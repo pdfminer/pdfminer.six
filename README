@@ -1,0 +1,7 @@
+
+Installation:
+
+ 1. $ tar jxf CMap.tar.bz2
+ 2. $ mkdir CDBCMap
+ 3. $ ./conv_cmap CMap/*
+
