@@ -23,7 +23,7 @@ def dumpcdb(cmap, cdbfile, verbose=1):
 def convert_cmap(files, cmapdir, cdbcmapdir, force=False):
   from cmap import CMapDB
   CMapDB.initialize(cmapdir)
-  for fname in fiels:
+  for fname in files:
     cmapname = os.path.basename(fname)
     cdbname = os.path.join(cdbcmapdir, cmapname+'.cmap.cdb')
     if not force and os.path.exists(cdbname):

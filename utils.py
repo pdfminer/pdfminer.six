@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from struct import pack, unpack
 
 ##  Utilities
 ##
