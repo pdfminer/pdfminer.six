@@ -5,14 +5,12 @@
 #  ver 0.2, Dec 24 2007
 
 # TODO:
-#   - .curpos
-#   - colorspace..
+#   - Code Documentation.
+#   - Error handling for invalid type.
 
-#   - comments.
 #   - Outlines.
 #   - Named Objects. (pages)
 #   - Writers.
-#   - Error handling for invalid type.
 #   - Linearized PDF.
 #   - Encryption?
 
@@ -143,10 +141,6 @@ LITERAL_PAGES = PSLiteralTable.intern('Pages')
 LITERAL_CATALOG = PSLiteralTable.intern('Catalog')
 LITERAL_FLATE_DECODE = PSLiteralTable.intern('FlateDecode')
 LITERAL_STANDARD_ENCODING = PSLiteralTable.intern('StandardEncoding')
-LITERAL_DEVICE_GRAY = PSLiteralTable.intern('DeviceGray')
-LITERAL_DEVICE_RGB = PSLiteralTable.intern('DeviceRGB')
-LITERAL_DEVICE_CMYK = PSLiteralTable.intern('DeviceCMYK')
-LITERAL_ICCBASED = PSLiteralTable.intern('ICCBased')
 KEYWORD_OBJ = PSKeywordTable.intern('obj')
 KEYWORD_EI = PSKeywordTable.intern('EI')
 
@@ -184,8 +178,10 @@ class CMap:
     return self
 
   def register_cid2code(self, cid, code):
-    assert isinstance(code, str)
+    from glyphlist import charname2unicode
     assert isinstance(cid, int)
+    if isinstance(code, PSLiteral):
+      code = pack('>H', charname2unicode[code.name])
     self.cid2code[cid] = code
     return self
 
@@ -243,6 +239,10 @@ class CDBCMap(CMap):
     if not self.db.has_key(k):
       return None
     return self.db[k]
+  
+  def is_vertical(self):
+    return (self.db.has_key('/WMode') and
+            self.db['/WMode'] == '1')
 
   def getall(self, c):
     while 1:
@@ -252,19 +252,16 @@ class CDBCMap(CMap):
       if k.startswith(c):
         yield (k[1:], unpack('>L', v)[0])
     return
-  
-  def is_vertical(self):
-    return (self.db.has_key('/WMode') and
-            self.db['/WMode'] == '1')
 
   def getall_attrs(self):
     while 1:
       x = self.db.each()
       if not x: break
       (k,v) = x
-      if k.startswith(c):
+      if k.startswith('/'):
         yield (k[1:], eval(v)[0])
     return
+  
   def getall_cid2code(self):
     return self.getall('i')
   def getall_code2cid(self):
@@ -387,6 +384,36 @@ class EncodingDB:
           cid += 1
     return cid2unicode
   
+
+##  Color Spaces
+##
+LITERAL_DEVICE_GRAY = PSLiteralTable.intern('DeviceGray')
+LITERAL_DEVICE_RGB = PSLiteralTable.intern('DeviceRGB')
+LITERAL_DEVICE_CMYK = PSLiteralTable.intern('DeviceCMYK')
+LITERAL_ICC_BASED = PSLiteralTable.intern('ICCBased')
+LITERAL_DEVICE_N = PSLiteralTable.intern('DeviceN')
+CS_COMPONENTS = {
+  PSLiteralTable.intern('CalRGB'): 3,
+  PSLiteralTable.intern('CalGray'): 1,
+  PSLiteralTable.intern('Lab'): 3,
+  PSLiteralTable.intern('DeviceRGB'): 3,
+  PSLiteralTable.intern('DeviceCMYK'): 4,
+  PSLiteralTable.intern('DeviceGray'): 1,
+  PSLiteralTable.intern('Separation'): 1,
+  PSLiteralTable.intern('Indexed'): 1,
+  PSLiteralTable.intern('Pattern'): 1,
+  }
+
+def cs_params(cs):
+  t = cs[0]
+  if t == LITERAL_ICC_BASED:
+    return stream_value(cs[1]).dic['N']
+  elif t == LITERAL_DEVICE_N:
+    return len(list_value(cs[1]))
+  else:
+    return CS_COMPONENTS[t]
+
+
 ##  PSBaseParser
 ##
 class PSBaseParser:
@@ -401,7 +428,7 @@ class PSBaseParser:
     return
 
   def __repr__(self):
-    return '<PSBaseParser: %r (pos=%d)>' % (self.fp, self.curpos)
+    return '<PSBaseParser: %r>' % (self.fp,)
 
   def seek(self, pos):
     '''
@@ -410,9 +437,9 @@ class PSBaseParser:
     if 2 <= self.debug:
       print >>stderr, 'seek:', pos
     self.fp.seek(pos)
-    self.curpos = pos
+    self.linepos = pos
     self.linebuf = None
-    self.linepos = 0
+    self.curpos = 0
     self.line = ''
     return
   
@@ -424,31 +451,31 @@ class PSBaseParser:
     line = ''
     eol = None
     while 1:
-      if not self.linebuf or len(self.linebuf) <= self.linepos:
+      if not self.linebuf or len(self.linebuf) <= self.curpos:
         # fetch next chunk.
         self.linebuf = self.fp.read(self.bufsize)
         if not self.linebuf:
           # at EOF.
           break
-        self.linepos = 0
+        self.curpos = 0
       if eol:
-        c = self.linebuf[self.linepos]
+        c = self.linebuf[self.curpos]
         # handle '\r\n'
         if (eol == '\r' and c == '\n'):
           line += c
-          self.linepos += 1
+          self.curpos += 1
         break
-      m = self.EOLCHAR.search(self.linebuf, self.linepos)
+      m = self.EOLCHAR.search(self.linebuf, self.curpos)
       if m:
         i = m.end(0)
-        line += self.linebuf[self.linepos:i]
+        line += self.linebuf[self.curpos:i]
         eol = self.linebuf[i-1]
-        self.linepos = i
+        self.curpos = i
       else:
         # fetch further
-        line += self.linebuf[self.linepos:]
+        line += self.linebuf[self.curpos:]
         self.linebuf = None
-    self.curpos += len(line)
+    self.linepos += len(line)
     return line
 
   def revreadlines(self):
@@ -490,11 +517,11 @@ class PSBaseParser:
     '''
     while 1:
       # do not strip line! we need to distinguish last '\n' or '\r'
-      basepos = self.curpos
+      linepos0 = self.linepos
       self.line = self.nextline()
       if not self.line: break
       if 2 <= self.debug:
-        print >>stderr, 'line: (%d) %r' % (self.curpos, self.line)
+        print >>stderr, 'line: (%d) %r' % (self.linepos, self.line)
       # do this before removing comment
       if self.line.startswith('%%EOF'): break
       charpos = 0
@@ -504,7 +531,7 @@ class PSBaseParser:
         m = self.TOKEN.search(self.line, charpos)
         if not m: break
         t = m.group(0)
-        pos = basepos+m.start(0)
+        pos = linepos0 + m.start(0)
         charpos = m.end(0)
         
         if t == '%':
@@ -534,22 +561,22 @@ class PSBaseParser:
               s += s1[-1:]
               self.line = self.nextline()
               if not self.line:
-                raise PSSyntaxError('end inside string: curpos=%d, line=%r' %
-                                    (self.curpos, self.line))
+                raise PSSyntaxError('end inside string: linepos=%d, line=%r' %
+                                    (self.linepos, self.line))
               charpos = 0
             elif charpos == len(self.line):
               s += s1
               self.line = self.nextline()
               if not self.line:
-                raise PSSyntaxError('end inside string: curpos=%d, line=%r' %
-                                    (self.curpos, self.line))
+                raise PSSyntaxError('end inside string: linepos=%d, line=%r' %
+                                    (self.linepos, self.line))
               charpos = 0
             else:
               s += s1
               break
           if self.line[charpos] != ')':
-            raise PSSyntaxError('no close paren: curpos=%d, line=%r' %
-                                (self.curpos, self.line))
+            raise PSSyntaxError('no close paren: linepos=%d, line=%r' %
+                                (self.linepos, self.line))
           charpos += 1
           def convesc(m):
             x = m.group(0)
@@ -567,8 +594,8 @@ class PSBaseParser:
           ms = self.STRING_HEX.match(self.line, charpos)
           charpos = ms.end(0)
           if self.line[charpos] != '>':
-            raise PSSyntaxError('no close paren: curpos=%d, line=%r' %
-                                (self.curpos, self.line))
+            raise PSSyntaxError('no close paren: linepos=%d, line=%r' %
+                                (self.linepos, self.line))
           charpos += 1
           def convhex(m1):
             return chr(int(m1.group(0), 16))
@@ -801,18 +828,21 @@ class CMapParser(PSStackParser):
       for (s,e,code) in choplist(3, self.partobj):
         assert isinstance(s, str)
         assert isinstance(e, str)
-        assert isinstance(code, str)
         assert len(s) == len(e)
         s1 = nunpack(s)
         e1 = nunpack(e)
         assert s1 <= e1
-        var = code[-4:]
-        base = nunpack(var)
-        prefix = code[:-4]
-        vlen = len(var)
-        for i in xrange(e1-s1+1):
-          x = prefix+pack('>L',base+i)[-vlen:]
-          self.cmap.register_cid2code(s1+i, x)
+        if isinstance(code, list):
+          for i in xrange(e1-s1+1):
+            self.cmap.register_cid2code(s1+i, code[i])
+        else:
+          var = code[-4:]
+          base = nunpack(var)
+          prefix = code[:-4]
+          vlen = len(var)
+          for i in xrange(e1-s1+1):
+            x = prefix+pack('>L',base+i)[-vlen:]
+            self.cmap.register_cid2code(s1+i, x)
       self.popall()
       return
         
@@ -858,6 +888,7 @@ class PDFStream:
     data = self.rawdata
     if self.doc.crypt:
       # func DECRYPT is not implemented yet...
+      raise NotImplementedError
       data = DECRYPT(self.doc.crypt, data)
     if 'Filter' not in self.dic:
       self.data = data
@@ -1008,63 +1039,6 @@ def stream_value(x):
   return x
 
 
-# dumpxml
-def dumpxml(out, obj):
-  if isinstance(obj, dict):
-    out.write('<dict size="%d">\n' % len(obj))
-    for (k,v) in obj.iteritems():
-      out.write('<key>%s</key>\n' % k)
-      out.write('<value>')
-      dumpxml(out, v)
-      out.write('</value>\n')
-    out.write('</dict>')
-    return
-  
-  if isinstance(obj, list):
-    out.write('<list size="%d">\n' % len(obj))
-    for v in obj:
-      dumpxml(out, v)
-      out.write('\n')
-    out.write('</list>')
-    return
-  
-  if isinstance(obj, str):
-    out.write('<string size="%d">%s</string>' % (len(obj), repr(obj)))
-    return
-  
-  if isinstance(obj, PDFStream):
-    props = obj.dic.copy()
-    if 'Filter' in props:
-      del props['Filter']
-    if 'DecodeParms' in props:
-      del props['DecodeParms']
-    out.write('<stream>\n<props>\n')
-    dumpxml(out, props)
-    data = obj.get_data()
-    out.write('\n</props>\n')
-    out.write('<data size="%d">%s</data>\n' % (len(data), repr(data)))
-    out.write('</stream>')
-    return
-  
-  if isinstance(obj, PDFObjRef):
-    out.write('<ref id="%d"/>' % obj.objid)
-    return
-  
-  if isinstance(obj, PSKeyword):
-    out.write('<keyword>%s</keyword>' % obj.name)
-    return
-
-  if isinstance(obj, PSLiteral):
-    out.write('<literal>%s</literal>' % obj.name)
-    return
-  
-  if isinstance(obj, int) or isinstance(obj, float):
-    out.write('<number>%s</nubmer>' % obj)
-    return
-
-  raise TypeError(obj)
-
-
 ##  PDFPage
 ##
 class PDFPage:
@@ -1176,6 +1150,7 @@ class PDFDocument:
     self.parsed_objs = {}
     self.crypt = None
     self.root = None
+    self.catalog = None
     self.parser = None
     return
 
@@ -1187,7 +1162,6 @@ class PDFDocument:
       trailer = xref.trailer
       if 'Encrypt' in trailer:
         self.crypt = dict_value(trailer['Encrypt'])
-        raise PDFEncrypted
       if 'Root' in trailer:
         self.set_root(dict_value(trailer['Root']))
         break
@@ -1196,6 +1170,7 @@ class PDFDocument:
     return
 
   def getobj(self, objid):
+    assert self.xrefs
     if objid in self.objs:
       obj = self.objs[objid]
     else:
@@ -1220,9 +1195,8 @@ class PDFDocument:
           self.parsed_objs[stream] = objs
         obj = objs[stream.dic['N']*2+index]
       else:
-        pos = index
-        pos0 = self.parser.curpos
-        self.parser.seek(pos)
+        pos0 = self.parser.linepos
+        self.parser.seek(index)
         seq = list_value(self.parser.parse())
         if not (len(seq) == 4 and seq[0] == objid and seq[2] == KEYWORD_OBJ):
           raise PDFSyntaxError('invalid stream spec: %r' % seq)
@@ -1234,6 +1208,7 @@ class PDFDocument:
     return obj
   
   def get_pages(self, debug=0):
+    assert self.xrefs
     def search(obj, parent):
       tree = dict_value(obj)
       if tree['Type'] == LITERAL_PAGES:
@@ -1244,7 +1219,7 @@ class PDFDocument:
             yield x
       elif tree['Type'] == LITERAL_PAGE:
         if 1 <= debug:
-          print >>stderr, 'Page: %r' % page1
+          print >>stderr, 'Page: %r' % tree
         yield (tree, parent)
     for (i,(tree,parent)) in enumerate(search(self.catalog['Pages'], self.catalog)):
       yield PDFPage(self, i, tree, parent)
@@ -1258,28 +1233,6 @@ class PDFDocument:
     self.outline = self.catalog.get('Outline')
     return
   
-  def dumptrailers(self, out=sys.stdout):
-    for xref in self.xrefs:
-      out.write('<trailer>\n')
-      dumpxml(out, xref.trailer)
-      out.write('\n</trailer>\n\n')
-    return
-  
-  def dumpall(self, out=sys.stdout):
-    out.write('<pdf>')
-    for xref in self.xrefs:
-      for objid in xrange(xref.objid0, xref.objid1+1):
-        try:
-          obj = self.getobj(objid)
-          out.write('<object id="%d">\n' % objid)
-          dumpxml(out, obj)
-          out.write('\n</object>\n\n')
-        except PDFValueError:
-          pass
-    self.dumptrailers(out)
-    out.write('</pdf>')
-    return
-
 
 ##  PDFParser
 ##
@@ -1293,7 +1246,7 @@ class PDFParser(PSStackParser):
     return
 
   def __repr__(self):
-    return '<PDFParser: curpos=%d>' % self.curpos
+    return '<PDFParser: linepos=%d>' % self.linepos
 
   EOIPAT = re.compile(r'\nEI\W')
   def do_token(self, pos, token):
@@ -1328,12 +1281,12 @@ class PDFParser(PSStackParser):
       while 1:
         line = self.nextline()
         if not line:
-          raise PDFSyntaxError('premature eof, need endstream: curpos=%d, line=%r' %
-                               (self.curpos, line))
+          raise PDFSyntaxError('premature eof, need endstream: linepos=%d, line=%r' %
+                               (self.linepos, line))
         if line.strip():
           if not line.startswith('endstream'):
-            raise PDFSyntaxError('need endstream: curpos=%d, line=%r' %
-                                 (self.curpos, line))
+            raise PDFSyntaxError('need endstream: linepos=%d, line=%r' %
+                                 (self.linepos, line))
           break
       if 1 <= self.debug:
         print >>stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
@@ -1355,7 +1308,7 @@ class PDFParser(PSStackParser):
       pos += len('ID ')
       self.fp.seek(pos)
       data = self.fp.read(8192) 
-      # XXX how do we know the real datalen other than scanning?
+      # XXX how do we know the real length other than scanning?
       m = self.EOIPAT.search(data)
       assert m
       objlen = m.start(0)
@@ -1391,7 +1344,7 @@ class PDFParser(PSStackParser):
     self.find_xref()
     while 1:
       # read xref table
-      pos0 = self.curpos
+      pos0 = self.linepos
       line = self.nextline()
       if 2 <= self.debug:
         print >>stderr, 'line: %r' % line
@@ -1400,8 +1353,8 @@ class PDFParser(PSStackParser):
         self.seek(pos0)
         xref = PDFXRefStream(self)
       elif line.strip() != 'xref':
-        raise PDFSyntaxError('xref not found: curpos=%d, line=%r' %
-                             (self.curpos, line))
+        raise PDFSyntaxError('xref not found: linepos=%d, line=%r' %
+                             (self.linepos, line))
       else:
         xref = PDFXRef(self)
       yield xref
@@ -1587,7 +1540,7 @@ class TrueTypeFont:
           (firstcode,entcount,delta,offset) = unpack('>HHhH', fp.read(8))
           hdrs.append((i,firstcode,entcount,delta,fp.tell()-2+offset))
         for (i,firstcode,entcount,delta,pos) in hdrs:
-          if not c: continue
+          if not entcount: continue
           first = firstcode + (firstbytes[i] << 8)
           fp.seek(pos)
           for c in xrange(entcount):
@@ -1911,12 +1864,10 @@ class PDFPageInterpreter:
   
   # setcolorspace-stroking
   def do_CS(self, name):
-    # XXX
     self.scs = self.csmap.get(literal_name(name), None)
     return
   # setcolorspace-non-strokine
   def do_cs(self, name):
-    # XXX
     self.ncs = self.csmap.get(literal_name(name), None)
     return
   # setgray-stroking
@@ -1946,19 +1897,11 @@ class PDFPageInterpreter:
 
   # setcolor
   def do_SCN(self):
-    if t == LITERAL_ICCBASED:
-      n = stream_value(self.scs[1]).dic['N']
-    else:
-      n = 1
+    n = cs_params(self.scs)
     self.pop(n)
     return
   def do_scn(self):
-    # XXX
-    t = self.ncs[0]
-    if t == LITERAL_ICCBASED:
-      n = stream_value(self.ncs[1]).dic['N']
-    else:
-      n = 1
+    n = cs_params(self.ncs)
     self.pop(n)
     return
   def do_SC(self):
@@ -2108,14 +2051,16 @@ class PDFPageInterpreter:
   def process_page(self, page):
     if 1 <= self.debug:
       print >>stderr, 'Processing page: %r' % page
-    self.render_contents('page%d' % page.pageid, page.resources, page.contents)
+    self.render_contents('page-%d' % page.pageid, page.resources, page.contents)
     return
 
   def render_contents(self, contid, resources, contents, ctm=(1, 0, 0, 1, 0, 0)):
     self.initpage(ctm)
-    self.device.begin_page(contid)
+    self.device.begin_block(contid)
     # Handle resource declarations.
     for (k,v) in resources.iteritems():
+      if 1 <= self.debug:
+        print >>stderr, 'Resource: %r: %r' % (k,v)
       if k == 'Font':
         for (fontid,fontrsrc) in dict_value(v).iteritems():
           self.fontmap[fontid] = self.rsrc.get_font(fontid, fontrsrc)
@@ -2129,7 +2074,7 @@ class PDFPageInterpreter:
           self.xobjmap[xobjid] = xobjstrm
     for stream in contents:
       self.execute(stream_value(stream))
-    self.device.end_page()
+    self.device.end_block()
     return
   
   def execute(self, stream):
@@ -2172,14 +2117,12 @@ class PDFDevice:
     self.ctm = ctm
     return
 
-  def begin_page(self, page):
+  def begin_block(self, name):
+    return
+  def end_block(self):
     return
   
-  def end_page(self):
-    return
-  
-  def render_string(self, state, matrix, size, seq):
-    print "render_string: state=%r, matrix=%r, size=%r, seq=%r" % (state, matrix, size, seq)
+  def render_string(self, textstate, textmatrix, size, seq):
     raise NotImplementedError
 
 
@@ -2193,19 +2136,17 @@ class TextConverter(PDFDevice):
     self.codec = codec
     return
   
-  def begin_page(self, pageid):
-    self.outfp.write('<page id="%s">\n' % pageid)
+  def begin_block(self, name):
+    self.outfp.write('<block name="%s">\n' % name)
     return
-  def end_page(self):
-    self.outfp.write('</page>\n')
+  def end_block(self):
+    self.outfp.write('</block>\n')
     return
 
-  def render_string(self, textstate, matrix, size, seq):
-    buf = ''
+  def render_string(self, textstate, textmatrix, size, seq):
     font = textstate.font
-    (a,b,c,d,tx,ty) = mult_matrix(matrix, self.ctm)
-    skewed = (b != 0 or c != 0)
     spwidth = int(-font.char_width(32) * 0.6) # space width
+    buf = ''
     for x in seq:
       if isinstance(x, int) or isinstance(x, float):
         if not font.is_vertical() and x <= spwidth:
@@ -2219,16 +2160,20 @@ class TextConverter(PDFDevice):
             (cidcoding, cid) = e.args
             char = u'[%s:%d]' % (cidcoding, cid)
           buf += char
-    def f(x): return '%.03f' % x
-    s = buf.encode(self.codec, 'xmlcharrefreplace')
+    (a,b,c,d,tx,ty) = mult_matrix(textmatrix, self.ctm)
+    skewed = (b != 0 or c != 0)
     if font.is_vertical():
-      (w,fs) = apply_matrix((a,b,c,d,0,0), (-size,textstate.fontsize))
-      self.outfp.write('<vtext font="%s" size="%s" x="%s" y="%s" w="%s">%s</vtext>\n' %
-                       (font.fontname, f(fs), f(tx),f(ty),f(w),s))
+      size = -size
+      tag = 'vtext'
     else:
-      (w,fs) = apply_matrix((a,b,c,d,0,0), (size,textstate.fontsize))
-      self.outfp.write('<htext font="%s" size="%s" x="%s" y="%s" w="%s">%s</htext>\n' %
-                       (font.fontname, f(fs), f(tx),f(ty),f(w),s))
+      tag = 'htext'
+    if skewed:
+      tag += ' skewed'
+    s = buf.encode(self.codec, 'xmlcharrefreplace')
+    (w,fs) = apply_matrix((a,b,c,d,0,0), (size,textstate.fontsize))
+    def f(x): return '%.03f' % x
+    self.outfp.write('<%s font="%s" size="%s" x="%s" y="%s" w="%s">%s</%s>\n' %
+                     (tag, font.fontname, f(fs), f(tx), f(ty), f(w), s, tag))
     return
 
 
