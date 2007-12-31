@@ -4,12 +4,17 @@ PACKAGE=pdfminer
 VERSION=20071231
 TAR=tar
 SVN=svn
+PYTHON=python
 
 WORKDIR=..
 DISTNAME=$(PACKAGE)-dist-$(VERSION)
 DISTFILE=$(DISTNAME).tar.gz
 
 all:
+
+cdbcmap: CMap
+	-mkdir CDBCMap
+	$(PYTHON) conv_cmap.py CMap/*
 
 clean:
 	-rm *.pyc *.pyo *~

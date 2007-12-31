@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-import sys
-import fileinput
-stdout = sys.stdout
+import sys, os.path
 stderr = sys.stderr
 
 def dumpcdb(cmap, cdbfile, verbose=1):
@@ -22,15 +20,10 @@ def dumpcdb(cmap, cdbfile, verbose=1):
   m.finish()
   return
 
-def convert_cmap(args, cmapdir='CMap', cdbcmapdir='CDBCMap', force=False):
-  from pdfparser import CMapDB
-  import os.path
-  if not os.path.isdir(cmapdir):
-    raise ValueError('not directory: %r' % cmapdir)
-  if not os.path.isdir(cdbcmapdir):
-    raise ValueError('not directory: %r' % cdbcmapdir)
+def convert_cmap(files, cmapdir, cdbcmapdir, force=False):
+  from cmap import CMapDB
   CMapDB.initialize(cmapdir)
-  for fname in args:
+  for fname in fiels:
     cmapname = os.path.basename(fname)
     cdbname = os.path.join(cdbcmapdir, cmapname+'.cmap.cdb')
     if not force and os.path.exists(cdbname):
@@ -44,16 +37,24 @@ def convert_cmap(args, cmapdir='CMap', cdbcmapdir='CDBCMap', force=False):
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-C cmapdir] file ...' % argv[0]
+    print 'usage: %s [-c cmapdir] [-C cdbcmapdir] [-f] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'C:')
+    (opts, args) = getopt.getopt(argv[1:], 'c:C:f')
   except getopt.GetoptError:
     return usage()
   if not args: usage()
   cmapdir = 'CMap'
+  cdbcmapdir = 'CDBCMap'
+  force = False
   for (k, v) in opts:
-    if k == '-C': cmapdir = v
-  return convert_cmap(args, cmapdir)
+    if k == '-f': force = True
+    elif k == '-c': cmapdir = v
+    elif k == '-C': cdbcmapdir = v
+  if not os.path.isdir(cmapdir):
+    raise ValueError('not directory: %r' % cmapdir)
+  if not os.path.isdir(cdbcmapdir):
+    raise ValueError('not directory: %r' % cdbcmapdir)
+  return convert_cmap(args, cmapdir, cdbcmapdir, force=force)
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

@@ -1,7 +1,15 @@
 
 Installation:
 
- 1. $ tar jxf CMap.tar.bz2
- 2. $ mkdir CDBCMap
- 3. $ ./conv_cmap CMap/*
+ 1. Get http://www.unixuser.org/~euske/pub/CMap.tar.bz2
+ 2. $ tar jxf CMap.tar.bz2
+ 3. $ make cdbcmap
 
+
+Dump the contents:
+
+  $ ./dumppdf.py foo.pdf
+
+Extract the text:
+
+  $ ./pdf2txt.py foo.pdf > foo.xml

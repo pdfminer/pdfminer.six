@@ -2,7 +2,7 @@
 #
 #  glyphlist.py - mappings from Adobe glyph name to unicode.
 #
-#  The following data is taken from
+#  The following data was taken from
 #    http://www.adobe.com/devnet/opentype/archives/glyphlist.txt
 #
 

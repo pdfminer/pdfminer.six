@@ -197,6 +197,8 @@ class CMapDB:
         fp = file(fname)
         CMapParser(cmap, fp).parse()
         fp.close()
+      else:
+        raise KeyError(cmapname)
       klass.cmapdb[cmapname] = cmap
     return cmap
 
