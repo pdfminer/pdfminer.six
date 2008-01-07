@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys
+import sys, re
 stderr = sys.stderr
 from struct import pack, unpack
 try:
@@ -9,9 +9,10 @@ except ImportError:
 from psparser import PSException, PSSyntaxError, PSTypeError, \
      PSStackParser, PSLiteral, PSKeyword, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name
-from pdfparser import resolve1, int_value, float_value, num_value, \
+from pdfparser import PDFStream, resolve1, int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value, PDFException
 from cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
+from utils import choplist
 
 
 ##  Exceptions
@@ -34,6 +35,7 @@ LITERAL_DEVICE_RGB = PSLiteralTable.intern('DeviceRGB')
 LITERAL_DEVICE_CMYK = PSLiteralTable.intern('DeviceCMYK')
 LITERAL_ICC_BASED = PSLiteralTable.intern('ICCBased')
 LITERAL_DEVICE_N = PSLiteralTable.intern('DeviceN')
+KEYWORD_EI = PSKeywordTable.intern('EI')
 MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
 CS_COMPONENTS = {
   PSLiteralTable.intern('CalRGB'): 3,
@@ -448,6 +450,50 @@ class PDFDevice:
     raise NotImplementedError
 
 
+##  PDFContentParser
+##
+class PDFContentParser(PSStackParser):
+
+  def __init__(self, fp, debug=0):
+    PSStackParser.__init__(self, fp, debug=debug)
+    return
+
+  def __repr__(self):
+    return '<PDFParser: linepos=%d>' % self.linepos
+
+  EOIPAT = re.compile(r'\nEI\W')
+  def do_token(self, pos, token):
+    name = keyword_name(token)
+
+    if name == 'BI':
+      # inline image within a content stream
+      self.context.append(('BI', self.partobj))
+      self.partobj = []
+      
+    elif name == 'ID':
+      objs = self.partobj
+      (type0, self.partobj) = self.context.pop()
+      if len(objs) % 2 != 0:
+        raise PSTypeError('invalid dictionary construct: %r' % objs)
+      dic = dict( (literal_name(k), v) for (k,v) in choplist(2, objs) )
+      pos += len('ID ')
+      self.fp.seek(pos)
+      data = self.fp.read(8192) 
+      # XXX how do we know the real length other than scanning?
+      m = self.EOIPAT.search(data)
+      assert m
+      objlen = m.start(0)
+      obj = PDFStream(dic, data[:objlen])
+      self.push(obj)
+      self.seek(pos+objlen+len('\nEI'))
+      self.push(KEYWORD_EI)
+      
+    else:
+      self.push(token)
+
+    return False
+
+
 ##  Interpreter
 ##
 class PDFPageInterpreter:
@@ -811,13 +857,15 @@ class PDFPageInterpreter:
         elif k == 'XObject':
           for (xobjid,xobjstrm) in dict_value(v).iteritems():
             self.xobjmap[xobjid] = xobjstrm
-    for stream in list_value(contents):
-      self.execute(stream_value(stream))
+    data = ''.join( stream_value(stream).get_data() 
+                    for stream in list_value(contents) )
+    self.execute(data)
     self.device.end_block()
     return
   
-  def execute(self, stream):
-    for obj in stream.parse_data(inline=True, debug=self.debug):
+  def execute(self, data):
+    parser = PDFContentParser(StringIO(data), debug=self.debug)
+    for obj in parser.parse():
       if isinstance(obj, PSKeyword):
         name = 'do_%s' % obj.name.replace('*','_a').replace('"','_w').replace("'",'_q')
         if hasattr(self, name):

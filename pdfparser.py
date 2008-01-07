@@ -15,6 +15,10 @@
 #   - Encryption?
 
 import sys, re
+try:
+  from cStringIO import StringIO
+except ImportError:
+  from StringIO import StringIO
 stderr = sys.stderr
 from utils import choplist, nunpack
 from psparser import PSException, PSSyntaxError, PSTypeError, \
@@ -40,7 +44,6 @@ LITERAL_PAGES = PSLiteralTable.intern('Pages')
 LITERAL_CATALOG = PSLiteralTable.intern('Catalog')
 LITERAL_FLATE_DECODE = PSLiteralTable.intern('FlateDecode')
 KEYWORD_OBJ = PSKeywordTable.intern('obj')
-KEYWORD_EI = PSKeywordTable.intern('EI')
 
 
 ##  PDFObjRef
@@ -135,10 +138,10 @@ def stream_value(x):
 ##
 class PDFStream:
   
-  def __init__(self, doc, dic, rawdata):
-    self.doc = doc
+  def __init__(self, dic, rawdata, crypt=None):
     self.dic = dic
     self.rawdata = rawdata
+    self.crypt = crypt
     self.data = None
     return
   
@@ -148,10 +151,10 @@ class PDFStream:
   def decode(self):
     assert self.data == None and self.rawdata != None
     data = self.rawdata
-    if self.doc.crypt:
+    if self.crypt:
       # func DECRYPT is not implemented yet...
       raise NotImplementedError
-      data = DECRYPT(self.doc.crypt, data)
+      data = DECRYPT(self.crypt, data)
     if 'Filter' not in self.dic:
       self.data = data
       self.rawdata = None
@@ -194,14 +197,6 @@ class PDFStream:
     if self.data == None:
       self.decode()
     return self.data
-
-  def parse_data(self, inline=False, debug=0):
-    try:
-      from cStringIO import StringIO
-    except ImportError:
-      from StringIO import StringIO
-    return PDFParser(self.doc, StringIO(self.get_data()),
-                     inline=inline, debug=debug).parse()
   
 
 ##  PDFPage
@@ -350,7 +345,9 @@ class PDFDocument:
         if strmid in self.parsed_objs:
           objs = self.parsed_objs[stream]
         else:
-          objs = stream.parse_data(self.debug)
+          parser = PDFParser(self, StringIO(stream.get_data()),
+                             debug=self.debug)
+          objs = list(parser.parse())
           self.parsed_objs[stream] = objs
         obj = objs[stream.dic['N']*2+index]
       else:
@@ -399,9 +396,8 @@ class PDFDocument:
 ##
 class PDFParser(PSStackParser):
 
-  def __init__(self, doc, fp, inline=False, debug=0):
+  def __init__(self, doc, fp, debug=0):
     PSStackParser.__init__(self, fp, debug=debug)
-    self.inline = inline
     self.doc = doc
     self.doc.set_parser(self)
     return
@@ -452,32 +448,9 @@ class PDFParser(PSStackParser):
       if 1 <= self.debug:
         print >>stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
               (pos, objlen, dic, data[:10])
-      obj = PDFStream(self.doc, dic, data)
+      obj = PDFStream(dic, data)
       self.push(obj)
 
-    elif self.inline and name == 'BI':
-      # inline image within a content stream
-      self.context.append(('BI', self.partobj))
-      self.partobj = []
-      
-    elif self.inline and name == 'ID':
-      objs = self.partobj
-      (type0, self.partobj) = self.context.pop()
-      if len(objs) % 2 != 0:
-        raise PSTypeError('invalid dictionary construct: %r' % objs)
-      dic = dict( (literal_name(k), v) for (k,v) in choplist(2, objs) )
-      pos += len('ID ')
-      self.fp.seek(pos)
-      data = self.fp.read(8192) 
-      # XXX how do we know the real length other than scanning?
-      m = self.EOIPAT.search(data)
-      assert m
-      objlen = m.start(0)
-      obj = PDFStream(self.doc, dic, data[:objlen])
-      self.push(obj)
-      self.seek(pos+objlen+len('\nEI'))
-      self.push(KEYWORD_EI)
-      
     else:
       self.push(token)
 
