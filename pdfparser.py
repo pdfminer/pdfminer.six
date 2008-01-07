@@ -18,8 +18,8 @@ import sys, re
 stderr = sys.stderr
 from utils import choplist, nunpack
 from psparser import PSException, PSSyntaxError, PSTypeError, \
-     PSLiteral, PSKeyword, \
-     PSLiteralTable, PSKeywordTable, literal_name, keyword_name, \
+     PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
+     literal_name, keyword_name, \
      PSStackParser
 
 
@@ -76,8 +76,7 @@ def resolveall(x):
   '''
   Recursively resolve X and all the internals.
   Make sure there is no indirect reference within the nested object.
-  This procedure might be slow. Do not used it unless
-  you really need it.
+  This procedure might be slow.
   '''
   while isinstance(x, PDFObjRef):
     x = x.resolve()
@@ -209,13 +208,12 @@ class PDFStream:
 ##
 class PDFPage:
   
-  def __init__(self, doc, pageidx, attrs, parent_attrs):
+  def __init__(self, doc, pageidx, attrs):
     self.doc = doc
     self.pageid = pageidx
     self.attrs = dict_value(attrs)
-    self.parent_attrs = parent_attrs
-    self.resources = self.get_attr('Resources')
-    self.mediabox = self.get_attr('MediaBox')
+    self.resources = resolve1(self.attrs['Resources'])
+    self.mediabox = resolve1(self.attrs['MediaBox'])
     contents = resolve1(self.attrs['Contents'])
     if not isinstance(contents, list):
       contents = [ contents ]
@@ -224,11 +222,6 @@ class PDFPage:
 
   def __repr__(self):
     return '<PDFPage: Resources=%r, MediaBox=%r>' % (self.resources, self.mediabox)
-  
-  def get_attr(self, k):
-    if k in self.attrs:
-      return resolve1(self.attrs[k])
-    return self.parent_attrs.get(k)
 
 
 ##  XRefs
@@ -239,7 +232,7 @@ class PDFXRef:
 
   def __init__(self, parser):
     while 1:
-      line = parser.nextline()
+      (_, line) = parser.nextline()
       if not line:
         raise PDFSyntaxError('premature eof: %r' % parser)
       line = line.strip()
@@ -253,7 +246,7 @@ class PDFXRef:
       self.objid1 = start+nobjs
       self.offsets = []
       for objid in xrange(start, start+nobjs):
-        line = parser.nextline()
+        (_, line) = parser.nextline()
         f = line.strip().split(' ')
         if len(f) != 3:
           raise PDFSyntaxError('invalid xref format: %r, line=%r' % (parser, line))
@@ -361,13 +354,12 @@ class PDFDocument:
           self.parsed_objs[stream] = objs
         obj = objs[stream.dic['N']*2+index]
       else:
-        pos0 = self.parser.linepos
-        self.parser.seek(index)
+        prevpos = self.parser.seek(index)
         seq = list_value(self.parser.parse())
         if not (len(seq) == 4 and seq[0] == objid and seq[2] == KEYWORD_OBJ):
           raise PDFSyntaxError('invalid stream spec: %r' % seq)
         obj = seq[3]
-        self.parser.seek(pos0)
+        self.parser.seek(prevpos)
       if 2 <= self.debug:
         print >>stderr, 'register: objid=%r: %r' % (objid, obj)
       self.objs[objid] = obj
@@ -376,7 +368,10 @@ class PDFDocument:
   def get_pages(self, debug=0):
     assert self.xrefs
     def search(obj, parent):
-      tree = dict_value(obj)
+      tree = dict_value(obj).copy()
+      for (k,v) in parent.iteritems():
+        if k not in tree:
+          tree[k] = v
       if tree['Type'] == LITERAL_PAGES:
         if 1 <= debug:
           print >>stderr, 'Pages: Kids=%r' % tree['Kids']
@@ -386,9 +381,9 @@ class PDFDocument:
       elif tree['Type'] == LITERAL_PAGE:
         if 1 <= debug:
           print >>stderr, 'Page: %r' % tree
-        yield (tree, parent)
-    for (i,(tree,parent)) in enumerate(search(self.catalog['Pages'], self.catalog)):
-      yield PDFPage(self, i, tree, parent)
+        yield tree
+    for (i,tree) in enumerate(search(self.catalog['Pages'], self.catalog)):
+      yield PDFPage(self, i, tree)
     return 
 
   def set_root(self, root):
@@ -440,19 +435,19 @@ class PDFParser(PSStackParser):
         raise PDFValueError('/Length is undefined: %r' % dic)
       objlen = int_value(dic['Length'])
       self.seek(pos)
-      line = self.nextline()  # 'stream'
+      (_, line) = self.nextline()  # 'stream'
       self.fp.seek(pos+len(line))
       data = self.fp.read(objlen)
       self.seek(pos+len(line)+objlen)
       while 1:
-        line = self.nextline()
+        (linepos, line) = self.nextline()
         if not line:
           raise PDFSyntaxError('premature eof, need endstream: linepos=%d, line=%r' %
-                               (self.linepos, line))
+                               (linepos, line))
         if line.strip():
           if not line.startswith('endstream'):
             raise PDFSyntaxError('need endstream: linepos=%d, line=%r' %
-                                 (self.linepos, line))
+                                 (linepos, line))
           break
       if 1 <= self.debug:
         print >>stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
@@ -510,17 +505,16 @@ class PDFParser(PSStackParser):
     self.find_xref()
     while 1:
       # read xref table
-      pos0 = self.linepos
-      line = self.nextline()
+      (linepos, line) = self.nextline()
       if 2 <= self.debug:
         print >>stderr, 'line: %r' % line
       if line[0].isdigit():
         # XRefStream: PDF-1.5
-        self.seek(pos0)
+        self.seek(linepos)
         xref = PDFXRefStream(self)
       elif line.strip() != 'xref':
         raise PDFSyntaxError('xref not found: linepos=%d, line=%r' %
-                             (self.linepos, line))
+                             (linepos, line))
       else:
         xref = PDFXRef(self)
       yield xref
@@ -531,10 +525,10 @@ class PDFParser(PSStackParser):
         self.seek(int_value(trailer['XRefStm']))
       if 'Prev' in trailer:
         # find previous xref
-        pos0 = int_value(trailer['Prev'])
-        self.seek(pos0)
+        pos = int_value(trailer['Prev'])
+        self.seek(pos)
         if 1 <= self.debug:
-          print >>stderr, 'prev trailer: pos=%d' % pos0
+          print >>stderr, 'prev trailer: pos=%d' % pos
       else:
         break
     return

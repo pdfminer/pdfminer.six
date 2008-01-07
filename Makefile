@@ -6,7 +6,7 @@ TAR=tar
 SVN=svn
 PYTHON=python
 
-WORKDIR=..
+WORKDIR=/tmp
 DISTNAME=$(PACKAGE)-dist-$(VERSION)
 DISTFILE=$(DISTNAME).tar.gz
 

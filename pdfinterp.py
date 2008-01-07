@@ -57,17 +57,18 @@ def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
           a0*e1+c0*f1+e0, b0*e1+d0*f1+f0)
 
 def apply_matrix((a,b,c,d,e,f), (x,y)):
-  '''Applies a matrix to a coordination.'''
+  '''Applies a matrix to coordinates.'''
   return (a*x+c*y+e, b*x+d*y+f)
 
 def cs_params(cs):
+  '''Returns a number of components for a given colorspace.'''
   t = cs[0]
   if t == LITERAL_ICC_BASED:
     return stream_value(cs[1]).dic['N']
   elif t == LITERAL_DEVICE_N:
     return len(list_value(cs[1]))
   else:
-    return CS_COMPONENTS[t]
+    return CS_COMPONENTS.get(t, 0)
 
 
 ##  Fonts
@@ -438,7 +439,7 @@ class PDFDevice:
     self.ctm = ctm
     return
 
-  def begin_block(self, name):
+  def begin_block(self, name, bbox):
     return
   def end_block(self):
     return
@@ -589,11 +590,11 @@ class PDFPageInterpreter:
   
   # setcolorspace-stroking
   def do_CS(self, name):
-    self.scs = self.csmap.get(literal_name(name), None)
+    self.scs = self.csmap.get(literal_name(name), [name])
     return
   # setcolorspace-non-strokine
   def do_cs(self, name):
-    self.ncs = self.csmap.get(literal_name(name), None)
+    self.ncs = self.csmap.get(literal_name(name), [name])
     return
   # setgray-stroking
   def do_G(self, gray):
@@ -770,34 +771,46 @@ class PDFPageInterpreter:
       if 1 <= self.debug:
         print >>stderr, 'Processing xobj: %r' % xobj
       interpreter = PDFPageInterpreter(self.rsrc, self.device)
-      interpreter.render_contents(xobjid, xobj.dic['Resources'], [xobj],
-                                  xobj.dic.get('Matrix', MATRIX_IDENTITY))
+      (x0,y0,x1,y1) = xobj.dic['BBox']
+      ctm = mult_matrix(xobj.dic.get('Matrix', MATRIX_IDENTITY), self.ctm)
+      (x0,y0) = apply_matrix(ctm, (x0,y0))
+      (x1,y1) = apply_matrix(ctm, (x1,y1))
+      interpreter.render_contents(xobjid,
+                                  (x0,y0,x1,y1),
+                                  xobj.dic.get('Resources'),
+                                  [xobj],
+                                  ctm=ctm)
     return
 
   def process_page(self, page):
     if 1 <= self.debug:
       print >>stderr, 'Processing page: %r' % page
-    self.render_contents('page-%d' % page.pageid, page.resources, page.contents)
+    self.render_contents('page-%d' % page.pageid,
+                         page.mediabox,
+                         page.resources,
+                         page.contents)
     return
 
-  def render_contents(self, contid, resources, contents, ctm=MATRIX_IDENTITY):
+  def render_contents(self, contid, mediabox, resources, contents,
+                      ctm=MATRIX_IDENTITY):
     self.initpage(ctm)
-    self.device.begin_block(contid)
+    self.device.begin_block(contid, mediabox)
     # Handle resource declarations.
-    for (k,v) in dict_value(resources).iteritems():
-      if 1 <= self.debug:
-        print >>stderr, 'Resource: %r: %r' % (k,v)
-      if k == 'Font':
-        for (fontid,fontrsrc) in dict_value(v).iteritems():
-          self.fontmap[fontid] = self.rsrc.get_font(fontid, fontrsrc)
-      elif k == 'ColorSpace':
-        for (csid,csspec) in dict_value(v).iteritems():
-          self.csmap[csid] = list_value(csspec)
-      elif k == 'ProcSet':
-        self.rsrc.get_procset(list_value(v))
-      elif k == 'XObject':
-        for (xobjid,xobjstrm) in dict_value(v).iteritems():
-          self.xobjmap[xobjid] = xobjstrm
+    if resources:
+      for (k,v) in dict_value(resources).iteritems():
+        if 1 <= self.debug:
+          print >>stderr, 'Resource: %r: %r' % (k,v)
+        if k == 'Font':
+          for (fontid,fontrsrc) in dict_value(v).iteritems():
+            self.fontmap[fontid] = self.rsrc.get_font(fontid, fontrsrc)
+        elif k == 'ColorSpace':
+          for (csid,csspec) in dict_value(v).iteritems():
+            self.csmap[csid] = list_value(csspec)
+        elif k == 'ProcSet':
+          self.rsrc.get_procset(list_value(v))
+        elif k == 'XObject':
+          for (xobjid,xobjstrm) in dict_value(v).iteritems():
+            self.xobjmap[xobjid] = xobjstrm
     for stream in list_value(contents):
       self.execute(stream_value(stream))
     self.device.end_block()

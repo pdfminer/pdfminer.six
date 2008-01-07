@@ -83,8 +83,8 @@ def dumptrailers(out, doc):
     out.write('\n</trailer>\n\n')
   return
 
-# dumpall
-def dumpall(out, doc):
+# dumpallobjs
+def dumpallobjs(out, doc):
   out.write('<pdf>')
   for xref in doc.xrefs:
     for objid in xrange(xref.objid0, xref.objid1+1):
@@ -93,7 +93,7 @@ def dumpall(out, doc):
         out.write('<object id="%d">\n' % objid)
         dumpxml(out, obj)
         out.write('\n</object>\n\n')
-      except PDFValueError:
+      except:
         pass
   dumptrailers(out, doc)
   out.write('</pdf>')
@@ -117,7 +117,7 @@ def dumppdf(outfp, fname, objids, pageids,
       if page.pageid in pageids:
         dumpxml(outfp, page.attrs)
   if dumpall:
-    dumpall(outfp, doc)
+    dumpallobjs(outfp, doc)
   if (not objids) and (not pageids) and (not dumpall):
     dumptrailers(outfp, doc)
   fp.close()

@@ -12,36 +12,48 @@ class PSTypeError(PSException): pass
 class PSValueError(PSException): pass
 
 
-##  PostScript Types
+##  Basic PostScript Types
 ##
+
+# PSLiteral
 class PSLiteral:
+  
   '''
   PS literals (e.g. "/Name").
   Caution: Never create these objects directly.
   Use PSLiteralTable.intern() instead.
   '''
+  
   def __init__(self, name):
     self.name = name
     return
+  
   def __repr__(self):
     return '/%s' % self.name
 
+# PSKeyword
 class PSKeyword:
+  
   '''
   PS keywords (e.g. "showpage").
   Caution: Never create these objects directly.
   Use PSKeywordTable.intern() instead.
   '''
+  
   def __init__(self, name):
     self.name = name
     return
+  
   def __repr__(self):
     return self.name
 
+# PSSymbolTable
 class PSSymbolTable:
+  
   '''
   Symbol table that stores PSLiteral or PSKeyword.
   '''
+  
   def __init__(self, classe):
     self.dic = {}
     self.classe = classe
@@ -74,7 +86,9 @@ def keyword_name(x):
 ##
 class PSBaseParser:
 
-  '''PostScript parser that performs only basic tokenization.'''
+  '''
+  Most basic PostScript parser that performs only basic tokenization.
+  '''
 
   def __init__(self, fp, debug=0):
     self.fp = fp
@@ -88,21 +102,22 @@ class PSBaseParser:
 
   def seek(self, pos):
     '''
-    seeks to the given pos.
+    Seeks the parser to the given position.
     '''
     if 2 <= self.debug:
       print >>stderr, 'seek:', pos
+    prevpos = self.fp.tell()
     self.fp.seek(pos)
-    self.linepos = pos
-    self.linebuf = None
-    self.curpos = 0
-    self.line = ''
-    return
+    self.linebuf = None  # line buffer.
+    self.curpos = 0      # current position in the buffer.
+    self.linepos = pos   # the beginning of the current line.
+    self.go = False
+    return prevpos
   
   EOLCHAR = re.compile(r'[\r\n]')
   def nextline(self):
     '''
-    fetches the next line that ends either with \\r or \\n.
+    Fetches a next line that ends either with \\r or \\n.
     '''
     line = ''
     eol = None
@@ -131,12 +146,14 @@ class PSBaseParser:
         # fetch further
         line += self.linebuf[self.curpos:]
         self.linebuf = None
+    linepos = self.linepos
     self.linepos += len(line)
-    return line
+    return (linepos, line)
 
   def revreadlines(self):
     '''
-    fetches lines backword. used to locate trailers.
+    Fetches a next line backword. This is used to locate
+    the trailers at the end of a file.
     '''
     self.fp.seek(0, 2)
     pos = self.fp.tell()
@@ -156,6 +173,7 @@ class PSBaseParser:
         buf = ''
     return
 
+  # regex patterns for basic lexical scanning.
   SPECIAL = r'%\[\]()<>{}/\000\011\012\014\015\040'
   TOKEN = re.compile(r'<<|>>|[%\[\]()<>{}/]|[^'+SPECIAL+r']+')
   LITERAL = re.compile(r'([^#'+SPECIAL+r']|#[0-9abcdefABCDEF]{2})+')
@@ -167,38 +185,39 @@ class PSBaseParser:
 
   def parse(self):
     '''
-    Yields a list of basic tokens: keywords, literals, strings, 
-    numbers and parentheses. Comments are skipped.
-    Nested objects (i.e. arrays and dictionaries) are not handled.
+    Yields a list of tuples (pos, token) of the following:
+    keywords, literals, strings, numbers and parentheses.
+    Comments are skipped.
+    Nested objects (i.e. arrays and dictionaries) are not handled here.
     '''
     while 1:
       # do not strip line! we need to distinguish last '\n' or '\r'
-      linepos0 = self.linepos
-      self.line = self.nextline()
-      if not self.line: break
+      (linepos, line) = self.nextline()
+      if not line: break
       if 2 <= self.debug:
-        print >>stderr, 'line: (%d) %r' % (self.linepos, self.line)
+        print >>stderr, 'line: (%d) %r' % (linepos, line)
       # do this before removing comment
-      if self.line.startswith('%%EOF'): break
+      if line.startswith('%%EOF'): break
       charpos = 0
       
       # tokenize
-      while 1:
-        m = self.TOKEN.search(self.line, charpos)
+      self.go = True
+      while self.go:
+        m = self.TOKEN.search(line, charpos)
         if not m: break
         t = m.group(0)
-        pos = linepos0 + m.start(0)
+        pos = linepos + m.start(0)
         charpos = m.end(0)
         
         if t == '%':
           # skip comment
           if 2 <= self.debug:
-            print >>stderr, 'comment: %r' % self.line[charpos:]
+            print >>stderr, 'comment: %r' % line[charpos:]
           break
         
         elif t == '/':
           # literal object
-          mn = self.LITERAL.match(self.line, m.start(0)+1)
+          mn = self.LITERAL.match(line, m.start(0)+1)
           lit = PSLiteralTable.intern(mn.group(0))
           yield (pos, lit)
           charpos = mn.end(0)
@@ -209,30 +228,30 @@ class PSBaseParser:
           # normal string object
           s = ''
           while 1:
-            ms = self.STRING_NORM.match(self.line, charpos)
+            ms = self.STRING_NORM.match(line, charpos)
             if not ms: break
             s1 = ms.group(0)
             charpos = ms.end(0)
             if len(s1) == 1 and s1[-1] == '\\':
               s += s1[-1:]
-              self.line = self.nextline()
-              if not self.line:
+              (linepos, line) = self.nextline()
+              if not line:
                 raise PSSyntaxError('end inside string: linepos=%d, line=%r' %
-                                    (self.linepos, self.line))
+                                    (linepos, line))
               charpos = 0
-            elif charpos == len(self.line):
+            elif charpos == len(line):
               s += s1
-              self.line = self.nextline()
-              if not self.line:
+              (linepos, line) = self.nextline()
+              if not line:
                 raise PSSyntaxError('end inside string: linepos=%d, line=%r' %
-                                    (self.linepos, self.line))
+                                    (linepos, line))
               charpos = 0
             else:
               s += s1
               break
-          if self.line[charpos] != ')':
+          if line[charpos] != ')':
             raise PSSyntaxError('no close paren: linepos=%d, line=%r' %
-                                (self.linepos, self.line))
+                                (linepos, line))
           charpos += 1
           def convesc(m):
             x = m.group(0)
@@ -247,11 +266,11 @@ class PSBaseParser:
           
         elif t == '<':
           # hex string object
-          ms = self.STRING_HEX.match(self.line, charpos)
+          ms = self.STRING_HEX.match(line, charpos)
           charpos = ms.end(0)
-          if self.line[charpos] != '>':
+          if line[charpos] != '>':
             raise PSSyntaxError('no close paren: linepos=%d, line=%r' %
-                                (self.linepos, self.line))
+                                (linepos, line))
           charpos += 1
           def convhex(m1):
             return chr(int(m1.group(0), 16))
@@ -270,7 +289,7 @@ class PSBaseParser:
             print >>stderr, 'number: %r' % n
           yield (pos, n)
 
-        elif t in ('true','false'):
+        elif t in ('true', 'false'):
           # boolean
           if 2 <= self.debug:
             print >>stderr, 'boolean: %r' % t

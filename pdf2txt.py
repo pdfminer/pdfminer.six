@@ -23,8 +23,9 @@ class TextConverter(PDFDevice):
     self.outfp.write('\n')
     return
   
-  def begin_block(self, name):
-    self.outfp.write('<block name="%s">\n' % name)
+  def begin_block(self, name, (x0,y0,x1,y1)):
+    self.outfp.write('<block name="%s" x0="%d" y0="%d" x1="%d" y1="%d">\n' %
+                     (name,x0,y0,x1,y1))
     return
   def end_block(self):
     self.outfp.write('</block>\n')
@@ -83,10 +84,10 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-v] [-c codec] [-p pages] file ...' % argv[0]
+    print 'usage: %s [-d] [-c codec] [-p pages] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dvp:c:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:c:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
