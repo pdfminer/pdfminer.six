@@ -138,10 +138,10 @@ def stream_value(x):
 ##
 class PDFStream:
   
-  def __init__(self, dic, rawdata, crypt=None):
+  def __init__(self, dic, rawdata, decipher=None):
     self.dic = dic
     self.rawdata = rawdata
-    self.crypt = crypt
+    self.decipher = decipher
     self.data = None
     return
   
@@ -151,10 +151,8 @@ class PDFStream:
   def decode(self):
     assert self.data == None and self.rawdata != None
     data = self.rawdata
-    if self.crypt:
-      # func DECRYPT is not implemented yet...
-      raise NotImplementedError
-      data = DECRYPT(self.crypt, data)
+    if self.decipher:
+      data = self.decipher(data)
     if 'Filter' not in self.dic:
       self.data = data
       self.rawdata = None
@@ -302,7 +300,7 @@ class PDFDocument:
     self.xrefs = []
     self.objs = {}
     self.parsed_objs = {}
-    self.crypt = None
+    self.decipher = None
     self.root = None
     self.catalog = None
     self.parser = None
@@ -315,7 +313,10 @@ class PDFDocument:
     for xref in self.xrefs:
       trailer = xref.trailer
       if 'Encrypt' in trailer:
-        self.crypt = dict_value(trailer['Encrypt'])
+        raise PDFEncrypted
+        param = dict_value(trailer['Encrypt'])
+        self.decipher = DECRYPTOR(param)
+        self.parser.strfilter = self.decipher
       if 'Root' in trailer:
         self.set_root(dict_value(trailer['Root']))
         break
@@ -448,7 +449,7 @@ class PDFParser(PSStackParser):
       if 1 <= self.debug:
         print >>stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
               (pos, objlen, dic, data[:10])
-      obj = PDFStream(dic, data)
+      obj = PDFStream(dic, data, self.doc.decipher)
       self.push(obj)
 
     else:

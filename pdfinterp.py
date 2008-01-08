@@ -23,6 +23,17 @@ class PDFFontError(PDFException): pass
 class PDFUnicodeNotDefined(PDFFontError): pass
 
 
+##  ColorSpace
+##
+class ColorSpace:
+  def __init__(self, name, ncomponents):
+    self.name = name
+    self.ncomponents = ncomponents
+    return
+  def __repr__(self):
+    return '<ColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
+
+
 ##  Constants
 ##
 LITERAL_PDF = PSLiteralTable.intern('PDF')
@@ -33,21 +44,21 @@ LITERAL_STANDARD_ENCODING = PSLiteralTable.intern('StandardEncoding')
 LITERAL_DEVICE_GRAY = PSLiteralTable.intern('DeviceGray')
 LITERAL_DEVICE_RGB = PSLiteralTable.intern('DeviceRGB')
 LITERAL_DEVICE_CMYK = PSLiteralTable.intern('DeviceCMYK')
-LITERAL_ICC_BASED = PSLiteralTable.intern('ICCBased')
-LITERAL_DEVICE_N = PSLiteralTable.intern('DeviceN')
 KEYWORD_EI = PSKeywordTable.intern('EI')
 MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
-CS_COMPONENTS = {
-  PSLiteralTable.intern('CalRGB'): 3,
-  PSLiteralTable.intern('CalGray'): 1,
-  PSLiteralTable.intern('Lab'): 3,
-  PSLiteralTable.intern('DeviceRGB'): 3,
-  PSLiteralTable.intern('DeviceCMYK'): 4,
-  PSLiteralTable.intern('DeviceGray'): 1,
-  PSLiteralTable.intern('Separation'): 1,
-  PSLiteralTable.intern('Indexed'): 1,
-  PSLiteralTable.intern('Pattern'): 1,
-  }
+
+PREDEFINED_COLORSPACE = dict(
+  (name, ColorSpace(name,n)) for (name,n) in {
+  'CalRGB': 3,
+  'CalGray': 1,
+  'Lab': 3,
+  'DeviceRGB': 3,
+  'DeviceCMYK': 4,
+  'DeviceGray': 1,
+  'Separation': 1,
+  'Indexed': 1,
+  'Pattern': 1,
+  }.iteritems())
 
 
 ##  Matrix operations
@@ -61,16 +72,6 @@ def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
 def apply_matrix((a,b,c,d,e,f), (x,y)):
   '''Applies a matrix to coordinates.'''
   return (a*x+c*y+e, b*x+d*y+f)
-
-def cs_params(cs):
-  '''Returns a number of components for a given colorspace.'''
-  t = cs[0]
-  if t == LITERAL_ICC_BASED:
-    return stream_value(cs[1]).dic['N']
-  elif t == LITERAL_DEVICE_N:
-    return len(list_value(cs[1]))
-  else:
-    return CS_COMPONENTS.get(t, 0)
 
 
 ##  Fonts
@@ -125,7 +126,7 @@ class PDFSimpleFont(PDFFont):
       encoding = LITERAL_STANDARD_ENCODING
     if isinstance(encoding, dict):
       name = literal_name(encoding.get('BaseEncoding', LITERAL_STANDARD_ENCODING))
-      diff = encoding.get('Differences', None)
+      diff = list_value(encoding.get('Differences', None))
       self.encoding = EncodingDB.get_encoding(name, diff)
     else:
       self.encoding = EncodingDB.get_encoding(literal_name(encoding))
@@ -531,7 +532,7 @@ class PDFPageInterpreter:
   def initpage(self, ctm):
     self.fontmap = {}
     self.xobjmap = {}
-    self.csmap = {}
+    self.csmap = PREDEFINED_COLORSPACE.copy()
     # gstack: stack for graphical states.
     self.gstack = []
     self.ctm = ctm
@@ -636,11 +637,11 @@ class PDFPageInterpreter:
   
   # setcolorspace-stroking
   def do_CS(self, name):
-    self.scs = self.csmap.get(literal_name(name), [name])
+    self.scs = self.csmap[literal_name(name)]
     return
   # setcolorspace-non-strokine
   def do_cs(self, name):
-    self.ncs = self.csmap.get(literal_name(name), [name])
+    self.ncs = self.csmap[literal_name(name)]
     return
   # setgray-stroking
   def do_G(self, gray):
@@ -669,12 +670,10 @@ class PDFPageInterpreter:
 
   # setcolor
   def do_SCN(self):
-    n = cs_params(self.scs)
-    self.pop(n)
+    self.pop(self.scs.ncomponents)
     return
   def do_scn(self):
-    n = cs_params(self.ncs)
-    self.pop(n)
+    self.pop(self.ncs.ncomponents)
     return
   def do_SC(self):
     self.do_SCN()
@@ -842,6 +841,17 @@ class PDFPageInterpreter:
     self.initpage(ctm)
     self.device.begin_block(contid, mediabox)
     # Handle resource declarations.
+    def get_colorspace(spec):
+      if isinstance(spec, list):
+        name = literal_name(spec[0])
+      else:
+        name = literal_name(spec)
+      if name == 'ICCBased':
+        return ColorSpace(name, stream_value(spec[1]).dic['N'])
+      elif name == 'DeviceN':
+        return ColorSpace(name, len(list_value(cs[1])))
+      else:
+        return PREDEFINED_COLORSPACE[name]
     if resources:
       for (k,v) in dict_value(resources).iteritems():
         if 1 <= self.debug:
@@ -850,8 +860,8 @@ class PDFPageInterpreter:
           for (fontid,fontrsrc) in dict_value(v).iteritems():
             self.fontmap[fontid] = self.rsrc.get_font(fontid, fontrsrc)
         elif k == 'ColorSpace':
-          for (csid,csspec) in dict_value(v).iteritems():
-            self.csmap[csid] = list_value(csspec)
+          for (csid,spec) in dict_value(v).iteritems():
+            self.csmap[csid] = get_colorspace(resolve1(spec))
         elif k == 'ProcSet':
           self.rsrc.get_procset(list_value(v))
         elif k == 'XObject':

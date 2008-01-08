@@ -94,6 +94,7 @@ class PSBaseParser:
     self.fp = fp
     self.debug = debug
     self.bufsize = 4096
+    self.strfilter = None
     self.seek(0)
     return
 
@@ -260,6 +261,8 @@ class PSBaseParser:
             else:
               return x[1]
           s = self.STRING_NORM_SUB.sub(convesc, s)
+          if self.strfilter:
+            s = self.strfilter(s)
           if 2 <= self.debug:
             print >>stderr, 'str: %r' % s
           yield (pos, s)
