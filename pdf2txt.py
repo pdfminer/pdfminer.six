@@ -23,13 +23,20 @@ class TextConverter(PDFDevice):
     self.outfp.write('\n')
     return
   
-  def begin_block(self, name, (x0,y0,x1,y1)):
-    self.outfp.write('<block name="%s" x0="%d" y0="%d" x1="%d" y1="%d">\n' %
+  def begin_page(self, name, (x0,y0,x1,y1)):
+    self.outfp.write('<page name="%s" x0="%d" y0="%d" x1="%d" y1="%d">\n' %
                      (name,x0,y0,x1,y1))
     return
-  
-  def end_block(self):
-    self.outfp.write('</block>\n')
+  def end_page(self, _):
+    self.outfp.write('</page>\n')
+    return
+
+  def begin_figure(self, name, (x0,y0,x1,y1)):
+    self.outfp.write('<figure name="%s" x0="%d" y0="%d" x1="%d" y1="%d">\n' %
+                     (name,x0,y0,x1,y1))
+    return
+  def end_figure(self, _):
+    self.outfp.write('</figure>\n')
     return
 
   def handle_undefined_char(self, cidcoding, cid):
@@ -73,6 +80,7 @@ class TextConverter(PDFDevice):
 # pdf2txt
 def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
   device = TextConverter(outfp, rsrc, codec)
+  outfp.write('<document>')
   doc = PDFDocument(debug=debug)
   fp = file(fname)
   parser = PDFParser(doc, fp, debug=debug)
@@ -81,6 +89,7 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
     if pages and (i not in pages): continue
     interpreter.process_page(page)
   fp.close()
+  outfp.write('</document>')
   device.close()
   return
 

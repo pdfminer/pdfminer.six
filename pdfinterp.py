@@ -189,7 +189,8 @@ class PDFType3Font(PDFSimpleFont):
     if 'FontDescriptor' in spec:
       descriptor = dict_value(spec['FontDescriptor'])
     else:
-      descriptor = {'FontName':None, 'Ascent':0, 'Descent':0,
+      descriptor = {'FontName':spec.get('Name'),
+                    'Ascent':0, 'Descent':0,
                     'FontBBox':spec['FontBBox']}
     PDFSimpleFont.__init__(self, descriptor, widths, spec)
     return
@@ -442,9 +443,13 @@ class PDFDevice:
     self.ctm = ctm
     return
 
-  def begin_block(self, name, bbox):
+  def begin_page(self, name, bbox):
     return
-  def end_block(self):
+  def end_page(self, name):
+    return
+  def begin_figure(self, name, bbox):
+    return
+  def end_figure(self, name):
     return
   
   def render_string(self, textstate, textmatrix, size, seq):
@@ -820,26 +825,23 @@ class PDFPageInterpreter:
       ctm = mult_matrix(xobj.dic.get('Matrix', MATRIX_IDENTITY), self.ctm)
       (x0,y0) = apply_matrix(ctm, (x0,y0))
       (x1,y1) = apply_matrix(ctm, (x1,y1))
-      interpreter.render_contents(xobjid,
-                                  (x0,y0,x1,y1),
-                                  xobj.dic.get('Resources'),
-                                  [xobj],
-                                  ctm=ctm)
+      bbox = (x0,y0,x1,y1)
+      self.device.begin_figure(xobjid, bbox)
+      interpreter.render_contents(xobj.dic.get('Resources'),
+                                  [xobj], ctm=ctm)
+      self.device.end_figure(xobjid)
     return
 
   def process_page(self, page):
     if 1 <= self.debug:
       print >>stderr, 'Processing page: %r' % page
-    self.render_contents('page-%d' % page.pageid,
-                         page.mediabox,
-                         page.resources,
-                         page.contents)
+    self.device.begin_page(page.pageid, page.mediabox)
+    self.render_contents(page.resources, page.contents)
+    self.device.end_page(page.pageid)
     return
 
-  def render_contents(self, contid, mediabox, resources, contents,
-                      ctm=MATRIX_IDENTITY):
+  def render_contents(self, resources, contents, ctm=MATRIX_IDENTITY):
     self.initpage(ctm)
-    self.device.begin_block(contid, mediabox)
     # Handle resource declarations.
     def get_colorspace(spec):
       if isinstance(spec, list):
@@ -874,7 +876,6 @@ class PDFPageInterpreter:
     data = ''.join( stream_value(stream).get_data() 
                     for stream in list_value(contents) )
     self.execute(data)
-    self.device.end_block()
     return
   
   def execute(self, data):

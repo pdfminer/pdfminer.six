@@ -117,7 +117,7 @@ def str_value(x):
 
 def list_value(x):
   x = resolve1(x)
-  if not isinstance(x, list):
+  if not (isinstance(x, list) or isinstance(x, tuple)):
     raise PDFTypeError('list required: %r' % x)
   return x
 
