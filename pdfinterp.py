@@ -9,8 +9,9 @@ except ImportError:
 from psparser import PSException, PSSyntaxError, PSTypeError, \
      PSStackParser, PSLiteral, PSKeyword, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name
-from pdfparser import PDFStream, resolve1, int_value, float_value, num_value, \
-     str_value, list_value, dict_value, stream_value, PDFException
+from pdfparser import PDFException, PDFStream, PDFObjRef, resolve1, \
+     int_value, float_value, num_value, \
+     str_value, list_value, dict_value, stream_value
 from cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
 from utils import choplist
 
@@ -80,8 +81,7 @@ def apply_matrix((a,b,c,d,e,f), (x,y)):
 # PDFFont
 class PDFFont:
   
-  def __init__(self, fontid, descriptor, widths, default_width=None):
-    self.fontid = fontid
+  def __init__(self, descriptor, widths, default_width=None):
     self.descriptor = descriptor
     self.widths = widths
     self.fontname = descriptor['FontName']
@@ -91,11 +91,11 @@ class PDFFont:
     self.descent = descriptor['Descent']
     self.default_width = default_width or descriptor.get('MissingWidth', 0)
     self.leading = descriptor.get('Leading', 0)
-    self.bbox = descriptor['FontBBox']
+    self.bbox = list_value(descriptor['FontBBox'])
     return
 
   def __repr__(self):
-    return '<PDFFont: fontid=%r>' % (self.fontid,)
+    return '<PDFFont>'
 
   def is_vertical(self):
     return False
@@ -116,7 +116,7 @@ class PDFFont:
 # PDFSimpleFont
 class PDFSimpleFont(PDFFont):
   
-  def __init__(self, fontid, descriptor, widths, spec):
+  def __init__(self, descriptor, widths, spec):
     # Font encoding is specified either by a name of
     # built-in encoding or a dictionary that describes
     # the differences.
@@ -135,7 +135,7 @@ class PDFSimpleFont(PDFFont):
       strm = stream_value(spec['ToUnicode'])
       self.ucs2_cmap = CMap()
       CMapParser(self.ucs2_cmap, StringIO(strm.get_data())).parse()
-    PDFFont.__init__(self, fontid, descriptor, widths)
+    PDFFont.__init__(self, descriptor, widths)
     return
 
   def to_unicode(self, cid):
@@ -154,7 +154,7 @@ class PDFSimpleFont(PDFFont):
 # PDFType1Font
 class PDFType1Font(PDFSimpleFont):
   
-  def __init__(self, fontid, spec):
+  def __init__(self, spec):
     if 'BaseFont' not in spec:
       raise PDFFontError('BaseFont is missing')
     self.basefont = literal_name(spec['BaseFont'])
@@ -169,7 +169,7 @@ class PDFType1Font(PDFSimpleFont):
                        in enumerate(list_value(spec['Widths'])) )
       except KeyError, k:
         raise PDFFontError('%s is missing' % k)
-    PDFSimpleFont.__init__(self, fontid, descriptor, widths, spec)
+    PDFSimpleFont.__init__(self, descriptor, widths, spec)
     return
 
 # PDFTrueTypeFont
@@ -178,7 +178,7 @@ class PDFTrueTypeFont(PDFType1Font):
 
 # PDFType3Font
 class PDFType3Font(PDFSimpleFont):
-  def __init__(self, fontid, spec):
+  def __init__(self, spec):
     try:
       firstchar = int_value(spec['FirstChar'])
       lastchar = int_value(spec['LastChar'])
@@ -189,9 +189,9 @@ class PDFType3Font(PDFSimpleFont):
     if 'FontDescriptor' in spec:
       descriptor = dict_value(spec['FontDescriptor'])
     else:
-      descriptor = {'FontName':fontid, 'Ascent':0, 'Descent':0,
+      descriptor = {'FontName':None, 'Ascent':0, 'Descent':0,
                     'FontBBox':spec['FontBBox']}
-    PDFSimpleFont.__init__(self, fontid, descriptor, widths, spec)
+    PDFSimpleFont.__init__(self, descriptor, widths, spec)
     return
 
 # PDFCIDFont
@@ -272,7 +272,7 @@ class TrueTypeFont:
 
 class PDFCIDFont(PDFFont):
   
-  def __init__(self, fontid, spec):
+  def __init__(self, spec):
     if 'BaseFont' not in spec:
       raise PDFFontError('BaseFont is missing')
     try:
@@ -335,7 +335,7 @@ class PDFCIDFont(PDFFont):
       self.disps = {}
       default_width = spec.get('DW', 1000)
       self.default_disp = 0
-    PDFFont.__init__(self, fontid, descriptor, widths, default_width)
+    PDFFont.__init__(self, descriptor, widths, default_width)
     return
 
   def is_vertical(self):
@@ -386,11 +386,10 @@ class PDFResourceManager:
   def get_cmap(self, name):
     return CMapDB.get_cmap(name)
 
-  def get_font(self, fontid, spec):
-    if fontid in self.fonts:
-      font = self.fonts[fontid]
+  def get_font(self, objid, spec):
+    if objid and objid in self.fonts:
+      font = self.fonts[objid]
     else:
-      spec = dict_value(spec)
       assert spec['Type'] == LITERAL_FONT
       # Create a Font object.
       if 'Subtype' not in spec:
@@ -398,16 +397,16 @@ class PDFResourceManager:
       subtype = literal_name(spec['Subtype'])
       if subtype in ('Type1', 'MMType1'):
         # Type1 Font
-        font = PDFType1Font(fontid, spec)
+        font = PDFType1Font(spec)
       elif subtype == 'TrueType':
         # TrueType Font
-        font = PDFTrueTypeFont(fontid, spec)
+        font = PDFTrueTypeFont(spec)
       elif subtype == 'Type3':
         # Type3 Font
-        font = PDFType3Font(fontid, spec)
+        font = PDFType3Font(spec)
       elif subtype in ('CIDFontType0', 'CIDFontType2'):
         # CID Font
-        font = PDFCIDFont(fontid, spec)
+        font = PDFCIDFont(spec)
       elif subtype == 'Type0':
         # Type0 Font
         dfonts = list_value(spec['DescendantFonts'])
@@ -416,10 +415,11 @@ class PDFResourceManager:
         for k in ('Encoding', 'ToUnicode'):
           if k in spec:
             subspec[k] = resolve1(spec[k])
-        font = self.get_font(fontid, subspec)
+        font = self.get_font(None, subspec)
       else:
         raise PDFFontError('Invalid Font: %r' % spec)
-      self.fonts[fontid] = font
+      if objid:
+        self.fonts[objid] = font
     return font
 
 
@@ -857,8 +857,12 @@ class PDFPageInterpreter:
         if 1 <= self.debug:
           print >>stderr, 'Resource: %r: %r' % (k,v)
         if k == 'Font':
-          for (fontid,fontrsrc) in dict_value(v).iteritems():
-            self.fontmap[fontid] = self.rsrc.get_font(fontid, fontrsrc)
+          for (fontid,spec) in dict_value(v).iteritems():
+            objid = None
+            if isinstance(spec, PDFObjRef):
+              objid = spec.objid
+            spec = dict_value(spec)
+            self.fontmap[fontid] = self.rsrc.get_font(objid, spec)
         elif k == 'ColorSpace':
           for (csid,spec) in dict_value(v).iteritems():
             self.csmap[csid] = get_colorspace(resolve1(spec))

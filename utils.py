@@ -14,7 +14,7 @@ def choplist(n, seq):
   return
 
 def nunpack(s, default=0):
-  '''Unpacks up to 4 bytes.'''
+  '''Unpacks up to 4 bytes big endian.'''
   l = len(s)
   if not l:
     return default

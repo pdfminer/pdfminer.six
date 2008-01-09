@@ -27,8 +27,12 @@ class TextConverter(PDFDevice):
     self.outfp.write('<block name="%s" x0="%d" y0="%d" x1="%d" y1="%d">\n' %
                      (name,x0,y0,x1,y1))
     return
+  
   def end_block(self):
     self.outfp.write('</block>\n')
+    return
+
+  def handle_undefined_char(self, cidcoding, cid):
     return
 
   def render_string(self, textstate, textmatrix, size, seq):
@@ -44,18 +48,19 @@ class TextConverter(PDFDevice):
         for cid in chars:
           try:
             char = font.to_unicode(cid)
+            buf += char
           except PDFUnicodeNotDefined, e:
             (cidcoding, cid) = e.args
-            char = u'[%s:%d]' % (cidcoding, cid)
-          buf += char
+            s = self.handle_undefined_char(cidcoding, cid)
+            if s:
+              buf += s
     (a,b,c,d,tx,ty) = mult_matrix(textmatrix, self.ctm)
-    skewed = (b != 0 or c != 0)
     if font.is_vertical():
       size = -size
       tag = 'vtext'
     else:
       tag = 'htext'
-    if skewed:
+    if (b != 0 or c != 0 or a <= 0 or d <= 0):
       tag += ' skewed'
     s = buf.encode(self.codec, 'xmlcharrefreplace')
     (w,fs) = apply_matrix((a,b,c,d,0,0), (size,textstate.fontsize))
