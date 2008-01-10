@@ -23,17 +23,19 @@ class TextConverter(PDFDevice):
     self.outfp.write('\n')
     return
   
-  def begin_page(self, name, (x0,y0,x1,y1)):
-    self.outfp.write('<page name="%s" x0="%d" y0="%d" x1="%d" y1="%d">\n' %
-                     (name,x0,y0,x1,y1))
+  def begin_page(self, page):
+    (x0,y0,x1,y1) = page.mediabox
+    self.outfp.write('<page id="%d" mediabox="%d,%d,%d,%d" rotate="%d">' %
+                     (page.pageid, x0,y0,x1,y1, page.rotate))
     return
   def end_page(self, _):
     self.outfp.write('</page>\n')
     return
 
-  def begin_figure(self, name, (x0,y0,x1,y1)):
-    self.outfp.write('<figure name="%s" x0="%d" y0="%d" x1="%d" y1="%d">\n' %
-                     (name,x0,y0,x1,y1))
+  def begin_figure(self, name, bbox):
+    (x0,y0,x1,y1) = bbox
+    self.outfp.write('<figure name="%s" bbox="%d,%d,%d,%d">\n' %
+                     (name, x0,y0,x1,y1))
     return
   def end_figure(self, _):
     self.outfp.write('</figure>\n')
@@ -80,7 +82,7 @@ class TextConverter(PDFDevice):
 # pdf2txt
 def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
   device = TextConverter(outfp, rsrc, codec)
-  outfp.write('<document>')
+  outfp.write('<document>\n')
   doc = PDFDocument(debug=debug)
   fp = file(fname)
   parser = PDFParser(doc, fp, debug=debug)
@@ -89,7 +91,7 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
     if pages and (i not in pages): continue
     interpreter.process_page(page)
   fp.close()
-  outfp.write('</document>')
+  outfp.write('</document>\n')
   device.close()
   return
 

@@ -205,8 +205,16 @@ class PDFPage:
     self.doc = doc
     self.pageid = pageidx
     self.attrs = dict_value(attrs)
+    self.lastmod = self.attrs.get('LastModified')
     self.resources = resolve1(self.attrs['Resources'])
     self.mediabox = resolve1(self.attrs['MediaBox'])
+    if 'CropBox' in self.attrs:
+      self.cropbox = resolve1(self.attrs['CropBox'])
+    else:
+      self.cropbox = self.mediabox
+    self.rotate = self.attrs.get('Rotate', 0)
+    self.annots = self.attrs.get('Annots')
+    self.beads = self.attrs.get('B')
     contents = resolve1(self.attrs['Contents'])
     if not isinstance(contents, list):
       contents = [ contents ]
@@ -293,6 +301,7 @@ class PDFXRefStream:
 
 ##  PDFDocument
 ##
+INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
 class PDFDocument:
   
   def __init__(self, debug=0):
@@ -368,7 +377,7 @@ class PDFDocument:
     def search(obj, parent):
       tree = dict_value(obj).copy()
       for (k,v) in parent.iteritems():
-        if k not in tree:
+        if k in INHERITABLE_ATTRS and k not in tree:
           tree[k] = v
       if tree['Type'] == LITERAL_PAGES:
         if 1 <= debug:

@@ -443,9 +443,9 @@ class PDFDevice:
     self.ctm = ctm
     return
 
-  def begin_page(self, name, bbox):
+  def begin_page(self, page):
     return
-  def end_page(self, name):
+  def end_page(self, page):
     return
   def begin_figure(self, name, bbox):
     return
@@ -835,9 +835,9 @@ class PDFPageInterpreter:
   def process_page(self, page):
     if 1 <= self.debug:
       print >>stderr, 'Processing page: %r' % page
-    self.device.begin_page(page.pageid, page.mediabox)
+    self.device.begin_page(page)
     self.render_contents(page.resources, page.contents)
-    self.device.end_page(page.pageid)
+    self.device.end_page(page)
     return
 
   def render_contents(self, resources, contents, ctm=MATRIX_IDENTITY):
