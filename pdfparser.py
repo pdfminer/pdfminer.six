@@ -24,7 +24,7 @@ from utils import choplist, nunpack
 from psparser import PSException, PSSyntaxError, PSTypeError, \
      PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
      literal_name, keyword_name, \
-     PSStackParser
+     PSStackParser, STRICT
 
 
 ##  PDF Exceptions
@@ -52,7 +52,8 @@ class PDFObjRef:
   
   def __init__(self, doc, objid, genno):
     if objid == 0:
-      raise PDFValueError('objid cannot be 0.')
+      if STRICT:
+        raise PDFValueError('objid cannot be 0.')
     self.doc = doc
     self.objid = objid
     #self.genno = genno  # Never used.
@@ -94,43 +95,57 @@ def resolveall(x):
 def int_value(x):
   x = resolve1(x)
   if not isinstance(x, int):
-    raise PDFTypeError('integer required: %r' % x)
+    if STRICT:
+      raise PDFTypeError('integer required: %r' % x)
+    return 0
   return x
 
 def float_value(x):
   x = resolve1(x)
   if not isinstance(x, float):
-    raise PDFTypeError('float required: %r' % x)
+    if STRICT:
+      raise PDFTypeError('float required: %r' % x)
+    return 0.0
   return x
 
 def num_value(x):
   x = resolve1(x)
   if not (isinstance(x, int) or isinstance(x, float)):
-    raise PDFTypeError('int or float required: %r' % x)
+    if STRICT:
+      raise PDFTypeError('int or float required: %r' % x)
+    return 0
   return x
 
 def str_value(x):
   x = resolve1(x)
   if not isinstance(x, str):
-    raise PDFTypeError('string required: %r' % x)
+    if STRICT:
+      raise PDFTypeError('string required: %r' % x)
+    return ''
   return x
 
 def list_value(x):
   x = resolve1(x)
   if not (isinstance(x, list) or isinstance(x, tuple)):
-    raise PDFTypeError('list required: %r' % x)
+    if STRICT:
+      raise PDFTypeError('list required: %r' % x)
+    return []
   return x
 
 def dict_value(x):
   x = resolve1(x)
   if not isinstance(x, dict):
-    raise PDFTypeError('dict required: %r' % x)
+    if STRICT:
+      raise PDFTypeError('dict required: %r' % x)
+    return {}
   return x
 
 def stream_value(x):
   x = resolve1(x)
   if not isinstance(x, PDFStream):
-    raise PDFTypeError('stream required: %r' % x)
+    if STRICT:
+      raise PDFTypeError('stream required: %r' % x)
+    return PDFStream({}, '')
   return x
 
 
@@ -186,7 +201,8 @@ class PDFStream:
               ent0 = ent1
             data = buf
       else:
-        raise PDFValueError('Invalid filter spec: %r' % f)
+        if STRICT:
+          raise PDFValueError('Invalid filter spec: %r' % f)
     self.data = data
     self.rawdata = None
     return
@@ -235,12 +251,15 @@ class PDFXRef:
     while 1:
       (_, line) = parser.nextline()
       if not line:
-        raise PDFSyntaxError('premature eof: %r' % parser)
+        if STRICT:
+          raise PDFSyntaxError('premature eof: %r' % parser)
+        break
       line = line.strip()
       f = line.split(' ')
       if len(f) != 2:
         if line != 'trailer':
-          raise PDFSyntaxError('trailer not found: %r: line=%r' % (parser, line))
+          if STRICT:
+            raise PDFSyntaxError('trailer not found: %r: line=%r' % (parser, line))
         break
       (start, nobjs) = map(long, f)
       self.objid0 = start
@@ -250,7 +269,9 @@ class PDFXRef:
         (_, line) = parser.nextline()
         f = line.strip().split(' ')
         if len(f) != 3:
-          raise PDFSyntaxError('invalid xref format: %r, line=%r' % (parser, line))
+          if STRICT:
+            raise PDFSyntaxError('invalid xref format: %r, line=%r' % (parser, line))
+          continue
         (pos, genno, use) = f
         self.offsets.append((int(genno), long(pos), use))
     # read trailer
@@ -259,10 +280,11 @@ class PDFXRef:
 
   def getpos(self, objid):
     if objid < self.objid0 or self.objid1 <= objid:
-      raise IndexError
+      raise IndexError(objid)
     (genno, pos, use) = self.offsets[objid-self.objid0]
     if use != 'n':
-      raise PDFValueError('unused objid=%r' % objid)
+      if STRICT:
+        raise PDFValueError('unused objid=%r' % objid)
     return (None, pos)
 
 
@@ -272,7 +294,8 @@ class PDFXRefStream:
 
   def __init__(self, parser):
     (objid, genno, _, stream) = list_value(parser.parse())
-    assert stream.dic['Type'] == LITERAL_XREF
+    if STRICT:
+      assert stream.dic['Type'] == LITERAL_XREF
     size = stream.dic['Size']
     (start, nobjs) = stream.dic.get('Index', (0,size))
     self.objid0 = start
@@ -285,7 +308,7 @@ class PDFXRefStream:
 
   def getpos(self, objid):
     if objid < self.objid0 or self.objid1 <= objid:
-      raise IndexError
+      raise IndexError(objid)
     i = self.entlen * (objid-self.objid0)
     ent = self.data[i:i+self.entlen]
     f1 = nunpack(ent[:self.fl1], 1)
@@ -334,7 +357,7 @@ class PDFDocument:
     return
 
   def getobj(self, objid):
-    assert self.xrefs
+    #assert self.xrefs
     if objid in self.objs:
       obj = self.objs[objid]
     else:
@@ -345,13 +368,20 @@ class PDFDocument:
         except IndexError:
           pass
       else:
-        raise PDFValueError('Cannot locate objid=%r' % objid)
+        if STRICT:
+          raise PDFValueError('Cannot locate objid=%r' % objid)
+        return None
       if strmid:
         stream = stream_value(self.getobj(strmid))
         if stream.dic['Type'] != LITERAL_OBJSTM:
-          raise PDFSyntaxError('Not a stream object: %r' % stream)
-        if 'N' not in stream.dic:
-          raise PDFSyntaxError('N is not defined: %r' % stream)
+          if STRICT:
+            raise PDFSyntaxError('Not a stream object: %r' % stream)
+        try:
+          n = stream.dic['N']
+        except KeyError:
+          if STRICT:
+            raise PDFSyntaxError('N is not defined: %r' % stream)
+          n = 0
         if strmid in self.parsed_objs:
           objs = self.parsed_objs[stream]
         else:
@@ -363,8 +393,10 @@ class PDFDocument:
       else:
         prevpos = self.parser.seek(index)
         seq = list_value(self.parser.parse())
-        if not (len(seq) == 4 and seq[0] == objid and seq[2] == KEYWORD_OBJ):
-          raise PDFSyntaxError('invalid stream spec: %r' % seq)
+        if not (4 <= len(seq) and seq[0] == objid and seq[2] == KEYWORD_OBJ):
+          if STRICT:
+            raise PDFSyntaxError('invalid stream spec: %r' % seq)
+          return None
         obj = seq[3]
         self.parser.seek(prevpos)
       if 2 <= self.debug:
@@ -373,7 +405,7 @@ class PDFDocument:
     return obj
   
   def get_pages(self, debug=0):
-    assert self.xrefs
+    #assert self.xrefs
     def search(obj, parent):
       tree = dict_value(obj).copy()
       for (k,v) in parent.iteritems():
@@ -397,7 +429,8 @@ class PDFDocument:
     self.root = root
     self.catalog = dict_value(self.root)
     if self.catalog['Type'] != LITERAL_CATALOG:
-      raise PDFValueError('Catalog not found!')
+      if STRICT:
+        raise PDFValueError('Catalog not found!')
     self.outline = self.catalog.get('Outline')
     return
   
@@ -437,24 +470,24 @@ class PDFParser(PSStackParser):
       # stream object
       (dic,) = self.pop(1)
       dic = dict_value(dic)
-      if 'Length' not in dic:
-        raise PDFValueError('/Length is undefined: %r' % dic)
-      objlen = int_value(dic['Length'])
+      try:
+        objlen = int_value(dic['Length'])
+      except KeyError:
+        if STRICT:
+          raise PDFValueError('/Length is undefined: %r' % dic)
+        objlen = 0
       self.seek(pos)
       (_, line) = self.nextline()  # 'stream'
-      self.fp.seek(pos+len(line))
+      pos += len(line)
+      self.fp.seek(pos)
       data = self.fp.read(objlen)
-      self.seek(pos+len(line)+objlen)
+      self.seek(pos+objlen)
       while 1:
         (linepos, line) = self.nextline()
-        if not line:
-          raise PDFSyntaxError('premature eof, need endstream: linepos=%d, line=%r' %
-                               (linepos, line))
-        if line.strip():
-          if not line.startswith('endstream'):
-            raise PDFSyntaxError('need endstream: linepos=%d, line=%r' %
-                                 (linepos, line))
+        if not line or line.startswith('endstream'):
           break
+        objlen += len(line)
+        data += line
       if 1 <= self.debug:
         print >>stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
               (pos, objlen, dic, data[:10])
@@ -477,7 +510,9 @@ class PDFParser(PSStackParser):
       if line:
         prev = line
     else:
-      raise PDFSyntaxError('startxref not found!')
+      if STRICT:
+        raise PDFSyntaxError('startxref not found!')
+      prev = 0
     if 1 <= self.debug:
       print >>stderr, 'xref found: pos=%r' % prev
     self.seek(long(prev))
@@ -495,10 +530,11 @@ class PDFParser(PSStackParser):
         # XRefStream: PDF-1.5
         self.seek(linepos)
         xref = PDFXRefStream(self)
-      elif line.strip() != 'xref':
-        raise PDFSyntaxError('xref not found: linepos=%d, line=%r' %
-                             (linepos, line))
       else:
+        if line.strip() != 'xref':
+          if STRICT:
+            raise PDFSyntaxError('xref not found: linepos=%d, line=%r' %
+                                 (linepos, line))
         xref = PDFXRef(self)
       yield xref
       trailer = xref.trailer

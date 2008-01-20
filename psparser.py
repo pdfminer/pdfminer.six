@@ -3,6 +3,8 @@ import sys, re
 stderr = sys.stderr
 from utils import choplist
 
+STRICT = 0
+
 
 ##  PS Exceptions
 ##
@@ -73,12 +75,18 @@ PSKeywordTable = PSSymbolTable(PSKeyword)
 
 def literal_name(x):
   if not isinstance(x, PSLiteral):
-    raise PSTypeError('literal required: %r' % x)
+    if STRICT:
+      raise PSTypeError('literal required: %r' % x)
+    else:
+      return str(x)
   return x.name
 
 def keyword_name(x):
   if not isinstance(x, PSKeyword):
-    raise PSTypeError('keyword required: %r' % x)
+    if STRICT:
+      raise PSTypeError('keyword required: %r' % x)
+    else:
+      return str(x)
   return x.name
 
 
@@ -237,23 +245,30 @@ class PSBaseParser:
               s += s1[-1:]
               (linepos, line) = self.nextline()
               if not line:
-                raise PSSyntaxError('end inside string: linepos=%d, line=%r' %
-                                    (linepos, line))
+                if STRICT:
+                  raise PSSyntaxError('end inside string: linepos=%d, line=%r' %
+                                      (linepos, line))
+                break
               charpos = 0
             elif charpos == len(line):
               s += s1
               (linepos, line) = self.nextline()
               if not line:
-                raise PSSyntaxError('end inside string: linepos=%d, line=%r' %
-                                    (linepos, line))
+                if STRICT:
+                  raise PSSyntaxError('end inside string: linepos=%d, line=%r' %
+                                      (linepos, line))
+                break
               charpos = 0
             else:
               s += s1
               break
-          if line[charpos] != ')':
-            raise PSSyntaxError('no close paren: linepos=%d, line=%r' %
-                                (linepos, line))
-          charpos += 1
+          if line[charpos] == ')':
+            charpos += 1
+          else:
+            if STRICT:
+              raise PSSyntaxError('no close paren: linepos=%d, line=%r' %
+                                  (linepos, line))
+            pass
           def convesc(m):
             x = m.group(0)
             if x[1:].isdigit():
@@ -271,10 +286,12 @@ class PSBaseParser:
           # hex string object
           ms = self.STRING_HEX.match(line, charpos)
           charpos = ms.end(0)
-          if line[charpos] != '>':
-            raise PSSyntaxError('no close paren: linepos=%d, line=%r' %
-                                (linepos, line))
-          charpos += 1
+          if line[charpos] == '>':
+            charpos += 1
+          else:
+            if STRICT:
+              raise PSSyntaxError('no close paren: linepos=%d, line=%r' %
+                                  (linepos, line))
           def convhex(m1):
             return chr(int(m1.group(0), 16))
           s = self.STRING_HEX_SUB.sub(convhex, ms.group(0))
@@ -341,7 +358,8 @@ class PSStackParser(PSBaseParser):
     Pop N objects from the stack.
     '''
     if len(self.partobj) < n:
-      raise PSSyntaxError('stack too short < %d' % n)
+      if STRICT:
+        raise PSSyntaxError('stack too short < %d' % n)
     r = self.partobj[-n:]
     self.partobj = self.partobj[:-n]
     return r
@@ -366,12 +384,18 @@ class PSStackParser(PSBaseParser):
       return
 
     def endobj(type1):
-      assert self.context
+      if not self.context:
+        if STRICT:
+          raise PSTypeError('stack empty.')
       obj = self.partobj
-      (type0, self.partobj) = self.context.pop()
-      if type0 != type1:
-        raise PSTypeError('type mismatch: %r(%r) != %r(%r)' %
-                          (type0, self.partobj, type1, obj))
+      (type0, partobj) = self.context[-1]
+      if type0 == type1:
+        self.partobj = partobj
+        self.context.pop()
+      else:
+        if STRICT:
+          raise PSTypeError('type mismatch: %r(%r) != %r(%r)' %
+                            (type0, self.partobj, type1, obj))
       return obj
 
     startobj('o')
@@ -407,7 +431,8 @@ class PSStackParser(PSBaseParser):
           # end dictionary
           objs = endobj('d')
           if len(objs) % 2 != 0:
-            raise PSTypeError('invalid dictionary construct: %r' % objs)
+            if STRICT:
+              raise PSTypeError('invalid dictionary construct: %r' % objs)
           d = dict( (literal_name(k), v) for (k,v) in choplist(2, objs) )
           if 2 <= self.debug:
             print >>stderr, 'end dict: %r' % d
@@ -415,4 +440,5 @@ class PSStackParser(PSBaseParser):
         elif self.do_token(pos, t):
           break
 
-    return endobj('o')
+    objs = endobj('o')
+    return objs

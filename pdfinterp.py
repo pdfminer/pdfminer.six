@@ -7,7 +7,7 @@ try:
 except ImportError:
   from StringIO import StringIO
 from psparser import PSException, PSSyntaxError, PSTypeError, \
-     PSStackParser, PSLiteral, PSKeyword, \
+     PSStackParser, PSLiteral, PSKeyword, STRICT, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name
 from pdfparser import PDFException, PDFStream, PDFObjRef, resolve1, \
      int_value, float_value, num_value, \
@@ -84,14 +84,14 @@ class PDFFont:
   def __init__(self, descriptor, widths, default_width=None):
     self.descriptor = descriptor
     self.widths = widths
-    self.fontname = descriptor['FontName']
+    self.fontname = descriptor.get('FontName', 'unknown')
     if isinstance(self.fontname, PSLiteral):
       self.fontname = literal_name(self.fontname)
-    self.ascent = descriptor['Ascent']
-    self.descent = descriptor['Descent']
+    self.ascent = num_value(descriptor.get('Ascent', 0))
+    self.descent = num_value(descriptor.get('Descent', 0))
     self.default_width = default_width or descriptor.get('MissingWidth', 0)
-    self.leading = descriptor.get('Leading', 0)
-    self.bbox = list_value(descriptor['FontBBox'])
+    self.leading = num_value(descriptor.get('Leading', 0))
+    self.bbox = list_value(descriptor.get('FontBBox', (0,0,0,0)))
     return
 
   def __repr__(self):
@@ -155,20 +155,20 @@ class PDFSimpleFont(PDFFont):
 class PDFType1Font(PDFSimpleFont):
   
   def __init__(self, spec):
-    if 'BaseFont' not in spec:
-      raise PDFFontError('BaseFont is missing')
-    self.basefont = literal_name(spec['BaseFont'])
+    try:
+      self.basefont = literal_name(spec['BaseFont'])
+    except KeyError:
+      if STRICT:
+        raise PDFFontError('BaseFont is missing')
+      self.basefont = 'unknown'
     try:
       (descriptor, widths) = FontMetricsDB.get_metrics(self.basefont)
     except KeyError:
-      try:
-        descriptor = dict_value(spec['FontDescriptor'])
-        firstchar = int_value(spec['FirstChar'])
-        lastchar = int_value(spec['LastChar'])
-        widths = dict( (i+firstchar,w) for (i,w)
-                       in enumerate(list_value(spec['Widths'])) )
-      except KeyError, k:
-        raise PDFFontError('%s is missing' % k)
+      descriptor = dict_value(spec.get('FontDescriptor', {}))
+      firstchar = int_value(spec.get('FirstChar', 0))
+      lastchar = int_value(spec.get('LastChar', 255))
+      widths = list_value(spec.get('Widths', [0]*256))
+      widths = dict( (i+firstchar,w) for (i,w) in enumerate(widths) )
     PDFSimpleFont.__init__(self, descriptor, widths, spec)
     return
 
@@ -179,13 +179,10 @@ class PDFTrueTypeFont(PDFType1Font):
 # PDFType3Font
 class PDFType3Font(PDFSimpleFont):
   def __init__(self, spec):
-    try:
-      firstchar = int_value(spec['FirstChar'])
-      lastchar = int_value(spec['LastChar'])
-      widths = dict( (i+firstchar,w) for (i,w)
-                     in enumerate(list_value(spec['Widths'])) )
-    except KeyError, k:
-      raise PDFFontError('%s is missing' % k)
+    firstchar = int_value(spec.get('FirstChar', 0))
+    lastchar = int_value(spec.get('LastChar', 0))
+    widths = list_value(spec.get('Widths', [0]*256))
+    widths = dict( (i+firstchar,w) for (i,w) in enumerate(widths))
     if 'FontDescriptor' in spec:
       descriptor = dict_value(spec['FontDescriptor'])
     else:
@@ -215,7 +212,8 @@ class TrueTypeFont:
     return
 
   def create_cmap(self):
-    if 'cmap' not in self.tables: raise TrueTypeFont.CMapNotFound
+    if 'cmap' not in self.tables:
+      raise TrueTypeFont.CMapNotFound
     (base_offset, length) = self.tables['cmap']
     fp = self.fp
     fp.seek(base_offset)
@@ -274,15 +272,15 @@ class TrueTypeFont:
 class PDFCIDFont(PDFFont):
   
   def __init__(self, spec):
-    if 'BaseFont' not in spec:
-      raise PDFFontError('BaseFont is missing')
     try:
-      self.cidsysteminfo = dict_value(spec['CIDSystemInfo'])
-      self.cidcoding = '%s-%s' % (self.cidsysteminfo['Registry'],
-                                  self.cidsysteminfo['Ordering'])
+      self.basefont = literal_name(spec['BaseFont'])
     except KeyError:
-      raise PDFFontError('CIDSystemInfo not properly defined.')
-    self.basefont = literal_name(spec['BaseFont'])
+      if STRICT:
+        raise PDFFontError('BaseFont is missing')
+      self.basefont = 'unknown'
+    self.cidsysteminfo = dict_value(spec.get('CIDSystemInfo', {}))
+    self.cidcoding = '%s-%s' % (self.cidsysteminfo.get('Registry', 'unknown'),
+                                self.cidsysteminfo.get('Ordering', 'unknown'))
     self.cmap = CMapDB.get_cmap(literal_name(spec['Encoding']))
     descriptor = dict_value(spec['FontDescriptor'])
     ttf = None
@@ -391,11 +389,16 @@ class PDFResourceManager:
     if objid and objid in self.fonts:
       font = self.fonts[objid]
     else:
-      assert spec['Type'] == LITERAL_FONT
+      if STRICT:
+        if spec['Type'] != LITERAL_FONT:
+          raise PDFFontError('Type is not /Font')
       # Create a Font object.
-      if 'Subtype' not in spec:
-        raise PDFFontError('Font Subtype is not specified.')
-      subtype = literal_name(spec['Subtype'])
+      if 'Subtype' in spec:
+        subtype = literal_name(spec['Subtype'])
+      else:
+        if STRICT:
+          raise PDFFontError('Font Subtype is not specified.')
+        subtype = 'Type1'
       if subtype in ('Type1', 'MMType1'):
         # Type1 Font
         font = PDFType1Font(spec)
@@ -411,14 +414,16 @@ class PDFResourceManager:
       elif subtype == 'Type0':
         # Type0 Font
         dfonts = list_value(spec['DescendantFonts'])
-        assert len(dfonts) == 1
+        assert dfonts
         subspec = dict_value(dfonts[0]).copy()
         for k in ('Encoding', 'ToUnicode'):
           if k in spec:
             subspec[k] = resolve1(spec[k])
         font = self.get_font(None, subspec)
       else:
-        raise PDFFontError('Invalid Font: %r' % spec)
+        if STRICT:
+          raise PDFFontError('Invalid Font: %r' % spec)
+        font = PDFType1Font(spec) # this is so wrong!
       if objid:
         self.fonts[objid] = font
     return font
@@ -480,14 +485,17 @@ class PDFContentParser(PSStackParser):
       objs = self.partobj
       (type0, self.partobj) = self.context.pop()
       if len(objs) % 2 != 0:
-        raise PSTypeError('invalid dictionary construct: %r' % objs)
+        if STRICT:
+          raise PSTypeError('invalid dictionary construct: %r' % objs)
       dic = dict( (literal_name(k), v) for (k,v) in choplist(2, objs) )
       pos += len('ID ')
       self.fp.seek(pos)
-      data = self.fp.read(8192) 
       # XXX how do we know the real length other than scanning?
-      m = self.EOIPAT.search(data)
-      assert m
+      data = ''
+      while 1:
+        data += self.fp.read(4096)
+        m = self.EOIPAT.search(data)
+        if m: break
       objlen = m.start(0)
       obj = PDFStream(dic, data[:objlen])
       self.push(obj)
@@ -731,7 +739,9 @@ class PDFPageInterpreter:
     try:
       self.textstate.font = self.fontmap[literal_name(fontid)]
     except KeyError:
-      raise PDFInterpreterError('Undefined font id: %r' % fontid)
+      if STRICT:
+        raise PDFInterpreterError('Undefined font id: %r' % fontid)
+      return
     self.textstate.fontsize = fontsize
     return
   # setrendering
@@ -816,7 +826,9 @@ class PDFPageInterpreter:
     try:
       xobj = stream_value(self.xobjmap[xobjid])
     except KeyError:
-      raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
+      if STRICT:
+        raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
+      return
     if xobj.dic['Subtype'] == LITERAL_FORM:
       if 1 <= self.debug:
         print >>stderr, 'Processing xobj: %r' % xobj
@@ -897,7 +909,8 @@ class PDFPageInterpreter:
               print >>stderr, 'exec: %s' % (obj.name)
             func()
         else:
-          raise PDFInterpreterError('unknown operator: %r' % obj.name)
+          if STRICT:
+            raise PDFInterpreterError('unknown operator: %r' % obj.name)
       else:
         self.push(obj)
     return
