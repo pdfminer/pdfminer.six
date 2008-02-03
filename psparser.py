@@ -3,7 +3,7 @@ import sys, re
 stderr = sys.stderr
 from utils import choplist
 
-STRICT = 1
+STRICT = 0
 
 
 ##  PS Exceptions

@@ -174,9 +174,14 @@ class PDFType1Font(PDFSimpleFont):
     PDFSimpleFont.__init__(self, descriptor, widths, spec)
     return
 
+  def __repr__(self):
+    return '<PDFType1Font: basefont=%r>' % self.basefont
+
 # PDFTrueTypeFont
 class PDFTrueTypeFont(PDFType1Font):
-  pass
+
+  def __repr__(self):
+    return '<PDFTrueTypeFont: basefont=%r>' % self.basefont
 
 # PDFType3Font
 class PDFType3Font(PDFSimpleFont):
@@ -193,6 +198,10 @@ class PDFType3Font(PDFSimpleFont):
                     'FontBBox':spec['FontBBox']}
     PDFSimpleFont.__init__(self, descriptor, widths, spec)
     return
+
+  def __repr__(self):
+    return '<PDFType3Font>'
+
 
 # PDFCIDFont
 
@@ -339,6 +348,9 @@ class PDFCIDFont(PDFFont):
     PDFFont.__init__(self, descriptor, widths, default_width)
     return
 
+  def __repr__(self):
+    return '<PDFCIDFont: basefont=%r, cidcoding=%r>' % (self.basefont, self.cidcoding)
+  
   def is_vertical(self):
     return self.vertical
   
