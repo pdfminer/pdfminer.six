@@ -14,14 +14,10 @@
 #   - Linearized PDF.
 #   - Encryption?
 
-import sys, re
-try:
-  from cStringIO import StringIO
-except ImportError:
-  from StringIO import StringIO
+import sys
 stderr = sys.stderr
 from utils import choplist, nunpack
-from psparser import PSException, PSSyntaxError, PSTypeError, \
+from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
      literal_name, keyword_name, \
      PSStackParser, STRICT
@@ -43,14 +39,19 @@ LITERAL_PAGE = PSLiteralTable.intern('Page')
 LITERAL_PAGES = PSLiteralTable.intern('Pages')
 LITERAL_CATALOG = PSLiteralTable.intern('Catalog')
 LITERAL_FLATE_DECODE = PSLiteralTable.intern('FlateDecode')
+KEYWORD_R = PSKeywordTable.intern('R')
 KEYWORD_OBJ = PSKeywordTable.intern('obj')
+KEYWORD_ENDOBJ = PSKeywordTable.intern('endobj')
+KEYWORD_STREAM = PSKeywordTable.intern('stream')
+KEYWORD_XREF = PSKeywordTable.intern('xref')
+KEYWORD_STARTXREF = PSKeywordTable.intern('startxref')
 
 
 ##  PDFObjRef
 ##
 class PDFObjRef:
   
-  def __init__(self, doc, objid, genno):
+  def __init__(self, doc, objid, _):
     if objid == 0:
       if STRICT:
         raise PDFValueError('objid cannot be 0.')
@@ -275,7 +276,8 @@ class PDFXRef:
         (pos, genno, use) = f
         self.offsets.append((int(genno), long(pos), use))
     # read trailer
-    self.trailer = dict_value(parser.parse()[0])
+    (_, dic) = parser.nextobject()
+    self.trailer = dict_value(dic)
     return
 
   def getpos(self, objid):
@@ -293,9 +295,13 @@ class PDFXRef:
 class PDFXRefStream:
 
   def __init__(self, parser):
-    (objid, genno, _, stream) = list_value(parser.parse())
+    (_,objid) = parser.nextobject()
+    (_,genno) = parser.nextobject()
+    parser.nextobject()
+    (_,stream) = parser.nextobject()
     if STRICT:
-      assert stream.dic['Type'] == LITERAL_XREF
+      if stream.dic['Type'] != LITERAL_XREF:
+        raise PDFSyntaxError('invalid stream spec.')
     size = stream.dic['Size']
     (start, nobjs) = stream.dic.get('Index', (0,size))
     self.objid0 = start
@@ -385,20 +391,24 @@ class PDFDocument:
         if strmid in self.parsed_objs:
           objs = self.parsed_objs[stream]
         else:
-          parser = PDFParser(self, StringIO(stream.get_data()),
-                             debug=self.debug)
-          objs = list(parser.parse())
+          parser = PDFObjStrmParser(self, stream.get_data(), debug=self.debug)
+          objs = []
+          try:
+            while 1:
+              (_,obj) = parser.nextobject()
+              objs.append(obj)
+          except PSEOF:
+            pass
           self.parsed_objs[stream] = objs
         obj = objs[stream.dic['N']*2+index]
       else:
-        prevpos = self.parser.seek(index)
-        seq = list_value(self.parser.parse())
-        if not (4 <= len(seq) and seq[0] == objid and seq[2] == KEYWORD_OBJ):
-          if STRICT:
-            raise PDFSyntaxError('invalid stream spec: %r' % seq)
-          return None
-        obj = seq[3]
-        self.parser.seek(prevpos)
+        self.parser.seek(index)
+        (_,objid1) = self.parser.nextobject() # objid
+        (_,genno1) = self.parser.nextobject() # genno
+        (_,kwd) = self.parser.nextobject()
+        if kwd != KEYWORD_OBJ:
+          raise PDFSyntaxError('invalid obj spec: offset=%r' % index)
+        (_,obj) = self.parser.nextobject()
       if 2 <= self.debug:
         print >>stderr, 'register: objid=%r: %r' % (objid, obj)
       self.objs[objid] = obj
@@ -446,29 +456,30 @@ class PDFParser(PSStackParser):
     return
 
   def __repr__(self):
-    return '<PDFParser: linepos=%d>' % self.linepos
+    return '<PDFParser>'
 
-  EOIPAT = re.compile(r'\nEI\W')
-  def do_token(self, pos, token):
-    name = keyword_name(token)
-    if name in ('xref', 'trailer', 'startxref', 'endobj'):
-      return True
-      
-    if name == 'R':
+  def do_keyword(self, pos, token):
+    if token in (KEYWORD_XREF, KEYWORD_STARTXREF):
+      self.add_results(*self.pop(1))
+      return
+    if token == KEYWORD_ENDOBJ:
+      self.add_results(*self.pop(4))
+      return
+    
+    if token == KEYWORD_R:
       # reference to indirect object
       try:
-        (objid, genno) = self.pop(2)
+        ((_,objid), (_,genno)) = self.pop(2)
         (objid, genno) = (int(objid), int(genno))
         obj = PDFObjRef(self.doc, objid, genno)
-        self.push(obj)
-        if 2 <= self.debug:
-          print >>stderr, 'refer obj: %r' % obj
+        self.push((pos, obj))
       except PSSyntaxError:
         pass
+      return
       
-    elif name == 'stream':
+    if token == KEYWORD_STREAM:
       # stream object
-      (dic,) = self.pop(1)
+      ((_,dic),) = self.pop(1)
       dic = dict_value(dic)
       try:
         objlen = int_value(dic['Length'])
@@ -484,20 +495,19 @@ class PDFParser(PSStackParser):
       self.seek(pos+objlen)
       while 1:
         (linepos, line) = self.nextline()
-        if not line or line.startswith('endstream'):
-          break
+        if line.startswith('endstream'): break
         objlen += len(line)
         data += line
       if 1 <= self.debug:
         print >>stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
               (pos, objlen, dic, data[:10])
       obj = PDFStream(dic, data, self.doc.decipher)
-      self.push(obj)
-
-    else:
-      self.push(token)
-
-    return False
+      self.push((pos, obj))
+      return
+    
+    # others
+    self.push((pos, token))
+    return
 
   def find_xref(self):
     # find the first xref table
@@ -505,7 +515,7 @@ class PDFParser(PSStackParser):
     for line in self.revreadlines():
       line = line.strip()
       if 2 <= self.debug:
-        print >>stderr, 'line: %r' % line
+        print >>stderr, 'find_xref: %r' % line
       if line == 'startxref': break
       if line:
         prev = line
@@ -525,10 +535,11 @@ class PDFParser(PSStackParser):
       # read xref table
       (linepos, line) = self.nextline()
       if 2 <= self.debug:
-        print >>stderr, 'line: %r' % line
+        print >>stderr, 'read_xref: %r' % line
       if line[0].isdigit():
         # XRefStream: PDF-1.5
         self.seek(linepos)
+        self.reset()
         xref = PDFXRefStream(self)
       else:
         if line.strip() != 'xref':
@@ -550,4 +561,19 @@ class PDFParser(PSStackParser):
           print >>stderr, 'prev trailer: pos=%d' % pos
       else:
         break
+    return
+
+##  PDFObjStrmParser
+##
+class PDFObjStrmParser(PDFParser):
+  def __init__(self, doc, data, debug=0):
+    try:
+      from cStringIO import StringIO
+    except ImportError:
+      from StringIO import StringIO
+    PDFParser.__init__(self, doc, StringIO(data), debug=debug)
+    return
+  
+  def flush(self):
+    self.add_results(*self.popall())
     return

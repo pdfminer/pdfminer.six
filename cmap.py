@@ -3,7 +3,7 @@ import sys
 stderr = sys.stderr
 from struct import pack, unpack
 from utils import choplist, nunpack
-from psparser import PSException, PSSyntaxError, PSTypeError, \
+from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSLiteral, PSKeyword, literal_name, keyword_name, \
      PSStackParser
 try:
@@ -39,17 +39,17 @@ class CMap:
     return self
 
   def register_code2cid(self, code, cid):
-    assert isinstance(code, str)
-    assert isinstance(cid, int)
-    self.code2cid[code] = cid
+    if isinstance(code, str) and isinstance(cid, int):
+      self.code2cid[code] = cid
     return self
 
   def register_cid2code(self, cid, code):
     from glyphlist import charname2unicode
-    assert isinstance(cid, int)
-    if isinstance(code, PSLiteral):
-      code = pack('>H', charname2unicode[code.name])
-    self.cid2code[cid] = code
+    if isinstance(cid, int):
+      if isinstance(code, PSLiteral):
+        self.cid2code[cid] = pack('>H', charname2unicode[code.name])
+      elif isinstance(code, str):
+        self.cid2code[cid] = code
     return self
 
   def decode(self, bytes):
@@ -195,7 +195,7 @@ class CMapDB:
           print >>stderr, 'Reading: CMap %r...' % fname
         cmap = CMap()
         fp = file(fname)
-        CMapParser(cmap, fp).parse()
+        CMapParser(cmap, fp, debug=klass.debug).run()
         fp.close()
       else:
         raise KeyError(cmapname)
@@ -213,7 +213,14 @@ class CMapParser(PSStackParser):
     self.in_cmap = False
     return
 
-  def do_token(self, _, token):
+  def run(self):
+    try:
+      self.nextobject()
+    except PSEOF:
+      pass
+    return
+
+  def do_keyword(self, pos, token):
     name = token.name
     if name == 'begincmap':
       self.in_cmap = True
@@ -226,15 +233,15 @@ class CMapParser(PSStackParser):
     #
     if name == 'def':
       try:
-        (k,v) = self.pop(2)
-        self.cmap.attrs[literal_name(k)] = v
+        ((_,k),(_,v)) = self.pop(2)
+        self.cmap.attrs[str(k)] = v
       except PSSyntaxError:
         pass
       return
     
     if name == 'usecmap':
       try:
-        (cmapname,) = self.pop(1)
+        ((_,cmapname),) = self.pop(1)
         self.cmap.copycmap(CMapDB.get_cmap(literal_name(cmapname)))
       except PSSyntaxError:
         pass
@@ -244,8 +251,6 @@ class CMapParser(PSStackParser):
       self.popall()
       return
     if name == 'endcodespacerange':
-      if 1 <= self.debug:
-        print >>stderr, 'codespace: %r' % self.partobj
       self.popall()
       return
     
@@ -253,48 +258,45 @@ class CMapParser(PSStackParser):
       self.popall()
       return
     if name == 'endcidrange':
-      for (s,e,cid) in choplist(3, self.partobj):
-        assert isinstance(s, str)
-        assert isinstance(e, str)
-        assert isinstance(cid, int)
-        assert len(s) == len(e)
+      objs = [ obj for (_,obj) in self.popall() ]
+      for (s,e,cid) in choplist(3, objs):
+        if (not isinstance(s, str) or not isinstance(e, str) or
+            not isinstance(cid, int) or len(s) != len(e)): continue
         sprefix = s[:-4]
         eprefix = e[:-4]
-        assert sprefix == eprefix
+        if sprefix != eprefix: continue
         svar = s[-4:]
         evar = e[-4:]
         s1 = nunpack(svar)
         e1 = nunpack(evar)
         vlen = len(svar)
-        assert s1 <= e1
+        #assert s1 <= e1
         for i in xrange(e1-s1+1):
           x = sprefix+pack('>L',s1+i)[-vlen:]
           self.cmap.register_code2cid(x, cid+i)
-      self.popall()
       return
     
     if name == 'begincidchar':
       self.popall()
       return
     if name == 'endcidchar':
-      for (cid,code) in choplist(2, self.partobj):
-        assert isinstance(code, str)
-        assert isinstance(cid, str)
-        self.cmap.register_code2cid(code, nunpack(cid))
-      self.popall()
+      objs = [ obj for (_,obj) in self.popall() ]
+      for (cid,code) in choplist(2, objs):
+        if isinstance(code, str) and isinstance(cid, str):
+          self.cmap.register_code2cid(code, nunpack(cid))
       return
         
     if name == 'beginbfrange':
       self.popall()
       return
     if name == 'endbfrange':
-      for (s,e,code) in choplist(3, self.partobj):
-        assert isinstance(s, str)
-        assert isinstance(e, str)
-        assert len(s) == len(e)
+      objs = [ obj for (_,obj) in self.popall() ]
+      for (s,e,code) in choplist(3, objs):
+        if (not isinstance(s, str) or not isinstance(e, str) or
+            len(s) != len(e)): continue
         s1 = nunpack(s)
         e1 = nunpack(e)
-        assert s1 <= e1
+        #assert s1 <= e1
         if isinstance(code, list):
           for i in xrange(e1-s1+1):
             self.cmap.register_cid2code(s1+i, code[i])
@@ -306,29 +308,26 @@ class CMapParser(PSStackParser):
           for i in xrange(e1-s1+1):
             x = prefix+pack('>L',base+i)[-vlen:]
             self.cmap.register_cid2code(s1+i, x)
-      self.popall()
       return
         
     if name == 'beginbfchar':
       self.popall()
       return
     if name == 'endbfchar':
-      for (cid,code) in choplist(2, self.partobj):
-        assert isinstance(cid, str)
-        assert isinstance(code, str)
-        self.cmap.register_cid2code(nunpack(cid), code)
-      self.popall()
+      objs = [ obj for (_,obj) in self.popall() ]
+      for (cid,code) in choplist(2, objs):
+        if isinstance(cid, str) and isinstance(code, str):
+          self.cmap.register_cid2code(nunpack(cid), code)
       return
         
     if name == 'beginnotdefrange':
       self.popall()
       return
     if name == 'endnotdefrange':
-      if 1 <= self.debug:
-        print >>stderr, 'notdefrange: %r' % self.partobj
       self.popall()
       return
-    
+
+    self.push((pos, token))
     return
 
 

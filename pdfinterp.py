@@ -6,7 +6,7 @@ try:
   from cStringIO import StringIO
 except ImportError:
   from StringIO import StringIO
-from psparser import PSException, PSSyntaxError, PSTypeError, \
+from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSStackParser, PSLiteral, PSKeyword, STRICT, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name
 from pdfparser import PDFException, PDFStream, PDFObjRef, resolve1, \
@@ -45,6 +45,8 @@ LITERAL_STANDARD_ENCODING = PSLiteralTable.intern('StandardEncoding')
 LITERAL_DEVICE_GRAY = PSLiteralTable.intern('DeviceGray')
 LITERAL_DEVICE_RGB = PSLiteralTable.intern('DeviceRGB')
 LITERAL_DEVICE_CMYK = PSLiteralTable.intern('DeviceCMYK')
+KEYWORD_BI = PSKeywordTable.intern('BI')
+KEYWORD_ID = PSKeywordTable.intern('ID')
 KEYWORD_EI = PSKeywordTable.intern('EI')
 MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
 
@@ -134,7 +136,7 @@ class PDFSimpleFont(PDFFont):
     if 'ToUnicode' in spec:
       strm = stream_value(spec['ToUnicode'])
       self.ucs2_cmap = CMap()
-      CMapParser(self.ucs2_cmap, StringIO(strm.get_data())).parse()
+      CMapParser(self.ucs2_cmap, StringIO(strm.get_data())).run()
     PDFFont.__init__(self, descriptor, widths)
     return
 
@@ -292,7 +294,7 @@ class PDFCIDFont(PDFFont):
     if 'ToUnicode' in spec:
       strm = stream_value(spec['ToUnicode'])
       self.ucs2_cmap = CMap()
-      CMapParser(self.ucs2_cmap, StringIO(strm.get_data())).parse()
+      CMapParser(self.ucs2_cmap, StringIO(strm.get_data())).run()
     elif self.cidcoding == 'Adobe-Identity':
       if ttf:
         try:
@@ -433,8 +435,9 @@ class PDFResourceManager:
 ##
 class PDFDevice:
   
-  def __init__(self, rsrc):
+  def __init__(self, rsrc, debug=0):
     self.rsrc = rsrc
+    self.debug = debug
     self.ctm = None
     return
   
@@ -465,47 +468,91 @@ class PDFDevice:
 ##
 class PDFContentParser(PSStackParser):
 
-  def __init__(self, fp, debug=0):
-    PSStackParser.__init__(self, fp, debug=debug)
+  def __init__(self, streams, debug=0):
+    self.streams = streams
+    self.istream = 0
+    PSStackParser.__init__(self, None, debug=debug)
     return
 
   def __repr__(self):
     return '<PDFParser: linepos=%d>' % self.linepos
 
-  EOIPAT = re.compile(r'\nEI\W')
-  def do_token(self, pos, token):
-    name = keyword_name(token)
+  def fillfp(self):
+    if not self.fp:
+      if self.istream < len(self.streams):
+        strm = stream_value(self.streams[self.istream])
+        self.istream += 1
+      else:
+        raise PSEOF
+      self.fp = StringIO(strm.get_data())
+    return
 
-    if name == 'BI':
+  def seek(self, pos):
+    self.fillfp()
+    PSStackParser.seek(self, pos)
+    return
+
+  def fillbuf(self):
+    if self.charpos < len(self.buf): return
+    while 1:
+      self.fillfp()
+      self.bufpos = self.fp.tell()
+      self.buf = self.fp.read(self.BUFSIZ)
+      if self.buf: break
+      self.fp = None
+    self.charpos = 0
+    return
+
+  def get_inline_data(self, pos, target='EI '):
+    self.seek(pos)
+    i = 0
+    data = ''
+    while i < len(target):
+      self.fillbuf()
+      if i:
+        c = self.buf[self.charpos]
+        data += c
+        self.charpos += 1
+        if c == target[i]:
+          i += 1
+        else:
+          i = 0
+      else:
+        try:
+          j = self.buf.index(target[0], self.charpos)
+          #print 'found', (0, self.buf[j:j+10])
+          data += self.buf[self.charpos:j]
+          self.charpos = j+1
+          i = 1
+        except ValueError:
+          data += self.buf[self.charpos:]
+          self.charpos = len(self.buf)
+    data = data[:-len(target)] # strip the last part
+    return (pos, data)
+
+  def flush(self):
+    self.add_results(*self.popall())
+    return
+
+  def do_keyword(self, pos, token):
+    if token == KEYWORD_BI:
       # inline image within a content stream
-      self.context.append(('BI', self.partobj))
-      self.partobj = []
-      
-    elif name == 'ID':
-      objs = self.partobj
-      (type0, self.partobj) = self.context.pop()
-      if len(objs) % 2 != 0:
-        if STRICT:
+      self.start_type(pos, 'inline')
+    elif token == KEYWORD_ID:
+      try:
+        (_, objs) = self.end_type('inline')
+        if len(objs) % 2 != 0:
           raise PSTypeError('invalid dictionary construct: %r' % objs)
-      dic = dict( (literal_name(k), v) for (k,v) in choplist(2, objs) )
-      pos += len('ID ')
-      self.fp.seek(pos)
-      # XXX how do we know the real length other than scanning?
-      data = ''
-      while 1:
-        data += self.fp.read(4096)
-        m = self.EOIPAT.search(data)
-        if m: break
-      objlen = m.start(0)
-      obj = PDFStream(dic, data[:objlen])
-      self.push(obj)
-      self.seek(pos+objlen+len('\nEI'))
-      self.push(KEYWORD_EI)
-      
+        d = dict( (literal_name(k), v) for (k,v) in choplist(2, objs) )
+        (pos, data) = self.get_inline_data(pos+len('ID '))
+        obj = PDFStream(d, data)
+        self.push((pos, obj))
+        self.push((pos, KEYWORD_EI))
+      except PSTypeError:
+        if STRICT: raise
     else:
-      self.push(token)
-
-    return False
+      self.push((pos, token))
+    return
 
 
 ##  Interpreter
@@ -542,10 +589,44 @@ class PDFPageInterpreter:
     self.debug = debug
     return
 
-  def initpage(self, ctm):
+  def init_resources(self, resources):
     self.fontmap = {}
     self.xobjmap = {}
     self.csmap = PREDEFINED_COLORSPACE.copy()
+    # Handle resource declarations.
+    def get_colorspace(spec):
+      if isinstance(spec, list):
+        name = literal_name(spec[0])
+      else:
+        name = literal_name(spec)
+      if name == 'ICCBased':
+        return ColorSpace(name, stream_value(spec[1]).dic['N'])
+      elif name == 'DeviceN':
+        return ColorSpace(name, len(list_value(spec[1])))
+      else:
+        return PREDEFINED_COLORSPACE[name]
+    if resources:
+      for (k,v) in dict_value(resources).iteritems():
+        if 1 <= self.debug:
+          print >>stderr, 'Resource: %r: %r' % (k,v)
+        if k == 'Font':
+          for (fontid,spec) in dict_value(v).iteritems():
+            objid = None
+            if isinstance(spec, PDFObjRef):
+              objid = spec.objid
+            spec = dict_value(spec)
+            self.fontmap[fontid] = self.rsrc.get_font(objid, spec)
+        elif k == 'ColorSpace':
+          for (csid,spec) in dict_value(v).iteritems():
+            self.csmap[csid] = get_colorspace(resolve1(spec))
+        elif k == 'ProcSet':
+          self.rsrc.get_procset(list_value(v))
+        elif k == 'XObject':
+          for (xobjid,xobjstrm) in dict_value(v).iteritems():
+            self.xobjmap[xobjid] = xobjstrm
+    return
+  
+  def init_state(self, ctm):
     # gstack: stack for graphical states.
     self.gstack = []
     self.ctm = ctm
@@ -554,8 +635,9 @@ class PDFPageInterpreter:
     # argstack: stack for command arguments.
     self.argstack = []
     # set some global states.
-    self.scs = None
-    self.ncs = None
+    self.scs = self.ncs = None
+    if self.csmap:
+      self.scs = self.ncs = self.csmap.values()[0]
     return
 
   def push(self, obj):
@@ -683,10 +765,22 @@ class PDFPageInterpreter:
 
   # setcolor
   def do_SCN(self):
-    self.pop(self.scs.ncomponents)
+    if self.scs:
+      n = self.scs.ncomponents
+    else:
+      if STRICT:
+        raise PDFInterpreterError('no colorspace specified!')
+      n = 1
+    self.pop(n)
     return
   def do_scn(self):
-    self.pop(self.ncs.ncomponents)
+    if self.ncs:
+      n = self.ncs.ncomponents
+    else:
+      if STRICT:
+        raise PDFInterpreterError('no colorspace specified!')
+      n = 1
+    self.pop(n)
     return
   def do_SC(self):
     self.do_SCN()
@@ -839,8 +933,7 @@ class PDFPageInterpreter:
       (x1,y1) = apply_matrix(ctm, (x1,y1))
       bbox = (x0,y0,x1,y1)
       self.device.begin_figure(xobjid, bbox)
-      interpreter.render_contents(xobj.dic.get('Resources'),
-                                  [xobj], ctm=ctm)
+      interpreter.render_contents(xobj.dic.get('Resources'), [xobj], ctm=ctm)
       self.device.end_figure(xobjid)
     return
 
@@ -853,46 +946,18 @@ class PDFPageInterpreter:
     return
 
   def render_contents(self, resources, contents, ctm=MATRIX_IDENTITY):
-    self.initpage(ctm)
-    # Handle resource declarations.
-    def get_colorspace(spec):
-      if isinstance(spec, list):
-        name = literal_name(spec[0])
-      else:
-        name = literal_name(spec)
-      if name == 'ICCBased':
-        return ColorSpace(name, stream_value(spec[1]).dic['N'])
-      elif name == 'DeviceN':
-        return ColorSpace(name, len(list_value(cs[1])))
-      else:
-        return PREDEFINED_COLORSPACE[name]
-    if resources:
-      for (k,v) in dict_value(resources).iteritems():
-        if 1 <= self.debug:
-          print >>stderr, 'Resource: %r: %r' % (k,v)
-        if k == 'Font':
-          for (fontid,spec) in dict_value(v).iteritems():
-            objid = None
-            if isinstance(spec, PDFObjRef):
-              objid = spec.objid
-            spec = dict_value(spec)
-            self.fontmap[fontid] = self.rsrc.get_font(objid, spec)
-        elif k == 'ColorSpace':
-          for (csid,spec) in dict_value(v).iteritems():
-            self.csmap[csid] = get_colorspace(resolve1(spec))
-        elif k == 'ProcSet':
-          self.rsrc.get_procset(list_value(v))
-        elif k == 'XObject':
-          for (xobjid,xobjstrm) in dict_value(v).iteritems():
-            self.xobjmap[xobjid] = xobjstrm
-    data = ''.join( stream_value(stream).get_data() 
-                    for stream in list_value(contents) )
-    self.execute(data)
+    self.init_resources(resources)
+    self.init_state(ctm)
+    self.execute(list_value(contents))
     return
   
-  def execute(self, data):
-    parser = PDFContentParser(StringIO(data), debug=self.debug)
-    for obj in parser.parse():
+  def execute(self, streams):
+    parser = PDFContentParser(streams, debug=self.debug)
+    while 1:
+      try:
+        (_,obj) = parser.nextobject()
+      except PSEOF:
+        break
       if isinstance(obj, PSKeyword):
         name = 'do_%s' % obj.name.replace('*','_a').replace('"','_w').replace("'",'_q')
         if hasattr(self, name):

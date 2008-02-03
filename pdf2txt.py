@@ -13,8 +13,8 @@ from cmap import CMapDB
 ##
 class TextConverter(PDFDevice):
 
-  def __init__(self, outfp, rsrc, codec):
-    PDFDevice.__init__(self, rsrc)
+  def __init__(self, outfp, rsrc, codec, debug=0):
+    PDFDevice.__init__(self, rsrc, debug=debug)
     self.outfp = outfp
     self.codec = codec
     return
@@ -22,7 +22,7 @@ class TextConverter(PDFDevice):
   def close(self):
     self.outfp.write('\n')
     return
-  
+
   def begin_page(self, page):
     (x0,y0,x1,y1) = page.mediabox
     self.outfp.write('<page id="%d" mediabox="%d,%d,%d,%d" rotate="%d">' %
@@ -42,6 +42,10 @@ class TextConverter(PDFDevice):
     return
 
   def handle_undefined_char(self, cidcoding, cid):
+    if self.debug:
+      print >>stderr, 'undefined: %r, %r' % (cidcoding, cid)
+    #return unichr(cid)
+    #return unichr(cid+32)
     return
 
   def render_string(self, textstate, textmatrix, size, seq):
@@ -81,7 +85,7 @@ class TextConverter(PDFDevice):
 
 # pdf2txt
 def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
-  device = TextConverter(outfp, rsrc, codec)
+  device = TextConverter(outfp, rsrc, codec, debug=debug)
   outfp.write('<document>\n')
   doc = PDFDocument(debug=debug)
   fp = file(fname)
