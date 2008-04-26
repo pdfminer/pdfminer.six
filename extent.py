@@ -20,6 +20,9 @@ class Rect:
       self.y1 = y0+h
     return
 
+  def __repr__(self):
+    return '<Rect: (%d,%d)-(%d,%d)>' % (self.x0, self.y0, self.x1, self.y1)
+
   def overlap(self, rect):
     return not (rect.x1 <= self.x0 or self.x1 <= rect.x0 or
                 rect.y1 <= self.y0 or self.y1 <= rect.y0)
@@ -31,7 +34,7 @@ class ExtSet:
   
   def __init__(self, gridsize):
     self.gridsize = gridsize
-    self.grid = []
+    self.grid = {}
     return
   
   def cells(self, x0, x1):
@@ -45,13 +48,19 @@ class ExtSet:
   
   def add(self, x0, x1, obj):
     for i in self.cells(x0, x1):
-      self.grid[i].append(obj)
+      if i not in self.grid:
+        a = []
+        self.grid[i] = a
+      else:
+        a = self.grid[i]
+      a.append(obj)
     return
   
   def get(self, x0, x1):
     objs = set()
     for i in self.cells(x0, x1):
-      objs.update(self.grid[i])
+      if i in self.grid:
+        objs.update(self.grid[i])
     return objs
 
 def test_extset():
@@ -78,12 +87,13 @@ class ExtGrid:
     self.vext = ExtSet(gridsize)
     return
   
-  def add(self, rect):
-    self.hext.add(rect.x0, rect.x1, rect)
-    self.vext.add(rect.y0, rect.y1, rect)
+  def add(self, rect, obj):
+    self.hext.add(rect.x0, rect.x1, obj)
+    self.vext.add(rect.y0, rect.y1, obj)
     return
   
-  def get(self, rect):
-    rects = self.hext.get(rect.x0, rect.x1)
-    rects.update_intersect(self.vext.get(rect.y0, rect.y1))
-    return rects
+  def get(self, rect, getrect):
+    objs = self.hext.get(rect.x0, rect.x1)
+    objs.intersection_update(self.vext.get(rect.y0, rect.y1))
+    objs = [ obj for obj in objs if rect.overlap(getrect(obj)) ]
+    return objs

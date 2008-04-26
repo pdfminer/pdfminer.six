@@ -4,30 +4,30 @@
 #  ver 0.1, Dec 24 2004-
 #  ver 0.2, Dec 24 2007
 
-# TODO:
-#   - Code Documentation.
-#   - Error handling for invalid type.
-
-#   - Outlines.
-#   - Named Objects. (pages)
-#   - Writers.
-#   - Linearized PDF.
-#   - Encryption?
-
 import sys
+import md5, struct
 stderr = sys.stderr
 from utils import choplist, nunpack
+from arcfour import Arcfour
 from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
      literal_name, keyword_name, \
      PSStackParser, STRICT
 
 
+def decrypt_rc4(key, objid, genno, data):
+  key += struct.pack('<L',objid)[:3]+struct.pack('<L',genno)[:2]
+  hash = md5.md5(key)
+  key = hash.digest()[:min(len(key),16)]
+  return Arcfour(key).process(data)
+
+
 ##  PDF Exceptions
 ##
 class PDFException(PSException): pass
 class PDFSyntaxError(PDFException): pass
-class PDFEncrypted(PDFException): pass
+class PDFEncryptionError(PDFException): pass
+class PDFPasswordIncorrect(PDFEncryptionError): pass
 class PDFTypeError(PDFException): pass
 class PDFValueError(PDFException): pass
 
@@ -38,6 +38,7 @@ LITERAL_XREF = PSLiteralTable.intern('XRef')
 LITERAL_PAGE = PSLiteralTable.intern('Page')
 LITERAL_PAGES = PSLiteralTable.intern('Pages')
 LITERAL_CATALOG = PSLiteralTable.intern('Catalog')
+LITERAL_CRYPT = PSLiteralTable.intern('Crypt')
 LITERAL_FLATE_DECODE = PSLiteralTable.intern('FlateDecode')
 KEYWORD_R = PSKeywordTable.intern('R')
 KEYWORD_OBJ = PSKeywordTable.intern('obj')
@@ -45,6 +46,7 @@ KEYWORD_ENDOBJ = PSKeywordTable.intern('endobj')
 KEYWORD_STREAM = PSKeywordTable.intern('stream')
 KEYWORD_XREF = PSKeywordTable.intern('xref')
 KEYWORD_STARTXREF = PSKeywordTable.intern('startxref')
+PASSWORD_PADDING = '(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
 
 
 ##  PDFObjRef
@@ -77,7 +79,7 @@ def resolve1(x):
     x = x.resolve()
   return x
 
-def resolveall(x):
+def resolve_all(x):
   '''
   Recursively resolve X and all the internals.
   Make sure there is no indirect reference within the nested object.
@@ -86,10 +88,23 @@ def resolveall(x):
   while isinstance(x, PDFObjRef):
     x = x.resolve()
   if isinstance(x, list):
-    x = [ resolveall(v) for v in x ]
+    x = [ resolve_all(v) for v in x ]
   elif isinstance(x, dict):
     for (k,v) in x.iteritems():
-      x[k] = resolveall(v)
+      x[k] = resolve_all(v)
+  return x
+
+def decipher_all(decipher, objid, genno, x):
+  '''
+  Recursively decipher X.
+  '''
+  if isinstance(x, str):
+    return decipher(objid, genno, x)
+  if isinstance(x, list):
+    x = [ decipher_all(decipher, objid, genno, v) for v in x ]
+  elif isinstance(x, dict):
+    for (k,v) in x.iteritems():
+      x[k] = decipher_all(decipher, objid, genno, v)
   return x
 
 # Type cheking
@@ -159,6 +174,13 @@ class PDFStream:
     self.rawdata = rawdata
     self.decipher = decipher
     self.data = None
+    self.objid = None
+    self.genno = None
+    return
+
+  def set_objid(self, objid, genno):
+    self.objid = objid
+    self.genno = genno
     return
   
   def __repr__(self):
@@ -168,7 +190,7 @@ class PDFStream:
     assert self.data == None and self.rawdata != None
     data = self.rawdata
     if self.decipher:
-      data = self.decipher(data)
+      data = self.decipher(self.objid, self.genno, data)
     if 'Filter' not in self.dic:
       self.data = data
       self.rawdata = None
@@ -201,6 +223,8 @@ class PDFStream:
               buf += ent1
               ent0 = ent1
             data = buf
+      if f == LITERAL_CRYPT:
+        raise PDFEncryptionError
       else:
         if STRICT:
           raise PDFValueError('Invalid filter spec: %r' % f)
@@ -338,10 +362,11 @@ class PDFDocument:
     self.xrefs = []
     self.objs = {}
     self.parsed_objs = {}
-    self.decipher = None
     self.root = None
     self.catalog = None
     self.parser = None
+    self.encryption = None
+    self.decipher = None
     return
 
   def set_parser(self, parser):
@@ -351,20 +376,74 @@ class PDFDocument:
     for xref in self.xrefs:
       trailer = xref.trailer
       if 'Encrypt' in trailer:
-        raise PDFEncrypted
-        param = dict_value(trailer['Encrypt'])
-        self.decipher = DECRYPTOR(param)
-        self.parser.strfilter = self.decipher
+        self.encryption = (list_value(trailer['ID']),
+                           dict_value(trailer['Encrypt']))
       if 'Root' in trailer:
         self.set_root(dict_value(trailer['Root']))
         break
     else:
       raise PDFValueError('no /Root object!')
+    if self.encryption:
+      self.prepare_cipher()
+    return
+
+  def prepare_cipher(self, password=''):
+    (docid, param) = self.encryption
+    if literal_name(param['Filter']) != 'Standard':
+      raise PDFEncryptionError('unknown filter: param=%r' % param)
+    V = int_value(param.get('V', 0))
+    if not (V == 1 or V == 2):
+      raise PDFEncryptionError('unknown algorithm: param=%r' % param)
+    length = int_value(param.get('Length', 40)) # Key length (bits)
+    O = str_value(param['O'])
+    R = int_value(param['R']) # Revision
+    if 5 <= R:
+      raise PDFEncryptionError('unknown revision: %r' % R)
+    U = str_value(param['U'])
+    P = int_value(param['P'])
+    is_printable = bool(P & 4)        
+    is_modifiable = bool(P & 8)
+    is_extractable = bool(P & 16)
+    # Algorithm 3.2
+    password = (password+PASSWORD_PADDING)[:32] # 1
+    hash = md5.md5(password) # 2
+    hash.update(O) # 3
+    hash.update(struct.pack('<L', P)) # 4
+    hash.update(docid[0]) # 5
+    if 4 <= R:
+      raise NotImplementedError # 6
+    if 3 <= R:
+      # 8
+      for _ in xrange(50):
+        hash = md5.md5(hash.digest()[:length/8])
+    key = hash.digest()[:length/8]
+    if R == 2:
+      # Algorithm 3.4
+      u1 = Arcfour(key).process(password)
+    elif R == 3:
+      # Algorithm 3.5
+      hash = md5.md5(PASSWORD_PADDING) # 2
+      hash.update(docid[0]) # 3
+      x = Arcfour(key).process(hash.digest()[:16]) # 4
+      for i in xrange(1,19+1):
+        k = ''.join( chr(c ^ i) for c in key )
+        x = Arcfour(k).process(x)
+      u1 = x+x # 32bytes total
+    else:
+      raise PDFEncryptionError('unknown revision: %r' % R)
+    if R == 2:
+      is_authenticated = (u1 == U)
+    else:
+      is_authenticated = (u1[:16] == U[:16])
+    if not is_authenticated:
+      raise PDFPasswordIncorrect
+    self.decipher = (lambda objid,genno,data: decrypt_rc4(key, objid, genno, data))
     return
 
   def getobj(self, objid):
     #assert self.xrefs
     if objid in self.objs:
+      genno = 0
       obj = self.objs[objid]
     else:
       for xref in self.xrefs:
@@ -400,18 +479,26 @@ class PDFDocument:
           except PSEOF:
             pass
           self.parsed_objs[stream] = objs
+        genno = 0
         obj = objs[stream.dic['N']*2+index]
+        if isinstance(obj, PDFStream):
+          obj.set_objid(objid, 0)
       else:
         self.parser.seek(index)
         (_,objid1) = self.parser.nextobject() # objid
-        (_,genno1) = self.parser.nextobject() # genno
+        (_,genno) = self.parser.nextobject() # genno
+        assert objid1 == objid
         (_,kwd) = self.parser.nextobject()
         if kwd != KEYWORD_OBJ:
           raise PDFSyntaxError('invalid obj spec: offset=%r' % index)
         (_,obj) = self.parser.nextobject()
+        if isinstance(obj, PDFStream):
+          obj.set_objid(objid, genno)
       if 2 <= self.debug:
         print >>stderr, 'register: objid=%r: %r' % (objid, obj)
       self.objs[objid] = obj
+    if self.decipher:
+      obj = decipher_all(self.decipher, objid, genno, obj)
     return obj
   
   def get_pages(self, debug=0):
