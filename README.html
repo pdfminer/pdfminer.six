@@ -1,17 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>PDFMiner</title>
-</head>
+<style type="text/css"><!--
+blockquote { background: #eeeeee; }
+--></style>
+</head><body>
 
-<body>
 <h1>PDFMiner</h1>
-
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Apr 27 20:46:21 JST 2008
+Last Modified: Sun Apr 27 20:54:51 JST 2008
 <!-- hhmts end -->
 </div>
 
+<a name="intro"></a>
+<hr noshade>
+<h2>What's it?</h2>
 <p>
 PDFMiner is a suite of programs that aims to help
 extracting or analyzing text data from PDF documents.
@@ -49,7 +55,8 @@ http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20080427.tar.gz
 http://pdfminerr.googlecode.com/svn/
 </a>
 
-<hr>
+<a name="install"></a>
+<hr noshade>
 <h2>Installation</h2>
 <p>
 Prerequisite: <a href="http://www.python.org/download/">Python</a> 2.4 or newer.
@@ -81,7 +88,10 @@ Here is how:
 <a href="http://www.unixuser.org/~euske/pub/CMap.tar.bz2">
 http://www.unixuser.org/~euske/pub/CMap.tar.bz2
 </a>
-<li> <code>$ tar jxf CMap.tar.bz2</code>
+<li> Do the follwoing:
+<blockquote><pre>
+$ <strong>tar jxf CMap.tar.bz2</strong>
+</pre></blockquote>
 <li> Put the <code>CMap</code> directory into the <code>pdfminer</code> directory.
 <li> Go to the <code>pdfminer</code> directory.
 <li> Do the follwoing: (this is optional but highly recommended)<br>
@@ -90,13 +100,15 @@ $ <strong>make cdbcmap</strong>
 </pre></blockquote>
 </ol>
 
-<hr>
+<a name="usage"></a>
+<hr noshade>
 <h2>Usage</h2>
 
 <p>
 PDFMiner comes with two programs:
 <code>pdf2txt.py</code> and <code>dumppdf.py</code>.
 
+<a name="pdf2txt"></a>
 <h3>pdf2txt.py</h3>
 <p>
 <code>pdf2txt.py</code> extracts text contents from a PDF file.
@@ -149,6 +161,7 @@ By default, it extracts texts from all the pages.
 <dd> Increases the debug level.
 </dl>
 
+<a name="dumppdf"></a>
 <h3>dumppdf.py</h3>
 <p>
 <code>dumppdf.py</code> dumps the internal contents of a PDF file
@@ -199,16 +212,18 @@ no stream header is displayed for the ease of saving it to a file.
 <dd> Increases the debug level.
 </dl>
 
-<hr>
+<a name="changes"></a>
+<hr noshade>
 <h2>Changes</h2>
 <ul>
 <li> 2007/04/27: Basic encryption and LZW decoding support added.
 <li> 2007/01/07: Several bugfixes. Thanks to Nick Fabry for his contribution.
 <li> 2007/12/31: Initial release.
-<li> 2004/12/24: Start writing the code...
+<li> 2004/12/24: Start writing the code out of boredom...
 </ul>
 
-<hr>
+<a name="related"></a>
+<hr noshade>
 <h2>Related Projects</h2>
 <ul>
 <li> <a href="http://pybrary.net/pyPdf/">pyPdf</a>
@@ -216,8 +231,8 @@ no stream header is displayed for the ease of saving it to a file.
 <li> <a href="http://www.pdfbox.org/">pdfbox</a>
 </ul>
 
-
-<hr>
+<a name="license"></a>
+<hr noshade>
 <h2>Terms and conditions</h2>
 <p>
 <small>
@@ -245,6 +260,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 </small>
 
-<hr>
+<hr noshade>
 <address>Yusuke Shinyama</address>
 </body>
