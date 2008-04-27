@@ -17,7 +17,6 @@ class LZWDecoder:
     return
 
   def readbits(self, bits):
-    bits0 = bits
     v = 0
     while 1:
       # the number of remaining bits we can get from the current buffer.

@@ -163,11 +163,14 @@ class TextConverter(PDFDevice):
 
 
 # pdf2txt
+class TextExtractionNotAllowed(RuntimeError): pass
 def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
   device = TextConverter(rsrc, debug=debug)
   doc = PDFDocument(debug=debug)
   fp = file(fname)
   parser = PDFParser(doc, fp, debug=debug)
+  if not doc.is_extractable:
+    raise TextExtractionNotAllowed('text extraction is not allowed: %r' % fname)
   interpreter = PDFPageInterpreter(rsrc, device, debug=debug)
   outfp.write('<document>\n')
   for (i,page) in enumerate(doc.get_pages(debug=debug)):
