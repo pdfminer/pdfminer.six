@@ -46,7 +46,8 @@ class FigureItem(PageItem):
     return ('<figure id=%r bbox="%s">' % (self.id, bbox))
   
   def dump(self, outfp, codec):
-    outfp.write(repr(self)+'\n')
+    bbox = '%d,%d,%d,%d' % self.bbox
+    outfp.write('<figure id="%s" bbox="%s">\n' % (self.id, bbox))
     for obj in self.objs:
       obj.dump(outfp, codec)
     outfp.write('</figure>\n')
@@ -126,6 +127,9 @@ class TextConverter(PDFDevice):
     self.context.add(fig)
     return
 
+  def render_image(self, stream, size, matrix):
+    return
+
   def handle_undefined_char(self, cidcoding, cid):
     if self.debug:
       print >>stderr, 'undefined: %r, %r' % (cidcoding, cid)
@@ -155,7 +159,7 @@ class TextConverter(PDFDevice):
                     font, textstate.fontsize, size, text)
     self.context.add(item)
     return
-
+  
   def dump(self, outfp, codec):
     for page in self.pages:
       page.dump(outfp, codec)

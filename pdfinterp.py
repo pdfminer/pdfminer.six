@@ -41,6 +41,7 @@ LITERAL_PDF = PSLiteralTable.intern('PDF')
 LITERAL_TEXT = PSLiteralTable.intern('Text')
 LITERAL_FONT = PSLiteralTable.intern('Font')
 LITERAL_FORM = PSLiteralTable.intern('Form')
+LITERAL_IMAGE = PSLiteralTable.intern('Image')
 LITERAL_STANDARD_ENCODING = PSLiteralTable.intern('StandardEncoding')
 LITERAL_DEVICE_GRAY = PSLiteralTable.intern('DeviceGray')
 LITERAL_DEVICE_RGB = PSLiteralTable.intern('DeviceRGB')
@@ -483,6 +484,8 @@ class PDFDevice:
     return
   
   def render_string(self, textstate, textmatrix, size, seq):
+    raise NotImplementedError
+  def render_image(self, stream, size, matrix):
     raise NotImplementedError
 
 
@@ -942,9 +945,10 @@ class PDFPageInterpreter:
       if STRICT:
         raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
       return
-    if xobj.dic.get('Subtype') == LITERAL_FORM and 'BBox' in xobj.dic:
-      if 1 <= self.debug:
-        print >>stderr, 'Processing xobj: %r' % xobj
+    if 1 <= self.debug:
+      print >>stderr, 'Processing xobj: %r' % xobj
+    subtype = xobj.dic.get('Subtype')
+    if subtype == LITERAL_FORM and 'BBox' in xobj.dic:
       interpreter = PDFPageInterpreter(self.rsrc, self.device)
       (x0,y0,x1,y1) = xobj.dic['BBox']
       ctm = mult_matrix(xobj.dic.get('Matrix', MATRIX_IDENTITY), self.ctm)
@@ -954,6 +958,16 @@ class PDFPageInterpreter:
       self.device.begin_figure(xobjid, bbox)
       interpreter.render_contents(xobj.dic.get('Resources'), [xobj], ctm=ctm)
       self.device.end_figure(xobjid)
+    elif subtype == LITERAL_IMAGE and 'Width' in xobj.dic and 'Height' in xobj.dic:
+      (x0,y0) = apply_matrix(self.ctm, (0,0))
+      (x1,y1) = apply_matrix(self.ctm, (1,1))
+      self.device.begin_figure(xobjid, (x0,y0,x1,y1))
+      (w,h) = (xobj.dic['Width'], xobj.dic['Height'])
+      self.device.render_image(xobj, (w,h), self.ctm)
+      self.device.end_figure(xobjid)
+    else:
+      # unsupported xobject type.
+      pass
     return
 
   def process_page(self, page):

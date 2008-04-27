@@ -19,7 +19,7 @@ def esc(s):
 
 
 # dumpxml
-def dumpxml(out, obj):
+def dumpxml(out, obj, codec=None):
   if isinstance(obj, dict):
     out.write('<dict size="%d">\n' % len(obj))
     for (k,v) in obj.iteritems():
@@ -43,16 +43,12 @@ def dumpxml(out, obj):
     return
   
   if isinstance(obj, PDFStream):
-    props = obj.dic.copy()
-    if 'Filter' in props:
-      del props['Filter']
-    if 'DecodeParms' in props:
-      del props['DecodeParms']
     out.write('<stream>\n<props>\n')
-    dumpxml(out, props)
-    data = obj.get_data()
+    dumpxml(out, obj.dic)
     out.write('\n</props>\n')
-    out.write('<data size="%d">%s</data>\n' % (len(data), esc(data)))
+    if codec:
+      data = obj.get_data()
+      out.write('<data size="%d">%s</data>\n' % (len(data), esc(data)))
     out.write('</stream>')
     return
   
@@ -101,17 +97,17 @@ def dumpallobjs(out, doc):
 
 # dumppdf
 def dumppdf(outfp, fname, objids, pageids,
-            dumpall=False, binary=False, debug=0):
+            dumpall=False, codec=None, debug=0):
   doc = PDFDocument(debug=debug)
   fp = file(fname)
   parser = PDFParser(doc, fp, debug=debug)
   if objids:
     for objid in objids:
       obj = doc.getobj(objid)
-      if binary and isinstance(obj, PDFStream):
+      if codec == 'binary' and isinstance(obj, PDFStream):
         outfp.write(obj.get_data())
       else:
-        dumpxml(outfp, obj)
+        dumpxml(outfp, obj, codec=codec)
   if pageids:
     for page in doc.get_pages():
       if page.pageid in pageids:
@@ -129,17 +125,17 @@ def dumppdf(outfp, fname, objids, pageids,
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-a] [-b] [-p pageid] [-i objid] file ...' % argv[0]
+    print 'usage: %s [-d] [-a] [-c|-b] [-p pageid] [-i objid] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dabi:p:')
+    (opts, args) = getopt.getopt(argv[1:], 'dacbi:p:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
   debug = 0
   objids = []
   pageids = set()
-  binary = False
+  codec = None
   dumpall = False
   outfp = stdout
   for (k, v) in opts:
@@ -147,12 +143,13 @@ def main(argv):
     elif k == '-i': objids.append(int(v))
     elif k == '-p': pageids.add(int(v))
     elif k == '-a': dumpall = True
-    elif k == '-b': binary = True
+    elif k == '-b': codec = 'binary'
+    elif k == '-c': codec = 'text'
     elif k == '-o': outfp = file(v, 'w')
   #
   for fname in args:
     dumppdf(outfp, fname, objids, pageids,
-            dumpall=dumpall, binary=binary, debug=debug)
+            dumpall=dumpall, codec=codec, debug=debug)
   return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))
