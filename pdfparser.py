@@ -9,6 +9,7 @@ import md5, struct
 stderr = sys.stderr
 from utils import choplist, nunpack
 from arcfour import Arcfour
+from lzw import LZWDecoder
 from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
      literal_name, keyword_name, \
@@ -208,7 +209,11 @@ class PDFStream:
         # will get errors if the document is encrypted.
         data = zlib.decompress(data)
       elif f == LITERAL_LZW_DECODE:
-        raise PDFNotImplementedError('LZWDecode is currently unsupported.')
+        try:
+          from cStringIO import StringIO
+        except ImportError:
+          from StringIO import StringIO
+        data = ''.join(LZWDecoder(StringIO(data)).run())
       elif f == LITERAL_CRYPT:
         raise PDFEncryptionError
       else:

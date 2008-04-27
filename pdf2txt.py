@@ -83,10 +83,13 @@ class TextItem:
             (self.matrix, self.font, self.size, self.width, self.text))
   
   def dump(self, outfp, codec):
+    def e(x):
+      x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;')
+      return x.encode(codec, 'xmlcharrefreplace')
     (a,b,c,d,tx,ty) = self.matrix
-    outfp.write('<text x="%.3f" y="%.3f" font=%r size="%.3f" width="%.3f">' %
-                (tx, ty, self.font.fontname, self.size, self.width))
-    outfp.write(self.text.encode(codec, 'xmlcharrefreplace'))
+    outfp.write('<text x="%.3f" y="%.3f" font="%s" size="%.3f" width="%.3f">' %
+                (tx, ty, e(self.font.fontname), self.size, self.width))
+    outfp.write(e(self.text))
     outfp.write('</text>\n')
     return
 
@@ -182,10 +185,10 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-c codec] [-p pages] file ...' % argv[0]
+    print 'usage: %s [-d] [-c codec] [-p pages] [-o output] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:c:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:c:o:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()

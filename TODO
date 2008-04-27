@@ -1,9 +1,9 @@
-TODO:
-  - Code Documentation.
+TODOs:
+  - Documentation.
   - Error handling for invalid type.
+  - PDF Writers.
 
   - Outlines.
   - Named Objects. (pages)
-  - Writers.
-  - Linearized PDF.
-  - Encryption?
+  - Any special treatments for linearized PDFs?
+  - More encryption support? (no way...)
