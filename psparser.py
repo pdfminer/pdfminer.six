@@ -424,6 +424,11 @@ class PSStackParser(PSBaseParser):
     self.results = []
     return
 
+  def seek(self, pos):
+    PSBaseParser.seek(self, pos)
+    self.reset()
+    return
+
   def push(self, *objs):
     self.curstack.extend(objs)
     return

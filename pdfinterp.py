@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, re
+import sys
 stderr = sys.stderr
 from struct import pack, unpack
 try:
@@ -292,8 +292,18 @@ class PDFCIDFont(PDFFont):
     self.cidsysteminfo = dict_value(spec.get('CIDSystemInfo', {}))
     self.cidcoding = '%s-%s' % (self.cidsysteminfo.get('Registry', 'unknown'),
                                 self.cidsysteminfo.get('Ordering', 'unknown'))
-    self.cmap = CMapDB.get_cmap(literal_name(spec['Encoding']))
-    descriptor = dict_value(spec['FontDescriptor'])
+    try:
+      self.cmap = CMapDB.get_cmap(literal_name(spec['Encoding']))
+    except KeyError:
+      if STRICT:
+        raise PDFFontError('cmap is missing')
+      self.cmap = None
+    try:
+      descriptor = dict_value(spec['FontDescriptor'])
+    except KeyError:
+      if STRICT:
+        raise PDFFontError('FontDescriptor is missing')
+      descriptor = {}
     ttf = None
     if 'FontFile2' in descriptor:
       self.fontfile = stream_value(descriptor.get('FontFile2'))
@@ -486,9 +496,6 @@ class PDFContentParser(PSStackParser):
     PSStackParser.__init__(self, None, debug=debug)
     return
 
-  def __repr__(self):
-    return '<PDFParser: linepos=%d>' % self.linepos
-
   def fillfp(self):
     if not self.fp:
       if self.istream < len(self.streams):
@@ -611,9 +618,9 @@ class PDFPageInterpreter:
         name = literal_name(spec[0])
       else:
         name = literal_name(spec)
-      if name == 'ICCBased':
+      if name == 'ICCBased' and isinstance(spec, list) and 2 <= len(spec):
         return ColorSpace(name, stream_value(spec[1]).dic['N'])
-      elif name == 'DeviceN':
+      elif name == 'DeviceN' and isinstance(spec, list) and 2 <= len(spec):
         return ColorSpace(name, len(list_value(spec[1])))
       else:
         return PREDEFINED_COLORSPACE[name]
@@ -935,7 +942,7 @@ class PDFPageInterpreter:
       if STRICT:
         raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
       return
-    if xobj.dic['Subtype'] == LITERAL_FORM:
+    if xobj.dic.get('Subtype') == LITERAL_FORM and 'BBox' in xobj.dic:
       if 1 <= self.debug:
         print >>stderr, 'Processing xobj: %r' % xobj
       interpreter = PDFPageInterpreter(self.rsrc, self.device)

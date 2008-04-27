@@ -30,6 +30,7 @@ class PDFEncryptionError(PDFException): pass
 class PDFPasswordIncorrect(PDFEncryptionError): pass
 class PDFTypeError(PDFException): pass
 class PDFValueError(PDFException): pass
+class PDFNotImplementedError(PSException): pass
 
 
 # some predefined literals and keywords.
@@ -40,11 +41,13 @@ LITERAL_PAGES = PSLiteralTable.intern('Pages')
 LITERAL_CATALOG = PSLiteralTable.intern('Catalog')
 LITERAL_CRYPT = PSLiteralTable.intern('Crypt')
 LITERAL_FLATE_DECODE = PSLiteralTable.intern('FlateDecode')
+LITERAL_LZW_DECODE = PSLiteralTable.intern('LZWDecode')
 KEYWORD_R = PSKeywordTable.intern('R')
 KEYWORD_OBJ = PSKeywordTable.intern('obj')
 KEYWORD_ENDOBJ = PSKeywordTable.intern('endobj')
 KEYWORD_STREAM = PSKeywordTable.intern('stream')
 KEYWORD_XREF = PSKeywordTable.intern('xref')
+KEYWORD_TRAILER = PSKeywordTable.intern('trailer')
 KEYWORD_STARTXREF = PSKeywordTable.intern('startxref')
 PASSWORD_PADDING = '(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
 
@@ -184,12 +187,13 @@ class PDFStream:
     return
   
   def __repr__(self):
-    return '<PDFStream: %r>' % (self.dic)
+    return '<PDFStream(%d): raw=%d, %r>' % (self.objid, len(self.rawdata), self.dic)
 
   def decode(self):
     assert self.data == None and self.rawdata != None
     data = self.rawdata
     if self.decipher:
+      # Handle encryption
       data = self.decipher(self.objid, self.genno, data)
     if 'Filter' not in self.dic:
       self.data = data
@@ -203,31 +207,32 @@ class PDFStream:
         import zlib
         # will get errors if the document is encrypted.
         data = zlib.decompress(data)
-        # apply predictors
-        params = self.dic.get('DecodeParms', {})
-        if 'Predictor' in params:
-          pred = int_value(params['Predictor'])
-          if pred:
-            if pred != 12:
-              raise PDFValueError('Unsupported predictor: %r' % pred)
-            if 'Columns' not in params:
-              raise PDFValueError('Columns undefined for predictor=12')
-            columns = int_value(params['Columns'])
-            buf = ''
-            ent0 = '\x00' * columns
-            for i in xrange(0, len(data), columns+1):
-              pred = data[i]
-              ent1 = data[i+1:i+1+columns]
-              if pred == '\x02':
-                ent1 = ''.join( chr((ord(a)+ord(b)) & 255) for (a,b) in zip(ent0,ent1) )
-              buf += ent1
-              ent0 = ent1
-            data = buf
-      if f == LITERAL_CRYPT:
+      elif f == LITERAL_LZW_DECODE:
+        raise PDFNotImplementedError('LZWDecode is currently unsupported.')
+      elif f == LITERAL_CRYPT:
         raise PDFEncryptionError
       else:
-        if STRICT:
-          raise PDFValueError('Invalid filter spec: %r' % f)
+        raise PDFNotImplementedError('Unsupported filter: %r' % f)
+      # apply predictors
+      params = self.dic.get('DecodeParms', {})
+      if 'Predictor' in params:
+        pred = int_value(params['Predictor'])
+        if pred:
+          if pred != 12:
+            raise PDFNotImplementedError('Unsupported predictor: %r' % pred)
+          if 'Columns' not in params:
+            raise PDFValueError('Columns undefined for predictor=12')
+          columns = int_value(params['Columns'])
+          buf = ''
+          ent0 = '\x00' * columns
+          for i in xrange(0, len(data), columns+1):
+            pred = data[i]
+            ent1 = data[i+1:i+1+columns]
+            if pred == '\x02':
+              ent1 = ''.join( chr((ord(a)+ord(b)) & 255) for (a,b) in zip(ent0,ent1) )
+            buf += ent1
+            ent0 = ent1
+          data = buf
     self.data = data
     self.rawdata = None
     return
@@ -274,18 +279,19 @@ class PDFXRef:
 
   def __init__(self, parser):
     while 1:
-      (_, line) = parser.nextline()
+      (pos, line) = parser.nextline()
       if not line:
         if STRICT:
           raise PDFSyntaxError('premature eof: %r' % parser)
         break
-      line = line.strip()
-      f = line.split(' ')
-      if len(f) != 2:
-        if line != 'trailer':
-          if STRICT:
-            raise PDFSyntaxError('trailer not found: %r: line=%r' % (parser, line))
+      if line.startswith('trailer'):
+        parser.seek(pos)
         break
+      f = line.strip().split(' ')
+      if len(f) != 2:
+        if STRICT:
+          raise PDFSyntaxError('trailer not found: %r: line=%r' % (parser, line))
+        continue
       (start, nobjs) = map(long, f)
       self.objid0 = start
       self.objid1 = start+nobjs
@@ -300,7 +306,9 @@ class PDFXRef:
         (pos, genno, use) = f
         self.offsets.append((int(genno), long(pos), use))
     # read trailer
-    (_, dic) = parser.nextobject()
+    (_,kwd) = parser.nexttoken()
+    assert kwd == KEYWORD_TRAILER
+    (_,dic) = parser.nextobject()
     self.trailer = dict_value(dic)
     return
 
@@ -319,9 +327,9 @@ class PDFXRef:
 class PDFXRefStream:
 
   def __init__(self, parser):
-    (_,objid) = parser.nextobject()
-    (_,genno) = parser.nextobject()
-    parser.nextobject()
+    (_,objid) = parser.nexttoken()
+    (_,genno) = parser.nexttoken()
+    (_,kwd) = parser.nexttoken()
     (_,stream) = parser.nextobject()
     if STRICT:
       if stream.dic['Type'] != LITERAL_XREF:
@@ -367,6 +375,7 @@ class PDFDocument:
     self.parser = None
     self.encryption = None
     self.decipher = None
+    self.is_printable = self.is_modifiable = self.is_extractable = True
     return
 
   def set_parser(self, parser):
@@ -401,9 +410,9 @@ class PDFDocument:
       raise PDFEncryptionError('unknown revision: %r' % R)
     U = str_value(param['U'])
     P = int_value(param['P'])
-    is_printable = bool(P & 4)        
-    is_modifiable = bool(P & 8)
-    is_extractable = bool(P & 16)
+    self.is_printable = bool(P & 4)        
+    self.is_modifiable = bool(P & 8)
+    self.is_extractable = bool(P & 16)
     # Algorithm 3.2
     password = (password+PASSWORD_PADDING)[:32] # 1
     hash = md5.md5(password) # 2
@@ -411,7 +420,8 @@ class PDFDocument:
     hash.update(struct.pack('<L', P)) # 4
     hash.update(docid[0]) # 5
     if 4 <= R:
-      raise NotImplementedError # 6
+      # 6
+      raise PDFNotImplementedError('Revision 4 encryption is currently unsupported')
     if 3 <= R:
       # 8
       for _ in xrange(50):
@@ -429,8 +439,6 @@ class PDFDocument:
         k = ''.join( chr(c ^ i) for c in key )
         x = Arcfour(k).process(x)
       u1 = x+x # 32bytes total
-    else:
-      raise PDFEncryptionError('unknown revision: %r' % R)
     if R == 2:
       is_authenticated = (u1 == U)
     else:
@@ -485,10 +493,10 @@ class PDFDocument:
           obj.set_objid(objid, 0)
       else:
         self.parser.seek(index)
-        (_,objid1) = self.parser.nextobject() # objid
-        (_,genno) = self.parser.nextobject() # genno
-        assert objid1 == objid
-        (_,kwd) = self.parser.nextobject()
+        (_,objid1) = self.parser.nexttoken() # objid
+        (_,genno) = self.parser.nexttoken() # genno
+        assert objid1 == objid, (objid, objid1)
+        (_,kwd) = self.parser.nexttoken()
         if kwd != KEYWORD_OBJ:
           raise PDFSyntaxError('invalid obj spec: offset=%r' % index)
         (_,obj) = self.parser.nextobject()
@@ -582,7 +590,11 @@ class PDFParser(PSStackParser):
       self.seek(pos+objlen)
       while 1:
         (linepos, line) = self.nextline()
-        if line.startswith('endstream'): break
+        if 'endstream' in line:
+          i = line.index('endstream')
+          objlen += i
+          data += line[:i]
+          break
         objlen += len(line)
         data += line
       if 1 <= self.debug:
@@ -597,7 +609,7 @@ class PDFParser(PSStackParser):
     return
 
   def find_xref(self):
-    # find the first xref table
+    # search the last xref table by scanning the file backwards.
     prev = None
     for line in self.revreadlines():
       line = line.strip()
@@ -620,19 +632,19 @@ class PDFParser(PSStackParser):
     self.find_xref()
     while 1:
       # read xref table
-      (linepos, line) = self.nextline()
+      (pos, token) = self.nexttoken()
       if 2 <= self.debug:
-        print >>stderr, 'read_xref: %r' % line
-      if line[0].isdigit():
+        print >>stderr, 'read_xref: %r' % token
+      if isinstance(token, int):
         # XRefStream: PDF-1.5
-        self.seek(linepos)
+        self.seek(pos)
         self.reset()
         xref = PDFXRefStream(self)
       else:
-        if line.strip() != 'xref':
+        if token != KEYWORD_XREF:
           if STRICT:
-            raise PDFSyntaxError('xref not found: linepos=%d, line=%r' %
-                                 (linepos, line))
+            raise PDFSyntaxError('xref not found: pos=%d, token=%r' %
+                                 (pos, token))
         xref = PDFXRef(self)
       yield xref
       trailer = xref.trailer
