@@ -1,9 +1,9 @@
 TODOs:
   - Documentation.
   - Error handling for invalid type.
-  - PDF Writers.
+  - Simple viewer application using pygame.
 
   - Outlines.
   - Named Objects. (pages)
+  - Support writing/creating PDFs.
   - Any special treatments for linearized PDFs?
-  - More encryption support? (no way...)

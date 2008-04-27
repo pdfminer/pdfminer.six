@@ -16,13 +16,6 @@ from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSStackParser, STRICT
 
 
-def decrypt_rc4(key, objid, genno, data):
-  key += struct.pack('<L',objid)[:3]+struct.pack('<L',genno)[:2]
-  hash = md5.md5(key)
-  key = hash.digest()[:min(len(key),16)]
-  return Arcfour(key).process(data)
-
-
 ##  PDF Exceptions
 ##
 class PDFException(PSException): pass
@@ -188,7 +181,7 @@ class PDFStream:
     return
   
   def __repr__(self):
-    return '<PDFStream(%d): raw=%d, %r>' % (self.objid, len(self.rawdata), self.dic)
+    return '<PDFStream(%r): raw=%d, %r>' % (self.objid, len(self.rawdata), self.dic)
 
   def decode(self):
     assert self.data == None and self.rawdata != None
@@ -246,6 +239,9 @@ class PDFStream:
     if self.data == None:
       self.decode()
     return self.data
+
+  def get_rawdata(self):
+    return self.rawdata
   
 
 ##  PDFPage
@@ -380,11 +376,12 @@ class PDFDocument:
     self.parser = None
     self.encryption = None
     self.decipher = None
-    self.is_printable = self.is_modifiable = self.is_extractable = True
+    self.initialized = False
     return
 
   def set_parser(self, parser):
     if self.parser: return
+    self.initialized = True
     self.parser = parser
     self.xrefs = list(parser.read_xref())
     for xref in self.xrefs:
@@ -397,11 +394,23 @@ class PDFDocument:
         break
     else:
       raise PDFValueError('no /Root object!')
-    if self.encryption:
-      self.prepare_cipher()
+    self.initialized = False
     return
 
-  def prepare_cipher(self, password=''):
+  def set_root(self, root):
+    self.root = root
+    self.catalog = dict_value(self.root)
+    if self.catalog['Type'] != LITERAL_CATALOG:
+      if STRICT:
+        raise PDFValueError('Catalog not found!')
+    self.outline = self.catalog.get('Outline')
+    return
+  
+  def initialize(self, password=''):
+    if not self.encryption:
+      self.is_printable = self.is_modifiable = self.is_extractable = True
+      self.initialized = True
+      return
     (docid, param) = self.encryption
     if literal_name(param['Filter']) != 'Standard':
       raise PDFEncryptionError('unknown filter: param=%r' % param)
@@ -450,10 +459,20 @@ class PDFDocument:
       is_authenticated = (u1[:16] == U[:16])
     if not is_authenticated:
       raise PDFPasswordIncorrect
-    self.decipher = (lambda objid,genno,data: decrypt_rc4(key, objid, genno, data))
+    self.decrypt_key = key
+    self.decipher = self.decrypt_rc4  # XXX may be AES
+    self.initialized = True
     return
 
+  def decrypt_rc4(self, objid, genno, data):
+    key = self.decrypt_key + struct.pack('<L',objid)[:3]+struct.pack('<L',genno)[:2]
+    hash = md5.md5(key)
+    key = hash.digest()[:min(len(key),16)]
+    return Arcfour(key).process(data)
+
   def getobj(self, objid):
+    if not self.initialized:
+      raise PDFException('PDFDocument not initialized')
     #assert self.xrefs
     if objid in self.objs:
       genno = 0
@@ -515,6 +534,8 @@ class PDFDocument:
     return obj
   
   def get_pages(self, debug=0):
+    if not self.initialized:
+      raise PDFException('PDFDocument not initialized')
     #assert self.xrefs
     def search(obj, parent):
       tree = dict_value(obj).copy()
@@ -535,15 +556,6 @@ class PDFDocument:
       yield PDFPage(self, i, tree)
     return 
 
-  def set_root(self, root):
-    self.root = root
-    self.catalog = dict_value(self.root)
-    if self.catalog['Type'] != LITERAL_CATALOG:
-      if STRICT:
-        raise PDFValueError('Catalog not found!')
-    self.outline = self.catalog.get('Outline')
-    return
-  
 
 ##  PDFParser
 ##

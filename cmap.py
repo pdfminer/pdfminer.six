@@ -12,6 +12,9 @@ except ImportError:
   import pycdb as cdb
 
 
+class CMapError(Exception): pass
+
+
 ##  CMap
 ##
 class CMap:
@@ -162,6 +165,8 @@ class CDBCMap(CMap):
 ##
 class CMapDB:
 
+  class CMapNotFound(CMapError): pass
+  
   CMAP_ALIAS = {
     }
   
@@ -178,7 +183,7 @@ class CMapDB:
     return
 
   @classmethod
-  def get_cmap(klass, cmapname):
+  def get_cmap(klass, cmapname, strict=True):
     import os.path
     cmapname = klass.CMAP_ALIAS.get(cmapname, cmapname)
     if cmapname in klass.cmapdb:
@@ -197,8 +202,10 @@ class CMapDB:
         fp = file(fname)
         CMapParser(cmap, fp, debug=klass.debug).run()
         fp.close()
+      elif not strict:
+        cmap = CMap() # just create empty cmap
       else:
-        raise KeyError(cmapname)
+        raise CMapDB.CMapNotFound(cmapname)
       klass.cmapdb[cmapname] = cmap
     return cmap
 

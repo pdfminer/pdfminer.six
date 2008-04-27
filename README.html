@@ -6,6 +6,12 @@
 <body>
 <h1>PDFMiner</h1>
 
+<div align=right class=lastmod>
+<!-- hhmts start -->
+Last Modified: Sun Apr 27 20:46:21 JST 2008
+<!-- hhmts end -->
+</div>
+
 <p>
 PDFMiner is a suite of programs that aims to help
 extracting or analyzing text data from PDF documents.
@@ -13,8 +19,16 @@ Unlike other PDF-related tools, it allows to obtain
 the exact location of texts in a page, as well as 
 other layout information such as font size or font name,
 which could be useful for analyzing the document.
-PDFMiner is written purely in Python. It can be also used as a 
-basis for a full-fledged PDF interpreter. 
+It can be also used as a basis for a full-fledged PDF interpreter.
+<p>
+<strong>Features:</strong>
+<ul>
+<li> Written entirely in Python. 
+<li> Roughly supports up to PDF-1.7 specification.
+<li> Supports non-ASCII languages and vertical writing scripts.
+<li> Supports various font types (Type1, TrueType, Type3, and CID).
+<li> Supports basic encryption (RC4).
+</ul>
 
 <p>
 <strong>Homepage:</strong><br>
@@ -23,11 +37,11 @@ http://www.unixuser.org/~euske/python/pdfminer/index.html
 </a>
 
 <p>
-<strong>Download:</strong><br>
-<a href="http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20080107.tar.gz">
-http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20080107.tar.gz
+<strong>Download (source):</strong><br>
+<a href="http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20080427.tar.gz">
+http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20080427.tar.gz
 </a>
-(220kbytes)
+(1.8Mbytes)
 
 <P>
 <strong>Svn repository:</strong><br>
@@ -37,6 +51,30 @@ http://pdfminerr.googlecode.com/svn/
 
 <hr>
 <h2>Installation</h2>
+<p>
+Prerequisite: <a href="http://www.python.org/download/">Python</a> 2.4 or newer.
+<ol>
+<li> Download the source.
+<li> Extract it.
+<li> Go to the <code>pdfminer</code> directory.
+<li> Do the following test:<br>
+<blockquote><pre>
+$ <strong>python pdf2txt.py samples/simple1.pdf</strong>
+&lt;document&gt;
+&lt;page id="0" bbox="0,0,612,792" rotate="0"&gt;
+&lt;text x="100.000" y="100.000" font="Helvetica" size="24.000" width="137.352"&gt; Hello World &lt;/text&gt;
+&lt;/page&gt;
+&lt;/document&gt;
+</pre></blockquote>
+<li> Done!
+</ol>
+
+<p>
+<h3>For non-ASCII languages</h3>
+In order to handle non-ASCII languages (e.g. Japanese),
+you need to install an additional data called <code>CMap</code>.
+<p>
+Here is how:
 
 <ol>
 <li> Get 
@@ -44,27 +82,134 @@ http://pdfminerr.googlecode.com/svn/
 http://www.unixuser.org/~euske/pub/CMap.tar.bz2
 </a>
 <li> <code>$ tar jxf CMap.tar.bz2</code>
-<li> <code>$ make cdbcmap</code>
+<li> Put the <code>CMap</code> directory into the <code>pdfminer</code> directory.
+<li> Go to the <code>pdfminer</code> directory.
+<li> Do the follwoing: (this is optional but highly recommended)<br>
+<blockquote><pre>
+$ <strong>make cdbcmap</strong>
+</pre></blockquote>
 </ol>
 
 <hr>
 <h2>Usage</h2>
 
 <p>
-<strong>Dump the contents in pseudo-XML:</strong>
+PDFMiner comes with two programs:
+<code>pdf2txt.py</code> and <code>dumppdf.py</code>.
+
+<h3>pdf2txt.py</h3>
+<p>
+<code>pdf2txt.py</code> extracts text contents from a PDF file.
+It extracts all the texts that are to be rendered programatically.
+It also extracts the corresponding locations, font names,
+and font sizes for each text portion in an SGML-like format.
+It cannot extract texts embedded within images
+(i.e. it does not do optical character recognition).
+You can provide a password for protected PDF documents 
+whose access is limited.
+<p>
+For non-ASCII languages, you can speficy the output encoding 
+(such as UTF-8).
+Note that not all characters in a PDF can be converted safely
+to Unicode, as some of them are not included in the current
+Unicode Standard.
+
+<p>
+Examples:
 <blockquote><pre>
-$ ./dumppdf.py -a foo.pdf
+$ <strong>./pdf2txt.py samples/naacl06-shinyama.pdf</strong>
+
+$ <strong>./pdf2txt.py -c euc-jp samples/jo.pdf</strong>
+(extract Japanese texts in vertical writing, CMap is required)
+
+$ <strong>./pdf2txt.py -P mypassword secret.pdf</strong>
+(extract texts from an encrypted PDF file with a password)
 </pre></blockquote>
 
 <p>
-<strong>Extract the text:</strong>
+Options:
+<dl>
+<dt> <code>-o <em>filename</em></code> 
+<dd> Speficies the output file name.
+By default, it prints the extracted contents to stdout.
+<p>
+<dt> <code>-p <em>pageno</em></code> 
+<dd> Speficies the page number to be extracted. 
+Note that page numbers start from zero.
+Multiple <code>-p</code> options are allowed.
+By default, it extracts texts from all the pages.
+<p>
+<dt> <code>-c <em>codec</em></code> 
+<dd> Speficies the output codec for non-ASCII texts.
+<p>
+<dt> <code>-P <em>password</em></code> 
+<dd> Provides the user password to open the PDF file.
+<p>
+<dt> <code>-d</code> 
+<dd> Increases the debug level.
+</dl>
+
+<h3>dumppdf.py</h3>
+<p>
+<code>dumppdf.py</code> dumps the internal contents of a PDF file
+in pseudo-XML format. This program is primarily for debugging purpose,
+but it's also possible to extract some meaningful contents
+(such as images).
+
+<p>
+Examples:
 <blockquote><pre>
-$ ./pdf2txt.py samples/naacl06-shinyama.pdf
-$ ./pdf2txt.py -c euc-jp samples/jo.pdf
+$ <strong>./dumppdf.py -a foo.pdf</strong>
+(dump all the headers and contents, except stream objects)
+
+$ <strong>./dumppdf.py -r -i6 foo.pdf &gt; pic.jpeg</strong>
+(extract a JPEG image)
 </pre></blockquote>
 
+<p>
+Options:
+<dl>
+<dt> <code>-a</code> 
+<dd> Instructs to dump all the objects.
+By default, it only prints the document trailer (like a header).
+<p>
+<dt> <code>-p <em>pageno</em></code> 
+<dd> Speficies the page number to be extracted. 
+Multiple <code>-p</code> options are allowed.
+Note that page numbers start from zero.
+<p>
+<dt> <code>-r</code> (raw)
+<dt> <code>-b</code> (binary)
+<dt> <code>-t</code> (text)
+<dd> Speficies the output format of stream contents.
+Because the contents of stream objects can be very large,
+they are omitted when none of the options above is specified.
+<p>
+With <code>-r</code> option, all the stream contents are dumped without decoding. 
+With <code>-b</code> option, the contents are dumped as a binary blob.
+With <code>-t</code> option, the contents are dumped in a text format,
+similar to <code>repr()</code> manner. When 
+<code>-r</code> or <code>-b</code> option is given, 
+no stream header is displayed for the ease of saving it to a file.
+<p>
+<dt> <code>-P <em>password</em></code> 
+<dd> Provides the user password to open the PDF file.
+<p>
+<dt> <code>-d</code> 
+<dd> Increases the debug level.
+</dl>
+
 <hr>
-<h2>Similar Projects</h2>
+<h2>Changes</h2>
+<ul>
+<li> 2007/04/27: Basic encryption and LZW decoding support added.
+<li> 2007/01/07: Several bugfixes. Thanks to Nick Fabry for his contribution.
+<li> 2007/12/31: Initial release.
+<li> 2004/12/24: Start writing the code...
+</ul>
+
+<hr>
+<h2>Related Projects</h2>
 <ul>
 <li> <a href="http://pybrary.net/pyPdf/">pyPdf</a>
 <li> <a href="http://www.foolabs.com/xpdf/">xpdf</a>

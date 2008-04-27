@@ -2,7 +2,7 @@
 import sys
 stdout = sys.stdout
 stderr = sys.stderr
-from pdfparser import PDFDocument, PDFParser
+from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
 from pdfinterp import PDFDevice, PDFResourceManager, \
      PDFPageInterpreter, PDFUnicodeNotDefined, \
      mult_matrix, apply_matrix
@@ -21,16 +21,16 @@ class PageItem:
     return
   
   def __repr__(self):
-    bbox = '%d,%d,%d,%d' % self.bbox
-    return ('<page id=%r bbox="%s" rotate="%d">' %
-            (self.id, bbox, self.rotate))
+    return ('<page id=%r bbox=%r rotate=%r>' % (self.id, self.bbox, self.rotate))
   
   def add(self, obj):
     self.objs.append(obj)
     return
   
   def dump(self, outfp, codec):
-    outfp.write(repr(self)+'\n')
+    bbox = '%d,%d,%d,%d' % self.bbox
+    outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
+                (self.id, bbox, self.rotate))
     for obj in self.objs:
       obj.dump(outfp, codec)
     outfp.write('</page>\n')
@@ -42,8 +42,7 @@ class PageItem:
 class FigureItem(PageItem):
   
   def __repr__(self):
-    bbox = '%d,%d,%d,%d' % self.bbox
-    return ('<figure id=%r bbox="%s">' % (self.id, bbox))
+    return ('<figure id=%r bbox=%r>' % (self.id, self.bbox))
   
   def dump(self, outfp, codec):
     bbox = '%d,%d,%d,%d' % self.bbox
@@ -168,11 +167,16 @@ class TextConverter(PDFDevice):
 
 # pdf2txt
 class TextExtractionNotAllowed(RuntimeError): pass
-def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
+
+def pdf2txt(outfp, rsrc, fname, pages, codec, password='', debug=0):
   device = TextConverter(rsrc, debug=debug)
   doc = PDFDocument(debug=debug)
   fp = file(fname)
   parser = PDFParser(doc, fp, debug=debug)
+  try:
+    doc.initialize(password)
+  except PDFPasswordIncorrect:
+    raise TextExtractionNotAllowed('incorrect password')
   if not doc.is_extractable:
     raise TextExtractionNotAllowed('text extraction is not allowed: %r' % fname)
   interpreter = PDFPageInterpreter(rsrc, device, debug=debug)
@@ -192,10 +196,10 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, debug=0):
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-c codec] [-p pages] [-o output] file ...' % argv[0]
+    print 'usage: %s [-d] [-p pages] [-P password] [-c codec] [-o output] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:c:o:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:o:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -204,17 +208,19 @@ def main(argv):
   cdbcmapdir = 'CDBCMap'
   codec = 'ascii'
   pages = set()
+  password = ''
   outfp = stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
     elif k == '-p': pages.add(int(v))
-    elif k == '-o': outfp = file(v, 'wb')
+    elif k == '-P': password = v
     elif k == '-c': codec = v
+    elif k == '-o': outfp = file(v, 'wb')
   #
   CMapDB.initialize(cmapdir, cdbcmapdir, debug=debug)
   rsrc = PDFResourceManager(debug=debug)
   for fname in args:
-    pdf2txt(outfp, rsrc, fname, pages, codec, debug=debug)
+    pdf2txt(outfp, rsrc, fname, pages, codec, password=password, debug=debug)
   return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

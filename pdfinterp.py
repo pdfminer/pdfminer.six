@@ -294,11 +294,15 @@ class PDFCIDFont(PDFFont):
     self.cidcoding = '%s-%s' % (self.cidsysteminfo.get('Registry', 'unknown'),
                                 self.cidsysteminfo.get('Ordering', 'unknown'))
     try:
-      self.cmap = CMapDB.get_cmap(literal_name(spec['Encoding']))
+      name = literal_name(spec['Encoding'])
     except KeyError:
       if STRICT:
-        raise PDFFontError('cmap is missing')
-      self.cmap = None
+        raise PDFFontError('Encoding not specified')
+      name = 'unknown'
+    try:
+      self.cmap = CMapDB.get_cmap(name, strict=STRICT)
+    except CMapDB.CMapNotFound, e:
+      raise PDFFontError(e)
     try:
       descriptor = dict_value(spec['FontDescriptor'])
     except KeyError:
@@ -322,7 +326,11 @@ class PDFCIDFont(PDFFont):
         except TrueTypeFont.CMapNotFound:
           pass
     else:
-      self.ucs2_cmap = CMapDB.get_cmap('%s-UCS2' % self.cidcoding)
+      try:
+        self.ucs2_cmap = CMapDB.get_cmap('%s-UCS2' % self.cidcoding,
+                                         strict=STRICT)
+      except CMapDB.CMapNotFound, e:
+        raise PDFFontError(e)
     
     def get_width(seq):
       dic = {}
@@ -408,7 +416,7 @@ class PDFResourceManager:
     return
   
   def get_cmap(self, name):
-    return CMapDB.get_cmap(name)
+    return CMapDB.get_cmap(name, strict=STRICT)
 
   def get_font(self, objid, spec):
     if objid and objid in self.fonts:

@@ -46,7 +46,7 @@ def dumpxml(out, obj, codec=None):
     out.write('<stream>\n<props>\n')
     dumpxml(out, obj.dic)
     out.write('\n</props>\n')
-    if codec:
+    if codec == 'text':
       data = obj.get_data()
       out.write('<data size="%d">%s</data>\n' % (len(data), esc(data)))
     out.write('</stream>')
@@ -96,15 +96,18 @@ def dumpallobjs(out, doc):
   return
 
 # dumppdf
-def dumppdf(outfp, fname, objids, pageids,
+def dumppdf(outfp, fname, objids, pageids, password='',
             dumpall=False, codec=None, debug=0):
   doc = PDFDocument(debug=debug)
   fp = file(fname)
   parser = PDFParser(doc, fp, debug=debug)
+  doc.initialize(password)
   if objids:
     for objid in objids:
       obj = doc.getobj(objid)
-      if codec == 'binary' and isinstance(obj, PDFStream):
+      if isinstance(obj, PDFStream) and codec == 'raw':
+        outfp.write(obj.get_rawdata())
+      elif isinstance(obj, PDFStream) and codec == 'binary':
         outfp.write(obj.get_data())
       else:
         dumpxml(outfp, obj, codec=codec)
@@ -125,10 +128,10 @@ def dumppdf(outfp, fname, objids, pageids,
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-a] [-c|-b] [-p pageid] [-i objid] file ...' % argv[0]
+    print 'usage: %s [-d] [-a] [-p pageid] [-P password] [-r|-b|-t] [-i objid] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dacbi:p:')
+    (opts, args) = getopt.getopt(argv[1:], 'dap:P:rbti:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -136,19 +139,22 @@ def main(argv):
   objids = []
   pageids = set()
   codec = None
+  password = ''
   dumpall = False
   outfp = stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
     elif k == '-i': objids.append(int(v))
     elif k == '-p': pageids.add(int(v))
+    elif k == '-P': password = v
     elif k == '-a': dumpall = True
+    elif k == '-r': codec = 'raw'
     elif k == '-b': codec = 'binary'
-    elif k == '-c': codec = 'text'
+    elif k == '-t': codec = 'text'
     elif k == '-o': outfp = file(v, 'w')
   #
   for fname in args:
-    dumppdf(outfp, fname, objids, pageids,
+    dumppdf(outfp, fname, objids, pageids, password=password,
             dumpall=dumpall, codec=codec, debug=debug)
   return
 
