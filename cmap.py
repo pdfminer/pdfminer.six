@@ -199,7 +199,7 @@ class CMapDB:
         if 1 <= klass.debug:
           print >>stderr, 'Reading: CMap %r...' % fname
         cmap = CMap()
-        fp = file(fname)
+        fp = file(fname, 'rb')
         CMapParser(cmap, fp, debug=klass.debug).run()
         fp.close()
       elif not strict:

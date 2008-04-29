@@ -171,7 +171,7 @@ class TextExtractionNotAllowed(RuntimeError): pass
 def pdf2txt(outfp, rsrc, fname, pages, codec, password='', debug=0):
   device = TextConverter(rsrc, debug=debug)
   doc = PDFDocument(debug=debug)
-  fp = file(fname)
+  fp = file(fname, 'rb')
   parser = PDFParser(doc, fp, debug=debug)
   try:
     doc.initialize(password)

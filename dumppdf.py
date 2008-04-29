@@ -99,7 +99,7 @@ def dumpallobjs(out, doc):
 def dumppdf(outfp, fname, objids, pageids, password='',
             dumpall=False, codec=None, debug=0):
   doc = PDFDocument(debug=debug)
-  fp = file(fname)
+  fp = file(fname, 'rb')
   parser = PDFParser(doc, fp, debug=debug)
   doc.initialize(password)
   if objids:
@@ -151,7 +151,7 @@ def main(argv):
     elif k == '-r': codec = 'raw'
     elif k == '-b': codec = 'binary'
     elif k == '-t': codec = 'text'
-    elif k == '-o': outfp = file(v, 'w')
+    elif k == '-o': outfp = file(v, 'wb')
   #
   for fname in args:
     dumppdf(outfp, fname, objids, pageids, password=password,
