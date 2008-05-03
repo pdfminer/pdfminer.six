@@ -280,7 +280,12 @@ class PDFXRef:
 
   def __init__(self, parser):
     while 1:
-      (pos, line) = parser.nextline()
+      try:
+        (pos, line) = parser.nextline()
+      except PSEOF:
+        if STRICT:
+          raise PDFSyntaxError('Unexpected EOF')
+        break
       if not line:
         if STRICT:
           raise PDFSyntaxError('premature eof: %r' % parser)
@@ -293,12 +298,19 @@ class PDFXRef:
         if STRICT:
           raise PDFSyntaxError('trailer not found: %r: line=%r' % (parser, line))
         continue
-      (start, nobjs) = map(long, f)
+      try:
+        (start, nobjs) = map(long, f)
+      except ValueError:
+        if STRICT:
+          raise PDFSyntaxError('invalid line: %r: line=%r' % (parser, line))
+        continue
       self.objid0 = start
-      self.objid1 = start+nobjs
       self.offsets = []
       for objid in xrange(start, start+nobjs):
-        (_, line) = parser.nextline()
+        try:
+          (_, line) = parser.nextline()
+        except PSEOF:
+          break
         f = line.strip().split(' ')
         if len(f) != 3:
           if STRICT:
@@ -307,14 +319,19 @@ class PDFXRef:
         (pos, genno, use) = f
         self.offsets.append((int(genno), long(pos), use))
     # read trailer
-    (_,kwd) = parser.nexttoken()
-    assert kwd == KEYWORD_TRAILER
-    (_,dic) = parser.nextobject()
-    self.trailer = dict_value(dic)
+    try:
+      (_,kwd) = parser.nexttoken()
+      assert kwd == KEYWORD_TRAILER
+      (_,dic) = parser.nextobject()
+      self.trailer = dict_value(dic)
+    except PSEOF:
+      if STRICT:
+        raise PDFSyntaxError('Unexpected EOF')
+      self.trailer = None
     return
 
   def getpos(self, objid):
-    if objid < self.objid0 or self.objid1 <= objid:
+    if objid < self.objid0 or (self.objid0+len(self.offsets)) <= objid:
       raise IndexError(objid)
     (genno, pos, use) = self.offsets[objid-self.objid0]
     if use != 'n':
@@ -386,6 +403,7 @@ class PDFDocument:
     self.xrefs = list(parser.read_xref())
     for xref in self.xrefs:
       trailer = xref.trailer
+      if not trailer: continue
       if 'Encrypt' in trailer:
         self.encryption = (list_value(trailer['ID']),
                            dict_value(trailer['Encrypt']))
@@ -600,13 +618,23 @@ class PDFParser(PSStackParser):
           raise PDFValueError('/Length is undefined: %r' % dic)
         objlen = 0
       self.seek(pos)
-      (_, line) = self.nextline()  # 'stream'
+      try:
+        (_, line) = self.nextline()  # 'stream'
+      except PSEOF:
+        if STRICT:
+          raise PDFSyntaxError('Unexpected EOF')
+        return
       pos += len(line)
       self.fp.seek(pos)
       data = self.fp.read(objlen)
       self.seek(pos+objlen)
       while 1:
-        (linepos, line) = self.nextline()
+        try:
+          (linepos, line) = self.nextline()
+        except PSEOF:
+          if STRICT:
+            raise PDFSyntaxError('Unexpected EOF')
+          break
         if 'endstream' in line:
           i = line.index('endstream')
           objlen += i
@@ -649,7 +677,12 @@ class PDFParser(PSStackParser):
     self.find_xref()
     while 1:
       # read xref table
-      (pos, token) = self.nexttoken()
+      try:
+        (pos, token) = self.nexttoken()
+      except PSEOF:
+        if STRICT:
+          raise PDFSyntaxError('Unexpected EOF')
+        break
       if 2 <= self.debug:
         print >>stderr, 'read_xref: %r' % token
       if isinstance(token, int):
@@ -665,6 +698,7 @@ class PDFParser(PSStackParser):
         xref = PDFXRef(self)
       yield xref
       trailer = xref.trailer
+      if not trailer: continue
       if 1 <= self.debug:
         print >>stderr, 'trailer: %r' % trailer
       if 'XRefStm' in trailer:
