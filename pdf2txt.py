@@ -28,7 +28,7 @@ class PageItem:
     return
   
   def dump(self, outfp, codec):
-    bbox = '%d,%d,%d,%d' % self.bbox
+    bbox = '%.3f,%.3f,%.3f,%.3f' % self.bbox
     outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
                 (self.id, bbox, self.rotate))
     for obj in self.objs:
@@ -45,7 +45,7 @@ class FigureItem(PageItem):
     return ('<figure id=%r bbox=%r>' % (self.id, self.bbox))
   
   def dump(self, outfp, codec):
-    bbox = '%d,%d,%d,%d' % self.bbox
+    bbox = '%.3f,%.3f,%.3f,%.3f' % self.bbox
     outfp.write('<figure id="%s" bbox="%s">\n' % (self.id, bbox))
     for obj in self.objs:
       obj.dump(outfp, codec)
@@ -86,9 +86,9 @@ class TextItem:
     def e(x):
       x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;')
       return x.encode(codec, 'xmlcharrefreplace')
-    (a,b,c,d,tx,ty) = self.matrix
-    outfp.write('<text x="%.3f" y="%.3f" font="%s" size="%.3f" width="%.3f">' %
-                (tx, ty, e(self.font.fontname), self.size, self.width))
+    bbox = '%.3f,%.3f,%.3f,%.3f' % self.bbox
+    outfp.write('<text font="%s" direction="%s" bbox="%s" size="%.3f">' %
+                (e(self.font.fontname), self.direction, bbox, self.size))
     outfp.write(e(self.text))
     outfp.write('</text>\n')
     return

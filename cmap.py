@@ -241,7 +241,7 @@ class CMapParser(PSStackParser):
     if name == 'def':
       try:
         ((_,k),(_,v)) = self.pop(2)
-        self.cmap.attrs[str(k)] = v
+        self.cmap.attrs[literal_name(k)] = v
       except PSSyntaxError:
         pass
       return
