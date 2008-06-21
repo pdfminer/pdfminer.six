@@ -36,7 +36,7 @@ endobj
 stream
 BT
 /F1 24 Tf
-100 100 TD
+1 0 0 1 100 700 TD
 ( Hello World ) Tj
 ET
 endstream
@@ -53,21 +53,10 @@ endobj
  /Encoding /MacRomanEncoding
 >>
 endobj
-xref
-0 8
-0000000000 65535 f
-0000000009 00000 n
-0000000077 00000 n
-0000000125 00000 n
-0000000187 00000 n
-0000000340 00000 n
-0000000435 00000 n
-0000000465 00000 n
+
 trailer 
 <<
  /Size 8
  /Root 1 0 R
 >>
-startxref
-578
 %%EOF

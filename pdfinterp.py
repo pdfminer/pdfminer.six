@@ -593,12 +593,6 @@ class PDFPageInterpreter:
     def __init__(self):
       self.font = None
       self.fontsize = 0
-      self.charspace = 0
-      self.wordspace = 0
-      self.scaling = 100
-      self.leading = 0
-      self.render = 0
-      self.rise = 0
       self.reset()
       return
     def __repr__(self):
@@ -609,6 +603,13 @@ class PDFPageInterpreter:
                self.charspace, self.wordspace, self.scaling, self.leading,
                self.render, self.rise))
     def reset(self):
+      self.charspace = 0
+      self.wordspace = 0
+      self.scaling = 100
+      self.leading = 0
+      self.render = 0
+      self.rise = 0
+      #
       self.matrix = MATRIX_IDENTITY
       self.linematrix = (0, 0)
       return

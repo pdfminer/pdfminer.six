@@ -4,7 +4,7 @@
 #  ver 0.1, Dec 24 2004-
 #  ver 0.2, Dec 24 2007
 
-import sys
+import sys, re
 import md5, struct
 stderr = sys.stderr
 from utils import choplist, nunpack
@@ -20,6 +20,7 @@ from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
 ##
 class PDFException(PSException): pass
 class PDFSyntaxError(PDFException): pass
+class PDFNoValidXRef(PDFSyntaxError): pass
 class PDFEncryptionError(PDFException): pass
 class PDFPasswordIncorrect(PDFEncryptionError): pass
 class PDFTypeError(PDFException): pass
@@ -276,64 +277,62 @@ class PDFPage:
 
 ##  PDFXRef
 ##
-class PDFXRef:
+class PDFXRef(object):
 
-  def __init__(self, parser):
+  def __init__(self):
+    self.offsets = None
+    return
+
+  def load(self, parser):
     while 1:
       try:
         (pos, line) = parser.nextline()
       except PSEOF:
-        if STRICT:
-          raise PDFSyntaxError('Unexpected EOF')
-        break
+        raise PDFNoValidXRef('Unexpected EOF')
       if not line:
-        if STRICT:
-          raise PDFSyntaxError('premature eof: %r' % parser)
-        break
+        raise PDFNoValidXRef('premature eof: %r' % parser)
       if line.startswith('trailer'):
         parser.seek(pos)
         break
       f = line.strip().split(' ')
       if len(f) != 2:
-        if STRICT:
-          raise PDFSyntaxError('trailer not found: %r: line=%r' % (parser, line))
-        continue
+        raise PDFNoValidXRef('trailer not found: %r: line=%r' % (parser, line))
       try:
         (start, nobjs) = map(long, f)
       except ValueError:
-        if STRICT:
-          raise PDFSyntaxError('invalid line: %r: line=%r' % (parser, line))
-        continue
-      self.objid0 = start
-      self.offsets = []
+        raise PDFNoValidXRef('invalid line: %r: line=%r' % (parser, line))
+      self.offsets = {}
       for objid in xrange(start, start+nobjs):
         try:
           (_, line) = parser.nextline()
         except PSEOF:
-          break
+          raise PDFNoValidXRef('Unexpected EOF')
         f = line.strip().split(' ')
         if len(f) != 3:
-          if STRICT:
-            raise PDFSyntaxError('invalid xref format: %r, line=%r' % (parser, line))
-          continue
+          raise PDFNoValidXRef('invalid xref format: %r, line=%r' % (parser, line))
         (pos, genno, use) = f
-        self.offsets.append((int(genno), long(pos), use))
-    # read trailer
+        self.offsets[objid] = (int(genno), long(pos), use)
+    self.load_trailer(parser)
+    return
+  
+  def load_trailer(self, parser):
     try:
       (_,kwd) = parser.nexttoken()
       assert kwd == KEYWORD_TRAILER
       (_,dic) = parser.nextobject()
-      self.trailer = dict_value(dic)
     except PSEOF:
-      if STRICT:
-        raise PDFSyntaxError('Unexpected EOF')
-      self.trailer = None
+      x = parser.pop(1)
+      if not x:
+        raise PDFNoValidXRef('Unexpected EOF')
+      (_,dic) = x[0]
+    self.trailer = dict_value(dic)
     return
 
   def getpos(self, objid):
-    if objid < self.objid0 or (self.objid0+len(self.offsets)) <= objid:
-      raise IndexError(objid)
-    (genno, pos, use) = self.offsets[objid-self.objid0]
+    try:
+      (genno, pos, use) = self.offsets[objid]
+    except KeyError:
+      raise PDFValueError('object not found: %r' % objid)
     if use != 'n':
       if STRICT:
         raise PDFValueError('unused objid=%r' % objid)
@@ -342,16 +341,23 @@ class PDFXRef:
 
 ##  PDFXRefStream
 ##
-class PDFXRefStream:
+class PDFXRefStream(object):
 
-  def __init__(self, parser):
-    (_,objid) = parser.nexttoken()
-    (_,genno) = parser.nexttoken()
+  def __init__(self):
+    self.objid0 = None
+    self.objid1 = None
+    self.data = None
+    self.entlen = None
+    self.fl1 = self.fl2 = self.fl3 = None
+    return
+
+  def load(self, parser):
+    (_,objid) = parser.nexttoken() # ignored
+    (_,genno) = parser.nexttoken() # ignored
     (_,kwd) = parser.nexttoken()
     (_,stream) = parser.nextobject()
-    if STRICT:
-      if stream.dic['Type'] != LITERAL_XREF:
-        raise PDFSyntaxError('invalid stream spec.')
+    if stream.dic['Type'] != LITERAL_XREF:
+      raise PDFNoValidXRef('invalid stream spec.')
     size = stream.dic['Size']
     (start, nobjs) = stream.dic.get('Index', (0,size))
     self.objid0 = start
@@ -380,7 +386,11 @@ class PDFXRefStream:
 
 ##  PDFDocument
 ##
-INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
+##  A PDFDocument object represents a PDF document.
+##  Since a PDF file is usually pretty big, normally it is not loaded
+##  at once. Rather it is parsed dynamically as processing goes.
+##  A PDF parser is associated with the document.
+##
 class PDFDocument:
   
   def __init__(self, debug=0):
@@ -393,18 +403,28 @@ class PDFDocument:
     self.parser = None
     self.encryption = None
     self.decipher = None
-    self.initialized = False
+    self.ready = False
     return
 
+  # set_parser(parser)
+  #   Associates the document with an (already initialized) parser object.
   def set_parser(self, parser):
     if self.parser: return
-    self.initialized = True
     self.parser = parser
+    # The document is set to be temporarily ready during collecting
+    # all the basic information about the document, e.g.
+    # the header, the encryption information, and the access rights 
+    # for the document.
+    self.ready = True
+    # Retrieve the information of each header that was appended
+    # (maybe multiple times) at the end of the document.
     self.xrefs = list(parser.read_xref())
     for xref in self.xrefs:
       trailer = xref.trailer
       if not trailer: continue
+      # If there's an encryption info, remember it.
       if 'Encrypt' in trailer:
+        #assert not self.encryption
         self.encryption = (list_value(trailer['ID']),
                            dict_value(trailer['Encrypt']))
       if 'Root' in trailer:
@@ -412,9 +432,15 @@ class PDFDocument:
         break
     else:
       raise PDFValueError('no /Root object!')
-    self.initialized = False
+    # The document is set to be non-ready again, until all the
+    # proper initialization (asking the password key and
+    # verifying the access permission, so on) is finished.
+    self.ready = False
     return
 
+  # set_root(root)
+  #   Set the Root dictionary of the document.
+  #   Each PDF file must have exactly one /Root dictionary.
   def set_root(self, root):
     self.root = root
     self.catalog = dict_value(self.root)
@@ -424,10 +450,14 @@ class PDFDocument:
     self.outline = self.catalog.get('Outline')
     return
   
+  # initialize(password='')
+  #   Perform the initialization with a given password.
+  #   This step is mandatory even if there's no password associated
+  #   with the document.
   def initialize(self, password=''):
     if not self.encryption:
       self.is_printable = self.is_modifiable = self.is_extractable = True
-      self.initialized = True
+      self.ready = True
       return
     (docid, param) = self.encryption
     if literal_name(param['Filter']) != 'Standard':
@@ -449,7 +479,7 @@ class PDFDocument:
     password = (password+PASSWORD_PADDING)[:32] # 1
     hash = md5.md5(password) # 2
     hash.update(O) # 3
-    hash.update(struct.pack('<L', P)) # 4
+    hash.update(struct.pack('<l', P)) # 4
     hash.update(docid[0]) # 5
     if 4 <= R:
       # 6
@@ -479,7 +509,7 @@ class PDFDocument:
       raise PDFPasswordIncorrect
     self.decrypt_key = key
     self.decipher = self.decrypt_rc4  # XXX may be AES
-    self.initialized = True
+    self.ready = True
     return
 
   def decrypt_rc4(self, objid, genno, data):
@@ -489,9 +519,11 @@ class PDFDocument:
     return Arcfour(key).process(data)
 
   def getobj(self, objid):
-    if not self.initialized:
+    if not self.ready:
       raise PDFException('PDFDocument not initialized')
     #assert self.xrefs
+    if 2 <= self.debug:
+      print >>stderr, 'getobj: objid=%r' % (objid)
     if objid in self.objs:
       genno = 0
       obj = self.objs[objid]
@@ -551,14 +583,15 @@ class PDFDocument:
       obj = decipher_all(self.decipher, objid, genno, obj)
     return obj
   
+  INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
   def get_pages(self, debug=0):
-    if not self.initialized:
+    if not self.ready:
       raise PDFException('PDFDocument not initialized')
     #assert self.xrefs
     def search(obj, parent):
       tree = dict_value(obj).copy()
       for (k,v) in parent.iteritems():
-        if k in INHERITABLE_ATTRS and k not in tree:
+        if k in self.INHERITABLE_ATTRS and k not in tree:
           tree[k] = v
       if tree['Type'] == LITERAL_PAGES:
         if 1 <= debug:
@@ -664,9 +697,7 @@ class PDFParser(PSStackParser):
       if line:
         prev = line
     else:
-      if STRICT:
-        raise PDFSyntaxError('startxref not found!')
-      prev = 0
+      raise PDFNoValidXRef
     if 1 <= self.debug:
       print >>stderr, 'xref found: pos=%r' % prev
     self.seek(long(prev))
@@ -674,43 +705,70 @@ class PDFParser(PSStackParser):
 
   # read xref tables and trailers
   def read_xref(self):
-    self.find_xref()
-    while 1:
-      # read xref table
-      try:
-        (pos, token) = self.nexttoken()
-      except PSEOF:
-        if STRICT:
-          raise PDFSyntaxError('Unexpected EOF')
-        break
-      if 2 <= self.debug:
-        print >>stderr, 'read_xref: %r' % token
-      if isinstance(token, int):
-        # XRefStream: PDF-1.5
-        self.seek(pos)
-        self.reset()
-        xref = PDFXRefStream(self)
-      else:
-        if token != KEYWORD_XREF:
-          if STRICT:
-            raise PDFSyntaxError('xref not found: pos=%d, token=%r' %
+    try:
+      self.find_xref()
+      while 1:
+        # read xref table
+        try:
+          (pos, token) = self.nexttoken()
+        except PSEOF:
+          raise PDFNoValidXRef('Unexpected EOF')
+        if 2 <= self.debug:
+          print >>stderr, 'read_xref: %r' % token
+        if isinstance(token, int):
+          # XRefStream: PDF-1.5
+          self.seek(pos)
+          self.reset()
+          xref = PDFXRefStream()
+          xref.load(self)
+        else:
+          if token != KEYWORD_XREF:
+            raise PDFNoValidXRef('xref not found: pos=%d, token=%r' % 
                                  (pos, token))
-        xref = PDFXRef(self)
-      yield xref
-      trailer = xref.trailer
-      if not trailer: continue
-      if 1 <= self.debug:
-        print >>stderr, 'trailer: %r' % trailer
-      if 'XRefStm' in trailer:
-        self.seek(int_value(trailer['XRefStm']))
-      if 'Prev' in trailer:
-        # find previous xref
-        pos = int_value(trailer['Prev'])
-        self.seek(pos)
+          self.nextline()
+          xref = PDFXRef()
+          xref.load(self)
+        yield xref
+        trailer = xref.trailer
+        if not trailer: continue
         if 1 <= self.debug:
-          print >>stderr, 'prev trailer: pos=%d' % pos
-      else:
-        break
+          print >>stderr, 'trailer: %r' % trailer
+        if 'XRefStm' in trailer:
+          self.seek(int_value(trailer['XRefStm']))
+        if 'Prev' in trailer:
+          # find previous xref
+          pos = int_value(trailer['Prev'])
+          self.seek(pos)
+          if 1 <= self.debug:
+            print >>stderr, 'prev trailer: pos=%d' % pos
+        else:
+          break
+    except PDFNoValidXRef:
+      # fallback
+      if 1 <= self.debug:
+        print >>stderr, 'no xref, fallback'
+      self.seek(0)
+      pat = re.compile(r'^(\d+)\s+(\d+)\s+obj\b')
+      offsets = {}
+      xref = PDFXRef()
+      while 1:
+        try:
+          (pos, line) = self.nextline()
+        except PSEOF:
+          break
+        if line.startswith('trailer'): break
+        m = pat.match(line)
+        if not m: continue
+        (objid, genno) = m.groups()
+        offsets[int(objid)] = (0, pos, 'f')
+      xref.offsets = offsets
+      xref.objid0 = min(offsets.iterkeys())
+      xref.objid1 = max(offsets.iterkeys())
+      self.seek(pos)
+      xref.load_trailer(self)
+      if 1 <= self.debug:
+        print >>stderr, 'trailer: %r' % xref.trailer
+      yield xref
     return
 
 ##  PDFObjStrmParser

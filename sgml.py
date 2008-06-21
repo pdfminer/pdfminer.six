@@ -105,7 +105,7 @@ class PDFSGMLParser(sgmllib.SGMLParser):
     font = attrs['font']
     direction = attrs['direction']
     bbox = getbbox(attrs['bbox'])
-    size = fixed(attrs['size'])
+    size = fixed(attrs['fontsize'])
     text = Text(font, direction, bbox, size)
     self.curtext = text
     return

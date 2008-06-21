@@ -73,8 +73,8 @@ def dumpxml(out, obj, codec=None):
 # dumptrailers
 def dumptrailers(out, doc):
   for xref in doc.xrefs:
-    out.write('<trailer objid0="%d" objid1="%d">\n' %
-              (xref.objid0, xref.objid1))
+    out.write('<trailer objid="%d-%d">\n' %
+              (xref.objid0, xref.objid1-1))
     dumpxml(out, xref.trailer)
     out.write('\n</trailer>\n\n')
   return

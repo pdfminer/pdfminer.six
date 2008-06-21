@@ -57,38 +57,38 @@ class FigureItem(PageItem):
 ##
 class TextItem:
   
-  def __init__(self, matrix, font, size, width, text):
+  def __init__(self, matrix, font, fontsize, width, text):
     self.matrix = matrix
     self.font = font
     (a,b,c,d,tx,ty) = self.matrix
-    (self.width, self.size) = apply_matrix((a,b,c,d,0,0), (width,size))
+    (self.width, self.fontsize) = apply_matrix((a,b,c,d,0,0), (width,fontsize))
     self.width = abs(self.width)
     self.origin = (tx,ty)
     self.direction = 0
     if not self.font.is_vertical():
       self.direction = 1
-      (_,ascent) = apply_matrix((a,b,c,d,0,0), (0,font.ascent*size*0.001))
-      (_,descent) = apply_matrix((a,b,c,d,0,0), (0,font.descent*size*0.001))
-      self.bbox = (tx, ty+descent, self.width, self.size)
+      (_,ascent) = apply_matrix((a,b,c,d,0,0), (0,font.ascent*fontsize*0.001))
+      (_,descent) = apply_matrix((a,b,c,d,0,0), (0,font.descent*fontsize*0.001))
+      self.bbox = (tx, ty+descent, self.width, self.fontsize)
     else:
       self.direction = 2
       mindisp = min( d for (d,_) in text )
-      (mindisp,_) = apply_matrix((a,b,c,d,0,0), (mindisp*size*0.001,0))
-      self.bbox = (tx-mindisp, ty+self.width, self.size, self.width)
+      (mindisp,_) = apply_matrix((a,b,c,d,0,0), (mindisp*fontsize*0.001,0))
+      self.bbox = (tx-mindisp, ty+self.width, self.fontsize, self.width)
     self.text = ''.join( c for (_,c) in text )
     return
   
   def __repr__(self):
-    return ('<text matrix=%r font=%r size=%r width=%r text=%r>' %
-            (self.matrix, self.font, self.size, self.width, self.text))
+    return ('<text matrix=%r font=%r fontsize=%r width=%r text=%r>' %
+            (self.matrix, self.font, self.fontsize, self.width, self.text))
   
   def dump(self, outfp, codec):
     def e(x):
       x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;')
       return x.encode(codec, 'xmlcharrefreplace')
     bbox = '%.3f,%.3f,%.3f,%.3f' % self.bbox
-    outfp.write('<text font="%s" direction="%s" bbox="%s" size="%.3f">' %
-                (e(self.font.fontname), self.direction, bbox, self.size))
+    outfp.write('<text font="%s" direction="%s" bbox="%s" fontsize="%.3f">' %
+                (e(self.font.fontname), self.direction, bbox, self.fontsize))
     outfp.write(e(self.text))
     outfp.write('</text>\n')
     return
