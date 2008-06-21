@@ -61,7 +61,7 @@ class TextItem:
     self.matrix = matrix
     self.font = font
     (a,b,c,d,tx,ty) = self.matrix
-    (self.width, self.fontsize) = apply_matrix((a,b,c,d,0,0), (width,fontsize))
+    (self.width, self.height) = apply_matrix((a,b,c,d,0,0), (width,fontsize))
     self.width = abs(self.width)
     self.origin = (tx,ty)
     self.direction = 0
@@ -69,18 +69,20 @@ class TextItem:
       self.direction = 1
       (_,ascent) = apply_matrix((a,b,c,d,0,0), (0,font.ascent*fontsize*0.001))
       (_,descent) = apply_matrix((a,b,c,d,0,0), (0,font.descent*fontsize*0.001))
-      self.bbox = (tx, ty+descent, self.width, self.fontsize)
+      self.bbox = (tx, ty+descent, self.width, self.height)
     else:
       self.direction = 2
       mindisp = min( d for (d,_) in text )
       (mindisp,_) = apply_matrix((a,b,c,d,0,0), (mindisp*fontsize*0.001,0))
-      self.bbox = (tx-mindisp, ty+self.width, self.fontsize, self.width)
+      self.bbox = (tx-mindisp, ty+self.width, self.height, self.width)
     self.text = ''.join( c for (_,c) in text )
+    (w,h) = apply_matrix((a,b,c,d,0,0), (fontsize,fontsize))
+    self.fontsize = max(w,h)
     return
   
   def __repr__(self):
-    return ('<text matrix=%r font=%r fontsize=%r width=%r text=%r>' %
-            (self.matrix, self.font, self.fontsize, self.width, self.text))
+    return ('<text matrix=%r font=%r fontsize=%r width=%r height=%r text=%r>' %
+            (self.matrix, self.font, self.fontsize, self.width, self.height, self.text))
   
   def dump(self, outfp, codec):
     def e(x):

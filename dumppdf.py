@@ -73,21 +73,20 @@ def dumpxml(out, obj, codec=None):
 # dumptrailers
 def dumptrailers(out, doc):
   for xref in doc.xrefs:
-    out.write('<trailer objid="%d-%d">\n' %
-              (xref.objid0, xref.objid1-1))
+    out.write('<trailer>\n')
     dumpxml(out, xref.trailer)
     out.write('\n</trailer>\n\n')
   return
 
 # dumpallobjs
-def dumpallobjs(out, doc):
+def dumpallobjs(out, doc, codec=None):
   out.write('<pdf>')
   for xref in doc.xrefs:
-    for objid in xrange(xref.objid0, xref.objid1+1):
+    for objid in xref.objids():
       try:
         obj = doc.getobj(objid)
         out.write('<object id="%d">\n' % objid)
-        dumpxml(out, obj)
+        dumpxml(out, obj, codec=codec)
         out.write('\n</object>\n\n')
       except:
         pass
@@ -116,7 +115,7 @@ def dumppdf(outfp, fname, objids, pageids, password='',
       if page.pageid in pageids:
         dumpxml(outfp, page.attrs)
   if dumpall:
-    dumpallobjs(outfp, doc)
+    dumpallobjs(outfp, doc, codec=codec)
   if (not objids) and (not pageids) and (not dumpall):
     dumptrailers(outfp, doc)
   fp.close()

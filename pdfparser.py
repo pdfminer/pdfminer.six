@@ -283,6 +283,9 @@ class PDFXRef(object):
     self.offsets = None
     return
 
+  def objids(self):
+    return self.offsets.keys()
+
   def load(self, parser):
     while 1:
       try:
@@ -332,7 +335,7 @@ class PDFXRef(object):
     try:
       (genno, pos, use) = self.offsets[objid]
     except KeyError:
-      raise PDFValueError('object not found: %r' % objid)
+      raise
     if use != 'n':
       if STRICT:
         raise PDFValueError('unused objid=%r' % objid)
@@ -350,6 +353,9 @@ class PDFXRefStream(object):
     self.entlen = None
     self.fl1 = self.fl2 = self.fl3 = None
     return
+
+  def objids(self):
+    return range(self.objid0, self.objid1+1)
 
   def load(self, parser):
     (_,objid) = parser.nexttoken() # ignored
@@ -370,7 +376,7 @@ class PDFXRefStream(object):
 
   def getpos(self, objid):
     if objid < self.objid0 or self.objid1 <= objid:
-      raise IndexError(objid)
+      raise KeyError(objid)
     i = self.entlen * (objid-self.objid0)
     ent = self.data[i:i+self.entlen]
     f1 = nunpack(ent[:self.fl1], 1)
@@ -532,7 +538,7 @@ class PDFDocument:
         try:
           (strmid, index) = xref.getpos(objid)
           break
-        except IndexError:
+        except KeyError:
           pass
       else:
         if STRICT:
