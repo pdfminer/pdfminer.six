@@ -9,13 +9,18 @@ from pdfinterp import PDFDevice, PDFResourceManager, \
 from cmap import CMapDB
 
 
+def enc(x, codec):
+  x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;')
+  return x.encode(codec, 'xmlcharrefreplace')
+
+
 ##  PageItem
 ##
-class PageItem:
+class PageItem(object):
   
   def __init__(self, id, (x0,y0,x1,y1), rotate=0):
     self.id = id
-    self.bbox = (x0, y0, x1-x0, y1-y0)
+    self.bbox = (x0, y0, x1, y1)
     self.rotate = rotate
     self.objs = []
     return
@@ -26,15 +31,6 @@ class PageItem:
   def add(self, obj):
     self.objs.append(obj)
     return
-  
-  def dump(self, outfp, codec):
-    bbox = '%.3f,%.3f,%.3f,%.3f' % self.bbox
-    outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
-                (self.id, bbox, self.rotate))
-    for obj in self.objs:
-      obj.dump(outfp, codec)
-    outfp.write('</page>\n')
-    return
 
 
 ##  FigureItem
@@ -44,18 +40,10 @@ class FigureItem(PageItem):
   def __repr__(self):
     return ('<figure id=%r bbox=%r>' % (self.id, self.bbox))
   
-  def dump(self, outfp, codec):
-    bbox = '%.3f,%.3f,%.3f,%.3f' % self.bbox
-    outfp.write('<figure id="%s" bbox="%s">\n' % (self.id, bbox))
-    for obj in self.objs:
-      obj.dump(outfp, codec)
-    outfp.write('</figure>\n')
-    return
-
 
 ##  TextItem
 ##
-class TextItem:
+class TextItem(object):
   
   def __init__(self, matrix, font, fontsize, width, text):
     self.matrix = matrix
@@ -69,12 +57,15 @@ class TextItem:
       self.direction = 1
       (_,ascent) = apply_matrix((a,b,c,d,0,0), (0,font.ascent*fontsize*0.001))
       (_,descent) = apply_matrix((a,b,c,d,0,0), (0,font.descent*fontsize*0.001))
-      self.bbox = (tx, ty+descent, self.width, self.height)
+      ty += descent
+      self.bbox = (tx, ty, tx+self.width, ty+self.height)
     else:
       self.direction = 2
       mindisp = min( d for (d,_) in text )
       (mindisp,_) = apply_matrix((a,b,c,d,0,0), (mindisp*fontsize*0.001,0))
-      self.bbox = (tx-mindisp, ty+self.width, self.height, self.width)
+      tx -= mindisp
+      ty += self.width
+      self.bbox = (tx, ty, tx+self.height, ty+self.width)
     self.text = ''.join( c for (_,c) in text )
     (w,h) = apply_matrix((a,b,c,d,0,0), (fontsize,fontsize))
     self.fontsize = max(w,h)
@@ -83,17 +74,6 @@ class TextItem:
   def __repr__(self):
     return ('<text matrix=%r font=%r fontsize=%r width=%r height=%r text=%r>' %
             (self.matrix, self.font, self.fontsize, self.width, self.height, self.text))
-  
-  def dump(self, outfp, codec):
-    def e(x):
-      x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;')
-      return x.encode(codec, 'xmlcharrefreplace')
-    bbox = '%.3f,%.3f,%.3f,%.3f' % self.bbox
-    outfp.write('<text font="%s" direction="%s" bbox="%s" fontsize="%.3f">' %
-                (e(self.font.fontname), self.direction, bbox, self.fontsize))
-    outfp.write(e(self.text))
-    outfp.write('</text>\n')
-    return
 
 
 ##  TextConverter
@@ -161,16 +141,61 @@ class TextConverter(PDFDevice):
     self.context.add(item)
     return
   
-  def dump(self, outfp, codec):
+  def dump_sgml(self, outfp, codec):
+    def f(item):
+      bbox = '%.3f,%.3f,%.3f,%.3f' % item.bbox
+      if isinstance(item, FigureItem):
+        outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, bbox))
+        for child in item.objs:
+          f(child)
+        outfp.write('</figure>\n')
+      elif isinstance(item, TextItem):
+        outfp.write('<text font="%s" direction="%s" bbox="%s" fontsize="%.3f">' %
+                    (enc(item.font.fontname, codec), item.direction, bbox, item.fontsize))
+        outfp.write(enc(item.text, codec))
+        outfp.write('</text>\n')
     for page in self.pages:
-      page.dump(outfp, codec)
+      bbox = '%.3f,%.3f,%.3f,%.3f' % page.bbox
+      outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
+                  (page.id, bbox, page.rotate))
+      for child in page.objs:
+        f(child)
+      outfp.write('</page>\n')
+    return
+
+  def dump_html(self, outfp, codec, scale=1.2, pagepad=50):
+    offset = 0
+    def f(item):
+      if isinstance(item, FigureItem):
+        pass
+      elif isinstance(item, TextItem):
+        if item.direction == 2:
+          wmode = 'tb-rl'
+        else:
+          wmode = 'lr-tb'
+        (x,_,_,y) = item.bbox
+        outfp.write('<span style="position:absolute; writing-mode:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
+                    (wmode, x*scale, (offset-y)*scale, item.fontsize*scale))
+        outfp.write(enc(item.text, codec))
+        outfp.write('</span>\n')
+    outfp.write('<html><body>\n')
+    for page in self.pages:
+      (x0,y0,x1,y1) = page.bbox
+      offset += y1
+      outfp.write('<span style="position:absolute; border: 1px solid gray; '
+                  'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
+                  (x0*scale, (offset-y1)*scale, (x1-x0)*scale, (y1-y0)*scale))
+      for child in page.objs:
+        f(child)
+      offset += pagepad
+    outfp.write('</body></html>\n')
     return
 
 
 # pdf2txt
 class TextExtractionNotAllowed(RuntimeError): pass
 
-def pdf2txt(outfp, rsrc, fname, pages, codec, password='', debug=0):
+def pdf2txt(outfp, rsrc, fname, pages, codec, html=False, password='', debug=0):
   device = TextConverter(rsrc, debug=debug)
   doc = PDFDocument(debug=debug)
   fp = file(fname, 'rb')
@@ -182,15 +207,16 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, password='', debug=0):
   if not doc.is_extractable:
     raise TextExtractionNotAllowed('text extraction is not allowed: %r' % fname)
   interpreter = PDFPageInterpreter(rsrc, device, debug=debug)
-  outfp.write('<document>\n')
+  device.reset()
   for (i,page) in enumerate(doc.get_pages(debug=debug)):
     if pages and (i not in pages): continue
-    device.reset()
     interpreter.process_page(page)
-    device.dump(outfp, codec)
-  fp.close()
+  if html:
+    device.dump_html(outfp, codec)
+  else:
+    device.dump_sgml(outfp, codec)
   device.close()
-  outfp.write('</document>\n')
+  fp.close()
   return
 
 
@@ -198,10 +224,10 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, password='', debug=0):
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-p pages] [-P password] [-c codec] [-o output] file ...' % argv[0]
+    print 'usage: %s [-d] [-p pages] [-P password] [-c codec] [-H] [-o output] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:o:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:Ho:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -210,6 +236,7 @@ def main(argv):
   cdbcmapdir = 'CDBCMap'
   codec = 'ascii'
   pages = set()
+  html = False
   password = ''
   outfp = stdout
   for (k, v) in opts:
@@ -217,12 +244,13 @@ def main(argv):
     elif k == '-p': pages.add(int(v))
     elif k == '-P': password = v
     elif k == '-c': codec = v
+    elif k == '-H': html = True
     elif k == '-o': outfp = file(v, 'wb')
   #
   CMapDB.initialize(cmapdir, cdbcmapdir, debug=debug)
   rsrc = PDFResourceManager(debug=debug)
   for fname in args:
-    pdf2txt(outfp, rsrc, fname, pages, codec, password=password, debug=debug)
+    pdf2txt(outfp, rsrc, fname, pages, codec, html=html, password=password, debug=debug)
   return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))
