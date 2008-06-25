@@ -593,23 +593,22 @@ class PDFPageInterpreter:
     def __init__(self):
       self.font = None
       self.fontsize = 0
-      self.reset()
-      return
-    def __repr__(self):
-      return ('<TextState: font=%r, fontsize=%r, matrix=%r,'
-              ' charspace=%r, wordspace=%r, scaling=%r, leading=%r,'
-              ' render=%r, rise=%r>' %
-              (self.font, self.fontsize, self.matrix,
-               self.charspace, self.wordspace, self.scaling, self.leading,
-               self.render, self.rise))
-    def reset(self):
       self.charspace = 0
       self.wordspace = 0
       self.scaling = 100
       self.leading = 0
       self.render = 0
       self.rise = 0
-      #
+      self.reset()
+      return
+    def __repr__(self):
+      return ('<TextState: font=%r, fontsize=%r, charspace=%r, wordspace=%r, '
+              ' scaling=%r, leading=%r, render=%r, rise=%r, '
+              ' matrix=%r, linematrix=%r>' %
+              (self.font, self.fontsize, self.charspace, self.wordspace, 
+               self.scaling, self.leading, self.render, self.rise,
+               self.matrix, self.linematrix))
+    def reset(self):
       self.matrix = MATRIX_IDENTITY
       self.linematrix = (0, 0)
       return
@@ -881,15 +880,17 @@ class PDFPageInterpreter:
   # text-move
   def do_Td(self, tx, ty):
     (a,b,c,d,e,f) = self.textstate.matrix
-    self.textstate.matrix = (a,b,c,d,e+tx,f+ty)
+    self.textstate.matrix = (a,b,c,d,tx*a+ty*c+e,tx*b+ty*d+f)
     self.textstate.linematrix = (0, 0)
+    #print >>stderr, 'Td(%r,%r): %r' % (tx,ty,self.textstate)
     return
   # text-move
   def do_TD(self, tx, ty):
     (a,b,c,d,e,f) = self.textstate.matrix
-    self.textstate.matrix = (a,b,c,d,e+tx,f+ty)
-    self.textstate.leading = -ty
+    self.textstate.matrix = (a,b,c,d,tx*a+ty*c+e,tx*b+ty*d+f)
+    self.textstate.leading = ty
     self.textstate.linematrix = (0, 0)
+    #print >>stderr, 'TD(%r,%r): %r' % (tx,ty,self.textstate)
     return
   # textmatrix
   def do_Tm(self, a,b,c,d,e,f):
@@ -899,12 +900,13 @@ class PDFPageInterpreter:
   # nextline
   def do_T_a(self):
     (a,b,c,d,e,f) = self.textstate.matrix
-    self.textstate.matrix = (a,b,c,d,e,f+self.textstate.leading)
+    self.textstate.matrix = (a,b,c,d,self.textstate.leading*c+e,self.textstate.leading*d+f)
     self.textstate.linematrix = (0, 0)
     return
   
   # show-pos
   def do_TJ(self, seq):
+    #print >>stderr, 'TJ(%r): %r' % (seq,self.textstate)
     textstate = self.textstate
     font = textstate.font
     (a,b,c,d,e,f) = textstate.matrix

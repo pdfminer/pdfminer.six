@@ -178,7 +178,8 @@ class TextConverter(PDFDevice):
                     (wmode, x*scale, (offset-y)*scale, item.fontsize*scale))
         outfp.write(enc(item.text, codec))
         outfp.write('</span>\n')
-    outfp.write('<html><body>\n')
+    outfp.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % codec)
+    outfp.write('</head><body>\n')
     for page in self.pages:
       (x0,y0,x1,y1) = page.bbox
       offset += y1

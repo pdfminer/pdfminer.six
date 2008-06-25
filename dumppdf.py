@@ -143,8 +143,8 @@ def main(argv):
   outfp = stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
-    elif k == '-i': objids.append(int(v))
-    elif k == '-p': pageids.add(int(v))
+    elif k == '-i': objids.extend( int(x) for x in v.split(',') )
+    elif k == '-p': pageids.update( int(x) for x in v.split(',') )
     elif k == '-P': password = v
     elif k == '-a': dumpall = True
     elif k == '-r': codec = 'raw'
