@@ -71,7 +71,7 @@ class CMap:
     return
   
   def is_vertical(self):
-    return self.attrs.get('WMode', '0') == '1'
+    return self.attrs.get('WMode', 0)
 
   def tocid(self, code):
     return self.code2cid.get(code)

@@ -49,23 +49,25 @@ class TextItem(object):
     self.matrix = matrix
     self.font = font
     (a,b,c,d,tx,ty) = self.matrix
-    (self.width, self.height) = apply_matrix((a,b,c,d,0,0), (width,fontsize))
-    self.width = abs(self.width)
     self.origin = (tx,ty)
     self.direction = 0
     if not self.font.is_vertical():
       self.direction = 1
+      (self.width, self.height) = apply_matrix((a,b,c,d,0,0), (width,fontsize))
+      self.width = abs(self.width)
       (_,ascent) = apply_matrix((a,b,c,d,0,0), (0,font.ascent*fontsize*0.001))
       (_,descent) = apply_matrix((a,b,c,d,0,0), (0,font.descent*fontsize*0.001))
       ty += descent
       self.bbox = (tx, ty, tx+self.width, ty+self.height)
     else:
       self.direction = 2
-      mindisp = min( d for (d,_) in text )
-      (mindisp,_) = apply_matrix((a,b,c,d,0,0), (mindisp*fontsize*0.001,0))
-      tx -= mindisp
-      ty += self.width
-      self.bbox = (tx, ty, tx+self.height, ty+self.width)
+      (self.width, self.height) = apply_matrix((a,b,c,d,0,0), (fontsize,width))
+      self.width = abs(self.width)
+      (disp,_) = text[0]
+      (_,disp) = apply_matrix((a,b,c,d,0,0), (0, (1000-disp)*fontsize*0.001))
+      tx -= self.width/2
+      ty += disp
+      self.bbox = (tx, ty+self.height, tx+self.width, ty)
     self.text = ''.join( c for (_,c) in text )
     (w,h) = apply_matrix((a,b,c,d,0,0), (fontsize,fontsize))
     self.fontsize = max(w,h)
@@ -136,9 +138,10 @@ class TextConverter(PDFDevice):
             s = self.handle_undefined_char(cidcoding, cid)
             if s:
               text.append(s)
-    item = TextItem(mult_matrix(textmatrix, self.ctm),
-                    font, textstate.fontsize, size, text)
-    self.context.add(item)
+    if text:
+      item = TextItem(mult_matrix(textmatrix, self.ctm),
+                      font, textstate.fontsize, size, text)
+      self.context.add(item)
     return
   
   def dump_sgml(self, outfp, codec):
@@ -228,7 +231,7 @@ def main(argv):
     print 'usage: %s [-d] [-p pages] [-P password] [-c codec] [-H] [-o output] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:Ho:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:Ho:C:D:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -245,6 +248,8 @@ def main(argv):
     elif k == '-p': pages.add(int(v))
     elif k == '-P': password = v
     elif k == '-c': codec = v
+    elif k == '-C': cmapdir = v
+    elif k == '-D': cdbcmapdir = v
     elif k == '-H': html = True
     elif k == '-o': outfp = file(v, 'wb')
   #

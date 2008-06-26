@@ -20,8 +20,8 @@ def scale(x):
 class FontManager:
 
   fonts = {}
-  default_font = '/Library/Fonts/Vera.ttf'
-  #default_font = '/Library/Fonts/ipag.ttf'
+  #default_font = '/Library/Fonts/Vera.ttf'
+  default_font = '/usr/share/fonts/truetype/kochi/kochi-gothic.ttf'
   
   @classmethod
   def get_font(klass, path, size):
