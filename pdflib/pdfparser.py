@@ -767,6 +767,7 @@ class PDFParser(PSStackParser):
         if not m: continue
         (objid, genno) = m.groups()
         offsets[int(objid)] = (0, pos, 'f')
+      if not offsets: raise
       xref.offsets = offsets
       xref.objid0 = min(offsets.iterkeys())
       xref.objid1 = max(offsets.iterkeys())

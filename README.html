@@ -11,7 +11,7 @@ blockquote { background: #eeeeee; }
 <h1>PDFMiner</h1>
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Jun 29 17:53:42 JST 2008
+Last Modified: Sun Jun 29 19:58:40 JST 2008
 <!-- hhmts end -->
 </div>
 
@@ -20,16 +20,18 @@ Last Modified: Sun Jun 29 17:53:42 JST 2008
 <h2>What's It?</h2>
 <p>
 PDFMiner is a suite of programs that aims to help
-extracting or analyzing text data from PDF documents.
+analyzing text data from PDF documents.
+It includes a PDF parser, a PDF interpreter 
+(though only rendering text is supported for now),
+and a couple of nice tools to extract texts.
 Unlike other PDF-related tools, it allows to obtain
 the exact location of texts in a page, as well as 
 other layout information such as font size or font name,
 which could be useful for analyzing the document.
-It can be also used as a basis for a full-fledged PDF interpreter.
 <p>
 <strong>Features:</strong>
 <ul>
-<li> Written entirely in Python. 
+<li> Written entirely in Python. (for version 2.4 or newer)
 <li> Roughly supports up to PDF-1.7 specification.
 <li> Supports non-ASCII languages and vertical writing scripts.
 <li> Supports various font types (Type1, TrueType, Type3, and CID).
@@ -217,9 +219,10 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
-<li> 2007/04/29: Bugfix for Win32. Thanks to Chris Clark.
-<li> 2007/04/27: Basic encryption and LZW decoding support added.
-<li> 2007/01/07: Several bugfixes. Thanks to Nick Fabry for his contribution.
+<li> 2008/06/29: Added HTML output. Reorganized the directory structure.
+<li> 2008/04/29: Bugfix for Win32. Thanks to Chris Clark.
+<li> 2008/04/27: Basic encryption and LZW decoding support added.
+<li> 2008/01/07: Several bugfixes. Thanks to Nick Fabry for his contribution.
 <li> 2007/12/31: Initial release.
 <li> 2004/12/24: Start writing the code out of boredom...
 </ul>
