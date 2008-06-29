@@ -144,7 +144,7 @@ def main(argv):
   for (k, v) in opts:
     if k == '-d': debug += 1
     elif k == '-i': objids.extend( int(x) for x in v.split(',') )
-    elif k == '-p': pageids.update( int(x) for x in v.split(',') )
+    elif k == '-p': pageids.update( int(x)-1 for x in v.split(',') )
     elif k == '-P': password = v
     elif k == '-a': dumpall = True
     elif k == '-r': codec = 'raw'

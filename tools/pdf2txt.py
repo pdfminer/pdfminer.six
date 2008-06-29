@@ -93,7 +93,7 @@ class TextConverter(PDFDevice):
     return
 
   def begin_page(self, page):
-    self.context = PageItem(str(page.pageid), page.mediabox, page.rotate)
+    self.context = PageItem(str(page.pageid+1), page.mediabox, page.rotate)
     return
   def end_page(self, _):
     assert not self.stack
@@ -166,8 +166,8 @@ class TextConverter(PDFDevice):
       outfp.write('</page>\n')
     return
 
-  def dump_html(self, outfp, codec, scale=1.2, pagepad=50):
-    offset = 0
+  def dump_html(self, outfp, codec, scale=1, pagepad=50, pagenum=True):
+    offset = pagepad
     def f(item):
       if isinstance(item, FigureItem):
         pass
@@ -183,9 +183,15 @@ class TextConverter(PDFDevice):
         outfp.write('</span>\n')
     outfp.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % codec)
     outfp.write('</head><body>\n')
+    if pagenum:
+      outfp.write('<div>Page: %s</div>\n' % 
+                  ', '.join('<a href="#%s">%s</a>' % (page.id,page.id) for page in self.pages ))
     for page in self.pages:
       (x0,y0,x1,y1) = page.bbox
       offset += y1
+      if pagenum:
+        outfp.write('<div style="position:absolute; top:%dpx;"><a name="%s">Page %s</a></div>' % 
+                    ((offset-y1)*scale, page.id, page.id))
       outfp.write('<span style="position:absolute; border: 1px solid gray; '
                   'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
                   (x0*scale, (offset-y1)*scale, (x1-x0)*scale, (y1-y0)*scale))
@@ -199,7 +205,7 @@ class TextConverter(PDFDevice):
 # pdf2txt
 class TextExtractionNotAllowed(RuntimeError): pass
 
-def pdf2txt(outfp, rsrc, fname, pages, codec, html=False, password='', debug=0):
+def pdf2txt(outfp, rsrc, fname, pages, codec, maxpages=10, html=False, password='', debug=0):
   device = TextConverter(rsrc, debug=debug)
   doc = PDFDocument(debug=debug)
   fp = file(fname, 'rb')
@@ -215,6 +221,7 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, html=False, password='', debug=0):
   for (i,page) in enumerate(doc.get_pages(debug=debug)):
     if pages and (i not in pages): continue
     interpreter.process_page(page)
+    if maxpages and maxpages <= i+1: break
   if html:
     device.dump_html(outfp, codec)
   else:
@@ -245,7 +252,7 @@ def main(argv):
   outfp = stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
-    elif k == '-p': pages.add(int(v))
+    elif k == '-p': pages.update( int(x)-1 for x in v.split(',') )
     elif k == '-P': password = v
     elif k == '-c': codec = v
     elif k == '-C': cmapdir = v
