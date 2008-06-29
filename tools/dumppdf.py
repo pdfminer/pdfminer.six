@@ -7,7 +7,7 @@
 #    -i objid : object id
 #
 import sys, re
-from pdfminer.pdfparser import PDFDocument, PDFParser, PDFStream, \
+from pdflib.pdfparser import PDFDocument, PDFParser, PDFStream, \
      PDFObjRef, PSKeyword, PSLiteral
 stdout = sys.stdout
 stderr = sys.stderr
