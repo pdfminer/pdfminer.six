@@ -18,11 +18,11 @@ cdbcmap: CMap
 	-mkdir CDBCMap
 	$(CONV_CMAP) CMap/*
 
-samples:
+test:
 	cd samples && make
 
 clean:
-	cd pdfminer && make clean
+	cd pdflib && make clean
 	cd tools && make clean
 	cd samples && make clean
 

@@ -11,7 +11,7 @@ blockquote { background: #eeeeee; }
 <h1>PDFMiner</h1>
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Jun 29 11:34:38 JST 2008
+Last Modified: Sun Jun 29 17:53:42 JST 2008
 <!-- hhmts end -->
 </div>
 
@@ -45,8 +45,8 @@ http://www.unixuser.org/~euske/python/pdfminer/index.html
 <a name="source"></a>
 <p>
 <strong>Download (source):</strong><br>
-<a href="http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20080429.tar.gz">
-http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20080429.tar.gz
+<a href="http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20080629.tar.gz">
+http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20080629.tar.gz
 </a>
 (1.8Mbytes)
 
@@ -66,12 +66,10 @@ http://pdfminerr.googlecode.com/svn/
 <li> Go to the <code>pdfminer</code> directory.
 <li> Do the following test:<br>
 <blockquote><pre>
-$ <strong>python pdf2txt.py samples/simple1.pdf</strong>
-&lt;document&gt;
-&lt;page id="0" bbox="0,0,612,792" rotate="0"&gt;
-&lt;text x="100.000" y="100.000" font="Helvetica" size="24.000" width="137.352"&gt; Hello World &lt;/text&gt;
+$ <strong>python -m tools.pdf2txt samples/simple1.pdf</strong>
+&lt;page id="0" bbox="0.000,0.000,612.000,792.000" rotate="0"&gt;
+&lt;text font="Helvetica" direction="1" bbox="100.000,695.032,237.352,719.032" fontsize="24.000"&gt; Hello World &lt;/text&gt;
 &lt;/page&gt;
-&lt;/document&gt;
 </pre></blockquote>
 <li> Done!
 </ol>
