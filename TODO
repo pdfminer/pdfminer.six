@@ -1,7 +1,6 @@
 TODOs:
   - Documentation.
   - Error handling for invalid type.
-  - Simple viewer application using pygame.
 
   - Outlines.
   - Named Objects. (pages)

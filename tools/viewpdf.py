@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from sgml import PDFSGMLParser, Document
+from pdfminer.sgml import PDFSGMLParser, Document
 stdout = sys.stdout
 stderr = sys.stderr
 try:

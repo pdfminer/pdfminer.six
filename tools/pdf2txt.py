@@ -2,11 +2,11 @@
 import sys
 stdout = sys.stdout
 stderr = sys.stderr
-from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
-from pdfinterp import PDFDevice, PDFResourceManager, \
+from pdfminer.pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
+from pdfminer.pdfinterp import PDFDevice, PDFResourceManager, \
      PDFPageInterpreter, PDFUnicodeNotDefined, \
      mult_matrix, apply_matrix
-from cmap import CMapDB
+from pdfminer.cmap import CMapDB
 
 
 def enc(x, codec):

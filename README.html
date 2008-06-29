@@ -11,7 +11,7 @@ blockquote { background: #eeeeee; }
 <h1>PDFMiner</h1>
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Wed Apr 30 19:15:12 JST 2008
+Last Modified: Sun Jun 29 11:34:38 JST 2008
 <!-- hhmts end -->
 </div>
 
@@ -114,8 +114,8 @@ PDFMiner comes with two programs:
 <code>pdf2txt.py</code> extracts text contents from a PDF file.
 It extracts all the texts that are to be rendered programatically.
 It also extracts the corresponding locations, font names,
-and font sizes for each text portion in an SGML-like format.
-It cannot extract texts embedded within images
+and font sizes for each text portion. However,
+it cannot extract texts embedded within images
 (i.e. it does not do optical character recognition).
 You can provide a password for protected PDF documents 
 whose access is limited.
@@ -129,7 +129,8 @@ Unicode Standard.
 <p>
 Examples:
 <blockquote><pre>
-$ <strong>./pdf2txt.py samples/naacl06-shinyama.pdf</strong>
+$ <strong>./pdf2txt.py -H -o output.html samples/naacl06-shinyama.pdf</strong>
+(extract text as an HTML file whose filename is output.html)
 
 $ <strong>./pdf2txt.py -c euc-jp samples/jo.pdf</strong>
 (extract Japanese texts in vertical writing, CMap is required)
@@ -145,14 +146,16 @@ Options:
 <dd> Speficies the output file name.
 By default, it prints the extracted contents to stdout.
 <p>
-<dt> <code>-p <em>pageno</em></code> 
-<dd> Speficies the page number to be extracted. 
-Note that page numbers start from zero.
-Multiple <code>-p</code> options are allowed.
+<dt> <code>-p <em>pageno[,pageno,...]</em></code> 
+<dd> Speficies the comma-separated list of the page numbers to be extracted. 
+Page numbers are starting from zero.
 By default, it extracts texts from all the pages.
 <p>
 <dt> <code>-c <em>codec</em></code> 
 <dd> Speficies the output codec for non-ASCII texts.
+<p>
+<dt> <code>-H</code> 
+<dd> Speficies the output to be HTML file.
 <p>
 <dt> <code>-P <em>password</em></code> 
 <dd> Provides the user password to open the PDF file.

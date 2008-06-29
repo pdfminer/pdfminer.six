@@ -1,7 +1,7 @@
 # Makefile for pdfminer
 
 PACKAGE=pdfminer
-VERSION=20080429
+VERSION=20080629
 GNUTAR=tar
 SVN=svn
 PYTHON=python
@@ -10,14 +10,21 @@ WORKDIR=/tmp
 DISTNAME=$(PACKAGE)-dist-$(VERSION)
 DISTFILE=$(DISTNAME).tar.gz
 
+CONV_CMAP=$(PYTHON) -m tools.conv_cmap
+
 all:
 
 cdbcmap: CMap
 	-mkdir CDBCMap
-	$(PYTHON) conv_cmap.py CMap/*
+	$(CONV_CMAP) CMap/*
+
+samples:
+	cd samples && make
 
 clean:
-	-rm *.pyc *.pyo *~
+	cd pdfminer && make clean
+	cd tools && make clean
+	cd samples && make clean
 
 # Maintainance:
 

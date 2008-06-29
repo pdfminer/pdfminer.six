@@ -7,7 +7,7 @@ def dumpcdb(cmap, cdbfile, verbose=1):
   try:
     import cdb
   except ImportError:
-    import pycdb as cdb
+    import pdfminer.pycdb as cdb
   m = cdb.cdbmake(cdbfile, cdbfile+'.tmp')
   if verbose:
     print >>stderr, 'Writing: %r...' % cdbfile
@@ -21,7 +21,7 @@ def dumpcdb(cmap, cdbfile, verbose=1):
   return
 
 def convert_cmap(files, cmapdir, cdbcmapdir, force=False):
-  from cmap import CMapDB
+  from pdfminer.cmap import CMapDB
   CMapDB.initialize(cmapdir)
   for fname in files:
     if fname.endswith('.upr'): continue
