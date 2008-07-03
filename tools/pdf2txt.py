@@ -205,7 +205,7 @@ class TextConverter(PDFDevice):
 # pdf2txt
 class TextExtractionNotAllowed(RuntimeError): pass
 
-def pdf2txt(outfp, rsrc, fname, pages, codec, maxpages=10, html=False, password='', debug=0):
+def pdf2txt(outfp, rsrc, fname, pages, codec, maxpages=0, html=False, password='', debug=0):
   device = TextConverter(rsrc, debug=debug)
   doc = PDFDocument(debug=debug)
   fp = file(fname, 'rb')
@@ -238,7 +238,7 @@ def main(argv):
     print 'usage: %s [-d] [-p pages] [-P password] [-c codec] [-H] [-o output] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:Ho:C:D:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:Ho:C:D:m:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -247,6 +247,7 @@ def main(argv):
   cdbcmapdir = 'CDBCMap'
   codec = 'ascii'
   pages = set()
+  maxpages = 0
   html = False
   password = ''
   outfp = stdout
@@ -255,6 +256,7 @@ def main(argv):
     elif k == '-p': pages.update( int(x)-1 for x in v.split(',') )
     elif k == '-P': password = v
     elif k == '-c': codec = v
+    elif k == '-m': maxpages = int(v)
     elif k == '-C': cmapdir = v
     elif k == '-D': cdbcmapdir = v
     elif k == '-H': html = True
@@ -263,7 +265,8 @@ def main(argv):
   CMapDB.initialize(cmapdir, cdbcmapdir, debug=debug)
   rsrc = PDFResourceManager(debug=debug)
   for fname in args:
-    pdf2txt(outfp, rsrc, fname, pages, codec, html=html, password=password, debug=debug)
+    pdf2txt(outfp, rsrc, fname, pages, codec, 
+            maxpages=maxpages, html=html, password=password, debug=debug)
   return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

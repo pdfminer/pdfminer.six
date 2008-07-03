@@ -362,7 +362,7 @@ class PDFXRefStream(object):
     (_,genno) = parser.nexttoken() # ignored
     (_,kwd) = parser.nexttoken()
     (_,stream) = parser.nextobject()
-    if stream.dic['Type'] != LITERAL_XREF:
+    if not isinstance(stream, PDFStream) or stream.dic['Type'] != LITERAL_XREF:
       raise PDFNoValidXRef('invalid stream spec.')
     size = stream.dic['Size']
     (start, nobjs) = stream.dic.get('Index', (0,size))
@@ -450,7 +450,7 @@ class PDFDocument:
   def set_root(self, root):
     self.root = root
     self.catalog = dict_value(self.root)
-    if self.catalog['Type'] != LITERAL_CATALOG:
+    if self.catalog.get('Type') != LITERAL_CATALOG:
       if STRICT:
         raise PDFValueError('Catalog not found!')
     self.outline = self.catalog.get('Outline')
@@ -504,7 +504,7 @@ class PDFDocument:
       hash.update(docid[0]) # 3
       x = Arcfour(key).process(hash.digest()[:16]) # 4
       for i in xrange(1,19+1):
-        k = ''.join( chr(c ^ i) for c in key )
+        k = ''.join( chr(ord(c) ^ i) for c in key )
         x = Arcfour(k).process(x)
       u1 = x+x # 32bytes total
     if R == 2:
@@ -599,16 +599,17 @@ class PDFDocument:
       for (k,v) in parent.iteritems():
         if k in self.INHERITABLE_ATTRS and k not in tree:
           tree[k] = v
-      if tree['Type'] == LITERAL_PAGES:
+      if tree.get('Type') == LITERAL_PAGES and 'Kids' in tree:
         if 1 <= debug:
           print >>stderr, 'Pages: Kids=%r' % tree['Kids']
         for c in tree['Kids']:
           for x in search(c, tree):
             yield x
-      elif tree['Type'] == LITERAL_PAGE:
+      elif tree.get('Type') == LITERAL_PAGE:
         if 1 <= debug:
           print >>stderr, 'Page: %r' % tree
         yield tree
+    if 'Pages' not in self.catalog: return
     for (i,tree) in enumerate(search(self.catalog['Pages'], self.catalog)):
       yield PDFPage(self, i, tree)
     return 

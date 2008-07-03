@@ -856,7 +856,7 @@ class PDFPageInterpreter:
     return
   # setleading
   def do_TL(self, leading):
-    self.textstate.leading = leading
+    self.textstate.leading = -leading
     return
   # selectfont
   def do_Tf(self, fontid, fontsize):
