@@ -17,7 +17,7 @@ class CMapError(Exception): pass
 
 ##  CMap
 ##
-class CMap:
+class CMap(object):
   
   def __init__(self, debug=0):
     self.debug = debug
@@ -163,7 +163,7 @@ class CDBCMap(CMap):
 
 ##  CMapDB
 ##
-class CMapDB:
+class CMapDB(object):
 
   class CMapNotFound(CMapError): pass
   
@@ -340,7 +340,7 @@ class CMapParser(PSStackParser):
 
 ##  FontMetricsDB
 ##
-class FontMetricsDB:
+class FontMetricsDB(object):
   from fontmetrics import FONT_METRICS
   
   @classmethod
@@ -350,7 +350,7 @@ class FontMetricsDB:
 
 ##  EncodingDB
 ##
-class EncodingDB:
+class EncodingDB(object):
       
   from glyphlist import charname2unicode
   from latin_enc import ENCODING

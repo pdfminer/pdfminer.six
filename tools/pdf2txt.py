@@ -93,7 +93,7 @@ class TextConverter(PDFDevice):
     return
 
   def begin_page(self, page):
-    self.context = PageItem(str(page.pageid+1), page.mediabox, page.rotate)
+    self.context = PageItem(len(self.pages), page.mediabox, page.rotate)
     return
   def end_page(self, _):
     assert not self.stack
@@ -205,7 +205,7 @@ class TextConverter(PDFDevice):
 # pdf2txt
 class TextExtractionNotAllowed(RuntimeError): pass
 
-def pdf2txt(outfp, rsrc, fname, pages, codec, maxpages=0, html=False, password='', debug=0):
+def pdf2txt(outfp, rsrc, fname, pagenos, codec, maxpages=0, html=False, password='', debug=0):
   device = TextConverter(rsrc, debug=debug)
   doc = PDFDocument(debug=debug)
   fp = file(fname, 'rb')
@@ -218,10 +218,10 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, maxpages=0, html=False, password='
     raise TextExtractionNotAllowed('text extraction is not allowed: %r' % fname)
   interpreter = PDFPageInterpreter(rsrc, device, debug=debug)
   device.reset()
-  for (i,page) in enumerate(doc.get_pages(debug=debug)):
-    if pages and (i not in pages): continue
+  for (pageno,page) in enumerate(doc.get_pages(debug=debug)):
+    if pagenos and (pageno not in pagenos): continue
     interpreter.process_page(page)
-    if maxpages and maxpages <= i+1: break
+    if maxpages and maxpages <= pageno+1: break
   if html:
     device.dump_html(outfp, codec)
   else:
@@ -235,7 +235,7 @@ def pdf2txt(outfp, rsrc, fname, pages, codec, maxpages=0, html=False, password='
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-p pages] [-P password] [-c codec] [-H] [-o output] file ...' % argv[0]
+    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-H] [-o output] file ...' % argv[0]
     return 100
   try:
     (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:Ho:C:D:m:')
@@ -246,14 +246,14 @@ def main(argv):
   cmapdir = 'CMap'
   cdbcmapdir = 'CDBCMap'
   codec = 'ascii'
-  pages = set()
+  pagenos = set()
   maxpages = 0
   html = False
   password = ''
   outfp = stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
-    elif k == '-p': pages.update( int(x)-1 for x in v.split(',') )
+    elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
     elif k == '-P': password = v
     elif k == '-c': codec = v
     elif k == '-m': maxpages = int(v)
@@ -265,7 +265,7 @@ def main(argv):
   CMapDB.initialize(cmapdir, cdbcmapdir, debug=debug)
   rsrc = PDFResourceManager(debug=debug)
   for fname in args:
-    pdf2txt(outfp, rsrc, fname, pages, codec, 
+    pdf2txt(outfp, rsrc, fname, pagenos, codec, 
             maxpages=maxpages, html=html, password=password, debug=debug)
   return
 

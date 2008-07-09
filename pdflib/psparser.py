@@ -19,7 +19,9 @@ class PSValueError(PSException): pass
 ##
 
 # PSLiteral
-class PSLiteral:
+class PSObject(object): pass
+
+class PSLiteral(PSObject):
   
   '''
   PS literals (e.g. "/Name").
@@ -35,7 +37,7 @@ class PSLiteral:
     return '/%s' % self.name
 
 # PSKeyword
-class PSKeyword:
+class PSKeyword(PSObject):
   
   '''
   PS keywords (e.g. "showpage").
@@ -51,7 +53,7 @@ class PSKeyword:
     return self.name
 
 # PSSymbolTable
-class PSSymbolTable:
+class PSSymbolTable(object):
   
   '''
   Symbol table that stores PSLiteral or PSKeyword.
@@ -113,7 +115,7 @@ END_KEYWORD = re.compile(r'[#/%\[\]()<>{}\s]')
 END_STRING = re.compile(r'[()\134]')
 OCT_STRING = re.compile(r'[0-7]')
 ESC_STRING = { 'b':8, 't':9, 'n':10, 'f':12, 'r':13, '(':40, ')':41, '\\':92 }
-class PSBaseParser:
+class PSBaseParser(object):
 
   '''
   Most basic PostScript parser that performs only basic tokenization.
@@ -129,6 +131,13 @@ class PSBaseParser:
   def __repr__(self):
     return '<PSBaseParser: %r, bufpos=%d>' % (self.fp, self.bufpos)
 
+  def flush(self):
+    return
+  
+  def close(self):
+    self.flush()
+    return
+  
   def tell(self):
     return self.fp.tell()
 
@@ -462,8 +471,6 @@ class PSStackParser(PSBaseParser):
     return (pos, objs)
 
   def do_keyword(self, pos, token):
-    return
-  def flush(self):
     return
   
   def nextobject(self):

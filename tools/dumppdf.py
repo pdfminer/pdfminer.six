@@ -8,7 +8,7 @@
 #
 import sys, re
 from pdflib.pdfparser import PDFDocument, PDFParser, PDFStream, \
-     PDFObjRef, PSKeyword, PSLiteral
+     PDFObjRef, PSKeyword, PSLiteral, resolve1
 stdout = sys.stdout
 stderr = sys.stderr
 
@@ -94,8 +94,28 @@ def dumpallobjs(out, doc, codec=None):
   out.write('</pdf>')
   return
 
+# dumpoutline
+def dumpoutline(outfp, fname, objids, pagenos, password='',
+                dumpall=False, codec=None, debug=0):
+  doc = PDFDocument(debug=debug)
+  fp = file(fname, 'rb')
+  parser = PDFParser(doc, fp, debug=debug)
+  doc.initialize(password)
+  pages = dict( (page.pageid, pageno) for (pageno,page) in enumerate(doc.get_pages()) )
+  for (level,title,dest,a,se) in doc.get_outlines():
+    pageno = None
+    if dest:
+      dest = resolve1( doc.lookup_name('Dests', dest) )
+      if isinstance(dest, dict):
+        dest = dest['D']
+      pageno = pages[dest[0].objid]
+    outfp.write(repr((level,title,dest,pageno))+'\n')
+  parser.close()
+  fp.close()
+  return
+
 # dumppdf
-def dumppdf(outfp, fname, objids, pageids, password='',
+def dumppdf(outfp, fname, objids, pagenos, password='',
             dumpall=False, codec=None, debug=0):
   doc = PDFDocument(debug=debug)
   fp = file(fname, 'rb')
@@ -110,13 +130,13 @@ def dumppdf(outfp, fname, objids, pageids, password='',
         outfp.write(obj.get_data())
       else:
         dumpxml(outfp, obj, codec=codec)
-  if pageids:
-    for page in doc.get_pages():
-      if page.pageid in pageids:
+  if pagenos:
+    for (pageno,page) in enumerate(doc.get_pages()):
+      if pageno in pagenos:
         dumpxml(outfp, page.attrs)
   if dumpall:
     dumpallobjs(outfp, doc, codec=codec)
-  if (not objids) and (not pageids) and (not dumpall):
+  if (not objids) and (not pagenos) and (not dumpall):
     dumptrailers(outfp, doc)
   fp.close()
   outfp.write('\n')
@@ -127,34 +147,36 @@ def dumppdf(outfp, fname, objids, pageids, password='',
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-a] [-p pageid] [-P password] [-r|-b|-t] [-i objid] file ...' % argv[0]
+    print 'usage: %s [-d] [-a] [-p pageid] [-P password] [-r|-b|-t] [-T] [-i objid] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dap:P:rbti:')
+    (opts, args) = getopt.getopt(argv[1:], 'dap:P:rbtTi:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
   debug = 0
   objids = []
-  pageids = set()
+  pagenos = set()
   codec = None
   password = ''
   dumpall = False
+  proc = dumppdf
   outfp = stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
     elif k == '-i': objids.extend( int(x) for x in v.split(',') )
-    elif k == '-p': pageids.update( int(x)-1 for x in v.split(',') )
+    elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
     elif k == '-P': password = v
     elif k == '-a': dumpall = True
     elif k == '-r': codec = 'raw'
     elif k == '-b': codec = 'binary'
     elif k == '-t': codec = 'text'
+    elif k == '-T': proc = dumpoutline
     elif k == '-o': outfp = file(v, 'wb')
   #
   for fname in args:
-    dumppdf(outfp, fname, objids, pageids, password=password,
-            dumpall=dumpall, codec=codec, debug=debug)
+    proc(outfp, fname, objids, pagenos, password=password,
+         dumpall=dumpall, codec=codec, debug=debug)
   return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

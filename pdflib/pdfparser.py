@@ -11,7 +11,7 @@ from utils import choplist, nunpack
 from arcfour import Arcfour
 from lzw import LZWDecoder
 from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
-     PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
+     PSObject, PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
      literal_name, keyword_name, \
      PSStackParser, STRICT
 
@@ -46,10 +46,12 @@ KEYWORD_TRAILER = PSKeywordTable.intern('trailer')
 KEYWORD_STARTXREF = PSKeywordTable.intern('startxref')
 PASSWORD_PADDING = '(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
 
+class PDFObject(PSObject): pass
+
 
 ##  PDFObjRef
 ##
-class PDFObjRef:
+class PDFObjRef(PDFObject):
   
   def __init__(self, doc, objid, _):
     if objid == 0:
@@ -165,7 +167,7 @@ def stream_value(x):
 
 ##  PDFStream type
 ##
-class PDFStream:
+class PDFStream(PDFObject):
   
   def __init__(self, dic, rawdata, decipher=None):
     self.dic = dic
@@ -247,11 +249,11 @@ class PDFStream:
 
 ##  PDFPage
 ##
-class PDFPage:
+class PDFPage(object):
   
-  def __init__(self, doc, pageidx, attrs):
+  def __init__(self, doc, pageid, attrs):
     self.doc = doc
-    self.pageid = pageidx
+    self.pageid = pageid
     self.attrs = dict_value(attrs)
     self.lastmod = self.attrs.get('LastModified')
     self.resources = resolve1(self.attrs['Resources'])
@@ -397,7 +399,7 @@ class PDFXRefStream(object):
 ##  at once. Rather it is parsed dynamically as processing goes.
 ##  A PDF parser is associated with the document.
 ##
-class PDFDocument:
+class PDFDocument(object):
   
   def __init__(self, debug=0):
     self.debug = debug
@@ -453,7 +455,6 @@ class PDFDocument:
     if self.catalog.get('Type') != LITERAL_CATALOG:
       if STRICT:
         raise PDFValueError('Catalog not found!')
-    self.outline = self.catalog.get('Outline')
     return
   
   # initialize(password='')
@@ -608,11 +609,54 @@ class PDFDocument:
       elif tree.get('Type') == LITERAL_PAGE:
         if 1 <= debug:
           print >>stderr, 'Page: %r' % tree
-        yield tree
+        yield (obj.objid, tree)
     if 'Pages' not in self.catalog: return
-    for (i,tree) in enumerate(search(self.catalog['Pages'], self.catalog)):
-      yield PDFPage(self, i, tree)
-    return 
+    for (pageid,tree) in search(self.catalog['Pages'], self.catalog):
+      yield PDFPage(self, pageid, tree)
+    return
+
+  def get_outlines(self):
+    if 'Outlines' not in self.catalog:
+      raise PDFException('no /Outlines defined!')
+    def search(entry, level):
+      entry = dict_value(entry)
+      if 'Title' in entry:
+        if 'A' in entry or 'Dest' in entry:
+          title = unicode(str_value(entry['Title']), 'utf-8', 'ignore')
+          dest = entry.get('Dest')
+          action = entry.get('A')
+          se = entry.get('SE')
+          yield (level, title, dest, action, se)
+      if 'First' in entry and 'Last' in entry:
+        for x in search(entry['First'], level+1):
+          yield x
+      if 'Next' in entry:
+        for x in search(entry['Next'], level):
+          yield x
+      return
+    return search(self.catalog['Outlines'], 0)
+
+  def lookup_name(self, cat, key):
+    try:
+      names = dict_value(self.catalog['Names'])
+    except (PDFTypeError, KeyError):
+      raise KeyError((cat,key))
+    # may raise KeyError
+    d0 = dict_value(names[cat])
+    def lookup(d):
+      if 'Limits' in d:
+        (k1,k2) = list_value(d['Limits'])
+        if key < k1 or k2 < key: return None
+        if 'Names' in d:
+          objs = list_value(d['Names'])
+          names = dict(choplist(2, objs))
+          return names[key]
+      if 'Kids' in d:
+        for c in list_value(d['Kids']):
+          v = lookup(dict_value(c))
+          if v: return v
+      raise KeyError((cat,key))
+    return lookup(d0)
 
 
 ##  PDFParser

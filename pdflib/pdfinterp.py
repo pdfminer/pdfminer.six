@@ -9,7 +9,7 @@ except ImportError:
 from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSStackParser, PSLiteral, PSKeyword, STRICT, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name
-from pdfparser import PDFException, PDFStream, PDFObjRef, resolve1, \
+from pdfparser import PDFException, PDFObject, PDFStream, PDFObjRef, resolve1, \
      int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
 from cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
@@ -26,7 +26,7 @@ class PDFUnicodeNotDefined(PDFFontError): pass
 
 ##  ColorSpace
 ##
-class ColorSpace:
+class ColorSpace(object):
   def __init__(self, name, ncomponents):
     self.name = name
     self.ncomponents = ncomponents
@@ -82,7 +82,7 @@ def apply_matrix((a,b,c,d,e,f), (x,y)):
 ##
 
 # PDFFont
-class PDFFont:
+class PDFFont(object):
   
   def __init__(self, descriptor, widths, default_width=None):
     self.descriptor = descriptor
@@ -208,7 +208,7 @@ class PDFType3Font(PDFSimpleFont):
 
 ##  TrueTypeFont
 ##
-class TrueTypeFont:
+class TrueTypeFont(object):
 
   class CMapNotFound(Exception): pass
   
@@ -391,7 +391,7 @@ class PDFCIDFont(PDFFont):
 
 ##  Resource Manager
 ##
-class PDFResourceManager:
+class PDFResourceManager(object):
 
   '''
   ResourceManager facilitates reuse of shared resources
@@ -464,7 +464,7 @@ class PDFResourceManager:
 
 ##  PDFDevice
 ##
-class PDFDevice:
+class PDFDevice(object):
   
   def __init__(self, rsrc, debug=0):
     self.rsrc = rsrc
@@ -587,9 +587,9 @@ class PDFContentParser(PSStackParser):
 
 ##  Interpreter
 ##
-class PDFPageInterpreter:
+class PDFPageInterpreter(object):
   
-  class TextState:
+  class TextState(object):
     def __init__(self):
       self.font = None
       self.fontsize = 0

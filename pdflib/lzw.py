@@ -4,7 +4,7 @@ stderr = sys.stderr
 
 ##  LZWDecoder
 ##
-class LZWDecoder:
+class LZWDecoder(object):
   
   def __init__(self, fp, debug=0):
     self.fp = fp

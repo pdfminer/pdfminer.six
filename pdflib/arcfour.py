@@ -4,7 +4,7 @@
 #  * public domain *
 #
 
-class Arcfour:
+class Arcfour(object):
   
   def __init__(self, key):
     s = range(256)

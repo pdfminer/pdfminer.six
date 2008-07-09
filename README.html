@@ -11,7 +11,7 @@ blockquote { background: #eeeeee; }
 <h1>PDFMiner</h1>
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Tue Jul  1 00:02:48 JST 2008
+Last Modified: Thu Jul 10 00:14:07 JST 2008
 <!-- hhmts end -->
 </div>
 
@@ -135,13 +135,13 @@ Unicode Standard.
 <p>
 Examples:
 <blockquote><pre>
-$ <strong>./pdf2txt.py -H -o output.html samples/naacl06-shinyama.pdf</strong>
+$ <strong>python -m tools.pdf2txt -H -o output.html samples/naacl06-shinyama.pdf</strong>
 (extract text as an HTML file whose filename is output.html)
 
-$ <strong>./pdf2txt.py -c euc-jp samples/jo.pdf</strong>
+$ <strong>python -m tools.pdf2txt -c euc-jp samples/jo.pdf</strong>
 (extract Japanese texts in vertical writing, CMap is required)
 
-$ <strong>./pdf2txt.py -P mypassword secret.pdf</strong>
+$ <strong>python -m tools.pdf2txt -P mypassword secret.pdf</strong>
 (extract texts from an encrypted PDF file with a password)
 </pre></blockquote>
 
@@ -181,10 +181,13 @@ but it's also possible to extract some meaningful contents
 <p>
 Examples:
 <blockquote><pre>
-$ <strong>./dumppdf.py -a foo.pdf</strong>
+$ <strong>python -m tools.dumppdf -a foo.pdf</strong>
 (dump all the headers and contents, except stream objects)
 
-$ <strong>./dumppdf.py -r -i6 foo.pdf &gt; pic.jpeg</strong>
+$ <strong>python -m tools.dumppdf -T foo.pdf</strong>
+(dump the table of contents)
+
+$ <strong>python -m tools.dumppdf -r -i6 foo.pdf &gt; pic.jpeg</strong>
 (extract a JPEG image)
 </pre></blockquote>
 
