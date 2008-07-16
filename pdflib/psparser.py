@@ -139,7 +139,7 @@ class PSBaseParser(object):
     return
   
   def tell(self):
-    return self.fp.tell()
+    return self.bufpos+self.charpos
 
   def poll(self, pos=None, n=80):
     pos0 = self.fp.tell()

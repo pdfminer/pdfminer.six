@@ -1,8 +1,8 @@
 TODOs:
   - Documentation.
   - Error handling for invalid type.
+  - Tagged PDF.
+  - Infer text stream by clustering.
 
-  - Outlines.
-  - Named Objects. (pages)
   - Support writing/creating PDFs.
   - Any special treatments for linearized PDFs?
