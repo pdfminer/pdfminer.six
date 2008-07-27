@@ -482,6 +482,13 @@ class PDFDevice(object):
     self.ctm = ctm
     return
 
+  def begin_tag(self, tag, props=None):
+    return
+  def end_tag(self):
+    return
+  def do_tag(self, tag, props=None):
+    return
+
   def begin_page(self, page):
     return
   def end_page(self, page):
@@ -618,6 +625,9 @@ class PDFPageInterpreter(object):
     self.device = device
     self.debug = debug
     return
+
+  def dup(self):
+    return PDFPageInterpreter(self.rsrc, self.device, debug=self.debug)
 
   def init_resources(self, resources):
     self.fontmap = {}
@@ -836,11 +846,21 @@ class PDFPageInterpreter(object):
   def do_EX(self): return
 
   # marked content operators
-  def do_MP(self, tag): return
-  def do_DP(self, tag, props): return
-  def do_BMC(self, tag): return
-  def do_BDC(self, tag, props): return
-  def do_EMC(self): return
+  def do_MP(self, tag):
+    self.device.do_tag(tag)
+    return
+  def do_DP(self, tag, props):
+    self.device.do_tag(tag, props)
+    return
+  def do_BMC(self, tag):
+    self.device.begin_tag(tag)
+    return
+  def do_BDC(self, tag, props):
+    self.device.begin_tag(tag, props)
+    return
+  def do_EMC(self):
+    self.device.end_tag()
+    return
 
   # setcharspace
   def do_Tc(self, space):
@@ -960,7 +980,7 @@ class PDFPageInterpreter(object):
       print >>stderr, 'Processing xobj: %r' % xobj
     subtype = xobj.dic.get('Subtype')
     if subtype == LITERAL_FORM and 'BBox' in xobj.dic:
-      interpreter = PDFPageInterpreter(self.rsrc, self.device)
+      interpreter = self.dup()
       (x0,y0,x1,y1) = xobj.dic['BBox']
       ctm = mult_matrix(xobj.dic.get('Matrix', MATRIX_IDENTITY), self.ctm)
       (x0,y0) = apply_matrix(ctm, (x0,y0))

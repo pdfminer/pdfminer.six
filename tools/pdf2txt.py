@@ -10,8 +10,12 @@ from pdflib.cmap import CMapDB
 
 
 def enc(x, codec):
-  x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;')
+  x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
   return x.encode(codec, 'xmlcharrefreplace')
+
+def encprops(props, codec):
+  if not props: return ''
+  return ''.join( ' %s="%s"' % (enc(k,codec), enc(str(v),codec)) for (k,v) in sorted(props.iteritems()) )
 
 
 ##  PageItem
@@ -82,22 +86,22 @@ class TextItem(object):
 ##
 class TextConverter(PDFDevice):
 
-  def __init__(self, rsrc, debug=0):
+  def __init__(self, rsrc, outfp, codec='utf-8', debug=0):
     PDFDevice.__init__(self, rsrc, debug=debug)
-    self.reset()
-    return
-
-  def reset(self):
-    self.pages = []
+    self.outfp = outfp
+    self.codec = codec
+    self.pageno = 0
     self.stack = []
     return
 
   def begin_page(self, page):
-    self.context = PageItem(len(self.pages), page.mediabox, page.rotate)
+    self.context = PageItem(self.pageno, page.mediabox, page.rotate)
     return
   def end_page(self, _):
     assert not self.stack
-    self.pages.append(self.context)
+    assert isinstance(self.context, PageItem)
+    self.pageno += 1
+    self.dump_page(self.context)
     return
 
   def begin_figure(self, name, bbox):
@@ -143,31 +147,49 @@ class TextConverter(PDFDevice):
                       font, textstate.fontsize, size, text)
       self.context.add(item)
     return
-  
-  def dump_sgml(self, outfp, codec):
+
+
+##  SGMLConverter
+##
+class SGMLConverter(TextConverter):
+
+  def dump_page(self, page):
     def f(item):
       bbox = '%.3f,%.3f,%.3f,%.3f' % item.bbox
       if isinstance(item, FigureItem):
-        outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, bbox))
+        self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, bbox))
         for child in item.objs:
           f(child)
-        outfp.write('</figure>\n')
+        self.outfp.write('</figure>\n')
       elif isinstance(item, TextItem):
-        outfp.write('<text font="%s" direction="%s" bbox="%s" fontsize="%.3f">' %
-                    (enc(item.font.fontname, codec), item.direction, bbox, item.fontsize))
-        outfp.write(enc(item.text, codec))
-        outfp.write('</text>\n')
-    for page in self.pages:
-      bbox = '%.3f,%.3f,%.3f,%.3f' % page.bbox
-      outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
-                  (page.id, bbox, page.rotate))
-      for child in page.objs:
-        f(child)
-      outfp.write('</page>\n')
+        self.outfp.write('<text font="%s" direction="%s" bbox="%s" fontsize="%.3f">' %
+                         (enc(item.font.fontname, self.codec), item.direction, bbox, item.fontsize))
+        self.outfp.write(enc(item.text, self.codec))
+        self.outfp.write('</text>\n')
+    bbox = '%.3f,%.3f,%.3f,%.3f' % page.bbox
+    self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
+                     (page.id, bbox, page.rotate))
+    for child in page.objs:
+      f(child)
+    self.outfp.write('</page>\n')
     return
 
-  def dump_html(self, outfp, codec, scale=1, pagepad=50, pagenum=True):
-    offset = pagepad
+
+##  HTMLConverter
+##
+class HTMLConverter(TextConverter):
+
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, debug=0):
+    TextConverter.__init__(self, rsrc, outfp, codec=codec, debug=debug)
+    self.pagenum = pagenum
+    self.pagepad = pagepad
+    self.scale = scale
+    self.outfp.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % self.codec)
+    self.outfp.write('</head><body>\n')
+    self.yoffset = self.pagepad
+    return
+  
+  def dump_page(self, page):
     def f(item):
       if isinstance(item, FigureItem):
         pass
@@ -177,36 +199,91 @@ class TextConverter(PDFDevice):
         else:
           wmode = 'lr-tb'
         (x,_,_,y) = item.bbox
-        outfp.write('<span style="position:absolute; writing-mode:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
-                    (wmode, x*scale, (offset-y)*scale, item.fontsize*scale))
-        outfp.write(enc(item.text, codec))
-        outfp.write('</span>\n')
-    outfp.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % codec)
-    outfp.write('</head><body>\n')
-    if pagenum:
-      outfp.write('<div>Page: %s</div>\n' % 
-                  ', '.join('<a href="#%s">%s</a>' % (page.id,page.id) for page in self.pages ))
-    for page in self.pages:
-      (x0,y0,x1,y1) = page.bbox
-      offset += y1
-      if pagenum:
-        outfp.write('<div style="position:absolute; top:%dpx;"><a name="%s">Page %s</a></div>' % 
-                    ((offset-y1)*scale, page.id, page.id))
-      outfp.write('<span style="position:absolute; border: 1px solid gray; '
-                  'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
-                  (x0*scale, (offset-y1)*scale, (x1-x0)*scale, (y1-y0)*scale))
-      for child in page.objs:
-        f(child)
-      offset += pagepad
-    outfp.write('</body></html>\n')
+        self.outfp.write('<span style="position:absolute; writing-mode:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
+                         (wmode, x*self.scale, (self.yoffset-y)*self.scale, item.fontsize*self.scale))
+        self.outfp.write(enc(item.text, self.codec))
+        self.outfp.write('</span>\n')
+    (x0,y0,x1,y1) = page.bbox
+    self.yoffset += y1
+    if self.pagenum:
+      self.outfp.write('<div style="position:absolute; top:%dpx;"><a name="%s">Page %s</a></div>' % 
+                       ((self.yoffset-y1)*self.scale, page.id, page.id))
+    self.outfp.write('<span style="position:absolute; border: 1px solid gray; '
+                     'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
+                     (x0*self.scale, (self.yoffset-y1)*self.scale, (x1-x0)*self.scale, (y1-y0)*self.scale))
+    for child in page.objs:
+      f(child)
+    self.yoffset += self.pagepad
+    return
+
+  def close(self):
+    self.outfp.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' % 
+                     ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(self.pageno)))
+    self.outfp.write('</body></html>\n')
+    return
+
+
+##  TagExtractor
+##
+class TagExtractor(PDFDevice):
+
+  def __init__(self, rsrc, outfp, codec='utf-8', debug=0):
+    PDFDevice.__init__(self, rsrc, debug=debug)
+    self.outfp = outfp
+    self.codec = codec
+    self.pageno = 0
+    self.tag = None
+    return
+  
+  def render_image(self, stream, size, matrix):
+    return
+
+  def render_string(self, textstate, textmatrix, size, seq):
+    font = textstate.font
+    text = ''
+    for x in seq:
+      if not isinstance(x, str): continue
+      chars = font.decode(x)
+      for cid in chars:
+        try:
+          char = font.to_unicode(cid)
+          text += char
+        except PDFUnicodeNotDefined, e:
+          pass
+    self.outfp.write(enc(text, self.codec))
+    return
+
+  def begin_page(self, page):
+    (x0, y0, x1, y1) = page.mediabox
+    bbox = '%.3f,%.3f,%.3f,%.3f' % (x0, y0, x1, y1)
+    self.outfp.write('<page id="%s" bbox="%s" rotate="%d">' %
+                     (self.pageno, bbox, page.rotate))
+    return
+  def end_page(self, _):
+    self.outfp.write('</page>\n')
+    self.pageno += 1
+    return
+  
+  def begin_tag(self, tag, props=None):
+    self.outfp.write('<%s%s>' % (enc(tag.name, self.codec), encprops(props, self.codec)))
+    self.tag = tag
+    return
+  
+  def end_tag(self):
+    assert self.tag
+    self.outfp.write('</%s>' % enc(self.tag.name, self.codec))
+    self.tag = None
+    return
+  
+  def do_tag(self, tag, props=None):
+    self.outfp.write('<%s%s/>' % (enc(tag.name, self.codec), encprops(props, self.codec)))
     return
 
 
 # pdf2txt
 class TextExtractionNotAllowed(RuntimeError): pass
 
-def pdf2txt(outfp, rsrc, fname, pagenos, codec, maxpages=0, html=False, password='', debug=0):
-  device = TextConverter(rsrc, debug=debug)
+def convert(outfp, rsrc, device, fname, pagenos, maxpages=0, password='', debug=0):
   doc = PDFDocument(debug=debug)
   fp = file(fname, 'rb')
   parser = PDFParser(doc, fp, debug=debug)
@@ -217,15 +294,10 @@ def pdf2txt(outfp, rsrc, fname, pagenos, codec, maxpages=0, html=False, password
   if not doc.is_extractable:
     raise TextExtractionNotAllowed('text extraction is not allowed: %r' % fname)
   interpreter = PDFPageInterpreter(rsrc, device, debug=debug)
-  device.reset()
   for (pageno,page) in enumerate(doc.get_pages(debug=debug)):
     if pagenos and (pageno not in pagenos): continue
     interpreter.process_page(page)
     if maxpages and maxpages <= pageno+1: break
-  if html:
-    device.dump_html(outfp, codec)
-  else:
-    device.dump_sgml(outfp, codec)
   device.close()
   fp.close()
   return
@@ -235,10 +307,10 @@ def pdf2txt(outfp, rsrc, fname, pagenos, codec, maxpages=0, html=False, password
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-H] [-o output] file ...' % argv[0]
+    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-t html|sgml|tag] [-o output] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:Ho:C:D:m:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:t:o:C:D:m:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -248,7 +320,7 @@ def main(argv):
   codec = 'ascii'
   pagenos = set()
   maxpages = 0
-  html = False
+  outtype = 'html'
   password = ''
   outfp = stdout
   for (k, v) in opts:
@@ -259,14 +331,22 @@ def main(argv):
     elif k == '-m': maxpages = int(v)
     elif k == '-C': cmapdir = v
     elif k == '-D': cdbcmapdir = v
-    elif k == '-H': html = True
+    elif k == '-t': outtype = v
     elif k == '-o': outfp = file(v, 'wb')
   #
   CMapDB.initialize(cmapdir, cdbcmapdir, debug=debug)
   rsrc = PDFResourceManager(debug=debug)
+  if outtype == 'sgml':
+    device = SGMLConverter(rsrc, outfp, codec, debug=debug)
+  elif outtype == 'html':
+    device = HTMLConverter(rsrc, outfp, codec, debug=debug)
+  elif outtype == 'tag':
+    device = TagExtractor(rsrc, outfp, codec, debug=debug)
+  else:
+    return usage()
   for fname in args:
-    pdf2txt(outfp, rsrc, fname, pagenos, codec, 
-            maxpages=maxpages, html=html, password=password, debug=debug)
+    convert(outfp, rsrc, device, fname, pagenos, 
+            maxpages=maxpages, password=password, debug=debug)
   return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))
