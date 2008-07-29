@@ -981,13 +981,13 @@ class PDFPageInterpreter(object):
     subtype = xobj.dic.get('Subtype')
     if subtype == LITERAL_FORM and 'BBox' in xobj.dic:
       interpreter = self.dup()
-      (x0,y0,x1,y1) = xobj.dic['BBox']
-      ctm = mult_matrix(xobj.dic.get('Matrix', MATRIX_IDENTITY), self.ctm)
+      (x0,y0,x1,y1) = list_value(xobj.dic['BBox'])
+      ctm = mult_matrix(list_value(xobj.dic.get('Matrix', MATRIX_IDENTITY)), self.ctm)
       (x0,y0) = apply_matrix(ctm, (x0,y0))
       (x1,y1) = apply_matrix(ctm, (x1,y1))
       bbox = (x0,y0,x1,y1)
       self.device.begin_figure(xobjid, bbox)
-      interpreter.render_contents(xobj.dic.get('Resources'), [xobj], ctm=ctm)
+      interpreter.render_contents(dict_value(xobj.dic.get('Resources')), [xobj], ctm=ctm)
       self.device.end_figure(xobjid)
     elif subtype == LITERAL_IMAGE and 'Width' in xobj.dic and 'Height' in xobj.dic:
       (x0,y0) = apply_matrix(self.ctm, (0,0))
