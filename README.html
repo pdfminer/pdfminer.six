@@ -14,7 +14,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Tue Jul 29 21:34:29 JST 2008
+Last Modified: Sat Aug 30 16:39:32 JST 2008
 <!-- hhmts end -->
 </div>
 
@@ -81,9 +81,12 @@ http://pdf2html.tabesugi.net:8080/
 <li> Do the following test:<br>
 <blockquote><pre>
 $ <strong>python -m tools.pdf2txt samples/simple1.pdf</strong>
-&lt;page id="0" bbox="0.000,0.000,612.000,792.000" rotate="0"&gt;
-&lt;text font="Helvetica" direction="1" bbox="100.000,695.032,237.352,719.032" fontsize="24.000"&gt; Hello World &lt;/text&gt;
-&lt;/page&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=ascii"&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;div style="position:absolute; top:50px;"&gt;&lt;a name="0"&gt;Page 0&lt;/a&gt;&lt;/div&gt;&lt;span style="position:absolute; border: 1px solid gray; left:0px; top:50px; width:612px; height:792px;"&gt;&lt;/span&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:100px; top:122px; font-size:24px;"&gt; Hello World &lt;/span&gt;
+&lt;div style="position:absolute; top:0px;"&gt;Page: &lt;a href="#0"&gt;0&lt;/a&gt;&lt;/div&gt;
+&lt;/body&gt;&lt;/html&gt;
 </pre></blockquote>
 <li> Done!
 </ol>
@@ -91,7 +94,8 @@ $ <strong>python -m tools.pdf2txt samples/simple1.pdf</strong>
 <p>
 <h3>For non-ASCII languages</h3>
 In order to handle non-ASCII languages (e.g. Japanese),
-you need to install an additional data called <code>CMap</code>.
+you need to install an additional data called <code>CMap</code>,
+which is distributed from Adobe.
 <p>
 Here is how:
 
@@ -173,7 +177,7 @@ By default, it extracts texts from all the pages.
 <li> <code>sgml</code> : SGML format.
 <li> <code>tag</code> : "Tagged PDF" format. A tagged PDF has its own contents annotated with
 HTML-like tags. pdf2txt tries to extract its content streams rather than inferring its text locations.
-Tags used here are defined in the PDF specification.
+Tags used here are defined in the PDF specification (See &sect;10.7 "<em>Tagged PDF</em>").
 </ul>
 <p>
 <dt> <code>-P <em>password</em></code> 
@@ -241,6 +245,7 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2008/08/30: ASCII85 encoding filter support.
 <li> 2008/07/27: Tagged contents extraction support.
 <li> 2008/07/10: Outline (TOC) extraction support.
 <li> 2008/06/29: HTML output added. Reorganized the directory structure.

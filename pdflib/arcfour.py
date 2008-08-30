@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 #
-#  Arcfour implementation
+#  Arcfour implementation in Python
 #  * public domain *
 #
 
+
+##  Arcfour
+##
 class Arcfour(object):
   
   def __init__(self, key):
@@ -30,6 +33,7 @@ class Arcfour(object):
     (self.i, self.j) = (i, j)
     return r
 
+# test
 if __name__ == '__main__':
   def doit(key, data):
     cipher = Arcfour(key)

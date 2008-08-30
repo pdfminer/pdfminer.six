@@ -35,8 +35,12 @@ LITERAL_PAGE = PSLiteralTable.intern('Page')
 LITERAL_PAGES = PSLiteralTable.intern('Pages')
 LITERAL_CATALOG = PSLiteralTable.intern('Catalog')
 LITERAL_CRYPT = PSLiteralTable.intern('Crypt')
-LITERAL_FLATE_DECODE = PSLiteralTable.intern('FlateDecode')
-LITERAL_LZW_DECODE = PSLiteralTable.intern('LZWDecode')
+LITERALS_FLATE_DECODE = (PSLiteralTable.intern('FlateDecode'),
+                         PSLiteralTable.intern('Fl'))
+LITERALS_LZW_DECODE = (PSLiteralTable.intern('LZWDecode'),
+                       PSLiteralTable.intern('LZW'))
+LITERALS_ASCII85_DECODE = (PSLiteralTable.intern('ASCII85Decode'),
+                           PSLiteralTable.intern('A85'))
 KEYWORD_R = PSKeywordTable.intern('R')
 KEYWORD_OBJ = PSKeywordTable.intern('obj')
 KEYWORD_ENDOBJ = PSKeywordTable.intern('endobj')
@@ -200,16 +204,19 @@ class PDFStream(PDFObject):
     if not isinstance(filters, list):
       filters = [ filters ]
     for f in filters:
-      if f == LITERAL_FLATE_DECODE:
+      if f in LITERALS_FLATE_DECODE:
         import zlib
         # will get errors if the document is encrypted.
         data = zlib.decompress(data)
-      elif f == LITERAL_LZW_DECODE:
+      elif f in LITERALS_LZW_DECODE:
         try:
           from cStringIO import StringIO
         except ImportError:
           from StringIO import StringIO
         data = ''.join(LZWDecoder(StringIO(data)).run())
+      elif f in LITERALS_ASCII85_DECODE:
+        import ascii85
+        data = ascii85.ascii85decode(data)
       elif f == LITERAL_CRYPT:
         raise PDFEncryptionError
       else:
@@ -265,7 +272,10 @@ class PDFPage(object):
     self.rotate = self.attrs.get('Rotate', 0)
     self.annots = self.attrs.get('Annots')
     self.beads = self.attrs.get('B')
-    contents = resolve1(self.attrs['Contents'])
+    if 'Contents' in self.attrs:
+      contents = resolve1(self.attrs['Contents'])
+    else:
+      contents = []
     if not isinstance(contents, list):
       contents = [ contents ]
     self.contents = contents

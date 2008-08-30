@@ -1016,7 +1016,11 @@ class PDFPageInterpreter(object):
     return
   
   def execute(self, streams):
-    parser = PDFContentParser(streams, debug=self.debug)
+    try:
+      parser = PDFContentParser(streams, debug=self.debug)
+    except PSEOF:
+      # empty page
+      return
     while 1:
       try:
         (_,obj) = parser.nextobject()
