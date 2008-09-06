@@ -60,7 +60,7 @@ class PDFObjRef(PDFObject):
   def __init__(self, doc, objid, _):
     if objid == 0:
       if STRICT:
-        raise PDFValueError('objid cannot be 0.')
+        raise PDFValueError('PDF object id cannot be 0.')
     self.doc = doc
     self.objid = objid
     #self.genno = genno  # Never used.
@@ -116,7 +116,7 @@ def int_value(x):
   x = resolve1(x)
   if not isinstance(x, int):
     if STRICT:
-      raise PDFTypeError('integer required: %r' % x)
+      raise PDFTypeError('Integer required: %r' % x)
     return 0
   return x
 
@@ -124,7 +124,7 @@ def float_value(x):
   x = resolve1(x)
   if not isinstance(x, float):
     if STRICT:
-      raise PDFTypeError('float required: %r' % x)
+      raise PDFTypeError('Float required: %r' % x)
     return 0.0
   return x
 
@@ -132,7 +132,7 @@ def num_value(x):
   x = resolve1(x)
   if not (isinstance(x, int) or isinstance(x, float)):
     if STRICT:
-      raise PDFTypeError('int or float required: %r' % x)
+      raise PDFTypeError('Int or Float required: %r' % x)
     return 0
   return x
 
@@ -140,7 +140,7 @@ def str_value(x):
   x = resolve1(x)
   if not isinstance(x, str):
     if STRICT:
-      raise PDFTypeError('string required: %r' % x)
+      raise PDFTypeError('String required: %r' % x)
     return ''
   return x
 
@@ -148,7 +148,7 @@ def list_value(x):
   x = resolve1(x)
   if not (isinstance(x, list) or isinstance(x, tuple)):
     if STRICT:
-      raise PDFTypeError('list required: %r' % x)
+      raise PDFTypeError('List required: %r' % x)
     return []
   return x
 
@@ -156,7 +156,7 @@ def dict_value(x):
   x = resolve1(x)
   if not isinstance(x, dict):
     if STRICT:
-      raise PDFTypeError('dict required: %r' % x)
+      raise PDFTypeError('Dict required: %r' % x)
     return {}
   return x
 
@@ -164,7 +164,7 @@ def stream_value(x):
   x = resolve1(x)
   if not isinstance(x, PDFStream):
     if STRICT:
-      raise PDFTypeError('stream required: %r' % x)
+      raise PDFTypeError('PDFStream required: %r' % x)
     return PDFStream({}, '')
   return x
 
@@ -218,7 +218,7 @@ class PDFStream(PDFObject):
         import ascii85
         data = ascii85.ascii85decode(data)
       elif f == LITERAL_CRYPT:
-        raise PDFEncryptionError
+        raise PDFEncryptionError('/Crypt filter is unsupported')
       else:
         raise PDFNotImplementedError('Unsupported filter: %r' % f)
       # apply predictors
@@ -303,28 +303,28 @@ class PDFXRef(object):
       try:
         (pos, line) = parser.nextline()
       except PSEOF:
-        raise PDFNoValidXRef('Unexpected EOF')
+        raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
       if not line:
-        raise PDFNoValidXRef('premature eof: %r' % parser)
+        raise PDFNoValidXRef('Premature eof: %r' % parser)
       if line.startswith('trailer'):
         parser.seek(pos)
         break
       f = line.strip().split(' ')
       if len(f) != 2:
-        raise PDFNoValidXRef('trailer not found: %r: line=%r' % (parser, line))
+        raise PDFNoValidXRef('Trailer not found: %r: line=%r' % (parser, line))
       try:
         (start, nobjs) = map(long, f)
       except ValueError:
-        raise PDFNoValidXRef('invalid line: %r: line=%r' % (parser, line))
+        raise PDFNoValidXRef('Invalid line: %r: line=%r' % (parser, line))
       self.offsets = {}
       for objid in xrange(start, start+nobjs):
         try:
           (_, line) = parser.nextline()
         except PSEOF:
-          raise PDFNoValidXRef('Unexpected EOF')
+          raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
         f = line.strip().split(' ')
         if len(f) != 3:
-          raise PDFNoValidXRef('invalid xref format: %r, line=%r' % (parser, line))
+          raise PDFNoValidXRef('Invalid XRef format: %r, line=%r' % (parser, line))
         (pos, genno, use) = f
         self.offsets[objid] = (int(genno), long(pos), use)
     self.load_trailer(parser)
@@ -338,7 +338,7 @@ class PDFXRef(object):
     except PSEOF:
       x = parser.pop(1)
       if not x:
-        raise PDFNoValidXRef('Unexpected EOF')
+        raise PDFNoValidXRef('Unexpected EOF - file corrupted')
       (_,dic) = x[0]
     self.trailer = dict_value(dic)
     return
@@ -350,7 +350,7 @@ class PDFXRef(object):
       raise
     if use != 'n':
       if STRICT:
-        raise PDFValueError('unused objid=%r' % objid)
+        raise PDFValueError('Unused objid=%r' % objid)
     return (None, pos)
 
 
@@ -375,7 +375,7 @@ class PDFXRefStream(object):
     (_,kwd) = parser.nexttoken()
     (_,stream) = parser.nextobject()
     if not isinstance(stream, PDFStream) or stream.dic['Type'] != LITERAL_XREF:
-      raise PDFNoValidXRef('invalid stream spec.')
+      raise PDFNoValidXRef('Invalid PDF stream spec.')
     size = stream.dic['Size']
     (start, nobjs) = stream.dic.get('Index', (0,size))
     self.objid0 = start
@@ -449,7 +449,7 @@ class PDFDocument(object):
         self.set_root(dict_value(trailer['Root']))
         break
     else:
-      raise PDFValueError('no /Root object!')
+      raise PDFSyntaxError('No /Root object! - Is this really a PDF?')
     # The document is set to be non-ready again, until all the
     # proper initialization (asking the password key and
     # verifying the access permission, so on) is finished.
@@ -478,15 +478,15 @@ class PDFDocument(object):
       return
     (docid, param) = self.encryption
     if literal_name(param['Filter']) != 'Standard':
-      raise PDFEncryptionError('unknown filter: param=%r' % param)
+      raise PDFEncryptionError('Unknown filter: param=%r' % param)
     V = int_value(param.get('V', 0))
     if not (V == 1 or V == 2):
-      raise PDFEncryptionError('unknown algorithm: param=%r' % param)
+      raise PDFEncryptionError('Unknown algorithm: param=%r' % param)
     length = int_value(param.get('Length', 40)) # Key length (bits)
     O = str_value(param['O'])
     R = int_value(param['R']) # Revision
     if 5 <= R:
-      raise PDFEncryptionError('unknown revision: %r' % R)
+      raise PDFEncryptionError('Unknown revision: %r' % R)
     U = str_value(param['U'])
     P = int_value(param['P'])
     self.is_printable = bool(P & 4)        
@@ -589,7 +589,7 @@ class PDFDocument(object):
         assert objid1 == objid, (objid, objid1)
         (_,kwd) = self.parser.nexttoken()
         if kwd != KEYWORD_OBJ:
-          raise PDFSyntaxError('invalid obj spec: offset=%r' % index)
+          raise PDFSyntaxError('Invalid object spec: offset=%r' % index)
         (_,obj) = self.parser.nextobject()
         if isinstance(obj, PDFStream):
           obj.set_objid(objid, genno)
@@ -603,7 +603,7 @@ class PDFDocument(object):
   INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
   def get_pages(self, debug=0):
     if not self.ready:
-      raise PDFException('PDFDocument not initialized')
+      raise PDFException('PDFDocument is not initialized')
     #assert self.xrefs
     def search(obj, parent):
       tree = dict_value(obj).copy()
@@ -627,7 +627,7 @@ class PDFDocument(object):
 
   def get_outlines(self):
     if 'Outlines' not in self.catalog:
-      raise PDFException('no /Outlines defined!')
+      raise PDFException('No /Outlines defined!')
     def search(entry, level):
       entry = dict_value(entry)
       if 'Title' in entry:
@@ -759,7 +759,7 @@ class PDFParser(PSStackParser):
       if line:
         prev = line
     else:
-      raise PDFNoValidXRef
+      raise PDFNoValidXRef('Unexpected EOF')
     if 1 <= self.debug:
       print >>stderr, 'xref found: pos=%r' % prev
     self.seek(long(prev))

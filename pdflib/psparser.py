@@ -87,7 +87,7 @@ KEYWORD_DICT_END = KWD('>>')
 def literal_name(x):
   if not isinstance(x, PSLiteral):
     if STRICT:
-      raise PSTypeError('literal required: %r' % x)
+      raise PSTypeError('Literal required: %r' % x)
     else:
       return str(x)
   return x.name
@@ -95,7 +95,7 @@ def literal_name(x):
 def keyword_name(x):
   if not isinstance(x, PSKeyword):
     if STRICT:
-      raise PSTypeError('keyword required: %r' % x)
+      raise PSTypeError('Keyword required: %r' % x)
     else:
       return str(x)
   return x.name
@@ -172,7 +172,7 @@ class PSBaseParser(object):
     self.bufpos = self.fp.tell()
     self.buf = self.fp.read(self.BUFSIZ)
     if not self.buf:
-      raise PSEOF
+      raise PSEOF('Unexpected EOF')
     self.charpos = 0
     return
   
@@ -463,7 +463,7 @@ class PSStackParser(PSBaseParser):
     return
   def end_type(self, type):
     if self.curtype != type:
-      raise PSTypeError('type mismatch: %r != %r' % (self.curtype, type))
+      raise PSTypeError('Type mismatch: %r != %r' % (self.curtype, type))
     objs = [ obj for (_,obj) in self.curstack ]
     (pos, self.curtype, self.curstack) = self.context.pop()
     if 2 <= self.debug:
@@ -506,7 +506,7 @@ class PSStackParser(PSBaseParser):
         try:
           (pos, objs) = self.end_type('d')
           if len(objs) % 2 != 0:
-            raise PSSyntaxError('invalid dictionary construct: %r' % objs)
+            raise PSSyntaxError('Invalid dictionary construct: %r' % objs)
           d = dict( (literal_name(k), v) for (k,v) in choplist(2, objs))
           self.push((pos, d))
         except PSTypeError:

@@ -297,7 +297,7 @@ class PDFCIDFont(PDFFont):
       name = literal_name(spec['Encoding'])
     except KeyError:
       if STRICT:
-        raise PDFFontError('Encoding not specified')
+        raise PDFFontError('Encoding is unspecified')
       name = 'unknown'
     try:
       self.cmap = CMapDB.get_cmap(name, strict=STRICT)
@@ -455,7 +455,7 @@ class PDFResourceManager(object):
         font = self.get_font(None, subspec)
       else:
         if STRICT:
-          raise PDFFontError('Invalid Font: %r' % spec)
+          raise PDFFontError('Invalid Font spec: %r' % spec)
         font = PDFType1Font(spec) # this is so wrong!
       if objid:
         self.fonts[objid] = font
@@ -520,7 +520,7 @@ class PDFContentParser(PSStackParser):
         strm = stream_value(self.streams[self.istream])
         self.istream += 1
       else:
-        raise PSEOF
+        raise PSEOF('Unexpected EOF, file truncated?')
       self.fp = StringIO(strm.get_data())
     return
 
@@ -579,7 +579,7 @@ class PDFContentParser(PSStackParser):
       try:
         (_, objs) = self.end_type('inline')
         if len(objs) % 2 != 0:
-          raise PSTypeError('invalid dictionary construct: %r' % objs)
+          raise PSTypeError('Invalid dictionary construct: %r' % objs)
         d = dict( (literal_name(k), v) for (k,v) in choplist(2, objs) )
         (pos, data) = self.get_inline_data(pos+len('ID '))
         obj = PDFStream(d, data)
@@ -809,7 +809,7 @@ class PDFPageInterpreter(object):
       n = self.scs.ncomponents
     else:
       if STRICT:
-        raise PDFInterpreterError('no colorspace specified!')
+        raise PDFInterpreterError('No colorspace specified!')
       n = 1
     self.pop(n)
     return
@@ -818,7 +818,7 @@ class PDFPageInterpreter(object):
       n = self.ncs.ncomponents
     else:
       if STRICT:
-        raise PDFInterpreterError('no colorspace specified!')
+        raise PDFInterpreterError('No colorspace specified!')
       n = 1
     self.pop(n)
     return
@@ -884,7 +884,7 @@ class PDFPageInterpreter(object):
       self.textstate.font = self.fontmap[literal_name(fontid)]
     except KeyError:
       if STRICT:
-        raise PDFInterpreterError('Undefined font id: %r' % fontid)
+        raise PDFInterpreterError('Undefined Font id: %r' % fontid)
       return
     self.textstate.fontsize = fontsize
     return
@@ -1043,7 +1043,7 @@ class PDFPageInterpreter(object):
             func()
         else:
           if STRICT:
-            raise PDFInterpreterError('unknown operator: %r' % obj.name)
+            raise PDFInterpreterError('Unknown operator: %r' % obj.name)
       else:
         self.push(obj)
     return
