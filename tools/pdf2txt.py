@@ -154,7 +154,7 @@ class TagExtractor(PDFDevice):
 # pdf2txt
 class TextExtractionNotAllowed(RuntimeError): pass
 
-def convert(outfp, rsrc, device, fname, pagenos, maxpages=0, password='', debug=0):
+def convert(rsrc, device, fname, pagenos, maxpages=0, password='', debug=0):
   doc = PDFDocument(debug=debug)
   fp = file(fname, 'rb')
   parser = PDFParser(doc, fp, debug=debug)
@@ -216,7 +216,7 @@ def main(argv):
   else:
     return usage()
   for fname in args:
-    convert(outfp, rsrc, device, fname, pagenos, 
+    convert(rsrc, device, fname, pagenos, 
             maxpages=maxpages, password=password, debug=debug)
   return
 
