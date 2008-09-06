@@ -161,9 +161,9 @@ def convert(rsrc, device, fname, pagenos, maxpages=0, password='', debug=0):
   try:
     doc.initialize(password)
   except PDFPasswordIncorrect:
-    raise TextExtractionNotAllowed('incorrect password')
+    raise TextExtractionNotAllowed('Incorrect password')
   if not doc.is_extractable:
-    raise TextExtractionNotAllowed('text extraction is not allowed: %r' % fname)
+    raise TextExtractionNotAllowed('Text extraction is not allowed: %r' % fname)
   interpreter = PDFPageInterpreter(rsrc, device, debug=debug)
   for (pageno,page) in enumerate(doc.get_pages(debug=debug)):
     if pagenos and (pageno not in pagenos): continue

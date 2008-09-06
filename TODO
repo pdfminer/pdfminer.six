@@ -1,6 +1,5 @@
 TODOs:
-  - API Documentation.
-  - Sample webapp for pdf->html.
+  - Better API Documentation.
   - Error handling for invalid type.
   - Infer text stream by clustering.
 
