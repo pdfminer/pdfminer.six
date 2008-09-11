@@ -22,7 +22,8 @@ def encprops(props, codec):
 ##
 class SGMLConverter(TextConverter):
 
-  def end_page(self, _):
+  def end_page(self, page):
+    TextConverter.end_page(self, page)
     page = self.cur_item
     def f(item):
       bbox = '%.3f,%.3f,%.3f,%.3f' % item.bbox
@@ -59,7 +60,8 @@ class HTMLConverter(TextConverter):
     self.yoffset = self.pagepad
     return
   
-  def end_page(self, _):
+  def end_page(self, page):
+    TextConverter.end_page(self, page)
     page = self.cur_item
     def f(item):
       if isinstance(item, FigureItem):
@@ -130,7 +132,7 @@ class TagExtractor(PDFDevice):
     self.outfp.write('<page id="%s" bbox="%s" rotate="%d">' %
                      (self.pageno, bbox, page.rotate))
     return
-  def end_page(self, _):
+  def end_page(self, page):
     self.outfp.write('</page>\n')
     self.pageno += 1
     return
