@@ -586,7 +586,7 @@ class PDFDocument(object):
         self.parser.seek(index)
         (_,objid1) = self.parser.nexttoken() # objid
         (_,genno) = self.parser.nexttoken() # genno
-        assert objid1 == objid, (objid, objid1)
+        #assert objid1 == objid, (objid, objid1)
         (_,kwd) = self.parser.nexttoken()
         if kwd != KEYWORD_OBJ:
           raise PDFSyntaxError('Invalid object spec: offset=%r' % index)

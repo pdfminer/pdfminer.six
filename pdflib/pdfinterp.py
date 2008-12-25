@@ -73,9 +73,15 @@ def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
           a0*c1+c0*d1,    b0*c1+d0*d1,
           a0*e1+c0*f1+e0, b0*e1+d0*f1+f0)
 
+def translate_matrix((a,b,c,d,e,f), (x,y)):
+  return (a,b,c,d,e+x,f+y)
+  
 def apply_matrix((a,b,c,d,e,f), (x,y)):
   '''Applies a matrix to coordinates.'''
   return (a*x+c*y+e, b*x+d*y+f)
+
+def apply_matrix_norm((a,b,c,d,e,f), (x,y)):
+  return (a*x+c*y, b*x+d*y)
 
 
 ##  Fonts
@@ -101,6 +107,9 @@ class PDFFont(object):
     return '<PDFFont>'
 
   def is_vertical(self):
+    return False
+  
+  def is_multibyte(self):
     return False
   
   def decode(self, bytes):
@@ -372,6 +381,9 @@ class PDFCIDFont(PDFFont):
   
   def is_vertical(self):
     return self.vertical
+
+  def is_multibyte(self):
+    return True
   
   def decode(self, bytes):
     return self.cmap.decode(bytes)
@@ -498,7 +510,7 @@ class PDFDevice(object):
   def end_figure(self, name):
     return
   
-  def render_string(self, textstate, textmatrix, size, seq):
+  def render_string(self, textstate, textmatrix, seq):
     raise NotImplementedError
   def render_image(self, stream, size, matrix):
     raise NotImplementedError
@@ -928,15 +940,16 @@ class PDFPageInterpreter(object):
   def do_TJ(self, seq):
     #print >>stderr, 'TJ(%r): %r' % (seq,self.textstate)
     textstate = self.textstate
+    matrix = translate_matrix(textstate.matrix, textstate.linematrix)
+    self.device.render_string(textstate, matrix, seq)
     font = textstate.font
-    (a,b,c,d,e,f) = textstate.matrix
-    (lx,ly) = textstate.linematrix
     s = ''.join( x for x in seq if isinstance(x, str) )
     n = sum( x for x in seq if not isinstance(x, str) )
-    w = ((font.string_width(s)-n)/1000.0 * textstate.fontsize +
-         len(s) * textstate.charspace +
-         s.count(' ')*textstate.wordspace) * textstate.scaling / 100.0
-    self.device.render_string(textstate, (a,b,c,d,e+lx,f+ly), w, seq)
+    w = (font.string_width(s)-n)*.001 * textstate.fontsize + len(s) * textstate.charspace
+    if not font.is_multibyte():
+      w += s.count(' ')*textstate.wordspace
+    w *= (textstate.scaling * .01)
+    (lx,ly) = textstate.linematrix
     if font.is_vertical():
       ly += w
     else:

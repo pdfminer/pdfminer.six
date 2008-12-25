@@ -89,7 +89,7 @@ def dumpallobjs(out, doc, codec=None):
         dumpxml(out, obj, codec=codec)
         out.write('\n</object>\n\n')
       except:
-        pass
+        raise
   dumptrailers(out, doc)
   out.write('</pdf>')
   return

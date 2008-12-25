@@ -3,7 +3,7 @@ import sys
 stdout = sys.stdout
 stderr = sys.stderr
 from pdfinterp import PDFDevice, PDFUnicodeNotDefined, \
-     mult_matrix, apply_matrix
+     mult_matrix, apply_matrix, apply_matrix_norm, translate_matrix
 
 
 ##  PageItem
@@ -37,47 +37,73 @@ class FigureItem(PageItem):
 ##
 class TextItem(object):
   
-  def __init__(self, matrix, font, fontsize, width, text):
+  SPACE_WIDTH = 0.6
+  
+  def __init__(self, matrix, font, fontsize, charspace, scaling, text):
     self.matrix = matrix
     self.font = font
-    (a,b,c,d,tx,ty) = self.matrix
+    (_,_,_,_,tx,ty) = self.matrix
     self.origin = (tx,ty)
     self.direction = 0
+    self.text = ''
     if not self.font.is_vertical():
+      spwidth = int(font.char_width(32) * self.SPACE_WIDTH) # space width
       self.direction = 1
-      (self.width, self.height) = apply_matrix((a,b,c,d,0,0), (width,fontsize))
-      self.width = abs(self.width)
-      (_,ascent) = apply_matrix((a,b,c,d,0,0), (0,font.ascent*fontsize*0.001))
-      (_,descent) = apply_matrix((a,b,c,d,0,0), (0,font.descent*fontsize*0.001))
+      (_,descent) = apply_matrix_norm(self.matrix, (0,font.descent * fontsize * .001))
       ty += descent
-      self.bbox = (tx, ty, tx+self.width, ty+self.height)
+      w = 0
+      dx = 0
+      prev = ' '
+      for t in text:
+        if isinstance(t, tuple):
+          if prev != ' ' and spwidth < dx:
+            self.text += ' '
+          (_,char) = t
+          self.text += char
+          prev = char
+          dx = 0
+          w += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling * .01
+        else:
+          dx -= t
+          w += t * fontsize * .001 * scaling * .01
+      self.adv = (w, 0)
+      (w,h) = apply_matrix_norm(self.matrix, (w,fontsize))
+      self.bbox = (tx, ty, tx+w, ty+h)
     else:
       self.direction = 2
-      (self.width, self.height) = apply_matrix((a,b,c,d,0,0), (fontsize,width))
-      self.width = abs(self.width)
-      (disp,_) = text[0]
-      (_,disp) = apply_matrix((a,b,c,d,0,0), (0, (1000-disp)*fontsize*0.001))
-      tx -= self.width/2
+      disp = 0
+      h = 0
+      for t in text:
+        if isinstance(t, tuple):
+          (disp,char) = t
+          (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-disp)*fontsize*.001))
+          self.text += char
+          h += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling * .01
+          break
+      for t in text:
+        if isinstance(t, tuple):
+          (_,char) = t
+          self.text += char
+          h += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling * .01
+      self.adv = (0, h)
+      (w,h) = apply_matrix_norm(self.matrix, (fontsize,h))
+      tx -= w/2
       ty += disp
-      self.bbox = (tx, ty+self.height, tx+self.width, ty)
-    self.text = ''.join( c for (_,c) in text )
-    (w,h) = apply_matrix((a,b,c,d,0,0), (fontsize,fontsize))
-    self.fontsize = max(w,h)
+      self.bbox = (tx, ty+h, tx+w, ty)
+    self.fontsize = max(apply_matrix_norm(self.matrix, (fontsize,fontsize)))
     return
   
   def __repr__(self):
-    return ('<text matrix=%r font=%r fontsize=%r width=%r height=%r text=%r>' %
-            (self.matrix, self.font, self.fontsize, self.width, self.height, self.text))
+    return ('<text matrix=%r font=%r fontsize=%r bbox=%r text=%r>' %
+            (self.matrix, self.font, self.fontsize, self.bbox, self.text))
 
 
-##  TextConverter
+##  PageAggregator
 ##
-class TextConverter(PDFDevice):
+class PageAggregator(PDFDevice):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', debug=0):
+  def __init__(self, rsrc, debug=0):
     PDFDevice.__init__(self, rsrc, debug=debug)
-    self.outfp = outfp
-    self.codec = codec
     self.pageno = 0
     self.stack = []
     return
@@ -109,14 +135,12 @@ class TextConverter(PDFDevice):
       print >>stderr, 'undefined: %r, %r' % (cidcoding, cid)
     return None
 
-  def render_string(self, textstate, textmatrix, size, seq, ratio=0.6):
+  def render_string(self, textstate, textmatrix, seq):
     font = textstate.font
-    spwidth = int(-font.char_width(32) * ratio) # space width
     text = []
     for x in seq:
       if isinstance(x, int) or isinstance(x, float):
-        if not font.is_vertical() and x <= spwidth:
-          text.append((0, ' '))
+        text.append(x)
       else:
         chars = font.decode(x)
         for cid in chars:
@@ -125,11 +149,20 @@ class TextConverter(PDFDevice):
             text.append((font.char_disp(cid), char))
           except PDFUnicodeNotDefined, e:
             (cidcoding, cid) = e.args
-            s = self.handle_undefined_char(cidcoding, cid)
-            if s:
-              text.append(s)
+            unc = self.handle_undefined_char(cidcoding, cid)
+            if unc:
+              text.append(unc)
+          if cid == 32 and not font.is_multibyte():
+            if text:
+              item = TextItem(mult_matrix(textmatrix, self.ctm),
+                              font, textstate.fontsize, textstate.charspace, textstate.scaling, text)
+              self.cur_item.add(item)
+              (dx,dy) = item.adv
+              dx += textstate.wordspace * textstate.scaling * .01
+              textmatrix = translate_matrix(textmatrix, (dx, dy))
+              text = []
     if text:
       item = TextItem(mult_matrix(textmatrix, self.ctm),
-                      font, textstate.fontsize, size, text)
+                      font, textstate.fontsize, textstate.charspace, textstate.scaling, text)
       self.cur_item.add(item)
     return

@@ -2,11 +2,11 @@
 import sys
 stdout = sys.stdout
 stderr = sys.stderr
-from pdflib.pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
-from pdflib.pdfinterp import PDFDevice, PDFResourceManager, \
+from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
+from pdfinterp import PDFDevice, PDFResourceManager, \
      PDFPageInterpreter, PDFUnicodeNotDefined
-from pdflib.cmap import CMapDB
-from pdflib.page import PageItem, FigureItem, TextItem, TextConverter
+from cmap import CMapDB
+from page import PageItem, FigureItem, TextItem, PageAggregator
 
 
 def enc(x, codec):
@@ -18,6 +18,16 @@ def encprops(props, codec):
   return ''.join( ' %s="%s"' % (enc(k,codec), enc(str(v),codec)) for (k,v) in sorted(props.iteritems()) )
 
 
+##  TextConverter
+class TextConverter(PageAggregator):
+  
+  def __init__(self, rsrc, outfp, codec='ascii', debug=0):
+    PageAggregator.__init__(self, rsrc, debug=debug)
+    self.outfp = outfp
+    self.codec = codec
+    return
+  
+  
 ##  SGMLConverter
 ##
 class SGMLConverter(TextConverter):
@@ -156,7 +166,7 @@ class TagExtractor(PDFDevice):
 # pdf2txt
 class TextExtractionNotAllowed(RuntimeError): pass
 
-def convert(rsrc, device, fname, pagenos, maxpages=0, password='', debug=0):
+def convert(rsrc, device, fname, pagenos=None, maxpages=0, password='', debug=0):
   doc = PDFDocument(debug=debug)
   fp = file(fname, 'rb')
   parser = PDFParser(doc, fp, debug=debug)
