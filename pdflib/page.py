@@ -2,8 +2,8 @@
 import sys
 stdout = sys.stdout
 stderr = sys.stderr
-from pdfinterp import PDFDevice, PDFUnicodeNotDefined, \
-     mult_matrix, apply_matrix, apply_matrix_norm, translate_matrix
+from pdflib.pdfinterp import PDFDevice, PDFUnicodeNotDefined
+from pdflib.utils import mult_matrix, apply_matrix, apply_matrix_norm, translate_matrix
 
 
 ##  PageItem
@@ -46,6 +46,7 @@ class TextItem(object):
     self.origin = (tx,ty)
     self.direction = 0
     self.text = ''
+    scaling *= .01
     if not self.font.is_vertical():
       spwidth = int(font.char_width(32) * self.SPACE_WIDTH) # space width
       self.direction = 1
@@ -62,12 +63,12 @@ class TextItem(object):
           self.text += char
           prev = char
           dx = 0
-          w += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling * .01
+          w += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling
         else:
           dx -= t
-          w += t * fontsize * .001 * scaling * .01
-      self.adv = (w, 0)
+          w += t * fontsize * .001 * scaling
       (w,h) = apply_matrix_norm(self.matrix, (w,fontsize))
+      self.adv = (w, 0)
       self.bbox = (tx, ty, tx+w, ty+h)
     else:
       self.direction = 2
@@ -78,33 +79,33 @@ class TextItem(object):
           (disp,char) = t
           (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-disp)*fontsize*.001))
           self.text += char
-          h += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling * .01
+          h += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling
           break
       for t in text:
         if isinstance(t, tuple):
           (_,char) = t
           self.text += char
-          h += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling * .01
-      self.adv = (0, h)
+          h += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling
       (w,h) = apply_matrix_norm(self.matrix, (fontsize,h))
       tx -= w/2
       ty += disp
+      self.adv = (0, h)
       self.bbox = (tx, ty+h, tx+w, ty)
     self.fontsize = max(apply_matrix_norm(self.matrix, (fontsize,fontsize)))
     return
   
   def __repr__(self):
-    return ('<text matrix=%r font=%r fontsize=%r bbox=%r text=%r>' %
-            (self.matrix, self.font, self.fontsize, self.bbox, self.text))
+    return ('<text matrix=%r font=%r fontsize=%r bbox=%r text=%r adv=%r>' %
+            (self.matrix, self.font, self.fontsize, self.bbox, self.text, self.adv))
 
 
 ##  PageAggregator
 ##
 class PageAggregator(PDFDevice):
 
-  def __init__(self, rsrc, debug=0):
-    PDFDevice.__init__(self, rsrc, debug=debug)
-    self.pageno = 0
+  def __init__(self, rsrc, pageno=1):
+    PDFDevice.__init__(self, rsrc)
+    self.pageno = pageno
     self.stack = []
     return
 
@@ -138,6 +139,7 @@ class PageAggregator(PDFDevice):
   def render_string(self, textstate, textmatrix, seq):
     font = textstate.font
     text = []
+    textmatrix = mult_matrix(textmatrix, self.ctm)
     for x in seq:
       if isinstance(x, int) or isinstance(x, float):
         text.append(x)
@@ -154,15 +156,13 @@ class PageAggregator(PDFDevice):
               text.append(unc)
           if cid == 32 and not font.is_multibyte():
             if text:
-              item = TextItem(mult_matrix(textmatrix, self.ctm),
-                              font, textstate.fontsize, textstate.charspace, textstate.scaling, text)
+              item = TextItem(textmatrix, font, textstate.fontsize, textstate.charspace, textstate.scaling, text)
               self.cur_item.add(item)
               (dx,dy) = item.adv
               dx += textstate.wordspace * textstate.scaling * .01
               textmatrix = translate_matrix(textmatrix, (dx, dy))
               text = []
     if text:
-      item = TextItem(mult_matrix(textmatrix, self.ctm),
-                      font, textstate.fontsize, textstate.charspace, textstate.scaling, text)
+      item = TextItem(textmatrix, font, textstate.fontsize, textstate.charspace, textstate.scaling, text)
       self.cur_item.add(item)
     return

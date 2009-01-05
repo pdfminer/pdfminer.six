@@ -15,7 +15,7 @@ stderr = sys.stderr
 
 ESC_PAT = re.compile(r'[\000-\037&<>\042\047\134\177-\377]')
 def esc(s):
-  return ESC_PAT.sub(lambda m:'\\x%02x' % ord(m.group(0)), s)
+  return ESC_PAT.sub(lambda m:'&#%d;' % ord(m.group(0)), s)
 
 
 # dumpxml
@@ -96,10 +96,10 @@ def dumpallobjs(out, doc, codec=None):
 
 # dumpoutline
 def dumpoutline(outfp, fname, objids, pagenos, password='',
-                dumpall=False, codec=None, debug=0):
-  doc = PDFDocument(debug=debug)
+                dumpall=False, codec=None):
+  doc = PDFDocument()
   fp = file(fname, 'rb')
-  parser = PDFParser(doc, fp, debug=debug)
+  parser = PDFParser(doc, fp)
   doc.initialize(password)
   pages = dict( (page.pageid, pageno) for (pageno,page) in enumerate(doc.get_pages()) )
   for (level,title,dest,a,se) in doc.get_outlines():
@@ -116,10 +116,10 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
 
 # dumppdf
 def dumppdf(outfp, fname, objids, pagenos, password='',
-            dumpall=False, codec=None, debug=0):
-  doc = PDFDocument(debug=debug)
+            dumpall=False, codec=None):
+  doc = PDFDocument()
   fp = file(fname, 'rb')
-  parser = PDFParser(doc, fp, debug=debug)
+  parser = PDFParser(doc, fp)
   doc.initialize(password)
   if objids:
     for objid in objids:
@@ -174,9 +174,12 @@ def main(argv):
     elif k == '-T': proc = dumpoutline
     elif k == '-o': outfp = file(v, 'wb')
   #
+  PDFDocument.debug = debug
+  PDFParser.debug = debug
+  #
   for fname in args:
     proc(outfp, fname, objids, pagenos, password=password,
-         dumpall=dumpall, codec=codec, debug=debug)
+         dumpall=dumpall, codec=codec)
   return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

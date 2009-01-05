@@ -121,10 +121,11 @@ class PSBaseParser(object):
   Most basic PostScript parser that performs only basic tokenization.
   '''
   BUFSIZ = 4096
+
+  debug = 0
   
-  def __init__(self, fp, debug=0):
+  def __init__(self, fp):
     self.fp = fp
-    self.debug = debug
     self.seek(0)
     return
 
@@ -421,8 +422,8 @@ class PSBaseParser(object):
 ##
 class PSStackParser(PSBaseParser):
 
-  def __init__(self, fp, debug=0):
-    PSBaseParser.__init__(self,fp, debug=debug)
+  def __init__(self, fp):
+    PSBaseParser.__init__(self, fp)
     self.reset()
     return
   
@@ -582,7 +583,7 @@ func/a/b{(c)do*}def
     class MyParser(PSBaseParser):
       def flush(self):
         self.add_results(*self.popall())
-    parser = MyParser(StringIO.StringIO(s), debug=1)
+    parser = MyParser(StringIO.StringIO(s))
     r = []
     try:
       while 1:
@@ -596,7 +597,7 @@ func/a/b{(c)do*}def
     class MyParser(PSStackParser):
       def flush(self):
         self.add_results(*self.popall())
-    parser = MyParser(StringIO.StringIO(s), debug=1)
+    parser = MyParser(StringIO.StringIO(s))
     r = []
     try:
       while 1:

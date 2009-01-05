@@ -2,11 +2,11 @@
 import sys
 stdout = sys.stdout
 stderr = sys.stderr
-from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
-from pdfinterp import PDFDevice, PDFResourceManager, \
+from pdflib.pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
+from pdflib.pdfinterp import PDFDevice, PDFResourceManager, \
      PDFPageInterpreter, PDFUnicodeNotDefined
-from cmap import CMapDB
-from page import PageItem, FigureItem, TextItem, PageAggregator
+from pdflib.cmap import CMapDB
+from pdflib.page import PageItem, FigureItem, TextItem, PageAggregator
 
 
 def enc(x, codec):
@@ -21,8 +21,8 @@ def encprops(props, codec):
 ##  TextConverter
 class TextConverter(PageAggregator):
   
-  def __init__(self, rsrc, outfp, codec='ascii', debug=0):
-    PageAggregator.__init__(self, rsrc, debug=debug)
+  def __init__(self, rsrc, outfp, codec='ascii'):
+    PageAggregator.__init__(self, rsrc)
     self.outfp = outfp
     self.codec = codec
     return
@@ -60,8 +60,8 @@ class SGMLConverter(TextConverter):
 ##
 class HTMLConverter(TextConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, debug=0):
-    TextConverter.__init__(self, rsrc, outfp, codec=codec, debug=debug)
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1):
+    TextConverter.__init__(self, rsrc, outfp, codec=codec)
     self.pagenum = pagenum
     self.pagepad = pagepad
     self.scale = scale
@@ -110,8 +110,8 @@ class HTMLConverter(TextConverter):
 ##
 class TagExtractor(PDFDevice):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', debug=0):
-    PDFDevice.__init__(self, rsrc, debug=debug)
+  def __init__(self, rsrc, outfp, codec='utf-8'):
+    PDFDevice.__init__(self, rsrc)
     self.outfp = outfp
     self.codec = codec
     self.pageno = 0
@@ -166,18 +166,18 @@ class TagExtractor(PDFDevice):
 # pdf2txt
 class TextExtractionNotAllowed(RuntimeError): pass
 
-def convert(rsrc, device, fname, pagenos=None, maxpages=0, password='', debug=0):
-  doc = PDFDocument(debug=debug)
+def convert(rsrc, device, fname, pagenos=None, maxpages=0, password=''):
+  doc = PDFDocument()
   fp = file(fname, 'rb')
-  parser = PDFParser(doc, fp, debug=debug)
+  parser = PDFParser(doc, fp)
   try:
     doc.initialize(password)
   except PDFPasswordIncorrect:
     raise TextExtractionNotAllowed('Incorrect password')
   if not doc.is_extractable:
     raise TextExtractionNotAllowed('Text extraction is not allowed: %r' % fname)
-  interpreter = PDFPageInterpreter(rsrc, device, debug=debug)
-  for (pageno,page) in enumerate(doc.get_pages(debug=debug)):
+  interpreter = PDFPageInterpreter(rsrc, device)
+  for (pageno,page) in enumerate(doc.get_pages()):
     if pagenos and (pageno not in pagenos): continue
     interpreter.process_page(page)
     if maxpages and maxpages <= pageno+1: break
@@ -217,19 +217,25 @@ def main(argv):
     elif k == '-t': outtype = v
     elif k == '-o': outfp = file(v, 'wb')
   #
-  CMapDB.initialize(cmapdir, cdbcmapdir, debug=debug)
-  rsrc = PDFResourceManager(debug=debug)
+  CMapDB.debug = debug
+  PDFResourceManager.debug = debug
+  PDFDocument.debug = debug
+  PDFParser.debug = debug
+  PDFPageInterpreter.debug = debug
+  #
+  CMapDB.initialize(cmapdir, cdbcmapdir)
+  rsrc = PDFResourceManager()
   if outtype == 'sgml':
-    device = SGMLConverter(rsrc, outfp, codec, debug=debug)
+    device = SGMLConverter(rsrc, outfp, codec)
   elif outtype == 'html':
-    device = HTMLConverter(rsrc, outfp, codec, debug=debug)
+    device = HTMLConverter(rsrc, outfp, codec)
   elif outtype == 'tag':
-    device = TagExtractor(rsrc, outfp, codec, debug=debug)
+    device = TagExtractor(rsrc, outfp, codec)
   else:
     return usage()
   for fname in args:
     convert(rsrc, device, fname, pagenos, 
-            maxpages=maxpages, password=password, debug=debug)
+            maxpages=maxpages, password=password)
   return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

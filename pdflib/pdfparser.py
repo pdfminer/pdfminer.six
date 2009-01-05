@@ -410,9 +410,10 @@ class PDFXRefStream(object):
 ##  A PDF parser is associated with the document.
 ##
 class PDFDocument(object):
+
+  debug = 0
   
-  def __init__(self, debug=0):
-    self.debug = debug
+  def __init__(self):
     self.xrefs = []
     self.objs = {}
     self.parsed_objs = {}
@@ -569,7 +570,7 @@ class PDFDocument(object):
         if strmid in self.parsed_objs:
           objs = self.parsed_objs[stream]
         else:
-          parser = PDFObjStrmParser(self, stream.get_data(), debug=self.debug)
+          parser = PDFObjStrmParser(self, stream.get_data())
           objs = []
           try:
             while 1:
@@ -601,7 +602,7 @@ class PDFDocument(object):
     return obj
   
   INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
-  def get_pages(self, debug=0):
+  def get_pages(self):
     if not self.ready:
       raise PDFException('PDFDocument is not initialized')
     #assert self.xrefs
@@ -611,13 +612,13 @@ class PDFDocument(object):
         if k in self.INHERITABLE_ATTRS and k not in tree:
           tree[k] = v
       if tree.get('Type') == LITERAL_PAGES and 'Kids' in tree:
-        if 1 <= debug:
+        if 1 <= self.debug:
           print >>stderr, 'Pages: Kids=%r' % tree['Kids']
         for c in tree['Kids']:
           for x in search(c, tree):
             yield x
       elif tree.get('Type') == LITERAL_PAGE:
-        if 1 <= debug:
+        if 1 <= self.debug:
           print >>stderr, 'Page: %r' % tree
         yield (obj.objid, tree)
     if 'Pages' not in self.catalog: return
@@ -673,8 +674,8 @@ class PDFDocument(object):
 ##
 class PDFParser(PSStackParser):
 
-  def __init__(self, doc, fp, debug=0):
-    PSStackParser.__init__(self, fp, debug=debug)
+  def __init__(self, doc, fp):
+    PSStackParser.__init__(self, fp)
     self.doc = doc
     self.doc.set_parser(self)
     return
@@ -837,12 +838,13 @@ class PDFParser(PSStackParser):
 ##  PDFObjStrmParser
 ##
 class PDFObjStrmParser(PDFParser):
-  def __init__(self, doc, data, debug=0):
+  
+  def __init__(self, doc, data):
     try:
       from cStringIO import StringIO
     except ImportError:
       from StringIO import StringIO
-    PDFParser.__init__(self, doc, StringIO(data), debug=debug)
+    PDFParser.__init__(self, doc, StringIO(data))
     return
   
   def flush(self):

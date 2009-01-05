@@ -1,7 +1,7 @@
 # Makefile for pdfminer
 
 PACKAGE=pdfminer
-VERSION=20080906
+VERSION=20081228
 GNUTAR=tar
 SVN=svn
 PYTHON=python

@@ -2,8 +2,8 @@
 import sys
 stderr = sys.stderr
 from struct import pack, unpack
-from utils import choplist, nunpack
-from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
+from pdflib.utils import choplist, nunpack
+from pdflib.psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSLiteral, PSKeyword, literal_name, keyword_name, \
      PSStackParser
 try:
@@ -18,9 +18,10 @@ class CMapError(Exception): pass
 ##  CMap
 ##
 class CMap(object):
+
+  debug = 0
   
-  def __init__(self, debug=0):
-    self.debug = debug
+  def __init__(self):
     self.code2cid = {}
     self.cid2code = {}
     self.attrs = {}
@@ -90,8 +91,8 @@ class CMap(object):
 ##
 class CDBCMap(CMap):
   
-  def __init__(self, cdbname, debug=0):
-    CMap.__init__(self, debug=debug)
+  def __init__(self, cdbname):
+    CMap.__init__(self)
     self.cdbname = cdbname
     self.db = cdb.init(cdbname)
     return
@@ -176,10 +177,9 @@ class CMapDB(object):
   cmapdb = {}
 
   @classmethod
-  def initialize(klass, dirname, cdbdirname=None, debug=0):
+  def initialize(klass, dirname, cdbdirname=None):
     klass.dirname = dirname
     klass.cdbdirname = cdbdirname or dirname
-    klass.debug = debug
     return
 
   @classmethod
@@ -200,7 +200,7 @@ class CMapDB(object):
           print >>stderr, 'Reading: CMap %r...' % fname
         cmap = CMap()
         fp = file(fname, 'rb')
-        CMapParser(cmap, fp, debug=klass.debug).run()
+        CMapParser(cmap, fp).run()
         fp.close()
       elif not strict:
         cmap = CMap() # just create empty cmap
@@ -214,8 +214,8 @@ class CMapDB(object):
 ##
 class CMapParser(PSStackParser):
 
-  def __init__(self, cmap, fp, debug=0):
-    PSStackParser.__init__(self, fp, debug=debug)
+  def __init__(self, cmap, fp):
+    PSStackParser.__init__(self, fp)
     self.cmap = cmap
     self.in_cmap = False
     return

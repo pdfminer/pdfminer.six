@@ -5,10 +5,11 @@ stderr = sys.stderr
 ##  LZWDecoder
 ##
 class LZWDecoder(object):
+
+  debug = 0
   
-  def __init__(self, fp, debug=0):
+  def __init__(self, fp):
     self.fp = fp
-    self.debug = debug
     self.buff = 0
     self.bpos = 8
     self.nbits = 9
@@ -88,7 +89,8 @@ def main(argv):
   input = '\x80\x0b\x60\x50\x22\x0c\x0c\x85\x01'
   fp = StringIO.StringIO(input)
   expected = '\x2d\x2d\x2d\x2d\x2d\x41\x2d\x2d\x2d\x42'
-  output = ''.join(LZWDecoder(fp, debug=1).run())
+  LZWDecoder.debug = 1
+  output = ''.join(LZWDecoder(fp).run())
   print (input, expected, output)
   print output == expected
   return 0

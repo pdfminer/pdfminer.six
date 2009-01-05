@@ -6,14 +6,14 @@ try:
   from cStringIO import StringIO
 except ImportError:
   from StringIO import StringIO
-from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
+from pdflib.psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSStackParser, PSLiteral, PSKeyword, STRICT, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name
-from pdfparser import PDFException, PDFObject, PDFStream, PDFObjRef, resolve1, \
+from pdflib.pdfparser import PDFException, PDFObject, PDFStream, PDFObjRef, resolve1, \
      int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
-from cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
-from utils import choplist
+from pdflib.cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
+from pdflib.utils import choplist, mult_matrix, translate_matrix, apply_matrix
 
 
 ##  Exceptions
@@ -63,25 +63,6 @@ PREDEFINED_COLORSPACE = dict(
   'Indexed': 1,
   'Pattern': 1,
   }.iteritems())
-
-
-##  Matrix operations
-##
-def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
-  '''Multiplies two matrices.'''
-  return (a0*a1+c0*b1,    b0*a1+d0*b1,
-          a0*c1+c0*d1,    b0*c1+d0*d1,
-          a0*e1+c0*f1+e0, b0*e1+d0*f1+f0)
-
-def translate_matrix((a,b,c,d,e,f), (x,y)):
-  return (a,b,c,d,e+x,f+y)
-  
-def apply_matrix((a,b,c,d,e,f), (x,y)):
-  '''Applies a matrix to coordinates.'''
-  return (a*x+c*y+e, b*x+d*y+f)
-
-def apply_matrix_norm((a,b,c,d,e,f), (x,y)):
-  return (a*x+c*y, b*x+d*y)
 
 
 ##  Fonts
@@ -410,9 +391,9 @@ class PDFResourceManager(object):
   such as fonts, images and cmaps so that large objects are not
   allocated multiple times.
   '''
+  debug = 0
   
-  def __init__(self, debug=0):
-    self.debug = debug
+  def __init__(self):
     self.fonts = {}
     return
 
@@ -477,10 +458,11 @@ class PDFResourceManager(object):
 ##  PDFDevice
 ##
 class PDFDevice(object):
+
+  debug = 0
   
-  def __init__(self, rsrc, debug=0):
+  def __init__(self, rsrc):
     self.rsrc = rsrc
-    self.debug = debug
     self.ctm = None
     return
   
@@ -520,10 +502,10 @@ class PDFDevice(object):
 ##
 class PDFContentParser(PSStackParser):
 
-  def __init__(self, streams, debug=0):
+  def __init__(self, streams):
     self.streams = streams
     self.istream = 0
-    PSStackParser.__init__(self, None, debug=debug)
+    PSStackParser.__init__(self, None)
     return
 
   def fillfp(self):
@@ -607,6 +589,8 @@ class PDFContentParser(PSStackParser):
 ##  Interpreter
 ##
 class PDFPageInterpreter(object):
+
+  debug = 0
   
   class TextState(object):
     def __init__(self):
@@ -632,14 +616,13 @@ class PDFPageInterpreter(object):
       self.linematrix = (0, 0)
       return
 
-  def __init__(self, rsrc, device, debug=0):
+  def __init__(self, rsrc, device):
     self.rsrc = rsrc
     self.device = device
-    self.debug = debug
     return
 
   def dup(self):
-    return PDFPageInterpreter(self.rsrc, self.device, debug=self.debug)
+    return PDFPageInterpreter(self.rsrc, self.device)
 
   def init_resources(self, resources):
     self.fontmap = {}
@@ -940,8 +923,8 @@ class PDFPageInterpreter(object):
   def do_TJ(self, seq):
     #print >>stderr, 'TJ(%r): %r' % (seq,self.textstate)
     textstate = self.textstate
-    matrix = translate_matrix(textstate.matrix, textstate.linematrix)
-    self.device.render_string(textstate, matrix, seq)
+    textmatrix = translate_matrix(textstate.matrix, textstate.linematrix)
+    self.device.render_string(textstate, textmatrix, seq)
     font = textstate.font
     s = ''.join( x for x in seq if isinstance(x, str) )
     n = sum( x for x in seq if not isinstance(x, str) )
@@ -1030,7 +1013,7 @@ class PDFPageInterpreter(object):
   
   def execute(self, streams):
     try:
-      parser = PDFContentParser(streams, debug=self.debug)
+      parser = PDFContentParser(streams)
     except PSEOF:
       # empty page
       return
