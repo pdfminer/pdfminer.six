@@ -14,7 +14,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sat Jan 10 20:13:39 JST 2009
+Last Modified: Sat Jan 10 20:18:36 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -80,12 +80,17 @@ http://pdf2html.tabesugi.net:8080/
 <li> Go to the <code>pdfminer</code> directory.
 <li> Do the following test:<br>
 <blockquote><pre>
-$ <strong>python -m tools.pdf2txt samples/simple1.pdf</strong>
+$ <strong>python -m pdflib.pdf2txt samples/simple1.pdf</strong>
 &lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=ascii"&gt;
 &lt;/head&gt;&lt;body&gt;
-&lt;div style="position:absolute; top:50px;"&gt;&lt;a name="0"&gt;Page 0&lt;/a&gt;&lt;/div&gt;&lt;span style="position:absolute; border: 1px solid gray; left:0px; top:50px; width:612px; height:792px;"&gt;&lt;/span&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:100px; top:122px; font-size:24px;"&gt; Hello World &lt;/span&gt;
-&lt;div style="position:absolute; top:0px;"&gt;Page: &lt;a href="#0"&gt;0&lt;/a&gt;&lt;/div&gt;
+&lt;div style="position:absolute; top:50px;"&gt;&lt;a name="1"&gt;Page 1&lt;/a&gt;&lt;/div&gt;&lt;span style="position:absolute; border: 1px solid gray; left:0px; top:50px; width:612px; height:792px;"&gt;&lt;/span&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:100px; top:224px; font-size:22px;"&gt; &lt;/span&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:106px; top:224px; font-size:22px;"&gt;Hello &lt;/span&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:168px; top:224px; font-size:22px;"&gt;World &lt;/span&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:100px; top:124px; font-size:22px;"&gt; &lt;/span&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:206px; top:124px; font-size:22px;"&gt;Hello &lt;/span&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:368px; top:124px; font-size:22px;"&gt;World &lt;/span&gt;
+&lt;div style="position:absolute; top:0px;"&gt;Page: &lt;a href="#1"&gt;1&lt;/a&gt;&lt;/div&gt;
 &lt;/body&gt;&lt;/html&gt;
 </pre></blockquote>
 <li> Done!
@@ -145,13 +150,13 @@ Unicode Standard.
 <p>
 Examples:
 <blockquote><pre>
-$ <strong>python -m tools.pdf2txt -o output.html samples/naacl06-shinyama.pdf</strong>
+$ <strong>python -m pdflib.pdf2txt -o output.html samples/naacl06-shinyama.pdf</strong>
 (extract text as an HTML file whose filename is output.html)
 
-$ <strong>python -m tools.pdf2txt -c euc-jp samples/jo.pdf</strong>
+$ <strong>python -m pdflib.pdf2txt -c euc-jp samples/jo.pdf</strong>
 (extract Japanese texts in vertical writing, CMap is required)
 
-$ <strong>python -m tools.pdf2txt -P mypassword secret.pdf</strong>
+$ <strong>python -m pdflib.pdf2txt -P mypassword secret.pdf</strong>
 (extract texts from an encrypted PDF file with a password)
 </pre></blockquote>
 
@@ -164,7 +169,7 @@ By default, it prints the extracted contents to stdout.
 <p>
 <dt> <code>-p <em>pageno[,pageno,...]</em></code> 
 <dd> Speficies the comma-separated list of the page numbers to be extracted. 
-Page numbers are starting from zero.
+Page numbers are starting from one.
 By default, it extracts texts from all the pages.
 <p>
 <dt> <code>-c <em>codec</em></code> 
@@ -218,7 +223,7 @@ By default, it only prints the document trailer (like a header).
 <dt> <code>-p <em>pageno</em></code> 
 <dd> Speficies the page number to be extracted. 
 Multiple <code>-p</code> options are allowed.
-Note that page numbers start from zero.
+Note that page numbers start from one.
 <p>
 <dt> <code>-r</code> (raw)
 <dt> <code>-b</code> (binary)
