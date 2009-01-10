@@ -101,7 +101,7 @@ class HTMLConverter(TextConverter):
 
   def close(self):
     self.outfp.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' % 
-                     ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(self.pageno)))
+                     ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(1,self.pageno)))
     self.outfp.write('</body></html>\n')
     return
 

@@ -1,7 +1,7 @@
 # Makefile for pdfminer
 
 PACKAGE=pdfminer
-VERSION=20081228
+VERSION=20090110
 GNUTAR=tar
 SVN=svn
 PYTHON=python
@@ -34,7 +34,7 @@ pack: clean
 	$(GNUTAR) c -z -C$(WORKDIR) -f $(WORKDIR)/$(DISTFILE) $(DISTNAME) --dereference --numeric-owner
 	rm -rf $(WORKDIR)/$(DISTNAME)
 
-pychecker:
+check:
 	-pychecker --limit=0 *.py
 
 commit: clean
