@@ -4,6 +4,8 @@ from struct import unpack
 
 ##  Matrix operations
 ##
+MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
+
 def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
   '''Multiplies two matrices.'''
   return (a0*a1+c0*b1,    b0*a1+d0*b1,

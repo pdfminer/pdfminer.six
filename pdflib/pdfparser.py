@@ -7,26 +7,22 @@
 import sys, re
 import md5, struct
 stderr = sys.stderr
-from utils import choplist, nunpack
-from arcfour import Arcfour
-from lzw import LZWDecoder
-from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
-     PSObject, PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
-     literal_name, keyword_name, \
-     PSStackParser, STRICT
+from pdflib.utils import choplist, nunpack
+from pdflib.arcfour import Arcfour
+from pdflib.psparser import PSStackParser, PSSyntaxError, PSEOF, \
+     PSLiteralTable, PSKeywordTable, literal_name, keyword_name, \
+     STRICT
+from pdflib.pdftypes import PDFException, PDFTypeError, PDFNotImplementedError, \
+     PDFStream, PDFObjRef, resolve1, decipher_all, \
+     int_value, float_value, num_value, str_value, list_value, dict_value, stream_value
 
 
-##  PDF Exceptions
+##  Exceptions
 ##
-class PDFException(PSException): pass
 class PDFSyntaxError(PDFException): pass
 class PDFNoValidXRef(PDFSyntaxError): pass
 class PDFEncryptionError(PDFException): pass
 class PDFPasswordIncorrect(PDFEncryptionError): pass
-class PDFTypeError(PDFException): pass
-class PDFValueError(PDFException): pass
-class PDFNotImplementedError(PSException): pass
-
 
 # some predefined literals and keywords.
 LITERAL_OBJSTM = PSLiteralTable.intern('ObjStm')
@@ -34,258 +30,10 @@ LITERAL_XREF = PSLiteralTable.intern('XRef')
 LITERAL_PAGE = PSLiteralTable.intern('Page')
 LITERAL_PAGES = PSLiteralTable.intern('Pages')
 LITERAL_CATALOG = PSLiteralTable.intern('Catalog')
-LITERAL_CRYPT = PSLiteralTable.intern('Crypt')
-LITERALS_FLATE_DECODE = (PSLiteralTable.intern('FlateDecode'),
-                         PSLiteralTable.intern('Fl'))
-LITERALS_LZW_DECODE = (PSLiteralTable.intern('LZWDecode'),
-                       PSLiteralTable.intern('LZW'))
-LITERALS_ASCII85_DECODE = (PSLiteralTable.intern('ASCII85Decode'),
-                           PSLiteralTable.intern('A85'))
-KEYWORD_R = PSKeywordTable.intern('R')
-KEYWORD_OBJ = PSKeywordTable.intern('obj')
-KEYWORD_ENDOBJ = PSKeywordTable.intern('endobj')
-KEYWORD_STREAM = PSKeywordTable.intern('stream')
-KEYWORD_XREF = PSKeywordTable.intern('xref')
-KEYWORD_TRAILER = PSKeywordTable.intern('trailer')
-KEYWORD_STARTXREF = PSKeywordTable.intern('startxref')
-PASSWORD_PADDING = '(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
-
-class PDFObject(PSObject): pass
-
-
-##  PDFObjRef
-##
-class PDFObjRef(PDFObject):
-  
-  def __init__(self, doc, objid, _):
-    if objid == 0:
-      if STRICT:
-        raise PDFValueError('PDF object id cannot be 0.')
-    self.doc = doc
-    self.objid = objid
-    #self.genno = genno  # Never used.
-    return
-
-  def __repr__(self):
-    return '<PDFObjRef:%d>' % (self.objid)
-
-  def resolve(self):
-    return self.doc.getobj(self.objid)
-
-
-# resolve
-def resolve1(x):
-  '''
-  Resolve an object. If this is an array or dictionary,
-  it may still contains some indirect objects inside.
-  '''
-  while isinstance(x, PDFObjRef):
-    x = x.resolve()
-  return x
-
-def resolve_all(x):
-  '''
-  Recursively resolve X and all the internals.
-  Make sure there is no indirect reference within the nested object.
-  This procedure might be slow.
-  '''
-  while isinstance(x, PDFObjRef):
-    x = x.resolve()
-  if isinstance(x, list):
-    x = [ resolve_all(v) for v in x ]
-  elif isinstance(x, dict):
-    for (k,v) in x.iteritems():
-      x[k] = resolve_all(v)
-  return x
-
-def decipher_all(decipher, objid, genno, x):
-  '''
-  Recursively decipher X.
-  '''
-  if isinstance(x, str):
-    return decipher(objid, genno, x)
-  if isinstance(x, list):
-    x = [ decipher_all(decipher, objid, genno, v) for v in x ]
-  elif isinstance(x, dict):
-    for (k,v) in x.iteritems():
-      x[k] = decipher_all(decipher, objid, genno, v)
-  return x
-
-# Type cheking
-def int_value(x):
-  x = resolve1(x)
-  if not isinstance(x, int):
-    if STRICT:
-      raise PDFTypeError('Integer required: %r' % x)
-    return 0
-  return x
-
-def float_value(x):
-  x = resolve1(x)
-  if not isinstance(x, float):
-    if STRICT:
-      raise PDFTypeError('Float required: %r' % x)
-    return 0.0
-  return x
-
-def num_value(x):
-  x = resolve1(x)
-  if not (isinstance(x, int) or isinstance(x, float)):
-    if STRICT:
-      raise PDFTypeError('Int or Float required: %r' % x)
-    return 0
-  return x
-
-def str_value(x):
-  x = resolve1(x)
-  if not isinstance(x, str):
-    if STRICT:
-      raise PDFTypeError('String required: %r' % x)
-    return ''
-  return x
-
-def list_value(x):
-  x = resolve1(x)
-  if not (isinstance(x, list) or isinstance(x, tuple)):
-    if STRICT:
-      raise PDFTypeError('List required: %r' % x)
-    return []
-  return x
-
-def dict_value(x):
-  x = resolve1(x)
-  if not isinstance(x, dict):
-    if STRICT:
-      raise PDFTypeError('Dict required: %r' % x)
-    return {}
-  return x
-
-def stream_value(x):
-  x = resolve1(x)
-  if not isinstance(x, PDFStream):
-    if STRICT:
-      raise PDFTypeError('PDFStream required: %r' % x)
-    return PDFStream({}, '')
-  return x
-
-
-##  PDFStream type
-##
-class PDFStream(PDFObject):
-  
-  def __init__(self, dic, rawdata, decipher=None):
-    self.dic = dic
-    self.rawdata = rawdata
-    self.decipher = decipher
-    self.data = None
-    self.objid = None
-    self.genno = None
-    return
-
-  def set_objid(self, objid, genno):
-    self.objid = objid
-    self.genno = genno
-    return
-  
-  def __repr__(self):
-    return '<PDFStream(%r): raw=%d, %r>' % (self.objid, len(self.rawdata), self.dic)
-
-  def decode(self):
-    assert self.data == None and self.rawdata != None
-    data = self.rawdata
-    if self.decipher:
-      # Handle encryption
-      data = self.decipher(self.objid, self.genno, data)
-    if 'Filter' not in self.dic:
-      self.data = data
-      self.rawdata = None
-      return
-    filters = self.dic['Filter']
-    if not isinstance(filters, list):
-      filters = [ filters ]
-    for f in filters:
-      if f in LITERALS_FLATE_DECODE:
-        import zlib
-        # will get errors if the document is encrypted.
-        data = zlib.decompress(data)
-      elif f in LITERALS_LZW_DECODE:
-        try:
-          from cStringIO import StringIO
-        except ImportError:
-          from StringIO import StringIO
-        data = ''.join(LZWDecoder(StringIO(data)).run())
-      elif f in LITERALS_ASCII85_DECODE:
-        import ascii85
-        data = ascii85.ascii85decode(data)
-      elif f == LITERAL_CRYPT:
-        raise PDFEncryptionError('/Crypt filter is unsupported')
-      else:
-        raise PDFNotImplementedError('Unsupported filter: %r' % f)
-      # apply predictors
-      params = self.dic.get('DecodeParms', {})
-      if 'Predictor' in params:
-        pred = int_value(params['Predictor'])
-        if pred:
-          if pred != 12:
-            raise PDFNotImplementedError('Unsupported predictor: %r' % pred)
-          if 'Columns' not in params:
-            raise PDFValueError('Columns undefined for predictor=12')
-          columns = int_value(params['Columns'])
-          buf = ''
-          ent0 = '\x00' * columns
-          for i in xrange(0, len(data), columns+1):
-            pred = data[i]
-            ent1 = data[i+1:i+1+columns]
-            if pred == '\x02':
-              ent1 = ''.join( chr((ord(a)+ord(b)) & 255) for (a,b) in zip(ent0,ent1) )
-            buf += ent1
-            ent0 = ent1
-          data = buf
-    self.data = data
-    self.rawdata = None
-    return
-
-  def get_data(self):
-    if self.data == None:
-      self.decode()
-    return self.data
-
-  def get_rawdata(self):
-    return self.rawdata
-  
-
-##  PDFPage
-##
-class PDFPage(object):
-  
-  def __init__(self, doc, pageid, attrs):
-    self.doc = doc
-    self.pageid = pageid
-    self.attrs = dict_value(attrs)
-    self.lastmod = self.attrs.get('LastModified')
-    self.resources = resolve1(self.attrs['Resources'])
-    self.mediabox = resolve1(self.attrs['MediaBox'])
-    if 'CropBox' in self.attrs:
-      self.cropbox = resolve1(self.attrs['CropBox'])
-    else:
-      self.cropbox = self.mediabox
-    self.rotate = self.attrs.get('Rotate', 0)
-    self.annots = self.attrs.get('Annots')
-    self.beads = self.attrs.get('B')
-    if 'Contents' in self.attrs:
-      contents = resolve1(self.attrs['Contents'])
-    else:
-      contents = []
-    if not isinstance(contents, list):
-      contents = [ contents ]
-    self.contents = contents
-    return
-
-  def __repr__(self):
-    return '<PDFPage: Resources=%r, MediaBox=%r>' % (self.resources, self.mediabox)
 
 
 ##  XRefs
+##
 
 ##  PDFXRef
 ##
@@ -296,7 +44,7 @@ class PDFXRef(object):
     return
 
   def objids(self):
-    return self.offsets.keys()
+    return self.offsets.iterkeys()
 
   def load(self, parser):
     while 1:
@@ -330,10 +78,11 @@ class PDFXRef(object):
     self.load_trailer(parser)
     return
   
+  KEYWORD_TRAILER = PSKeywordTable.intern('trailer')
   def load_trailer(self, parser):
     try:
       (_,kwd) = parser.nexttoken()
-      assert kwd == KEYWORD_TRAILER
+      assert kwd is self.KEYWORD_TRAILER
       (_,dic) = parser.nextobject()
     except PSEOF:
       x = parser.pop(1)
@@ -350,7 +99,7 @@ class PDFXRef(object):
       raise
     if use != 'n':
       if STRICT:
-        raise PDFValueError('Unused objid=%r' % objid)
+        raise PDFSyntaxError('Unused objid=%r' % objid)
     return (None, pos)
 
 
@@ -367,14 +116,14 @@ class PDFXRefStream(object):
     return
 
   def objids(self):
-    return range(self.objid0, self.objid1+1)
+    return xrange(self.objid0, self.objid1)
 
   def load(self, parser):
     (_,objid) = parser.nexttoken() # ignored
     (_,genno) = parser.nexttoken() # ignored
     (_,kwd) = parser.nexttoken()
     (_,stream) = parser.nextobject()
-    if not isinstance(stream, PDFStream) or stream.dic['Type'] != LITERAL_XREF:
+    if not isinstance(stream, PDFStream) or stream.dic['Type'] is not LITERAL_XREF:
       raise PDFNoValidXRef('Invalid PDF stream spec.')
     size = stream.dic['Size']
     (start, nobjs) = stream.dic.get('Index', (0,size))
@@ -400,6 +149,37 @@ class PDFXRefStream(object):
       objid = nunpack(ent[self.fl1:self.fl1+self.fl2])
       index = nunpack(ent[self.fl1+self.fl2:])
       return (objid, index)
+
+
+##  PDFPage
+##
+class PDFPage(object):
+  
+  def __init__(self, doc, pageid, attrs):
+    self.doc = doc
+    self.pageid = pageid
+    self.attrs = dict_value(attrs)
+    self.lastmod = resolve1(self.attrs.get('LastModified'))
+    self.resources = resolve1(self.attrs['Resources'])
+    self.mediabox = resolve1(self.attrs['MediaBox'])
+    if 'CropBox' in self.attrs:
+      self.cropbox = resolve1(self.attrs['CropBox'])
+    else:
+      self.cropbox = self.mediabox
+    self.rotate = self.attrs.get('Rotate', 0)
+    self.annots = self.attrs.get('Annots')
+    self.beads = self.attrs.get('B')
+    if 'Contents' in self.attrs:
+      contents = resolve1(self.attrs['Contents'])
+    else:
+      contents = []
+    if not isinstance(contents, list):
+      contents = [ contents ]
+    self.contents = contents
+    return
+
+  def __repr__(self):
+    return '<PDFPage: Resources=%r, MediaBox=%r>' % (self.resources, self.mediabox)
 
 
 ##  PDFDocument
@@ -463,15 +243,16 @@ class PDFDocument(object):
   def set_root(self, root):
     self.root = root
     self.catalog = dict_value(self.root)
-    if self.catalog.get('Type') != LITERAL_CATALOG:
+    if self.catalog.get('Type') is not LITERAL_CATALOG:
       if STRICT:
-        raise PDFValueError('Catalog not found!')
+        raise PDFSyntaxError('Catalog not found!')
     return
   
   # initialize(password='')
   #   Perform the initialization with a given password.
   #   This step is mandatory even if there's no password associated
   #   with the document.
+  PASSWORD_PADDING = '(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
   def initialize(self, password=''):
     if not self.encryption:
       self.is_printable = self.is_modifiable = self.is_extractable = True
@@ -494,7 +275,7 @@ class PDFDocument(object):
     self.is_modifiable = bool(P & 8)
     self.is_extractable = bool(P & 16)
     # Algorithm 3.2
-    password = (password+PASSWORD_PADDING)[:32] # 1
+    password = (password+self.PASSWORD_PADDING)[:32] # 1
     hash = md5.md5(password) # 2
     hash.update(O) # 3
     hash.update(struct.pack('<l', P)) # 4
@@ -512,7 +293,7 @@ class PDFDocument(object):
       u1 = Arcfour(key).process(password)
     elif R == 3:
       # Algorithm 3.5
-      hash = md5.md5(PASSWORD_PADDING) # 2
+      hash = md5.md5(self.PASSWORD_PADDING) # 2
       hash.update(docid[0]) # 3
       x = Arcfour(key).process(hash.digest()[:16]) # 4
       for i in xrange(1,19+1):
@@ -536,6 +317,7 @@ class PDFDocument(object):
     key = hash.digest()[:min(len(key),16)]
     return Arcfour(key).process(data)
 
+  KEYWORD_OBJ = PSKeywordTable.intern('obj')
   def getobj(self, objid):
     if not self.ready:
       raise PDFException('PDFDocument not initialized')
@@ -554,11 +336,11 @@ class PDFDocument(object):
           pass
       else:
         if STRICT:
-          raise PDFValueError('Cannot locate objid=%r' % objid)
+          raise PDFSyntaxError('Cannot locate objid=%r' % objid)
         return None
       if strmid:
         stream = stream_value(self.getobj(strmid))
-        if stream.dic['Type'] != LITERAL_OBJSTM:
+        if stream.dic['Type'] is not LITERAL_OBJSTM:
           if STRICT:
             raise PDFSyntaxError('Not a stream object: %r' % stream)
         try:
@@ -589,7 +371,7 @@ class PDFDocument(object):
         (_,genno) = self.parser.nexttoken() # genno
         #assert objid1 == objid, (objid, objid1)
         (_,kwd) = self.parser.nexttoken()
-        if kwd != KEYWORD_OBJ:
+        if kwd is not self.KEYWORD_OBJ:
           raise PDFSyntaxError('Invalid object spec: offset=%r' % index)
         (_,obj) = self.parser.nextobject()
         if isinstance(obj, PDFStream):
@@ -611,13 +393,13 @@ class PDFDocument(object):
       for (k,v) in parent.iteritems():
         if k in self.INHERITABLE_ATTRS and k not in tree:
           tree[k] = v
-      if tree.get('Type') == LITERAL_PAGES and 'Kids' in tree:
+      if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
         if 1 <= self.debug:
           print >>stderr, 'Pages: Kids=%r' % tree['Kids']
         for c in tree['Kids']:
           for x in search(c, tree):
             yield x
-      elif tree.get('Type') == LITERAL_PAGE:
+      elif tree.get('Type') is LITERAL_PAGE:
         if 1 <= self.debug:
           print >>stderr, 'Page: %r' % tree
         yield (obj.objid, tree)
@@ -683,15 +465,20 @@ class PDFParser(PSStackParser):
   def __repr__(self):
     return '<PDFParser>'
 
+  KEYWORD_R = PSKeywordTable.intern('R')
+  KEYWORD_ENDOBJ = PSKeywordTable.intern('endobj')
+  KEYWORD_STREAM = PSKeywordTable.intern('stream')
+  KEYWORD_XREF = PSKeywordTable.intern('xref')
+  KEYWORD_STARTXREF = PSKeywordTable.intern('startxref')
   def do_keyword(self, pos, token):
-    if token in (KEYWORD_XREF, KEYWORD_STARTXREF):
+    if token in (self.KEYWORD_XREF, self.KEYWORD_STARTXREF):
       self.add_results(*self.pop(1))
       return
-    if token == KEYWORD_ENDOBJ:
+    if token is self.KEYWORD_ENDOBJ:
       self.add_results(*self.pop(4))
       return
     
-    if token == KEYWORD_R:
+    if token is self.KEYWORD_R:
       # reference to indirect object
       try:
         ((_,objid), (_,genno)) = self.pop(2)
@@ -702,7 +489,7 @@ class PDFParser(PSStackParser):
         pass
       return
       
-    if token == KEYWORD_STREAM:
+    if token is self.KEYWORD_STREAM:
       # stream object
       ((_,dic),) = self.pop(1)
       dic = dict_value(dic)
@@ -710,7 +497,7 @@ class PDFParser(PSStackParser):
         objlen = int_value(dic['Length'])
       except KeyError:
         if STRICT:
-          raise PDFValueError('/Length is undefined: %r' % dic)
+          raise PDFSyntaxError('/Length is undefined: %r' % dic)
         objlen = 0
       self.seek(pos)
       try:
@@ -785,7 +572,7 @@ class PDFParser(PSStackParser):
           xref = PDFXRefStream()
           xref.load(self)
         else:
-          if token != KEYWORD_XREF:
+          if token is not self.KEYWORD_XREF:
             raise PDFNoValidXRef('xref not found: pos=%d, token=%r' % 
                                  (pos, token))
           self.nextline()
@@ -834,6 +621,7 @@ class PDFParser(PSStackParser):
         print >>stderr, 'trailer: %r' % xref.trailer
       yield xref
     return
+
 
 ##  PDFObjStrmParser
 ##

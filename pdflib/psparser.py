@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import sys, re
 stderr = sys.stderr
-from utils import choplist
+
+from pdflib.utils import choplist
 
 STRICT = 0
 

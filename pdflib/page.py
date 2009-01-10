@@ -2,8 +2,51 @@
 import sys
 stdout = sys.stdout
 stderr = sys.stderr
-from pdflib.pdfinterp import PDFDevice, PDFUnicodeNotDefined
+from pdflib.pdffont import PDFUnicodeNotDefined
 from pdflib.utils import mult_matrix, apply_matrix, apply_matrix_norm, translate_matrix
+
+
+##  PDFDevice
+##
+class PDFDevice(object):
+
+  debug = 0
+  
+  def __init__(self, rsrc):
+    self.rsrc = rsrc
+    self.ctm = None
+    return
+  
+  def __repr__(self):
+    return '<PDFDevice>'
+
+  def close(self):
+    return
+
+  def set_ctm(self, ctm):
+    self.ctm = ctm
+    return
+
+  def begin_tag(self, tag, props=None):
+    return
+  def end_tag(self):
+    return
+  def do_tag(self, tag, props=None):
+    return
+
+  def begin_page(self, page):
+    return
+  def end_page(self, page):
+    return
+  def begin_figure(self, name, bbox):
+    return
+  def end_figure(self, name):
+    return
+  
+  def render_string(self, textstate, textmatrix, seq):
+    raise NotImplementedError
+  def render_image(self, stream, size, matrix):
+    raise NotImplementedError
 
 
 ##  PageItem

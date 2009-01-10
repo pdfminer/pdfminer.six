@@ -3,10 +3,10 @@ import sys
 stdout = sys.stdout
 stderr = sys.stderr
 from pdflib.pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
-from pdflib.pdfinterp import PDFDevice, PDFResourceManager, \
-     PDFPageInterpreter, PDFUnicodeNotDefined
+from pdflib.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdflib.pdffont import PDFUnicodeNotDefined
 from pdflib.cmap import CMapDB
-from pdflib.page import PageItem, FigureItem, TextItem, PageAggregator
+from pdflib.page import PDFDevice, PageItem, FigureItem, TextItem, PageAggregator
 
 
 def enc(x, codec):
