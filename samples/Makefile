@@ -2,7 +2,7 @@
 
 PYTHON=python
 CDBCMAPDIR=../CDBCMap
-PDF2TXT=PYTHONPATH=.. $(PYTHON) -m tools.pdf2txt
+PDF2TXT=PYTHONPATH=.. $(PYTHON) -m pdflib.pdf2txt
 
 HTMLS= \
 	simple1.html \
@@ -22,4 +22,4 @@ clean:
 
 .SUFFIXES: .pdf .html
 .pdf.html:
-	$(PDF2TXT) -D$(CDBCMAPDIR) -H -o $@ $<
+	$(PDF2TXT) -D$(CDBCMAPDIR) -o $@ $<

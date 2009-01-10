@@ -12,10 +12,11 @@ from pdflib.psparser import PSException, PSTypeError, PSEOF, \
 from pdflib.pdftypes import PDFException, PDFStream, PDFObjRef, \
      resolve1, int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
-from pdflib.utils import choplist, mult_matrix, translate_matrix, apply_matrix, MATRIX_IDENTITY
+from pdflib.utils import choplist, mult_matrix, translate_matrix, apply_matrix, apply_matrix_norm, MATRIX_IDENTITY
 from pdflib.pdffont import PDFFontError, PDFType1Font, PDFTrueTypeFont, PDFType3Font, PDFCIDFont
 from pdflib.pdfcolor import ColorSpace, PREDEFINED_COLORSPACE, \
      LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
+from pdflib.cmap import CMapDB
 
 
 ##  Exceptions
@@ -58,6 +59,9 @@ class PDFResourceManager(object):
         #raise PDFResourceError('ProcSet %r is not supported.' % proc)
         pass
     return
+
+  def get_cmap(self, cmapname, strict=False):
+    return CMapDB.get_cmap(cmapname, strict=strict)
   
   def get_font(self, objid, spec):
     if objid and objid in self.fonts:
@@ -75,16 +79,16 @@ class PDFResourceManager(object):
         subtype = 'Type1'
       if subtype in ('Type1', 'MMType1'):
         # Type1 Font
-        font = PDFType1Font(spec)
+        font = PDFType1Font(self, spec)
       elif subtype == 'TrueType':
         # TrueType Font
-        font = PDFTrueTypeFont(spec)
+        font = PDFTrueTypeFont(self, spec)
       elif subtype == 'Type3':
         # Type3 Font
-        font = PDFType3Font(spec)
+        font = PDFType3Font(self, spec)
       elif subtype in ('CIDFontType0', 'CIDFontType2'):
         # CID Font
-        font = PDFCIDFont(spec)
+        font = PDFCIDFont(self, spec)
       elif subtype == 'Type0':
         # Type0 Font
         dfonts = list_value(spec['DescendantFonts'])
@@ -535,16 +539,17 @@ class PDFPageInterpreter(object):
     self.device.render_string(textstate, textmatrix, seq)
     font = textstate.font
     s = ''.join( x for x in seq if isinstance(x, str) )
-    n = sum( x for x in seq if not isinstance(x, str) )
-    w = (font.string_width(s)-n)*.001 * textstate.fontsize + len(s) * textstate.charspace
-    if not font.is_multibyte():
-      w += s.count(' ')*textstate.wordspace
-    w *= (textstate.scaling * .01)
+    w = ((font.string_width(s) - sum( x for x in seq if not isinstance(x, str) )*.001) * textstate.fontsize +
+         len(s) * textstate.charspace)
     (lx,ly) = textstate.linematrix
     if font.is_vertical():
-      ly += w
+      # advance vertically
+      ly += w * (textstate.scaling * .01)
     else:
-      lx += w
+      # advance horizontally
+      if not font.is_multibyte():
+        w += s.count(' ')*textstate.wordspace
+      lx += w * (textstate.scaling * .01)
     textstate.linematrix = (lx,ly)
     return
   # show

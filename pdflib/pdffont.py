@@ -12,6 +12,7 @@ from pdflib.pdftypes import PDFException, \
      resolve1, int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
 from pdflib.cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
+from utils import apply_matrix_norm
 
 
 ##  Fonts
@@ -26,7 +27,7 @@ LITERAL_STANDARD_ENCODING = PSLiteralTable.intern('StandardEncoding')
 # PDFFont
 class PDFFont(object):
   
-  def __init__(self, descriptor, widths, default_width=None, font_matrix=None):
+  def __init__(self, descriptor, widths, default_width=None):
     self.descriptor = descriptor
     self.widths = widths
     self.fontname = descriptor.get('FontName', 'unknown')
@@ -37,7 +38,6 @@ class PDFFont(object):
     self.default_width = default_width or descriptor.get('MissingWidth', 0)
     self.leading = num_value(descriptor.get('Leading', 0))
     self.bbox = list_value(descriptor.get('FontBBox', (0,0,0,0)))
-    self.font_matrix = font_matrix or (.001,0,0,.001,0,0)
     return
 
   def __repr__(self):
@@ -52,8 +52,13 @@ class PDFFont(object):
   def decode(self, bytes):
     return map(ord, bytes)
 
+  def get_ascent(self):
+    return self.ascent * .001
+  def get_descent(self):
+    return self.descent * .001
+
   def char_width(self, cid):
-    return self.widths.get(cid, self.default_width)
+    return self.widths.get(cid, self.default_width) * .001
 
   def char_disp(self, cid):
     return 0
@@ -61,10 +66,11 @@ class PDFFont(object):
   def string_width(self, s):
     return sum( self.char_width(cid) for cid in self.decode(s) )
 
+
 # PDFSimpleFont
 class PDFSimpleFont(PDFFont):
   
-  def __init__(self, descriptor, widths, spec, font_matrix=None):
+  def __init__(self, descriptor, widths, spec):
     # Font encoding is specified either by a name of
     # built-in encoding or a dictionary that describes
     # the differences.
@@ -83,7 +89,7 @@ class PDFSimpleFont(PDFFont):
       strm = stream_value(spec['ToUnicode'])
       self.ucs2_cmap = CMap()
       CMapParser(self.ucs2_cmap, StringIO(strm.get_data())).run()
-    PDFFont.__init__(self, descriptor, widths, font_matrix=font_matrix)
+    PDFFont.__init__(self, descriptor, widths)
     return
 
   def to_unicode(self, cid):
@@ -102,7 +108,7 @@ class PDFSimpleFont(PDFFont):
 # PDFType1Font
 class PDFType1Font(PDFSimpleFont):
   
-  def __init__(self, spec):
+  def __init__(self, rsrc, spec):
     try:
       self.basefont = literal_name(spec['BaseFont'])
     except KeyError:
@@ -132,7 +138,7 @@ class PDFTrueTypeFont(PDFType1Font):
 # PDFType3Font
 class PDFType3Font(PDFSimpleFont):
   
-  def __init__(self, spec):
+  def __init__(self, rsrc, spec):
     firstchar = int_value(spec.get('FirstChar', 0))
     lastchar = int_value(spec.get('LastChar', 0))
     widths = list_value(spec.get('Widths', [0]*256))
@@ -143,12 +149,22 @@ class PDFType3Font(PDFSimpleFont):
       descriptor = {'FontName':spec.get('Name'),
                     'Ascent':0, 'Descent':0,
                     'FontBBox':spec['FontBBox']}
-    PDFSimpleFont.__init__(self, descriptor, widths, spec,
-                           font_matrix=tuple(list_value(spec.get('FontMatrix'))))
+    PDFSimpleFont.__init__(self, descriptor, widths, spec)
+    self.matrix = tuple(list_value(spec.get('FontMatrix')))
+    (_,self.descent,_,self.ascent) = self.bbox
+    (self.hscale,self.vscale) = apply_matrix_norm(self.matrix, (1,1))
     return
 
   def __repr__(self):
     return '<PDFType3Font>'
+
+  def get_ascent(self):
+    return self.ascent * self.vscale
+  def get_descent(self):
+    return self.descent * self.vscale
+
+  def char_width(self, cid):
+    return self.widths.get(cid, self.default_width) * self.hscale
 
 
 # PDFCIDFont
@@ -229,7 +245,7 @@ class TrueTypeFont(object):
 
 class PDFCIDFont(PDFFont):
   
-  def __init__(self, spec):
+  def __init__(self, rsrc, spec):
     try:
       self.basefont = literal_name(spec['BaseFont'])
     except KeyError:
@@ -246,7 +262,7 @@ class PDFCIDFont(PDFFont):
         raise PDFFontError('Encoding is unspecified')
       name = 'unknown'
     try:
-      self.cmap = CMapDB.get_cmap(name, strict=STRICT)
+      self.cmap = rsrc.get_cmap(name, strict=STRICT)
     except CMapDB.CMapNotFound, e:
       raise PDFFontError(e)
     try:
@@ -273,8 +289,8 @@ class PDFCIDFont(PDFFont):
           pass
     else:
       try:
-        self.ucs2_cmap = CMapDB.get_cmap('%s-UCS2' % self.cidcoding,
-                                         strict=STRICT)
+        self.ucs2_cmap = rsrc.get_cmap('%s-UCS2' % self.cidcoding,
+                                       strict=STRICT)
       except CMapDB.CMapNotFound, e:
         raise PDFFontError(e)
     
@@ -336,5 +352,3 @@ class PDFCIDFont(PDFFont):
       raise PDFUnicodeNotDefined(self.cidcoding, cid)
     chars = unpack('>%dH' % (len(code)/2), code)
     return ''.join( unichr(c) for c in chars )
-
-

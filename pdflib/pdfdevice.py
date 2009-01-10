@@ -90,11 +90,11 @@ class TextItem(object):
     self.direction = 0
     self.text = ''
     scaling *= .01
+    size = (font.get_ascent() - font.get_descent()) * fontsize
     if not self.font.is_vertical():
-      spwidth = int(font.char_width(32) * self.SPACE_WIDTH) # space width
+      # horizontal text
+      spwidth = font.char_width(32) * self.SPACE_WIDTH # space width
       self.direction = 1
-      (_,descent) = apply_matrix_norm(self.matrix, (0,font.descent * fontsize * .001))
-      ty += descent
       w = 0
       dx = 0
       prev = ' '
@@ -106,14 +106,18 @@ class TextItem(object):
           self.text += char
           prev = char
           dx = 0
-          w += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling
+          w += (font.char_width(ord(char)) * fontsize + charspace) * scaling
         else:
+          t *= .001
           dx -= t
-          w += t * fontsize * .001 * scaling
-      (w,h) = apply_matrix_norm(self.matrix, (w,fontsize))
+          w += t * fontsize * scaling
+      (_,descent) = apply_matrix_norm(self.matrix, (0,font.get_descent() * fontsize))
+      ty += descent
+      (w,h) = apply_matrix_norm(self.matrix, (w,size))
       self.adv = (w, 0)
       self.bbox = (tx, ty, tx+w, ty+h)
     else:
+      # vertical text
       self.direction = 2
       disp = 0
       h = 0
@@ -122,19 +126,19 @@ class TextItem(object):
           (disp,char) = t
           (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-disp)*fontsize*.001))
           self.text += char
-          h += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling
+          h += (font.char_width(ord(char)) * fontsize + charspace) * scaling
           break
       for t in text:
         if isinstance(t, tuple):
           (_,char) = t
           self.text += char
-          h += (font.char_width(ord(char)) * fontsize * .001 + charspace) * scaling
-      (w,h) = apply_matrix_norm(self.matrix, (fontsize,h))
+          h += (font.char_width(ord(char)) * fontsize + charspace) * scaling
+      (w,h) = apply_matrix_norm(self.matrix, (size,h))
       tx -= w/2
       ty += disp
       self.adv = (0, h)
       self.bbox = (tx, ty+h, tx+w, ty)
-    self.fontsize = max(apply_matrix_norm(self.matrix, (fontsize,fontsize)))
+    self.fontsize = max(apply_matrix_norm(self.matrix, (size,size)))
     return
   
   def __repr__(self):
