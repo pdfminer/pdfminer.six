@@ -7,8 +7,8 @@
 #    -i objid : object id
 #
 import sys, re
-from pdflib.pdfparser import PDFDocument, PDFParser, PDFStream, \
-     PDFObjRef, PSKeyword, PSLiteral, resolve1
+from pdflib.pdfparser import PDFDocument, PDFParser
+from pdflib.pdftypes import PDFStream, PDFObjRef, PSKeyword, PSLiteral, resolve1
 stdout = sys.stdout
 stderr = sys.stderr
 

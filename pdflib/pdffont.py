@@ -225,8 +225,7 @@ class TrueTypeFont(object):
               char2gid[c] = (c + idd) & 0xffff
     gid2char = dict( (gid, pack('>H', char))
                      for (char,gid) in char2gid.iteritems() )
-    cmapname = 'Adobe-Identity-UCS-%s' % self.name
-    return CMap(cmapname).update(char2gid, gid2char)
+    return CMap().update(char2gid, gid2char)
 
 class PDFCIDFont(PDFFont):
   

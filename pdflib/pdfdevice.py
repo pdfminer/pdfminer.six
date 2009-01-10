@@ -142,9 +142,9 @@ class TextItem(object):
             (self.matrix, self.font, self.fontsize, self.bbox, self.text, self.adv))
 
 
-##  PageAggregator
+##  PDFPageAggregator
 ##
-class PageAggregator(PDFDevice):
+class PDFPageAggregator(PDFDevice):
 
   def __init__(self, rsrc, pageno=1):
     PDFDevice.__init__(self, rsrc)

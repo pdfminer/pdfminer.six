@@ -186,7 +186,7 @@ class PDFStream(PDFObject):
         import ascii85
         data = ascii85.ascii85decode(data)
       elif f == LITERAL_CRYPT:
-        raise PDFEncryptionError('/Crypt filter is unsupported')
+        raise PDFNotImplementedError('/Crypt filter is unsupported')
       else:
         raise PDFNotImplementedError('Unsupported filter: %r' % f)
       # apply predictors
