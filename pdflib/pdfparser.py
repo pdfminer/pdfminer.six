@@ -43,10 +43,14 @@ class PDFXRef(object):
     self.offsets = None
     return
 
+  def __repr__(self):
+    return '<PDFXRef: objs=%d>' % len(self.offsets)
+
   def objids(self):
     return self.offsets.iterkeys()
 
-  def load(self, parser):
+  def load(self, parser, debug=0):
+    self.offsets = {}
     while 1:
       try:
         (pos, line) = parser.nextline()
@@ -64,7 +68,6 @@ class PDFXRef(object):
         (start, nobjs) = map(long, f)
       except ValueError:
         raise PDFNoValidXRef('Invalid line: %r: line=%r' % (parser, line))
-      self.offsets = {}
       for objid in xrange(start, start+nobjs):
         try:
           (_, line) = parser.nextline()
@@ -74,7 +77,10 @@ class PDFXRef(object):
         if len(f) != 3:
           raise PDFNoValidXRef('Invalid XRef format: %r, line=%r' % (parser, line))
         (pos, genno, use) = f
-        self.offsets[objid] = (int(genno), long(pos), use)
+        if use != 'n': continue
+        self.offsets[objid] = (int(genno), long(pos))
+    if debug:
+      print >>stderr, 'xref objects:', self.offsets
     self.load_trailer(parser)
     return
   
@@ -94,12 +100,9 @@ class PDFXRef(object):
 
   def getpos(self, objid):
     try:
-      (genno, pos, use) = self.offsets[objid]
+      (genno, pos) = self.offsets[objid]
     except KeyError:
       raise
-    if use != 'n':
-      if STRICT:
-        raise PDFSyntaxError('Unused objid=%r' % objid)
     return (None, pos)
 
 
@@ -108,17 +111,20 @@ class PDFXRef(object):
 class PDFXRefStream(object):
 
   def __init__(self):
-    self.objid0 = None
-    self.objid1 = None
+    self.objid_first = None
+    self.objid_last = None
     self.data = None
     self.entlen = None
     self.fl1 = self.fl2 = self.fl3 = None
     return
 
-  def objids(self):
-    return xrange(self.objid0, self.objid1)
+  def __repr__(self):
+    return '<PDFXRef: objid=%d-%d>' % (self.objid_first, self.objid_last)
 
-  def load(self, parser):
+  def objids(self):
+    return xrange(self.objid_first, self.objid_last+1)
+
+  def load(self, parser, debug=0):
     (_,objid) = parser.nexttoken() # ignored
     (_,genno) = parser.nexttoken() # ignored
     (_,kwd) = parser.nexttoken()
@@ -127,18 +133,21 @@ class PDFXRefStream(object):
       raise PDFNoValidXRef('Invalid PDF stream spec.')
     size = stream.dic['Size']
     (start, nobjs) = stream.dic.get('Index', (0,size))
-    self.objid0 = start
-    self.objid1 = start+nobjs
+    self.objid_first = start
+    self.objid_last = start+nobjs-1
     (self.fl1, self.fl2, self.fl3) = stream.dic['W']
     self.data = stream.get_data()
     self.entlen = self.fl1+self.fl2+self.fl3
     self.trailer = stream.dic
+    if debug:
+      print >>stderr, ('xref stream: objid=%d-%d, fields=%d,%d,%d' %
+                       (self.objid_first, self.objid_last, self.fl1, self.fl2, self.fl3))
     return
 
   def getpos(self, objid):
-    if objid < self.objid0 or self.objid1 <= objid:
+    if objid < self.objid_first or self.objid_last < objid:
       raise KeyError(objid)
-    i = self.entlen * (objid-self.objid0)
+    i = self.entlen * (objid-self.objid_first)
     ent = self.data[i:i+self.entlen]
     f1 = nunpack(ent[:self.fl1], 1)
     if f1 == 1:
@@ -149,6 +158,8 @@ class PDFXRefStream(object):
       objid = nunpack(ent[self.fl1:self.fl1+self.fl2])
       index = nunpack(ent[self.fl1+self.fl2:])
       return (objid, index)
+    # this is a free object
+    raise KeyError(objid)
 
 
 ##  PDFPage
@@ -217,7 +228,7 @@ class PDFDocument(object):
     self.ready = True
     # Retrieve the information of each header that was appended
     # (maybe multiple times) at the end of the document.
-    self.xrefs = list(parser.read_xref())
+    self.xrefs = parser.read_xref()
     for xref in self.xrefs:
       trailer = xref.trailer
       if not trailer: continue
@@ -340,7 +351,7 @@ class PDFDocument(object):
         return None
       if strmid:
         stream = stream_value(self.getobj(strmid))
-        if stream.dic['Type'] is not LITERAL_OBJSTM:
+        if stream.dic.get('Type') is not LITERAL_OBJSTM:
           if STRICT:
             raise PDFSyntaxError('Not a stream object: %r' % stream)
         try:
@@ -362,7 +373,11 @@ class PDFDocument(object):
             pass
           self.parsed_objs[stream] = objs
         genno = 0
-        obj = objs[stream.dic['N']*2+index]
+        i = n*2+index
+        try:
+          obj = objs[i]
+        except IndexError:
+          raise PDFSyntaxError('Invalid object number: objid=%r' % (objid))
         if isinstance(obj, PDFStream):
           obj.set_objid(objid, 0)
       else:
@@ -550,49 +565,50 @@ class PDFParser(PSStackParser):
       raise PDFNoValidXRef('Unexpected EOF')
     if 1 <= self.debug:
       print >>stderr, 'xref found: pos=%r' % prev
-    self.seek(long(prev))
-    return
+    return long(prev)
 
+  # read xref table
+  def read_xref_from(self, start, xrefs):
+    self.seek(start)
+    self.reset()
+    try:
+      (pos, token) = self.nexttoken()
+    except PSEOF:
+      raise PDFNoValidXRef('Unexpected EOF')
+    if 2 <= self.debug:
+      print >>stderr, 'read_xref_from: start=%d, token=%r' % (start, token)
+    if isinstance(token, int):
+      # XRefStream: PDF-1.5
+      self.seek(pos)
+      self.reset()
+      xref = PDFXRefStream()
+      xref.load(self, debug=self.debug)
+    else:
+      if token is not self.KEYWORD_XREF:
+        raise PDFNoValidXRef('xref not found: pos=%d, token=%r' % 
+                             (pos, token))
+      self.nextline()
+      xref = PDFXRef()
+      xref.load(self, debug=self.debug)
+    xrefs.append(xref)
+    trailer = xref.trailer
+    if 1 <= self.debug:
+      print >>stderr, 'trailer: %r' % trailer
+    if 'XRefStm' in trailer:
+      pos = int_value(trailer['XRefStm'])
+      self.read_xref_from(pos, xrefs)
+    if 'Prev' in trailer:
+      # find previous xref
+      pos = int_value(trailer['Prev'])
+      self.read_xref_from(pos, xrefs)
+    return
+    
   # read xref tables and trailers
   def read_xref(self):
+    xrefs = []
     try:
-      self.find_xref()
-      while 1:
-        # read xref table
-        try:
-          (pos, token) = self.nexttoken()
-        except PSEOF:
-          raise PDFNoValidXRef('Unexpected EOF')
-        if 2 <= self.debug:
-          print >>stderr, 'read_xref: %r' % token
-        if isinstance(token, int):
-          # XRefStream: PDF-1.5
-          self.seek(pos)
-          self.reset()
-          xref = PDFXRefStream()
-          xref.load(self)
-        else:
-          if token is not self.KEYWORD_XREF:
-            raise PDFNoValidXRef('xref not found: pos=%d, token=%r' % 
-                                 (pos, token))
-          self.nextline()
-          xref = PDFXRef()
-          xref.load(self)
-        yield xref
-        trailer = xref.trailer
-        if not trailer: continue
-        if 1 <= self.debug:
-          print >>stderr, 'trailer: %r' % trailer
-        if 'XRefStm' in trailer:
-          self.seek(int_value(trailer['XRefStm']))
-        if 'Prev' in trailer:
-          # find previous xref
-          pos = int_value(trailer['Prev'])
-          self.seek(pos)
-          if 1 <= self.debug:
-            print >>stderr, 'prev trailer: pos=%d' % pos
-        else:
-          break
+      pos = self.find_xref()
+      self.read_xref_from(pos, xrefs)
     except PDFNoValidXRef:
       # fallback
       if 1 <= self.debug:
@@ -610,17 +626,15 @@ class PDFParser(PSStackParser):
         m = pat.match(line)
         if not m: continue
         (objid, genno) = m.groups()
-        offsets[int(objid)] = (0, pos, 'f')
+        offsets[int(objid)] = (0, pos)
       if not offsets: raise
       xref.offsets = offsets
-      xref.objid0 = min(offsets.iterkeys())
-      xref.objid1 = max(offsets.iterkeys())
       self.seek(pos)
       xref.load_trailer(self)
       if 1 <= self.debug:
         print >>stderr, 'trailer: %r' % xref.trailer
-      yield xref
-    return
+      xrefs.append(xref)
+    return xrefs
 
 
 ##  PDFObjStrmParser

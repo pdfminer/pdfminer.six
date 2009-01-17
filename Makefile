@@ -1,7 +1,7 @@
 # Makefile for pdfminer
 
 PACKAGE=pdfminer
-VERSION=20090110
+VERSION=20090117
 GNUTAR=tar
 SVN=svn
 PYTHON=python
@@ -39,3 +39,8 @@ check:
 
 commit: clean
 	$(SVN) commit
+
+WEBDIR=$$HOME/Site/unixuser.org/python/pdfminer
+publish: pack
+	cp $(WORKDIR)/$(DISTFILE) $(WEBDIR)
+	cp README.html $(WEBDIR)/index.html

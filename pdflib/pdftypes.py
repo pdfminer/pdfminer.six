@@ -190,7 +190,10 @@ class PDFStream(PDFObject):
       else:
         raise PDFNotImplementedError('Unsupported filter: %r' % f)
       # apply predictors
-      params = self.dic.get('DecodeParms', {})
+      if 'DP' in self.dic:
+        params = self.dic['DP']
+      else:
+        params = self.dic.get('DecodeParms', {})
       if 'Predictor' in params:
         pred = int_value(params['Predictor'])
         if pred:
