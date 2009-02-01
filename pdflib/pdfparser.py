@@ -7,7 +7,7 @@
 import sys, re
 import md5, struct
 stderr = sys.stderr
-from pdflib.utils import choplist, nunpack
+from pdflib.utils import choplist, nunpack, decode_text
 from pdflib.arcfour import Arcfour
 from pdflib.psparser import PSStackParser, PSSyntaxError, PSEOF, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name, \
@@ -430,7 +430,7 @@ class PDFDocument(object):
       entry = dict_value(entry)
       if 'Title' in entry:
         if 'A' in entry or 'Dest' in entry:
-          title = unicode(str_value(entry['Title']), 'utf-8', 'ignore')
+          title = decode_text(str_value(entry['Title']))
           dest = entry.get('Dest')
           action = entry.get('A')
           se = entry.get('SE')

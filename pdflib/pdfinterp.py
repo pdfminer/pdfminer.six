@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys
+import sys, re
 stderr = sys.stderr
 from struct import pack, unpack
 try:
@@ -143,17 +143,19 @@ class PDFContentParser(PSStackParser):
     self.charpos = 0
     return
 
-  def get_inline_data(self, pos, target='EI '):
+  def get_inline_data(self, pos, target='EI'):
     self.seek(pos)
     i = 0
     data = ''
-    while i < len(target):
+    while i <= len(target):
       self.fillbuf()
       if i:
         c = self.buf[self.charpos]
         data += c
         self.charpos += 1
-        if c == target[i]:
+        if i >= len(target) and c.isspace():
+          i += 1
+        elif c == target[i]:
           i += 1
         else:
           i = 0
@@ -161,13 +163,14 @@ class PDFContentParser(PSStackParser):
         try:
           j = self.buf.index(target[0], self.charpos)
           #print 'found', (0, self.buf[j:j+10])
-          data += self.buf[self.charpos:j]
+          data += self.buf[self.charpos:j+1]
           self.charpos = j+1
           i = 1
         except ValueError:
           data += self.buf[self.charpos:]
           self.charpos = len(self.buf)
-    data = data[:-len(target)] # strip the last part
+    data = data[:-(len(target)+1)] # strip the last part
+    data = re.sub(r'(\x0d\x0a|[\x0d\x0a])', '', data)
     return (pos, data)
 
   def flush(self):

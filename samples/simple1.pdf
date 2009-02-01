@@ -38,7 +38,7 @@ BT
 /F1 24 Tf
 100 600 Td
 0 Tw
-( Hello World ) Tj
+[ ( Hello ) 1000 ( World ) ] TJ
 0 100 Td
 100 Tw
 ( Hello World ) Tj

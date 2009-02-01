@@ -98,19 +98,18 @@ class TextItem(object):
       w = 0
       dx = 0
       prev = ' '
-      for t in text:
-        if isinstance(t, tuple):
+      for (char,cid,t) in text:
+        if char:
           if prev != ' ' and spwidth < dx:
             self.text += ' '
-          (_,char) = t
-          self.text += char
           prev = char
+          self.text += char
           dx = 0
-          w += (font.char_width(ord(char)) * fontsize + charspace) * scaling
+          w += (font.char_width(cid) * fontsize + charspace) * scaling
         else:
           t *= .001
           dx -= t
-          w += t * fontsize * scaling
+          w -= t * fontsize * scaling
       (_,descent) = apply_matrix_norm(self.matrix, (0,font.get_descent() * fontsize))
       ty += descent
       (w,h) = apply_matrix_norm(self.matrix, (w,size))
@@ -121,18 +120,16 @@ class TextItem(object):
       self.direction = 2
       disp = 0
       h = 0
-      for t in text:
-        if isinstance(t, tuple):
-          (disp,char) = t
-          (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-disp)*fontsize*.001))
-          self.text += char
-          h += (font.char_width(ord(char)) * fontsize + charspace) * scaling
-          break
-      for t in text:
-        if isinstance(t, tuple):
-          (_,char) = t
-          self.text += char
-          h += (font.char_width(ord(char)) * fontsize + charspace) * scaling
+      for (char,cid,disp) in text:
+        if not char: continue
+        (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-disp)*fontsize*.001))
+        self.text += font.to_unicode(cid)
+        h += (font.char_width(cid) * fontsize + charspace) * scaling
+        break
+      for (char,cid,_) in text:
+        if not char: continue
+        self.text += font.to_unicode(cid)
+        h += (font.char_width(cid) * fontsize + charspace) * scaling
       (w,h) = apply_matrix_norm(self.matrix, (size,h))
       tx -= w/2
       ty += disp
@@ -189,18 +186,16 @@ class PDFPageAggregator(PDFDevice):
     textmatrix = mult_matrix(textmatrix, self.ctm)
     for x in seq:
       if isinstance(x, int) or isinstance(x, float):
-        text.append(x)
+        text.append((None, None, x))
       else:
         chars = font.decode(x)
         for cid in chars:
           try:
             char = font.to_unicode(cid)
-            text.append((font.char_disp(cid), char))
           except PDFUnicodeNotDefined, e:
             (cidcoding, cid) = e.args
-            unc = self.handle_undefined_char(cidcoding, cid)
-            if unc:
-              text.append(unc)
+            char = self.handle_undefined_char(cidcoding, cid)
+          text.append((char, cid, font.char_disp(cid)))
           if cid == 32 and not font.is_multibyte():
             if text:
               item = TextItem(textmatrix, font, textstate.fontsize, textstate.charspace, textstate.scaling, text)
