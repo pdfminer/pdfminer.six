@@ -295,6 +295,7 @@ class PDFPageInterpreter(object):
     return
 
   def pop(self, n):
+    if n == 0: return []
     x = self.argstack[-n:]
     self.argstack = self.argstack[:-n]
     return x
