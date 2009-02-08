@@ -80,8 +80,6 @@ class FigureItem(PageItem):
 ##
 class TextItem(object):
   
-  SPACE_WIDTH = 0.6
-  
   def __init__(self, matrix, font, fontsize, charspace, scaling, text):
     self.matrix = matrix
     self.font = font
@@ -93,7 +91,7 @@ class TextItem(object):
     size = (font.get_ascent() - font.get_descent()) * fontsize
     if not self.font.is_vertical():
       # horizontal text
-      spwidth = font.char_width(32) * self.SPACE_WIDTH # space width
+      spwidth = font.space_width()
       self.direction = 1
       w = 0
       dx = 0
