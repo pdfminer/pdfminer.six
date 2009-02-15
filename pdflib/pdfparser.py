@@ -361,7 +361,7 @@ class PDFDocument(object):
             raise PDFSyntaxError('N is not defined: %r' % stream)
           n = 0
         if strmid in self.parsed_objs:
-          objs = self.parsed_objs[stream]
+          objs = self.parsed_objs[strmid]
         else:
           parser = PDFObjStrmParser(self, stream.get_data())
           objs = []
@@ -371,7 +371,7 @@ class PDFDocument(object):
               objs.append(obj)
           except PSEOF:
             pass
-          self.parsed_objs[stream] = objs
+          self.parsed_objs[strmid] = objs
         genno = 0
         i = n*2+index
         try:
