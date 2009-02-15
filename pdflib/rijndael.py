@@ -690,7 +690,7 @@ rcon = [
   # 128-bit blocks, Rijndael never uses more than 10 rcon values
   ]
 
-if sys.maxint == 2147483647:
+if len(pack('L',0)) == 4:
   # 32bit
   def GETU32(x): return unpack('>L', x)[0]
   def PUTU32(x): return pack('>L', x)
@@ -1056,11 +1056,13 @@ class RijndaelEncryptor(object):
 
 def main(argv):
   # test
-  key = 'ousamanomimiwarobanomimi12345678' # 32bytes
-  plaintext = 'TakeyabuYaketa!?' # 16bytes
-  e = RijndaelEncryptor(key)
-  ciphertext = e.encrypt(plaintext)
-  d = RijndaelDecryptor(key)
+  key = '00010203050607080A0B0C0D0F101112'.decode('hex')
+  plaintext = '506812A45F08C889B97F5980038B8359'.decode('hex')
+  ciphertext = 'D8F532538289EF7D06B506A4FD5BE9C9'.decode('hex')
+  e = RijndaelEncryptor(key, 128)
+  text = e.encrypt(plaintext)
+  assert text == ciphertext
+  d = RijndaelDecryptor(key, 128)
   text = d.decrypt(ciphertext)
   assert text == plaintext
   return 0
