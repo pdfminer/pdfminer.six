@@ -2,7 +2,7 @@
 import sys, re
 stderr = sys.stderr
 
-from pdflib.utils import choplist
+from utils import choplist
 
 STRICT = 0
 

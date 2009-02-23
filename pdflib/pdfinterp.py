@@ -6,17 +6,17 @@ try:
   from cStringIO import StringIO
 except ImportError:
   from StringIO import StringIO
-from pdflib.psparser import PSException, PSTypeError, PSEOF, \
+from psparser import PSException, PSTypeError, PSEOF, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name, \
      PSStackParser, PSKeyword, STRICT
-from pdflib.pdftypes import PDFException, PDFStream, PDFObjRef, \
+from pdftypes import PDFException, PDFStream, PDFObjRef, \
      resolve1, int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
-from pdflib.utils import choplist, mult_matrix, translate_matrix, apply_matrix, apply_matrix_norm, MATRIX_IDENTITY
-from pdflib.pdffont import PDFFontError, PDFType1Font, PDFTrueTypeFont, PDFType3Font, PDFCIDFont
-from pdflib.pdfcolor import ColorSpace, PREDEFINED_COLORSPACE, \
+from utils import choplist, mult_matrix, translate_matrix, apply_matrix, apply_matrix_norm, MATRIX_IDENTITY
+from pdffont import PDFFontError, PDFType1Font, PDFTrueTypeFont, PDFType3Font, PDFCIDFont
+from pdfcolor import ColorSpace, PREDEFINED_COLORSPACE, \
      LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
-from pdflib.cmap import CMapDB
+from cmap import CMapDB
 
 
 ##  Exceptions
@@ -391,27 +391,27 @@ class PDFPageInterpreter(object):
     return
   # setgray-stroking
   def do_G(self, gray):
-    self.do_CS(LITERAL_DEVICE_GRAY)
+    #self.do_CS(LITERAL_DEVICE_GRAY)
     return
   # setgray-non-stroking
   def do_g(self, gray):
-    self.do_cs(LITERAL_DEVICE_GRAY)
+    #self.do_cs(LITERAL_DEVICE_GRAY)
     return
   # setrgb-stroking
   def do_RG(self, r, g, b):
-    self.do_CS(LITERAL_DEVICE_RGB)
+    #self.do_CS(LITERAL_DEVICE_RGB)
     return
   # setrgb-non-stroking
   def do_rg(self, r, g, b):
-    self.do_cs(LITERAL_DEVICE_RGB)
+    #self.do_cs(LITERAL_DEVICE_RGB)
     return
   # setcmyk-stroking
   def do_K(self, c, m, y, k):
-    self.do_CS(LITERAL_DEVICE_CMYK)
+    #self.do_CS(LITERAL_DEVICE_CMYK)
     return
   # setcmyk-non-stroking
   def do_k(self, c, m, y, k):
-    self.do_cs(LITERAL_DEVICE_CMYK)
+    #self.do_cs(LITERAL_DEVICE_CMYK)
     return
 
   # setcolor

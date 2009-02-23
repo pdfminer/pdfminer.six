@@ -6,13 +6,175 @@ try:
   from cStringIO import StringIO
 except ImportError:
   from StringIO import StringIO
-from pdflib.psparser import PSLiteralTable, PSKeywordTable, PSLiteral, \
+from psparser import PSLiteralTable, PSKeywordTable, PSLiteral, \
      literal_name, keyword_name, STRICT
-from pdflib.pdftypes import PDFException, \
+from pdftypes import PDFException, \
      resolve1, int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
-from pdflib.cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
-from utils import apply_matrix_norm
+from cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
+from utils import apply_matrix_norm, nunpack
+
+
+NIBBLES = ('0','1','2','3','4','5','6','7','8','9','.','e','e-',None,'-')
+def getnum(fp):
+  b0 = ord(fp.read(1))
+  if b0 == 30:
+    s = ''
+    loop = True
+    while loop:
+      b = ord(fp.read(1))
+      for n in (b >> 4, b & 15):
+        if n == 15:
+          loop = False
+        else:
+          s += NIBBLES[n]
+    return float(s)
+  if 32 <= b0 and b0 <= 246:
+    return b0-139
+  b1 = ord(fp.read(1))
+  if 247 <= b0 and b0 <= 250:
+    return ((b0-247)<<8)+b1+108
+  if 251 <= b0 and b0 <= 254:
+    return -((b0-251)<<8)-b1-108
+  b2 = ord(fp.read(1))
+  if 128 <= b1: b1 -= 256
+  if b0 == 28:
+    return b1<<8 | b2
+  return b1<<24 | b2<<16 | unpack('>H',fp.read(2))[0]
+#assert getop(StringIO('\x8b')) == 0
+#assert getop(StringIO('\xef')) == 100
+#assert getop(StringIO('\x27')) == -100
+#assert getop(StringIO('\xfa\x7c')) == 1000
+#assert getop(StringIO('\xfe\x7c')) == -1000
+#assert getop(StringIO('\x1c\x27\x10')) == 10000
+#assert getop(StringIO('\x1c\xd8\xf0')) == -10000
+#assert getop(StringIO('\x1d\x00\x01\x86\xa0')) == 100000
+#assert getop(StringIO('\x1d\xff\xfe\x79\x60')) == -100000
+#assert getop(StringIO('\x1e\xe2\xa2\x5f')) == -2.25
+#assert getop(StringIO('\x1e\x0a\x14\x05\x41\xc3\xff')) == 0.140541e-3
+
+
+##  CFFFont
+##  (Format specified in Adobe Technical Note: #5176
+##   "The Compact Font Format Specification")
+##
+class CFFFont(object):
+
+  class INDEX(object):
+    
+    def __init__(self, fp):
+      self.fp = fp
+      self.offsets = []
+      (count, offsize) = unpack('>HB', self.fp.read(3))
+      for i in xrange(count+1):
+        self.offsets.append(nunpack(self.fp.read(offsize)))
+      self.base = self.fp.tell()-1
+      self.fp.seek(self.base+self.offsets[-1])
+      return
+
+    def __repr__(self):
+      return '<INDEX: size=%d>' % len(self)
+
+    def __len__(self):
+      return len(self.offsets)-1
+
+    def __getitem__(self, i):
+      self.fp.seek(self.base+self.offsets[i])
+      return self.fp.read(self.offsets[i+1]-self.offsets[i])
+
+  def __init__(self, name, fp):
+    self.name = name
+    self.fp = fp
+    # Header
+    (_major,_minor,hdrsize,self.offsize) = unpack('BBBB', fp.read(4))
+    self.fp.read(hdrsize-4)
+    # Name INDEX
+    self.name_index = self.INDEX(self.fp)
+    # Top DICT INDEX
+    self.dict_index = self.INDEX(self.fp)
+    # String INDEX
+    self.string_index = self.INDEX(self.fp)
+    # Global Subr INDEX
+    self.subr_index = self.INDEX(self.fp)
+    # Encodings
+    # Charsets
+    return
+
+  
+  
+##  TrueTypeFont
+##
+class TrueTypeFont(object):
+
+  class CMapNotFound(Exception): pass
+  
+  def __init__(self, name, fp):
+    self.name = name
+    self.fp = fp
+    self.tables = {}
+    fonttype = fp.read(4)
+    (ntables, _1, _2, _3) = unpack('>HHHH', fp.read(8))
+    for i in xrange(ntables):
+      (name, tsum, offset, length) = unpack('>4sLLL', fp.read(16))
+      self.tables[name] = (offset, length)
+    return
+
+  def create_cmap(self):
+    if 'cmap' not in self.tables:
+      raise TrueTypeFont.CMapNotFound
+    (base_offset, length) = self.tables['cmap']
+    fp = self.fp
+    fp.seek(base_offset)
+    (version, nsubtables) = unpack('>HH', fp.read(4))
+    subtables = []
+    for i in xrange(nsubtables):
+      subtables.append(unpack('>HHL', fp.read(8)))
+    char2gid = {}
+    # Only supports subtable type 0, 2 and 4.
+    for (_1, _2, st_offset) in subtables:
+      fp.seek(base_offset+st_offset)
+      (fmttype, fmtlen, fmtlang) = unpack('>HHH', fp.read(6))
+      if fmttype == 0:
+        char2gid.update(enumerate(unpack('>256B', fp.read(256))))
+      elif fmttype == 2:
+        subheaderkeys = unpack('>256H', fp.read(512))
+        firstbytes = [0]*8192
+        for (i,k) in enumerate(subheaderkeys):
+          firstbytes[k/8] = i
+        nhdrs = max(subheaderkeys)/8 + 1
+        hdrs = []
+        for i in xrange(nhdrs):
+          (firstcode,entcount,delta,offset) = unpack('>HHhH', fp.read(8))
+          hdrs.append((i,firstcode,entcount,delta,fp.tell()-2+offset))
+        for (i,firstcode,entcount,delta,pos) in hdrs:
+          if not entcount: continue
+          first = firstcode + (firstbytes[i] << 8)
+          fp.seek(pos)
+          for c in xrange(entcount):
+            gid = unpack('>H', fp.read(2))
+            if gid:
+              gid += delta
+            char2gid[first+c] = gid
+      elif fmttype == 4:
+        (segcount, _1, _2, _3) = unpack('>HHHH', fp.read(8))
+        segcount /= 2
+        ecs = unpack('>%dH' % segcount, fp.read(2*segcount))
+        fp.read(2)
+        scs = unpack('>%dH' % segcount, fp.read(2*segcount))
+        idds = unpack('>%dh' % segcount, fp.read(2*segcount))
+        pos = fp.tell()
+        idrs = unpack('>%dH' % segcount, fp.read(2*segcount))
+        for (ec,sc,idd,idr) in zip(ecs, scs, idds, idrs):
+          if idr:
+            fp.seek(pos+idr)
+            for c in xrange(sc, ec+1):
+              char2gid[c] = (unpack('>H', fp.read(2))[0] + idd) & 0xffff
+          else:
+            for c in xrange(sc, ec+1):
+              char2gid[c] = (c + idd) & 0xffff
+    gid2char = dict( (gid, pack('>H', char))
+                     for (char,gid) in char2gid.iteritems() )
+    return CMap().update(char2gid, gid2char)
 
 
 ##  Fonts
@@ -96,17 +258,15 @@ class PDFSimpleFont(PDFFont):
     return
 
   def to_unicode(self, cid):
-    if not self.ucs2_cmap:
-      try:
-        return self.encoding[cid]
-      except KeyError:
-        raise PDFUnicodeNotDefined(None, cid)
-    code = self.ucs2_cmap.tocode(cid)
-    if not code:
+    if self.ucs2_cmap:
+      code = self.ucs2_cmap.tocode(cid)
+      if code:
+        chars = unpack('>%dH' % (len(code)/2), code)
+        return ''.join( unichr(c) for c in chars )
+    try:
+      return self.encoding[cid]
+    except KeyError:
       raise PDFUnicodeNotDefined(None, cid)
-    chars = unpack('>%dH' % (len(code)/2), code)
-    return ''.join( unichr(c) for c in chars )
-
 
 # PDFType1Font
 class PDFType1Font(PDFSimpleFont):
@@ -171,81 +331,6 @@ class PDFType3Font(PDFSimpleFont):
 
 
 # PDFCIDFont
-
-##  TrueTypeFont
-##
-class TrueTypeFont(object):
-
-  class CMapNotFound(Exception): pass
-  
-  def __init__(self, name, fp):
-    self.name = name
-    self.fp = fp
-    self.tables = {}
-    fonttype = fp.read(4)
-    (ntables, _1, _2, _3) = unpack('>HHHH', fp.read(8))
-    for i in xrange(ntables):
-      (name, tsum, offset, length) = unpack('>4sLLL', fp.read(16))
-      self.tables[name] = (offset, length)
-    return
-
-  def create_cmap(self):
-    if 'cmap' not in self.tables:
-      raise TrueTypeFont.CMapNotFound
-    (base_offset, length) = self.tables['cmap']
-    fp = self.fp
-    fp.seek(base_offset)
-    (version, nsubtables) = unpack('>HH', fp.read(4))
-    subtables = []
-    for i in xrange(nsubtables):
-      subtables.append(unpack('>HHL', fp.read(8)))
-    char2gid = {}
-    # Only supports subtable type 0, 2 and 4.
-    for (_1, _2, st_offset) in subtables:
-      fp.seek(base_offset+st_offset)
-      (fmttype, fmtlen, fmtlang) = unpack('>HHH', fp.read(6))
-      if fmttype == 0:
-        char2gid.update(enumerate(unpack('>256B', fp.read(256))))
-      elif fmttype == 2:
-        subheaderkeys = unpack('>256H', fp.read(512))
-        firstbytes = [0]*8192
-        for (i,k) in enumerate(subheaderkeys):
-          firstbytes[k/8] = i
-        nhdrs = max(subheaderkeys)/8 + 1
-        hdrs = []
-        for i in xrange(nhdrs):
-          (firstcode,entcount,delta,offset) = unpack('>HHhH', fp.read(8))
-          hdrs.append((i,firstcode,entcount,delta,fp.tell()-2+offset))
-        for (i,firstcode,entcount,delta,pos) in hdrs:
-          if not entcount: continue
-          first = firstcode + (firstbytes[i] << 8)
-          fp.seek(pos)
-          for c in xrange(entcount):
-            gid = unpack('>H', fp.read(2))
-            if gid:
-              gid += delta
-            char2gid[first+c] = gid
-      elif fmttype == 4:
-        (segcount, _1, _2, _3) = unpack('>HHHH', fp.read(8))
-        segcount /= 2
-        ecs = unpack('>%dH' % segcount, fp.read(2*segcount))
-        fp.read(2)
-        scs = unpack('>%dH' % segcount, fp.read(2*segcount))
-        idds = unpack('>%dh' % segcount, fp.read(2*segcount))
-        pos = fp.tell()
-        idrs = unpack('>%dH' % segcount, fp.read(2*segcount))
-        for (ec,sc,idd,idr) in zip(ecs, scs, idds, idrs):
-          if idr:
-            fp.seek(pos+idr)
-            for c in xrange(sc, ec+1):
-              char2gid[c] = (unpack('>H', fp.read(2))[0] + idd) & 0xffff
-          else:
-            for c in xrange(sc, ec+1):
-              char2gid[c] = (c + idd) & 0xffff
-    gid2char = dict( (gid, pack('>H', char))
-                     for (char,gid) in char2gid.iteritems() )
-    return CMap().update(char2gid, gid2char)
-
 class PDFCIDFont(PDFFont):
   
   def __init__(self, rsrc, spec):
@@ -358,3 +443,13 @@ class PDFCIDFont(PDFFont):
 
   def space_width(self):
     return 0
+
+
+# main
+def main(argv):
+  for fname in argv[1:]:
+    fp = file(fname, 'rb')
+    CFFFont(fname, fp)
+    fp.close()
+  return
+if __name__ == '__main__': sys.exit(main(sys.argv))

@@ -2,11 +2,11 @@
 import sys
 stdout = sys.stdout
 stderr = sys.stderr
-from pdflib.pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
-from pdflib.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdflib.pdfdevice import PDFDevice, FigureItem, TextItem, PDFPageAggregator
-from pdflib.pdffont import PDFUnicodeNotDefined
-from pdflib.cmap import CMapDB
+from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
+from pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfdevice import PDFDevice, FigureItem, TextItem, PDFPageAggregator
+from pdffont import PDFUnicodeNotDefined
+from cmap import CMapDB
 
 
 def enc(x, codec):
@@ -121,7 +121,7 @@ class TagExtractor(PDFDevice):
   def render_image(self, stream, size, matrix):
     return
 
-  def render_string(self, textstate, textmatrix, size, seq):
+  def render_string(self, textstate, textmatrix, seq):
     font = textstate.font
     text = ''
     for x in seq:

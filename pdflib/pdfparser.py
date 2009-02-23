@@ -7,12 +7,12 @@
 import sys, re
 import md5, struct
 stderr = sys.stderr
-from pdflib.utils import choplist, nunpack, decode_text
-from pdflib.arcfour import Arcfour
-from pdflib.psparser import PSStackParser, PSSyntaxError, PSEOF, \
+from utils import choplist, nunpack, decode_text
+from arcfour import Arcfour
+from psparser import PSStackParser, PSSyntaxError, PSEOF, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name, \
      STRICT
-from pdflib.pdftypes import PDFException, PDFTypeError, PDFNotImplementedError, \
+from pdftypes import PDFException, PDFTypeError, PDFNotImplementedError, \
      PDFStream, PDFObjRef, resolve1, decipher_all, \
      int_value, float_value, num_value, str_value, list_value, dict_value, stream_value
 
@@ -34,23 +34,50 @@ LITERAL_CATALOG = PSLiteralTable.intern('Catalog')
 
 ##  XRefs
 ##
+class XRefObjRange(object):
+  def __init__(self, start, nobjs):
+    self.start = start
+    self.nobjs = nobjs
+    return
+
+  def __repr__(self):
+    return '<XRefObjRange: %d-%d>' % (self.get_start_id(), self.get_end_id())
+
+  def get_start_id(self):
+    return self.start
+
+  def get_end_id(self):
+    return self.start + self.nobjs - 1
+
+  def get_nobjs(self):
+    return self.nobjs
+
+class PDFBaseXRef(object):
+  def __init__(self):
+    self.objid_ranges = None
+    self.objid_list = None
+    return
+
+  def objids(self):
+    for objid_range in self.objid_ranges:
+      for objid in xrange(objid_range.get_start_id(), objid_range.get_end_id() + 1):
+        yield objid
+    return
 
 ##  PDFXRef
 ##
-class PDFXRef(object):
-
+class PDFXRef(PDFBaseXRef):
   def __init__(self):
+    PDFBaseXRef.__init__(self)
     self.offsets = None
     return
 
   def __repr__(self):
     return '<PDFXRef: objs=%d>' % len(self.offsets)
 
-  def objids(self):
-    return self.offsets.iterkeys()
-
   def load(self, parser, debug=0):
     self.offsets = {}
+    self.objid_ranges = []
     while 1:
       try:
         (pos, line) = parser.nextline()
@@ -68,6 +95,8 @@ class PDFXRef(object):
         (start, nobjs) = map(long, f)
       except ValueError:
         raise PDFNoValidXRef('Invalid line: %r: line=%r' % (parser, line))
+      self.newoffsets = {}
+      self.objid_ranges.append(XRefObjRange(start, nobjs))
       for objid in xrange(start, start+nobjs):
         try:
           (_, line) = parser.nextline()
@@ -108,11 +137,10 @@ class PDFXRef(object):
 
 ##  PDFXRefStream
 ##
-class PDFXRefStream(object):
+class PDFXRefStream(PDFBaseXRef):
 
   def __init__(self):
-    self.objid_first = None
-    self.objid_last = None
+    PDFBaseXRef.__init__(self)
     self.data = None
     self.entlen = None
     self.fl1 = self.fl2 = self.fl3 = None
@@ -120,9 +148,6 @@ class PDFXRefStream(object):
 
   def __repr__(self):
     return '<PDFXRef: objid=%d-%d>' % (self.objid_first, self.objid_last)
-
-  def objids(self):
-    return xrange(self.objid_first, self.objid_last+1)
 
   def load(self, parser, debug=0):
     (_,objid) = parser.nexttoken() # ignored
@@ -132,22 +157,31 @@ class PDFXRefStream(object):
     if not isinstance(stream, PDFStream) or stream.dic['Type'] is not LITERAL_XREF:
       raise PDFNoValidXRef('Invalid PDF stream spec.')
     size = stream.dic['Size']
-    (start, nobjs) = stream.dic.get('Index', (0,size))
-    self.objid_first = start
-    self.objid_last = start+nobjs-1
+    index_array = stream.dic.get('Index', (0,size))
+    if len(index_array) % 2 != 0:
+      raise PDFSyntaxError('Invalid index number')
+    self.objid_ranges = [ XRefObjRange(start,nobjs) for (start,nobjs) in choplist(2, index_array) ]
     (self.fl1, self.fl2, self.fl3) = stream.dic['W']
     self.data = stream.get_data()
     self.entlen = self.fl1+self.fl2+self.fl3
     self.trailer = stream.dic
     if debug:
-      print >>stderr, ('xref stream: objid=%d-%d, fields=%d,%d,%d' %
-                       (self.objid_first, self.objid_last, self.fl1, self.fl2, self.fl3))
+      print >>stderr, ('xref stream: objid=%s, fields=%d,%d,%d' %
+                       (', '.join(map(repr, self.objid_ranges), self.fl1, self.fl2, self.fl3)))
     return
 
   def getpos(self, objid):
-    if objid < self.objid_first or self.objid_last < objid:
-      raise KeyError(objid)
-    i = self.entlen * (objid-self.objid_first)
+    offset = 0
+    found = False
+    for objid_range in self.objid_ranges:
+      if objid >= objid_range.get_start_id() and objid <= objid_range.get_end_id():
+        offset += objid - objid_range.get_start_id()
+        found = True
+        break
+      else:
+        offset += objid_range.get_nobjs()
+    if not found: raise KeyError(objid)
+    i = self.entlen * offset
     ent = self.data[i:i+self.entlen]
     f1 = nunpack(ent[:self.fl1], 1)
     if f1 == 1:

@@ -2,8 +2,8 @@
 import sys
 stderr = sys.stderr
 from struct import pack, unpack
-from pdflib.utils import choplist, nunpack
-from pdflib.psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
+from utils import choplist, nunpack
+from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSLiteral, PSKeyword, literal_name, keyword_name, \
      PSStackParser
 try:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 stderr = sys.stderr
-from pdflib.psparser import PSLiteralTable
+from psparser import PSLiteralTable
 
 
 ##  ColorSpace

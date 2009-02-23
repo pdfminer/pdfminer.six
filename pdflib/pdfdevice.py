@@ -2,8 +2,8 @@
 import sys
 stdout = sys.stdout
 stderr = sys.stderr
-from pdflib.pdffont import PDFUnicodeNotDefined
-from pdflib.utils import mult_matrix, apply_matrix, apply_matrix_norm, translate_matrix
+from pdffont import PDFUnicodeNotDefined
+from utils import mult_matrix, apply_matrix, apply_matrix_norm, translate_matrix
 
 
 ##  PDFDevice
