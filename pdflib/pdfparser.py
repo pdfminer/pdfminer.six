@@ -59,9 +59,13 @@ class PDFBaseXRef(object):
     return
 
   def objids(self):
-    for objid_range in self.objid_ranges:
-      for objid in xrange(objid_range.get_start_id(), objid_range.get_end_id() + 1):
-        yield objid
+    if self.objid_ranges:
+        for objid_range in self.objid_ranges:
+          for objid in xrange(objid_range.get_start_id(), objid_range.get_end_id() + 1):
+            yield objid
+    else:
+        for objid in self.offsets:
+            yield objid
     return
 
 ##  PDFXRef
@@ -70,6 +74,7 @@ class PDFXRef(PDFBaseXRef):
   def __init__(self):
     PDFBaseXRef.__init__(self)
     self.offsets = None
+    self.trailer = {}
     return
 
   def __repr__(self):
@@ -81,6 +86,8 @@ class PDFXRef(PDFBaseXRef):
     while 1:
       try:
         (pos, line) = parser.nextline()
+        if not line.strip():
+            continue
       except PSEOF:
         raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
       if not line:
@@ -112,7 +119,7 @@ class PDFXRef(PDFBaseXRef):
       print >>stderr, 'xref objects:', self.offsets
     self.load_trailer(parser)
     return
-  
+
   KEYWORD_TRAILER = PSKeywordTable.intern('trailer')
   def load_trailer(self, parser):
     try:
@@ -124,7 +131,7 @@ class PDFXRef(PDFBaseXRef):
       if not x:
         raise PDFNoValidXRef('Unexpected EOF - file corrupted')
       (_,dic) = x[0]
-    self.trailer = dict_value(dic)
+    self.trailer.update( dict_value(dic))
     return
 
   def getpos(self, objid):
@@ -199,7 +206,7 @@ class PDFXRefStream(PDFBaseXRef):
 ##  PDFPage
 ##
 class PDFPage(object):
-  
+
   def __init__(self, doc, pageid, attrs):
     self.doc = doc
     self.pageid = pageid
@@ -237,7 +244,7 @@ class PDFPage(object):
 class PDFDocument(object):
 
   debug = 0
-  
+
   def __init__(self):
     self.xrefs = []
     self.objs = {}
@@ -257,7 +264,7 @@ class PDFDocument(object):
     self.parser = parser
     # The document is set to be temporarily ready during collecting
     # all the basic information about the document, e.g.
-    # the header, the encryption information, and the access rights 
+    # the header, the encryption information, and the access rights
     # for the document.
     self.ready = True
     # Retrieve the information of each header that was appended
@@ -292,7 +299,7 @@ class PDFDocument(object):
       if STRICT:
         raise PDFSyntaxError('Catalog not found!')
     return
-  
+
   # initialize(password='')
   #   Perform the initialization with a given password.
   #   This step is mandatory even if there's no password associated
@@ -316,7 +323,7 @@ class PDFDocument(object):
       raise PDFEncryptionError('Unknown revision: %r' % R)
     U = str_value(param['U'])
     P = int_value(param['P'])
-    self.is_printable = bool(P & 4)        
+    self.is_printable = bool(P & 4)
     self.is_modifiable = bool(P & 8)
     self.is_extractable = bool(P & 16)
     # Algorithm 3.2
@@ -418,8 +425,18 @@ class PDFDocument(object):
         self.parser.seek(index)
         (_,objid1) = self.parser.nexttoken() # objid
         (_,genno) = self.parser.nexttoken() # genno
-        #assert objid1 == objid, (objid, objid1)
         (_,kwd) = self.parser.nexttoken()
+# #### hack around malformed pdf files
+#        assert objid1 == objid, (objid, objid1)
+        if objid1 != objid:
+            x = []
+            while kwd is not self.KEYWORD_OBJ:
+                (_,kwd) = self.parser.nexttoken()
+                x.append(kwd)
+            if x:
+                objid1 = x[-2]
+                genno = x[-1]
+# #### end hack around malformed pdf files
         if kwd is not self.KEYWORD_OBJ:
           raise PDFSyntaxError('Invalid object spec: offset=%r' % index)
         (_,obj) = self.parser.nextobject()
@@ -431,7 +448,7 @@ class PDFDocument(object):
     if self.decipher:
       obj = decipher_all(self.decipher, objid, genno, obj)
     return obj
-  
+
   INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
   def get_pages(self):
     if not self.ready:
@@ -526,7 +543,7 @@ class PDFParser(PSStackParser):
     if token is self.KEYWORD_ENDOBJ:
       self.add_results(*self.pop(4))
       return
-    
+
     if token is self.KEYWORD_R:
       # reference to indirect object
       try:
@@ -537,7 +554,7 @@ class PDFParser(PSStackParser):
       except PSSyntaxError:
         pass
       return
-      
+
     if token is self.KEYWORD_STREAM:
       # stream object
       ((_,dic),) = self.pop(1)
@@ -580,7 +597,7 @@ class PDFParser(PSStackParser):
       obj = PDFStream(dic, data, self.doc.decipher)
       self.push((pos, obj))
       return
-    
+
     # others
     self.push((pos, token))
     return
@@ -611,17 +628,15 @@ class PDFParser(PSStackParser):
       raise PDFNoValidXRef('Unexpected EOF')
     if 2 <= self.debug:
       print >>stderr, 'read_xref_from: start=%d, token=%r' % (start, token)
-    if isinstance(token, int):
+    try:
       # XRefStream: PDF-1.5
       self.seek(pos)
       self.reset()
       xref = PDFXRefStream()
       xref.load(self, debug=self.debug)
-    else:
-      if token is not self.KEYWORD_XREF:
-        raise PDFNoValidXRef('xref not found: pos=%d, token=%r' % 
-                             (pos, token))
-      self.nextline()
+    except:
+      if token is self.KEYWORD_XREF:
+          self.nextline()
       xref = PDFXRef()
       xref.load(self, debug=self.debug)
     xrefs.append(xref)
@@ -636,7 +651,7 @@ class PDFParser(PSStackParser):
       pos = int_value(trailer['Prev'])
       self.read_xref_from(pos, xrefs)
     return
-    
+
   # read xref tables and trailers
   def read_xref(self):
     xrefs = []
@@ -656,17 +671,17 @@ class PDFParser(PSStackParser):
           (pos, line) = self.nextline()
         except PSEOF:
           break
-        if line.startswith('trailer'): break
+        if line.startswith('trailer'):
+          xref.offsets = offsets
+          self.seek(pos)
+          xref.load_trailer(self)
+          if 1 <= self.debug:
+            print >>stderr, 'trailer: %r' % xref.trailer
+          continue
         m = pat.match(line)
         if not m: continue
         (objid, genno) = m.groups()
         offsets[int(objid)] = (0, pos)
-      if not offsets: raise
-      xref.offsets = offsets
-      self.seek(pos)
-      xref.load_trailer(self)
-      if 1 <= self.debug:
-        print >>stderr, 'trailer: %r' % xref.trailer
       xrefs.append(xref)
     return xrefs
 
@@ -674,7 +689,7 @@ class PDFParser(PSStackParser):
 ##  PDFObjStrmParser
 ##
 class PDFObjStrmParser(PDFParser):
-  
+
   def __init__(self, doc, data):
     try:
       from cStringIO import StringIO
@@ -682,7 +697,7 @@ class PDFObjStrmParser(PDFParser):
       from StringIO import StringIO
     PDFParser.__init__(self, doc, StringIO(data))
     return
-  
+
   def flush(self):
     self.add_results(*self.popall())
     return

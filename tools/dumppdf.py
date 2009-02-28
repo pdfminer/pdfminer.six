@@ -29,7 +29,7 @@ def dumpxml(out, obj, codec=None):
       out.write('</value>\n')
     out.write('</dict>')
     return
-  
+
   if isinstance(obj, list):
     out.write('<list size="%d">\n' % len(obj))
     for v in obj:
@@ -37,11 +37,11 @@ def dumpxml(out, obj, codec=None):
       out.write('\n')
     out.write('</list>')
     return
-  
+
   if isinstance(obj, str):
     out.write('<string size="%d">%s</string>' % (len(obj), esc(obj)))
     return
-  
+
   if isinstance(obj, PDFStream):
     out.write('<stream>\n<props>\n')
     dumpxml(out, obj.dic)
@@ -51,11 +51,11 @@ def dumpxml(out, obj, codec=None):
       out.write('<data size="%d">%s</data>\n' % (len(data), esc(data)))
     out.write('</stream>')
     return
-  
+
   if isinstance(obj, PDFObjRef):
     out.write('<ref id="%d"/>' % obj.objid)
     return
-  
+
   if isinstance(obj, PSKeyword):
     out.write('<keyword>%s</keyword>' % obj.name)
     return
@@ -63,7 +63,7 @@ def dumpxml(out, obj, codec=None):
   if isinstance(obj, PSLiteral):
     out.write('<literal>%s</literal>' % obj.name)
     return
-  
+
   if isinstance(obj, int) or isinstance(obj, float):
     out.write('<number>%s</number>' % obj)
     return

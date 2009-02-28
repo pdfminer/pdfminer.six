@@ -159,6 +159,20 @@ class PDFStream(PDFObject):
   def __repr__(self):
     return '<PDFStream(%r): raw=%d, %r>' % (self.objid, len(self.rawdata), self.dic)
 
+  def decomp(self,data):
+    import zlib
+    buf = data
+    # some FlateDecode streams have garbage (newlines, etc) appended to the
+    # end.  remove chars from the end to try and decompress the buffer
+    while len(buf) > 10:
+      try:
+          # will get errors if the document is encrypted.
+          dco = zlib.decompressobj()
+          return dco.decompress(buf)
+      except:
+          buf = buf[:-1]
+    raise Exception, "zlib.error while decompressing data"
+
   def decode(self):
     assert self.data == None and self.rawdata != None
     data = self.rawdata
@@ -175,7 +189,7 @@ class PDFStream(PDFObject):
     for f in filters:
       if f in LITERALS_FLATE_DECODE:
         # will get errors if the document is encrypted.
-        data = zlib.decompress(data)
+        data = self.decomp(data)
       elif f in LITERALS_LZW_DECODE:
         try:
           from cStringIO import StringIO
