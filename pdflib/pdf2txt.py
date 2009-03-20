@@ -21,8 +21,8 @@ def encprops(props, codec):
 ##  TextConverter
 class TextConverter(PDFPageAggregator):
   
-  def __init__(self, rsrc, outfp, codec='ascii'):
-    PDFPageAggregator.__init__(self, rsrc)
+  def __init__(self, rsrc, outfp, codec='ascii', splitwords=False):
+    PDFPageAggregator.__init__(self, rsrc, splitwords=splitwords)
     self.outfp = outfp
     self.codec = codec
     return
@@ -60,8 +60,8 @@ class SGMLConverter(TextConverter):
 ##
 class HTMLConverter(TextConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1):
-    TextConverter.__init__(self, rsrc, outfp, codec=codec)
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, splitwords=False):
+    TextConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=splitwords)
     self.pagenum = pagenum
     self.pagepad = pagepad
     self.scale = scale
@@ -190,10 +190,10 @@ def convert(rsrc, device, fname, pagenos=None, maxpages=0, password=''):
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-t html|sgml|tag] [-o output] file ...' % argv[0]
+    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-w] [-t html|sgml|tag] [-o output] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:t:o:C:D:m:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:t:o:C:D:m:w')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -205,6 +205,7 @@ def main(argv):
   maxpages = 0
   outtype = 'html'
   password = ''
+  splitwords = False
   outfp = stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
@@ -216,6 +217,7 @@ def main(argv):
     elif k == '-D': cdbcmapdir = v
     elif k == '-t': outtype = v
     elif k == '-o': outfp = file(v, 'wb')
+    elif k == '-w': splitwords = True
   #
   CMapDB.debug = debug
   PDFResourceManager.debug = debug
@@ -226,11 +228,11 @@ def main(argv):
   CMapDB.initialize(cmapdir, cdbcmapdir)
   rsrc = PDFResourceManager()
   if outtype == 'sgml':
-    device = SGMLConverter(rsrc, outfp, codec)
+    device = SGMLConverter(rsrc, outfp, codec=codec, splitwords=splitwords)
   elif outtype == 'html':
-    device = HTMLConverter(rsrc, outfp, codec)
+    device = HTMLConverter(rsrc, outfp, codec=codec, splitwords=splitwords)
   elif outtype == 'tag':
-    device = TagExtractor(rsrc, outfp, codec)
+    device = TagExtractor(rsrc, outfp, codec=codec, splitwords=splitwords)
   else:
     return usage()
   for fname in args:

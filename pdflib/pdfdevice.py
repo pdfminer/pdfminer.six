@@ -145,9 +145,10 @@ class TextItem(object):
 ##
 class PDFPageAggregator(PDFDevice):
 
-  def __init__(self, rsrc, pageno=1):
+  def __init__(self, rsrc, pageno=1, splitwords=False):
     PDFDevice.__init__(self, rsrc)
     self.pageno = pageno
+    self.splitwords = splitwords
     self.stack = []
     return
 
@@ -180,29 +181,31 @@ class PDFPageAggregator(PDFDevice):
 
   def render_string(self, textstate, textmatrix, seq):
     font = textstate.font
-    text = []
-    textmatrix = mult_matrix(textmatrix, self.ctm)
+    chars = []
     for x in seq:
       if isinstance(x, int) or isinstance(x, float):
-        text.append((None, None, x))
+        chars.append((None, None, x))
       else:
-        chars = font.decode(x)
-        for cid in chars:
+        for cid in font.decode(x):
           try:
             char = font.to_unicode(cid)
           except PDFUnicodeNotDefined, e:
             (cidcoding, cid) = e.args
             char = self.handle_undefined_char(cidcoding, cid)
-          text.append((char, cid, font.char_disp(cid)))
-          if cid == 32 and not font.is_multibyte():
-            if text:
-              item = TextItem(textmatrix, font, textstate.fontsize, textstate.charspace, textstate.scaling, text)
-              self.cur_item.add(item)
-              (dx,dy) = item.adv
-              dx += textstate.wordspace * textstate.scaling * .01
-              textmatrix = translate_matrix(textmatrix, (dx, dy))
-              text = []
-    if text:
-      item = TextItem(textmatrix, font, textstate.fontsize, textstate.charspace, textstate.scaling, text)
+          chars.append((char, cid, font.char_disp(cid)))
+    textmatrix = mult_matrix(textmatrix, self.ctm)
+    word = []
+    for (char, cid, disp) in chars:
+      word.append((char,cid,disp))
+      if self.splitwords and cid == 32 and not font.is_multibyte():
+        if word:
+          item = TextItem(textmatrix, font, textstate.fontsize, textstate.charspace, textstate.scaling, word)
+          self.cur_item.add(item)
+          (dx,dy) = item.adv
+          dx += textstate.wordspace * textstate.scaling * .01
+          textmatrix = translate_matrix(textmatrix, (dx, dy))
+          word = []
+    if word:
+      item = TextItem(textmatrix, font, textstate.fontsize, textstate.charspace, textstate.scaling, word)
       self.cur_item.add(item)
     return
