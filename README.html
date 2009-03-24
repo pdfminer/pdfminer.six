@@ -14,7 +14,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Mon Feb  2 00:01:01 JST 2009
+Last Modified: Wed Mar 25 01:26:33 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -175,6 +175,10 @@ By default, it extracts texts from all the pages.
 <dt> <code>-c <em>codec</em></code> 
 <dd> Specifies the output codec for non-ASCII texts.
 <p>
+<dt> <code>-w</code> 
+<dd> Split each word into a different chunk in the output.
+This makes the word spacing correctly handled.
+<p>
 <dt> <code>-t <em>type</em></code> 
 <dd> Specifies the output format. The following formats are currently supported.
 <ul>
@@ -250,6 +254,7 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2009/03/25: Encoding problems fixed. Word splitting option added.
 <li> 2009/02/01: Various bugfixes. Thanks to Hiroshi Manabe.
 <li> 2009/01/17: Handling a trailer correctly that contains both /XrefStm and /Prev entries.
 <li> 2009/01/10: Handling Type3 font metrics correctly.

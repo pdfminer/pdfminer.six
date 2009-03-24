@@ -13,7 +13,7 @@ stdout = sys.stdout
 stderr = sys.stderr
 
 
-ESC_PAT = re.compile(r'[\000-\037&<>\042\047\134\177-\377]')
+ESC_PAT = re.compile(r'[\000-\037&<>()\042\047\134\177-\377]')
 def esc(s):
   return ESC_PAT.sub(lambda m:'&#%d;' % ord(m.group(0)), s)
 

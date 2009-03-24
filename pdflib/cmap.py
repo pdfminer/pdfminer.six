@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys
+import sys, re
 stderr = sys.stderr
 from struct import pack, unpack
 from utils import choplist, nunpack
@@ -13,6 +13,16 @@ except ImportError:
 
 
 class CMapError(Exception): pass
+
+
+STRIP_NAME = re.compile(r'[0-9]+')
+def name2unicode(name):
+  from glyphlist import charname2unicode
+  if name in charname2unicode:
+    return charname2unicode[name]
+  m = STRIP_NAME.search(name)
+  if not m: raise KeyError(name)
+  return int(m.group(0))
 
 
 ##  CMap
@@ -48,10 +58,9 @@ class CMap(object):
     return self
 
   def register_cid2code(self, cid, code):
-    from glyphlist import charname2unicode
     if isinstance(cid, int):
       if isinstance(code, PSLiteral):
-        self.cid2code[cid] = pack('>H', charname2unicode[code.name])
+        self.cid2code[cid] = pack('>H', name2unicode(code.name))
       elif isinstance(code, str):
         self.cid2code[cid] = code
     return self
@@ -352,7 +361,6 @@ class FontMetricsDB(object):
 ##
 class EncodingDB(object):
       
-  from glyphlist import charname2unicode
   from latin_enc import ENCODING
   
   std2unicode = {}
@@ -360,7 +368,7 @@ class EncodingDB(object):
   win2unicode = {}
   pdf2unicode = {}
   for (name,std,mac,win,pdf) in ENCODING:
-    c = unichr(charname2unicode[name])
+    c = unichr(name2unicode(name))
     if std: std2unicode[std] = c
     if mac: mac2unicode[mac] = c
     if win: win2unicode[win] = c
@@ -384,7 +392,7 @@ class EncodingDB(object):
           cid = x
         elif isinstance(x, PSLiteral):
           try:
-            cid2unicode[cid] = unichr(EncodingDB.charname2unicode[x.name])
+            cid2unicode[cid] = unichr(name2unicode(x.name))
           except KeyError:
             pass
           cid += 1
