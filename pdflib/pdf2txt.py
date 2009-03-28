@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 import sys
-stdout = sys.stdout
-stderr = sys.stderr
 from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
 from pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfdevice import PDFDevice, FigureItem, TextItem, PDFPageAggregator
@@ -18,8 +16,8 @@ def encprops(props, codec):
   return ''.join( ' %s="%s"' % (enc(k,codec), enc(str(v),codec)) for (k,v) in sorted(props.iteritems()) )
 
 
-##  TextConverter
-class TextConverter(PDFPageAggregator):
+##  PDFConverter
+class PDFConverter(PDFPageAggregator):
   
   def __init__(self, rsrc, outfp, codec='ascii', splitwords=False):
     PDFPageAggregator.__init__(self, rsrc, splitwords=splitwords)
@@ -30,11 +28,10 @@ class TextConverter(PDFPageAggregator):
   
 ##  SGMLConverter
 ##
-class SGMLConverter(TextConverter):
+class SGMLConverter(PDFConverter):
 
   def end_page(self, page):
-    TextConverter.end_page(self, page)
-    page = self.cur_item
+    page = PDFConverter.end_page(self, page)
     def f(item):
       bbox = '%.3f,%.3f,%.3f,%.3f' % item.bbox
       if isinstance(item, FigureItem):
@@ -58,21 +55,22 @@ class SGMLConverter(TextConverter):
 
 ##  HTMLConverter
 ##
-class HTMLConverter(TextConverter):
+class HTMLConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, splitwords=False):
-    TextConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=splitwords)
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, cluster_margin=0.5, splitwords=False):
+    PDFConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=splitwords)
     self.pagenum = pagenum
     self.pagepad = pagepad
     self.scale = scale
     self.outfp.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % self.codec)
     self.outfp.write('</head><body>\n')
     self.yoffset = self.pagepad
+    self.cluster_margin = cluster_margin
     return
   
   def end_page(self, page):
-    TextConverter.end_page(self, page)
-    page = self.cur_item
+    from cluster import cluster_pageobjs
+    page = PDFConverter.end_page(self, page)
     def f(item):
       if isinstance(item, FigureItem):
         pass
@@ -96,6 +94,12 @@ class HTMLConverter(TextConverter):
                      (x0*self.scale, (self.yoffset-y1)*self.scale, (x1-x0)*self.scale, (y1-y0)*self.scale))
     for child in page.objs:
       f(child)
+    if self.cluster_margin:
+      textobjs = [ item for item in page.objs if isinstance(item, TextItem) ]
+      for ((x0,y0,x1,y1),objs) in cluster_pageobjs(textobjs, self.cluster_margin):
+        self.outfp.write('<span style="position:absolute; border: 1px solid red; '
+                         'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
+                       (x0*self.scale, (self.yoffset-y1)*self.scale, (x1-x0)*self.scale, (y1-y0)*self.scale))
     self.yoffset += self.pagepad
     return
 
@@ -103,6 +107,41 @@ class HTMLConverter(TextConverter):
     self.outfp.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' % 
                      ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(1,self.pageno)))
     self.outfp.write('</body></html>\n')
+    return
+
+
+##  TextConverter
+##
+class TextConverter(PDFConverter):
+
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, cluster_margin=0.2, splitwords=False, hyphenation=True):
+    PDFConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=True)
+    self.pagenum = pagenum
+    self.cluster_margin = cluster_margin
+    self.hyphenation = hyphenation
+    return
+  
+  def end_page(self, page):
+    from cluster import cluster_pageobjs
+    page = PDFConverter.end_page(self, page)
+    if self.cluster_margin:
+      textobjs = [ item for item in page.objs if isinstance(item, TextItem) ]
+      idx = dict( (obj,i) for (i,obj) in enumerate(textobjs) )
+      clusters = cluster_pageobjs(textobjs, self.cluster_margin)
+      clusters.sort(key=lambda (_,objs): idx[objs[0]])
+      for (_,objs) in clusters:
+        for item in sorted(objs, key=lambda obj:idx[obj]):
+          text = item.text
+          self.outfp.write(text.encode(self.codec, 'replace'))
+        self.outfp.write('\n')
+    else:
+      for item in page.objs:
+        if isinstance(item, TextItem):
+          self.outfp.write(item.text.encode(self.codec, 'replace'))
+          self.outfp.write('\n')
+    return
+
+  def close(self):
     return
 
 
@@ -142,6 +181,7 @@ class TagExtractor(PDFDevice):
     self.outfp.write('<page id="%s" bbox="%s" rotate="%d">' %
                      (self.pageno, bbox, page.rotate))
     return
+  
   def end_page(self, page):
     self.outfp.write('</page>\n')
     self.pageno += 1
@@ -190,7 +230,7 @@ def convert(rsrc, device, fname, pagenos=None, maxpages=0, password=''):
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-w] [-t html|sgml|tag] [-o output] file ...' % argv[0]
+    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-w] [-t text|html|sgml|tag] [-o output] file ...' % argv[0]
     return 100
   try:
     (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:t:o:C:D:m:w')
@@ -203,10 +243,10 @@ def main(argv):
   codec = 'ascii'
   pagenos = set()
   maxpages = 0
-  outtype = 'html'
+  outtype = 'text'
   password = ''
   splitwords = False
-  outfp = stdout
+  outfp = sys.stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
     elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
@@ -231,8 +271,10 @@ def main(argv):
     device = SGMLConverter(rsrc, outfp, codec=codec, splitwords=splitwords)
   elif outtype == 'html':
     device = HTMLConverter(rsrc, outfp, codec=codec, splitwords=splitwords)
+  elif outtype == 'text':
+    device = TextConverter(rsrc, outfp, codec=codec)
   elif outtype == 'tag':
-    device = TagExtractor(rsrc, outfp, codec=codec, splitwords=splitwords)
+    device = TagExtractor(rsrc, outfp, codec=codec)
   else:
     return usage()
   for fname in args:

@@ -80,7 +80,7 @@ class FigureItem(PageItem):
 ##
 class TextItem(object):
   
-  def __init__(self, matrix, font, fontsize, charspace, scaling, text):
+  def __init__(self, matrix, font, fontsize, charspace, scaling, chars):
     self.matrix = matrix
     self.font = font
     (_,_,_,_,tx,ty) = self.matrix
@@ -96,7 +96,7 @@ class TextItem(object):
       w = 0
       dx = 0
       prev = ' '
-      for (char,cid,t) in text:
+      for (char,cid,t) in chars:
         if char:
           if prev != ' ' and spwidth < dx:
             self.text += ' '
@@ -118,13 +118,13 @@ class TextItem(object):
       self.direction = 2
       disp = 0
       h = 0
-      for (char,cid,disp) in text:
+      for (char,cid,disp) in chars:
         if not char: continue
         (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-disp)*fontsize*.001))
         self.text += font.to_unicode(cid)
         h += (font.char_width(cid) * fontsize + charspace) * scaling
         break
-      for (char,cid,_) in text:
+      for (char,cid,_) in chars[1:]:
         if not char: continue
         self.text += font.to_unicode(cid)
         h += (font.char_width(cid) * fontsize + charspace) * scaling
@@ -155,16 +155,18 @@ class PDFPageAggregator(PDFDevice):
   def begin_page(self, page):
     self.cur_item = PageItem(self.pageno, page.mediabox, page.rotate)
     return
+  
   def end_page(self, _):
     assert not self.stack
     assert isinstance(self.cur_item, PageItem)
     self.pageno += 1
-    return
+    return self.cur_item
 
   def begin_figure(self, name, bbox):
     self.stack.append(self.cur_item)
     self.cur_item = FigureItem(name, bbox)
     return
+  
   def end_figure(self, _):
     fig = self.cur_item
     self.cur_item = self.stack.pop()

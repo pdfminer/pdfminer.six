@@ -1,7 +1,5 @@
 TODOs:
   - Better API Documentation.
-  - Error handling for invalid type.
-  - Infer text stream by clustering.
-
+  - Robust error handling.
+  - Any special handling for linearized PDFs?
   - Support writing/creating PDFs.
-  - Any special treatments for linearized PDFs?
