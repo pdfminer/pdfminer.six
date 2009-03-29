@@ -66,7 +66,7 @@ class SGMLConverter(PDFConverter):
 ##
 class HTMLConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, cluster_margin=0.5, splitwords=False):
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, cluster_margin=None, splitwords=False):
     PDFConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=splitwords)
     self.pagenum = pagenum
     self.pagepad = pagepad
@@ -124,16 +124,19 @@ class HTMLConverter(PDFConverter):
 ##
 class TextConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, cluster_margin=0.5, splitwords=False, hyphenation=True):
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, cluster_margin=None, splitwords=False):
     PDFConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=True)
     self.pagenum = pagenum
+    if cluster_margin == None:
+      cluster_margin = 0.5
     self.cluster_margin = cluster_margin
-    self.hyphenation = hyphenation
     return
   
   def end_page(self, page):
     from cluster import cluster_pageobjs
     page = PDFConverter.end_page(self, page)
+    if self.pagenum:
+      self.outfp.write('Page %d\n' % page.id)
     if self.cluster_margin:
       textobjs = get_textobjs(page)
       clusters = cluster_pageobjs(textobjs, self.cluster_margin)
@@ -152,6 +155,7 @@ class TextConverter(PDFConverter):
         if isinstance(item, TextItem):
           self.outfp.write(item.text.encode(self.codec, 'replace'))
           self.outfp.write('\n')
+    self.outfp.write('\f')
     return
 
   def close(self):
@@ -246,7 +250,7 @@ def main(argv):
     print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-w] [-t text|html|sgml|tag] [-o output] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:t:o:C:D:m:w')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:T:t:o:C:D:m:w')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -258,7 +262,9 @@ def main(argv):
   maxpages = 0
   outtype = 'html'
   password = ''
+  pagenum = True
   splitwords = False
+  cluster_margin = None
   outfp = sys.stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
@@ -268,6 +274,7 @@ def main(argv):
     elif k == '-m': maxpages = int(v)
     elif k == '-C': cmapdir = v
     elif k == '-D': cdbcmapdir = v
+    elif k == '-T': cluster_margin = float(v)
     elif k == '-t': outtype = v
     elif k == '-o': outfp = file(v, 'wb')
     elif k == '-w': splitwords = True
@@ -283,9 +290,9 @@ def main(argv):
   if outtype == 'sgml':
     device = SGMLConverter(rsrc, outfp, codec=codec, splitwords=splitwords)
   elif outtype == 'html':
-    device = HTMLConverter(rsrc, outfp, codec=codec, splitwords=splitwords)
+    device = HTMLConverter(rsrc, outfp, codec=codec, splitwords=splitwords, cluster_margin=cluster_margin)
   elif outtype == 'text':
-    device = TextConverter(rsrc, outfp, codec=codec)
+    device = TextConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
   elif outtype == 'tag':
     device = TagExtractor(rsrc, outfp, codec=codec)
   else:
