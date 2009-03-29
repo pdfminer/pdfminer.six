@@ -17,7 +17,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Mon Mar 30 00:13:34 JST 2009
+Last Modified: Mon Mar 30 00:30:36 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -83,14 +83,8 @@ You have to download and unpack it manually,
 and spend some time to make it work.
 <strong>Your will</strong> is needed!
 I do not support easy_install or setup.py or any automated installation until
-this is very polished to the point that it really should be widely distributed.
+this is very matured to the point that it really should be widely distributed.
 (For now, it's not yet up to the standard, IMO.)
-Until then, I don't want to help scattering this
-poorly tested/documented/supported piece of software in your system.
-Having that said, 
-I don't stop anyone repackaging or redistributing this as a more 
-sophisticated package, in which case, it's their responsibility
-to properly test, document and maintain the derived packages.
 
 <ol>
 <li> Install <a href="http://www.python.org/download/">Python</a> 2.5 or newer.
@@ -275,7 +269,8 @@ no stream header is displayed for the ease of saving it to a file.
 <h2>Changes</h2>
 <ul>
 <li> 2009/03/30: Text output mode added.
-<li> 2009/03/25: Encoding problems fixed. Word splitting option added.
+<li> 2009/03/25: Encoding problems fixed. Word splitting option added. 
+<li> 2009/02/28: Robust handling of corrupted PDFs. Thanks to Troy Bollinger.
 <li> 2009/02/01: Various bugfixes. Thanks to Hiroshi Manabe.
 <li> 2009/01/17: Handling a trailer correctly that contains both /XrefStm and /Prev entries.
 <li> 2009/01/10: Handling Type3 font metrics correctly.
