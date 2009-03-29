@@ -59,9 +59,9 @@ class Plane(object):
     return objs
 
 
-##  Clusters
+##  ClusterSet
 ##
-class Clusters(object):
+class ClusterSet(object):
 
   def __init__(self):
     self.clusters = {}
@@ -86,11 +86,12 @@ class Clusters(object):
 
 
 def cluster_pageobjs(objs, ratio):
+  idx = dict( (obj,i) for (i,obj) in enumerate(objs) )
   plane = Plane()
   for obj in objs:
     plane.add(obj.bbox, obj)
   plane.finish()
-  clusters = Clusters()
+  cset = ClusterSet()
   for obj in objs:
     (bx0,by0,bx1,by1) = obj.bbox
     margin = abs(obj.fontsize * ratio)
@@ -100,17 +101,26 @@ def cluster_pageobjs(objs, ratio):
     y1 = max(by0,by1)
     found = plane.find((x0-margin, y0-margin, x1+margin, y1+margin))
     if len(found) == 1:
-      clusters.add(found.pop())
+      cset.add(found.pop())
     else:
-      clusters.merge(found)
+      cset.merge(found)
+  clusters = sorted(cset.finish(), key=lambda objs: idx[objs[0]])
   r = []
-  for objs in clusters.finish():
+  for objs in clusters:
+    objs = sorted(objs, key=lambda obj: idx[obj])
+    h = v = 0
     (bx0,by0,bx1,by1) = objs[0].bbox
+    (lx0,ly0,_,_) = objs[0].bbox
     for obj in objs[1:]:
       (x0,y0,x1,y1) = obj.bbox
+      if len(obj.text) == 1 and abs(lx0-x0) < abs(ly0-y0):
+        v += 1
+      else:
+        h += 1
+      (lx0,ly0) = (x0,y0)
       bx0 = min(bx0, x0)
       bx1 = max(bx1, x1)
       by0 = min(by0, y0)
       by1 = max(by1, y1)
-    r.append(((bx0,by0,bx1,by1), objs))
+    r.append(((bx0,by0,bx1,by1), h < v, objs))
   return r

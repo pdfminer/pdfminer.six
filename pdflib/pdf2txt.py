@@ -2,7 +2,7 @@
 import sys
 from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
 from pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfdevice import PDFDevice, FigureItem, TextItem, PDFPageAggregator
+from pdfdevice import PDFDevice, PageItem, FigureItem, TextItem, PDFPageAggregator
 from pdffont import PDFUnicodeNotDefined
 from cmap import CMapDB
 
@@ -14,6 +14,15 @@ def enc(x, codec):
 def encprops(props, codec):
   if not props: return ''
   return ''.join( ' %s="%s"' % (enc(k,codec), enc(str(v),codec)) for (k,v) in sorted(props.iteritems()) )
+
+def get_textobjs(item, r=None):
+  if r == None: r = []
+  if isinstance(item, TextItem):
+    r.append(item)
+  elif isinstance(item, PageItem):
+    for child in item.objs:
+      get_textobjs(child, r)
+  return r
 
 
 ##  PDFConverter
@@ -73,7 +82,8 @@ class HTMLConverter(PDFConverter):
     page = PDFConverter.end_page(self, page)
     def f(item):
       if isinstance(item, FigureItem):
-        pass
+        for child in item.objs:
+          f(child)
       elif isinstance(item, TextItem):
         if item.direction == 2:
           wmode = 'tb-rl'
@@ -95,8 +105,8 @@ class HTMLConverter(PDFConverter):
     for child in page.objs:
       f(child)
     if self.cluster_margin:
-      textobjs = [ item for item in page.objs if isinstance(item, TextItem) ]
-      for ((x0,y0,x1,y1),objs) in cluster_pageobjs(textobjs, self.cluster_margin):
+      clusters = cluster_pageobjs(get_textobjs(page), self.cluster_margin)
+      for ((x0,y0,x1,y1),_,objs) in clusters:
         self.outfp.write('<span style="position:absolute; border: 1px solid red; '
                          'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
                        (x0*self.scale, (self.yoffset-y1)*self.scale, (x1-x0)*self.scale, (y1-y0)*self.scale))
@@ -114,7 +124,7 @@ class HTMLConverter(PDFConverter):
 ##
 class TextConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, cluster_margin=0.2, splitwords=False, hyphenation=True):
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, cluster_margin=0.5, splitwords=False, hyphenation=True):
     PDFConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=True)
     self.pagenum = pagenum
     self.cluster_margin = cluster_margin
@@ -125,15 +135,18 @@ class TextConverter(PDFConverter):
     from cluster import cluster_pageobjs
     page = PDFConverter.end_page(self, page)
     if self.cluster_margin:
-      textobjs = [ item for item in page.objs if isinstance(item, TextItem) ]
-      idx = dict( (obj,i) for (i,obj) in enumerate(textobjs) )
+      textobjs = get_textobjs(page)
       clusters = cluster_pageobjs(textobjs, self.cluster_margin)
-      clusters.sort(key=lambda (_,objs): idx[objs[0]])
-      for (_,objs) in clusters:
-        for item in sorted(objs, key=lambda obj:idx[obj]):
-          text = item.text
-          self.outfp.write(text.encode(self.codec, 'replace'))
-        self.outfp.write('\n')
+      for (_,vertical,objs) in clusters:
+        for (i,item) in enumerate(objs):
+          (x0,y0,x1,y1) = item.bbox
+          if (i and
+              ((not vertical and (y1 < ly0 or ly1 < y0)) or
+               (vertical and (x1 < lx0 or lx1 < x0)))):
+            self.outfp.write('\n')
+          (lx0,ly0,lx1,ly1) = (x0,y0,x1,y1)
+          self.outfp.write(item.text.encode(self.codec, 'replace'))
+        self.outfp.write('\n\n')
     else:
       for item in page.objs:
         if isinstance(item, TextItem):
@@ -243,7 +256,7 @@ def main(argv):
   codec = 'ascii'
   pagenos = set()
   maxpages = 0
-  outtype = 'text'
+  outtype = 'html'
   password = ''
   splitwords = False
   outfp = sys.stdout
