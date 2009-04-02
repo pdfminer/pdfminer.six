@@ -153,9 +153,9 @@ class PDFContentParser(PSStackParser):
         c = self.buf[self.charpos]
         data += c
         self.charpos += 1
-        if i >= len(target) and c.isspace():
+        if len(target) <= i and c.isspace():
           i += 1
-        elif c == target[i]:
+        elif i < len(target) and c == target[i]:
           i += 1
         else:
           i = 0

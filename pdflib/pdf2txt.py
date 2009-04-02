@@ -124,7 +124,7 @@ class HTMLConverter(PDFConverter):
 ##
 class TextConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, cluster_margin=None, splitwords=False):
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=False, cluster_margin=None, splitwords=False):
     PDFConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=True)
     self.pagenum = pagenum
     if cluster_margin == None:
