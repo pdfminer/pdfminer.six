@@ -12,8 +12,6 @@
 #   $ mkdir CGIDIR
 #   $ mkdir CGIDIR/var
 #   $ cp -a pdfminer/pdflib CGIDIR
-#   $ cp -a pdfminer/tools CGIDIR
-#   $ cp -a pdfminer/CDBCMap CGIDIR
 #   $ PYTHONPATH=CGIDIR pdfminer/tools/pdf2html.cgi 
 #
 
@@ -21,6 +19,7 @@ import sys
 # comment out at runtime.
 import cgitb; cgitb.enable()
 import os, os.path, re, cgi, time, random, codecs, logging, traceback
+import pdflib.pdf2txt
 
 
 # quote HTML metacharacters
@@ -36,11 +35,11 @@ def url(base, **kw):
     r.append('%s=%s' % (k, v))
   return base+'&'.join(r)
 
-##  convert(outfp, infp, path, codec='utf-8', maxpages=10, pagenos=None)
+##  convert
 ##
 class FileSizeExceeded(ValueError): pass
-def convert(outfp, infp, path, codec='utf-8', maxpages=10, maxfilesize=5000000, pagenos=None):
-  from tools.pdf2txt import CMapDB, PDFResourceManager, HTMLConverter, convert
+def convert(outfp, infp, path, codec='utf-8', maxpages=10,
+            maxfilesize=5000000, pagenos=None, html=True):
   # save the input file.
   src = file(path, 'wb')
   nbytes = 0
@@ -55,10 +54,13 @@ def convert(outfp, infp, path, codec='utf-8', maxpages=10, maxfilesize=5000000, 
   infp.close()
   # perform conversion and
   # send the results over the network.
-  CMapDB.initialize('.', './CDBCMap')
-  rsrc = PDFResourceManager()
-  device = HTMLConverter(rsrc, outfp, codec=codec)
-  convert(rsrc, device, path, pagenos, maxpages=maxpages)
+  pdflib.pdf2txt.CMapDB.initialize('.', './CDBCMap')
+  rsrc = pdflib.pdf2txt.PDFResourceManager()
+  if html:
+    device = pdflib.pdf2txt.HTMLConverter(rsrc, outfp, codec=codec)
+  else:
+    device = pdflib.pdf2txt.TextConverter(rsrc, outfp, codec=codec)
+  pdflib.pdf2txt.convert(rsrc, device, path, pagenos, maxpages=maxpages)
   return
 
 
@@ -127,7 +129,9 @@ class PDF2HTMLApp(object):
       '&nbsp; Page numbers (comma-separated): <input name="p" type="text" size="10" value="">\n',
       '<p>(Text extraction is limited to maximum %d pages.\n' % self.MAXPAGES,
       'Maximum file size for input is %d bytes.)\n' % self.MAXFILESIZE,
-      '<p><input type="submit" value="Convert to HTML"> <input type="reset" value="Reset">\n',
+      '<p><input type="submit" name="c" value="Convert to HTML">\n',
+      '<input type="submit" name="c" value="Convert to TEXT">\n',
+      '<input type="reset" value="Reset">\n',
       '</form><hr>\n',
       '<p>Powered by <a href="http://www.unixuser.org/~euske/python/pdfminer/">PDFMiner</a>\n',
       '</body></html>\n',
@@ -148,10 +152,15 @@ class PDF2HTMLApp(object):
     if 'f' not in self.form:
       self.http_301('/')
       return
+    if 'c' not in self.form:
+      self.http_301('/')
+      return
     item = self.form['f']
     if not (item.file and item.filename):
       self.http_301('/')
       return
+    cmd = self.form.getvalue('c')
+    html = (cmd == 'Convert to HTML')
     pagenos = []
     if 'p' in self.form:
       for m in re.finditer(r'\d+', self.form.getvalue('p')):
@@ -164,8 +173,11 @@ class PDF2HTMLApp(object):
     tmppath = os.path.join(self.TMPDIR, '%08x%08x.pdf' % (self.cur_time, h))
     try:
       try:
-        convert(sys.stdout, item.file, tmppath, pagenos=pagenos,
-                codec=self.codec, maxpages=self.MAXPAGES, maxfilesize=self.MAXFILESIZE)
+        if not html:
+          self.content_type = 'text/plain; charset=%s' % self.codec
+        self.http_200()
+        convert(sys.stdout, item.file, tmppath, pagenos=pagenos, codec=self.codec,
+                maxpages=self.MAXPAGES, maxfilesize=self.MAXFILESIZE, html=html)
       except Exception, e:
         self.put('<p>Sorry, an error has occured: %s' % q(repr(e)))
         logging.error('error: %r: path=%r: %s' % (e, tmppath, traceback.format_exc()))
