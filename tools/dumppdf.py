@@ -139,7 +139,8 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
   if (not objids) and (not pagenos) and (not dumpall):
     dumptrailers(outfp, doc)
   fp.close()
-  outfp.write('\n')
+  if codec not in ('raw','binary'):
+    outfp.write('\n')
   return
 
 

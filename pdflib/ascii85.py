@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 #
-#  ASCII85 decoder (Adobe version) implementation
+#  ASCII85/ASCIIHex decoder (Adobe version) implementation
 #  * public domain *
 #
 
-import struct
-
 # ascii85decode(data)
 def ascii85decode(data):
+  import struct
   n = b = 0
   out = ''
   for c in data:
@@ -28,6 +27,34 @@ def ascii85decode(data):
       break
   return out
 
+# asciihexdecode(data)
+def asciihexdecode(data):
+  """
+  ASCIIHexDecode filter: PDFReference v1.4 section 3.3.1
+  For each pair of ASCII hexadecimal digits (0-9 and A-F or a-f), the
+  ASCIIHexDecode filter produces one byte of binary data. All white-space
+  characters are ignored. A right angle bracket character (>) indicates
+  EOD. Any other characters will cause an error. If the filter encounters
+  the EOD marker after reading an odd number of hexadecimal digits, it
+  will behave as if a 0 followed the last digit.
+  >>> asciihexdecode("61 62 2e6364   65")
+  'ab.cde'
+  >>> asciihexdecode("61 62 2e6364   657>")
+  'ab.cdep'
+  >>> asciihexdecode("7>")
+  'p'
+  """
+  import re
+  hex_re = re.compile(r'([a-f\d]{2})', re.IGNORECASE)
+  trail_re = re.compile(r'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
+  decode = (lambda hx: chr(int(hx, 16)))
+  out = map(decode, hex_re.findall(data))
+  m = trail_re.search(data)
+  if m:
+    out.append(decode("%c0" % m.group(1)))
+  return ''.join(out)
+
+
 # test
 # sample taken from: http://en.wikipedia.org/w/index.php?title=Ascii85
 if __name__ == '__main__':
@@ -44,4 +71,7 @@ if __name__ == '__main__':
        'continued and indefatigable generation of knowledge, exceeds the short vehemence of '\
        'any carnal pleasure.'
   assert ascii85decode(orig) == data
-  print 'test succeeded'
+  print 'ascii85decode test succeeded'
+
+  import doctest
+  doctest.testmod()

@@ -10,6 +10,7 @@ LITERAL_CRYPT = PSLiteralTable.intern('Crypt')
 LITERALS_FLATE_DECODE = (PSLiteralTable.intern('FlateDecode'), PSLiteralTable.intern('Fl'))
 LITERALS_LZW_DECODE = (PSLiteralTable.intern('LZWDecode'), PSLiteralTable.intern('LZW'))
 LITERALS_ASCII85_DECODE = (PSLiteralTable.intern('ASCII85Decode'), PSLiteralTable.intern('A85'))
+LITERALS_ASCIIHEX_DECODE = (PSLiteralTable.intern('ASCIIHexDecode'), PSLiteralTable.intern('AHx'))
 
 
 ##  PDF Objects
@@ -199,6 +200,9 @@ class PDFStream(PDFObject):
       elif f in LITERALS_ASCII85_DECODE:
         import ascii85
         data = ascii85.ascii85decode(data)
+      elif f in LITERALS_ASCIIHEX_DECODE:
+        import ascii85
+        data = ascii85.asciihexdecode(data)
       elif f == LITERAL_CRYPT:
         raise PDFNotImplementedError('/Crypt filter is unsupported')
       else:
