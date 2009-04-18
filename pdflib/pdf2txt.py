@@ -28,8 +28,8 @@ def get_textobjs(item, r=None):
 ##  PDFConverter
 class PDFConverter(PDFPageAggregator):
   
-  def __init__(self, rsrc, outfp, codec='ascii', splitwords=False):
-    PDFPageAggregator.__init__(self, rsrc, splitwords=splitwords)
+  def __init__(self, rsrc, outfp, codec='ascii'):
+    PDFPageAggregator.__init__(self, rsrc)
     self.outfp = outfp
     self.codec = codec
     return
@@ -66,8 +66,8 @@ class SGMLConverter(PDFConverter):
 ##
 class HTMLConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, cluster_margin=None, splitwords=False):
-    PDFConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=splitwords)
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, cluster_margin=None):
+    PDFConverter.__init__(self, rsrc, outfp, codec=codec)
     self.pagenum = pagenum
     self.pagepad = pagepad
     self.scale = scale
@@ -75,25 +75,12 @@ class HTMLConverter(PDFConverter):
     self.outfp.write('</head><body>\n')
     self.yoffset = self.pagepad
     self.cluster_margin = cluster_margin
+    self.show_text_border = False
     return
   
   def end_page(self, page):
     from cluster import cluster_pageobjs
     page = PDFConverter.end_page(self, page)
-    def f(item):
-      if isinstance(item, FigureItem):
-        for child in item.objs:
-          f(child)
-      elif isinstance(item, TextItem):
-        if item.direction == 2:
-          wmode = 'tb-rl'
-        else:
-          wmode = 'lr-tb'
-        (x,_,_,y) = item.bbox
-        self.outfp.write('<span style="position:absolute; writing-mode:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
-                         (wmode, x*self.scale, (self.yoffset-y)*self.scale, item.fontsize*self.scale))
-        self.outfp.write(enc(item.text, self.codec))
-        self.outfp.write('</span>\n')
     (x0,y0,x1,y1) = page.bbox
     self.yoffset += y1
     if self.pagenum:
@@ -102,8 +89,26 @@ class HTMLConverter(PDFConverter):
     self.outfp.write('<span style="position:absolute; border: 1px solid gray; '
                      'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
                      (x0*self.scale, (self.yoffset-y1)*self.scale, (x1-x0)*self.scale, (y1-y0)*self.scale))
+    def draw(item):
+      if isinstance(item, FigureItem):
+        for child in item.objs:
+          draw(child)
+      elif isinstance(item, TextItem):
+        if item.direction == 2:
+          wmode = 'tb-rl'
+        else:
+          wmode = 'lr-tb'
+        (x0,y0,x1,y1) = item.bbox
+        self.outfp.write('<span style="position:absolute; writing-mode:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
+                         (wmode, x0*self.scale, (self.yoffset-y1)*self.scale, item.fontsize*self.scale))
+        self.outfp.write(enc(item.text, self.codec))
+        self.outfp.write('</span>\n')
+        if self.show_text_border:
+          self.outfp.write('<span style="position:absolute; border: 1px solid red; '
+                           'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
+                           (x0*self.scale, (self.yoffset-y1)*self.scale, (x1-x0)*self.scale, (y1-y0)*self.scale))
     for child in page.objs:
-      f(child)
+      draw(child)
     if self.cluster_margin:
       clusters = cluster_pageobjs(get_textobjs(page), self.cluster_margin)
       for ((x0,y0,x1,y1),_,objs) in clusters:
@@ -124,8 +129,8 @@ class HTMLConverter(PDFConverter):
 ##
 class TextConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=False, cluster_margin=None, splitwords=False):
-    PDFConverter.__init__(self, rsrc, outfp, codec=codec, splitwords=True)
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=False, cluster_margin=None):
+    PDFConverter.__init__(self, rsrc, outfp, codec=codec)
     self.pagenum = pagenum
     if cluster_margin == None:
       cluster_margin = 0.5
@@ -288,9 +293,9 @@ def main(argv):
   CMapDB.initialize(cmapdir, cdbcmapdir)
   rsrc = PDFResourceManager()
   if outtype == 'sgml':
-    device = SGMLConverter(rsrc, outfp, codec=codec, splitwords=splitwords)
+    device = SGMLConverter(rsrc, outfp, codec=codec)
   elif outtype == 'html':
-    device = HTMLConverter(rsrc, outfp, codec=codec, splitwords=splitwords, cluster_margin=cluster_margin)
+    device = HTMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
   elif outtype == 'text':
     device = TextConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
   elif outtype == 'tag':

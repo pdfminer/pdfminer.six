@@ -5,15 +5,16 @@ def prof_main(argv):
   import getopt
   import hotshot, hotshot.stats
   def usage():
-    print 'usage: %s output.prof mod.func [args ...]' % argv[0]
+    print 'usage: %s module.function [args ...]' % argv[0]
     return 100
   args = argv[1:]
-  if len(args) < 2: return usage()
-  prof = args.pop(0)
+  if len(args) < 1: return usage()
   name = args.pop(0)
+  prof = name+'.prof'
   i = name.rindex('.')
   (modname, funcname) = (name[:i], name[i+1:])
-  func = getattr(__import__(modname, fromlist=[modname]), funcname)
+  module = __import__(modname, fromlist=1)
+  func = getattr(module, funcname)
   if args:
     args.insert(0, argv[0])
     prof = hotshot.Profile(prof)

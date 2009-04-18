@@ -3,7 +3,8 @@ import sys
 stdout = sys.stdout
 stderr = sys.stderr
 from pdffont import PDFUnicodeNotDefined
-from utils import mult_matrix, apply_matrix, apply_matrix_norm, translate_matrix
+from utils import mult_matrix, apply_matrix, apply_matrix_norm, translate_matrix, \
+     matrix2str, rect2str, point2str
 
 
 ##  PDFDevice
@@ -84,71 +85,48 @@ class TextItem(object):
     self.matrix = matrix
     self.font = font
     (_,_,_,_,tx,ty) = self.matrix
-    self.origin = (tx,ty)
     self.direction = 0
     self.text = ''
-    scaling *= .01
+    adv = 0
+    for (char,cid) in chars:
+      self.text += char
+      adv += font.char_width(cid)
+    adv = (adv * fontsize + len(chars)*charspace) * scaling * .01
     size = (font.get_ascent() - font.get_descent()) * fontsize
     if not self.font.is_vertical():
       # horizontal text
-      spwidth = font.space_width()
       self.direction = 1
-      w = 0
-      dx = 0
-      prev = ' '
-      for (char,cid,t) in chars:
-        if char:
-          if prev != ' ' and spwidth < dx:
-            self.text += ' '
-          prev = char
-          self.text += char
-          dx = 0
-          w += (font.char_width(cid) * fontsize + charspace) * scaling
-        else:
-          t *= .001
-          dx -= t
-          w -= t * fontsize * scaling
+      (dx,dy) = apply_matrix_norm(self.matrix, (adv,size))
       (_,descent) = apply_matrix_norm(self.matrix, (0,font.get_descent() * fontsize))
       ty += descent
-      (w,h) = apply_matrix_norm(self.matrix, (w,size))
-      self.adv = (w, 0)
-      self.bbox = (tx, ty, tx+w, ty+h)
+      self.adv = (dx, 0)
+      self.bbox = (tx, ty, tx+dx, ty+dy)
     else:
       # vertical text
       self.direction = 2
-      disp = 0
-      h = 0
-      for (char,cid,disp) in chars:
-        if not char: continue
-        (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-disp)*fontsize*.001))
-        self.text += font.to_unicode(cid)
-        h += (font.char_width(cid) * fontsize + charspace) * scaling
-        break
-      for (char,cid,_) in chars[1:]:
-        if not char: continue
-        self.text += font.to_unicode(cid)
-        h += (font.char_width(cid) * fontsize + charspace) * scaling
-      (w,h) = apply_matrix_norm(self.matrix, (size,h))
-      tx -= w/2
+      (_,cid) = chars[0]
+      (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-font.char_disp(cid))*fontsize*.001))
+      (dx,dy) = apply_matrix_norm(self.matrix, (size,adv))
+      tx -= dx/2
       ty += disp
-      self.adv = (0, h)
-      self.bbox = (tx, ty+h, tx+w, ty)
+      self.adv = (0, dy)
+      self.bbox = (tx, ty+dy, tx+dx, ty)
     self.fontsize = max(apply_matrix_norm(self.matrix, (size,size)))
     return
   
   def __repr__(self):
-    return ('<text matrix=%r font=%r fontsize=%r bbox=%r text=%r adv=%r>' %
-            (self.matrix, self.font, self.fontsize, self.bbox, self.text, self.adv))
+    return ('<text matrix=%s font=%r fontsize=%.1f bbox=%s text=%r adv=%s>' %
+            (matrix2str(self.matrix), self.font, self.fontsize,
+             rect2str(self.bbox), self.text, point2str(self.adv)))
 
 
 ##  PDFPageAggregator
 ##
 class PDFPageAggregator(PDFDevice):
 
-  def __init__(self, rsrc, pageno=1, splitwords=False):
+  def __init__(self, rsrc, pageno=1):
     PDFDevice.__init__(self, rsrc)
     self.pageno = pageno
-    self.splitwords = splitwords
     self.stack = []
     return
 
@@ -181,12 +159,22 @@ class PDFPageAggregator(PDFDevice):
       print >>stderr, 'undefined: %r, %r' % (cidcoding, cid)
     return None
 
+  def render_chars(self, textmatrix, textstate, chars):
+    if not chars: return (0, 0)
+    item = TextItem(textmatrix, textstate.font, textstate.fontsize, textstate.charspace, textstate.scaling, chars)
+    self.cur_item.add(item)
+    return item.adv
+
   def render_string(self, textstate, textmatrix, seq):
     font = textstate.font
+    textmatrix = mult_matrix(textmatrix, self.ctm)
     chars = []
     for x in seq:
       if isinstance(x, int) or isinstance(x, float):
-        chars.append((None, None, x))
+        (dx,dy) = self.render_chars(textmatrix, textstate, chars)
+        dx -= x * textstate.scaling * .0001
+        textmatrix = translate_matrix(textmatrix, (dx, dy))
+        chars = []
       else:
         for cid in font.decode(x):
           try:
@@ -194,20 +182,11 @@ class PDFPageAggregator(PDFDevice):
           except PDFUnicodeNotDefined, e:
             (cidcoding, cid) = e.args
             char = self.handle_undefined_char(cidcoding, cid)
-          chars.append((char, cid, font.char_disp(cid)))
-    textmatrix = mult_matrix(textmatrix, self.ctm)
-    word = []
-    for (char, cid, disp) in chars:
-      word.append((char,cid,disp))
-      if self.splitwords and cid == 32 and not font.is_multibyte():
-        if word:
-          item = TextItem(textmatrix, font, textstate.fontsize, textstate.charspace, textstate.scaling, word)
-          self.cur_item.add(item)
-          (dx,dy) = item.adv
-          dx += textstate.wordspace * textstate.scaling * .01
-          textmatrix = translate_matrix(textmatrix, (dx, dy))
-          word = []
-    if word:
-      item = TextItem(textmatrix, font, textstate.fontsize, textstate.charspace, textstate.scaling, word)
-      self.cur_item.add(item)
+          chars.append((char, cid))
+          if cid == 32 and not font.is_multibyte():
+            (dx,dy) = self.render_chars(textmatrix, textstate, chars)
+            dx += textstate.wordspace * textstate.scaling * .01
+            textmatrix = translate_matrix(textmatrix, (dx, dy))
+            chars = []
+    self.render_chars(textmatrix, textstate, chars)
     return
