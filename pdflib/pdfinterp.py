@@ -231,6 +231,22 @@ class PDFPageInterpreter(object):
       self.linematrix = (0, 0)
       return
 
+  class GraphicState(object):
+    def __init__(self):
+      self.linewidth = None
+      self.linecap = None
+      self.linejoin = None
+      self.miterlimit = None
+      self.dash = None
+      self.intent = None
+      self.flatness = None
+      return
+    def __repr__(self):
+      return ('<GraphicState: linewidth=%r, linecap=%r, linejoin=%r, '
+              ' miterlimit=%r, dash=%r, intent=%r, flatness=%r>' %
+              (self.linewidth, self.linecap, self.linejoin,
+               self.miterlimit, self.dash, self.intent, self.flatness))
+    
   def __init__(self, rsrc, device):
     self.rsrc = rsrc
     self.device = device
@@ -281,7 +297,9 @@ class PDFPageInterpreter(object):
     self.gstack = []
     self.ctm = ctm
     self.device.set_ctm(self.ctm)
-    self.textstate = PDFPageInterpreter.TextState()
+    self.textstate = self.TextState()
+    self.graphicstate = self.GraphicState()
+    self.curpath = []
     # argstack: stack for command arguments.
     self.argstack = []
     # set some global states.
@@ -301,10 +319,10 @@ class PDFPageInterpreter(object):
     return x
 
   def get_current_state(self):
-    return (self.ctm, self.textstate)
+    return (self.ctm, self.textstate, self.graphicstate)
   
   def set_current_state(self, state):
-    (self.ctm, self.textstate) = state
+    (self.ctm, self.textstate, self.graphicstate) = state
     self.device.set_ctm(self.ctm)
     return
 
@@ -325,57 +343,117 @@ class PDFPageInterpreter(object):
     return
   
   # setlinewidth
-  def do_w(self, width): return
+  def do_w(self, linewidth):
+    self.graphicstate.linewidth = linewidth
+    return
   # setlinecap
-  def do_J(self, cap): return
+  def do_J(self, linecap):
+    self.graphicstate.linecap = linecap
+    return
   # setlinejoin
-  def do_j(self, join): return
+  def do_j(self, linejoin):
+    self.graphicstate.linejoin = linejoin
+    return
   # setmiterlimit
-  def do_M(self, limit): return
+  def do_M(self, limit):
+    self.graphicstate.miterlimit = miterlimit
+    return
   # setdash
-  def do_d(self, dash, phase): return
+  def do_d(self, dash, phase):
+    self.graphicstate.dash = (dash, phase)
+    return
   # setintent
-  def do_ri(self, intent): return
+  def do_ri(self, intent):
+    self.graphicstate.intent = intent
+    return
   # setflatness
-  def do_i(self, flatness): return
-  # savedict
-  def do_gs(self, name): return
+  def do_i(self, flatness):
+    self.graphicstate.flatness = flatness
+    return
+  # load-gstate
+  def do_gs(self, name):
+    #XXX
+    return
   
   # moveto
-  def do_m(self, x, y): return
+  def do_m(self, x, y):
+    self.curpath.append(('m',x,y))
+    return
   # lineto
-  def do_l(self, x, y): return
+  def do_l(self, x, y):
+    self.curpath.append(('l',x,y))
+    return
   # curveto
-  def do_c(self, x1, y1, x2, y2, x3, y3): return
+  def do_c(self, x1, y1, x2, y2, x3, y3):
+    self.curpath.append(('c',x1,y1,x2,y2,x3,y3))
+    return
   # urveto
-  def do_v(self, x2, y2, x3, y3): return
+  def do_v(self, x2, y2, x3, y3):
+    self.curpath.append(('v',x2,y2,x3,y3))
+    return
   # rveto
-  def do_y(self, x1, y1, x3, y3): return
+  def do_y(self, x1, y1, x3, y3):
+    self.curpath.append(('y',x1,y1,x3,y3))
+    return
   # closepath
-  def do_h(self): return
+  def do_h(self):
+    self.curpath.append(('h',))
+    return
   # rectangle
-  def do_re(self, x, y, w, h): return
+  def do_re(self, x, y, w, h):
+    self.curpath.append(('m',x,y))
+    self.curpath.append(('l',x+w,y))
+    self.curpath.append(('l',x+w,y+h))
+    self.curpath.append(('l',x,y+h))
+    self.curpath.append(('h',))
+    return
   
   # stroke
-  def do_S(self): return
+  def do_S(self):
+    self.device.paint_path(self.graphicstate, self.ctm, True, False, False, self.curpath)
+    self.curpath = []
+    return
   # close-and-stroke
-  def do_s(self): return
+  def do_s(self):
+    self.do_h()
+    self.do_S()
+    return
   # fill
-  def do_f(self): return
+  def do_f(self):
+    self.device.paint_path(self.graphicstate, self.ctm, False, True, False, self.curpath)
+    self.curpath = []
+    return
   # fill (obsolete)
   do_F = do_f
   # fill-even-odd
-  def do_f_a(self): return
+  def do_f_a(self):
+    self.device.paint_path(self.graphicstate, self.ctm, False, True, True, self.curpath)
+    self.curpath = []
+    return
   # fill-and-stroke
-  def do_B(self): return
+  def do_B(self):
+    self.device.paint_path(self.graphicstate, self.ctm, True, True, False, self.curpath)
+    self.curpath = []
+    return
   # fill-and-stroke-even-odd
-  def do_B_a(self): return
+  def do_B_a(self):
+    self.device.paint_path(self.graphicstate, self.ctm, True, True, True, self.curpath)
+    self.curpath = []
+    return
   # close-fill-and-stroke
-  def do_b(self): return
+  def do_b(self):
+    self.do_h()
+    self.do_B()
+    return
   # close-fill-and-stroke-even-odd
-  def do_b_a(self): return
+  def do_b_a(self):
+    self.do_h()
+    self.do_B_a()
+    return
   # close-only
-  def do_n(self): return
+  def do_n(self):
+    self.curpath = []
+    return
   # clip
   def do_W(self): return
   # clip-even-odd

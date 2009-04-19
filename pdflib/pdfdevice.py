@@ -43,11 +43,13 @@ class PDFDevice(object):
     return
   def end_figure(self, name):
     return
-  
+
+  def paint_path(self, graphicstate, matrix, stroke, fill, evenodd, path):
+    return
   def render_string(self, textstate, textmatrix, seq):
-    raise NotImplementedError
+    return
   def render_image(self, stream, size, matrix):
-    raise NotImplementedError
+    return
 
 
 ##  PageItem
@@ -151,14 +153,28 @@ class PDFPageAggregator(PDFDevice):
     self.cur_item.add(fig)
     return
 
-  def render_image(self, stream, size, matrix):
-    return
-
   def handle_undefined_char(self, cidcoding, cid):
     if self.debug:
       print >>stderr, 'undefined: %r, %r' % (cidcoding, cid)
     return None
 
+  def paint_path(self, graphicstate, matrix, stroke, fill, evenodd, path):
+    shape = ''.join(x[0] for x in path)
+    if shape == 'ml': # single line
+      if path[0][1] == path[1][1]:
+        #print 'vertical'
+        pass
+      elif path[0][2] == path[1][2]:
+        #print 'horizontal'
+        pass
+    elif shape == 'mlllh': # rectangle
+      if ((path[0][1] == path[1][1] and path[1][2] == path[2][2] and
+           path[2][1] == path[3][1] and path[3][2] == path[0][2]) or
+          (path[0][2] == path[1][2] and path[1][1] == path[2][1] and
+           path[2][2] == path[3][2] and path[3][1] == path[0][1])):
+        pass
+    return
+  
   def render_chars(self, textmatrix, textstate, chars):
     if not chars: return (0, 0)
     item = TextItem(textmatrix, textstate.font, textstate.fontsize, textstate.charspace, textstate.scaling, chars)
