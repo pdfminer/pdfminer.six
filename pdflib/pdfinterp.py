@@ -355,7 +355,7 @@ class PDFPageInterpreter(object):
     self.graphicstate.linejoin = linejoin
     return
   # setmiterlimit
-  def do_M(self, limit):
+  def do_M(self, miterlimit):
     self.graphicstate.miterlimit = miterlimit
     return
   # setdash
