@@ -156,7 +156,7 @@ class PDFPageAggregator(PDFDevice):
   def handle_undefined_char(self, cidcoding, cid):
     if self.debug:
       print >>stderr, 'undefined: %r, %r' % (cidcoding, cid)
-    return None
+    return '?'
 
   def paint_path(self, graphicstate, matrix, stroke, fill, evenodd, path):
     shape = ''.join(x[0] for x in path)
