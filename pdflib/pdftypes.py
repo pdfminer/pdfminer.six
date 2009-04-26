@@ -167,11 +167,11 @@ class PDFStream(PDFObject):
     # end.  remove chars from the end to try and decompress the buffer
     while len(buf) > 10:
       try:
-          # will get errors if the document is encrypted.
-          dco = zlib.decompressobj()
-          return dco.decompress(buf)
-      except:
-          buf = buf[:-1]
+        # will get errors if the document is encrypted.
+        dco = zlib.decompressobj()
+        return dco.decompress(buf)
+      except zlib.error:
+        buf = buf[:-1]
     raise Exception, "zlib.error while decompressing data"
 
   def decode(self):

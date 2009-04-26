@@ -60,12 +60,12 @@ class PDFBaseXRef(object):
 
   def objids(self):
     if self.objid_ranges:
-        for objid_range in self.objid_ranges:
-          for objid in xrange(objid_range.get_start_id(), objid_range.get_end_id() + 1):
-            yield objid
+      for objid_range in self.objid_ranges:
+        for objid in xrange(objid_range.get_start_id(), objid_range.get_end_id() + 1):
+          yield objid
     else:
-        for objid in self.offsets:
-            yield objid
+      for objid in self.offsets:
+        yield objid
     return
 
 ##  PDFXRef
@@ -628,15 +628,15 @@ class PDFParser(PSStackParser):
       raise PDFNoValidXRef('Unexpected EOF')
     if 2 <= self.debug:
       print >>stderr, 'read_xref_from: start=%d, token=%r' % (start, token)
-    try:
+    if isinstance(token, int):
       # XRefStream: PDF-1.5
       self.seek(pos)
       self.reset()
       xref = PDFXRefStream()
       xref.load(self, debug=self.debug)
-    except:
+    else:
       if token is self.KEYWORD_XREF:
-          self.nextline()
+        self.nextline()
       xref = PDFXRef()
       xref.load(self, debug=self.debug)
     xrefs.append(xref)
@@ -689,7 +689,7 @@ class PDFParser(PSStackParser):
 ##  PDFObjStrmParser
 ##
 class PDFObjStrmParser(PDFParser):
-
+  
   def __init__(self, doc, data):
     try:
       from cStringIO import StringIO
@@ -697,7 +697,7 @@ class PDFObjStrmParser(PDFParser):
       from StringIO import StringIO
     PDFParser.__init__(self, doc, StringIO(data))
     return
-
+  
   def flush(self):
     self.add_results(*self.popall())
     return
