@@ -98,3 +98,12 @@ def decode_text(s):
     return unicode(s[2:], 'utf-16be', 'ignore')
   else:
     return ''.join( PDFDocEncoding[ord(c)] for c in s )
+
+##
+def pick(seq, func, maxobj=None):
+  maxscore = None
+  for obj in seq:
+    score = func(obj)
+    if maxscore == None or maxscore < score:
+      (maxscore,maxobj) = (score,obj)
+  return maxobj

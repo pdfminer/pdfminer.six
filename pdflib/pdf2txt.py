@@ -2,7 +2,7 @@
 import sys
 from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
 from pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfdevice import PDFDevice, PageItem, FigureItem, TextItem, PDFPageAggregator
+from pdfdevice import PDFDevice, PageItem, Page, FigureItem, TextItem, PDFPageAggregator
 from pdffont import PDFUnicodeNotDefined
 from cmap import CMapDB
 
@@ -19,7 +19,7 @@ def get_textobjs(item, r=None):
   if r == None: r = []
   if isinstance(item, TextItem):
     r.append(item)
-  elif isinstance(item, PageItem):
+  elif isinstance(item, Page):
     for child in item.objs:
       get_textobjs(child, r)
   return r
@@ -49,8 +49,8 @@ class SGMLConverter(PDFConverter):
           f(child)
         self.outfp.write('</figure>\n')
       elif isinstance(item, TextItem):
-        self.outfp.write('<text font="%s" direction="%s" bbox="%s" fontsize="%.3f">' %
-                         (enc(item.font.fontname, self.codec), item.direction, bbox, item.fontsize))
+        self.outfp.write('<text font="%s" vertical="%s" bbox="%s" fontsize="%.3f">' %
+                         (enc(item.font.fontname, self.codec), item.vertical, bbox, item.fontsize))
         self.outfp.write(enc(item.text, self.codec))
         self.outfp.write('</text>\n')
     bbox = '%.3f,%.3f,%.3f,%.3f' % page.bbox
@@ -79,42 +79,45 @@ class HTMLConverter(PDFConverter):
     return
   
   def end_page(self, page):
-    from cluster import cluster_pageobjs
+    from cluster import cluster_textobjs
     page = PDFConverter.end_page(self, page)
-    (x0,y0,x1,y1) = page.bbox
-    self.yoffset += y1
+    self.yoffset += page.y1
     if self.pagenum:
       self.outfp.write('<div style="position:absolute; top:%dpx;"><a name="%s">Page %s</a></div>' % 
-                       ((self.yoffset-y1)*self.scale, page.id, page.id))
+                       ((self.yoffset-page.y1)*self.scale, page.id, page.id))
     self.outfp.write('<span style="position:absolute; border: 1px solid gray; '
                      'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
-                     (x0*self.scale, (self.yoffset-y1)*self.scale, (x1-x0)*self.scale, (y1-y0)*self.scale))
+                     (page.x0*self.scale, (self.yoffset-page.y1)*self.scale,
+                      page.width*self.scale, page.height*self.scale))
     def draw(item):
       if isinstance(item, FigureItem):
         for child in item.objs:
           draw(child)
       elif isinstance(item, TextItem):
-        if item.direction == 2:
+        if item.vertical:
           wmode = 'tb-rl'
         else:
           wmode = 'lr-tb'
-        (x0,y0,x1,y1) = item.bbox
-        self.outfp.write('<span style="position:absolute; writing-mode:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
-                         (wmode, x0*self.scale, (self.yoffset-y1)*self.scale, item.fontsize*self.scale))
+        self.outfp.write('<span style="position:absolute; writing-mode:%s;'
+                         ' left:%dpx; top:%dpx; font-size:%dpx;">' %
+                         (wmode, item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
+                          item.fontsize*self.scale))
         self.outfp.write(enc(item.text, self.codec))
         self.outfp.write('</span>\n')
         if self.show_text_border:
           self.outfp.write('<span style="position:absolute; border: 1px solid red; '
                            'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
-                           (x0*self.scale, (self.yoffset-y1)*self.scale, (x1-x0)*self.scale, (y1-y0)*self.scale))
+                           (item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
+                            item.width*self.scale, self.height*self.scale))
     for child in page.objs:
       draw(child)
     if self.cluster_margin:
-      clusters = cluster_pageobjs(get_textobjs(page), self.cluster_margin)
-      for ((x0,y0,x1,y1),_,objs) in clusters:
+      clusters = cluster_textobjs(get_textobjs(page), self.cluster_margin)
+      for textbox in clusters:
         self.outfp.write('<span style="position:absolute; border: 1px solid red; '
                          'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
-                       (x0*self.scale, (self.yoffset-y1)*self.scale, (x1-x0)*self.scale, (y1-y0)*self.scale))
+                       (textbox.x0*self.scale, (self.yoffset-textbox.y1)*self.scale,
+                        textbox.width*self.scale, textbox.height*self.scale))
     self.yoffset += self.pagepad
     return
 
@@ -135,30 +138,25 @@ class TextConverter(PDFConverter):
     if cluster_margin == None:
       cluster_margin = 0.5
     self.cluster_margin = cluster_margin
+    self.word_margin = 0.2
     return
   
   def end_page(self, page):
-    from cluster import cluster_pageobjs
+    from cluster import cluster_textobjs
     page = PDFConverter.end_page(self, page)
     if self.pagenum:
       self.outfp.write('Page %d\n' % page.id)
     if self.cluster_margin:
       textobjs = get_textobjs(page)
-      clusters = cluster_pageobjs(textobjs, self.cluster_margin)
-      for (_,vertical,objs) in clusters:
-        for (i,item) in enumerate(objs):
-          (x0,y0,x1,y1) = item.bbox
-          if (i and
-              ((not vertical and (y1 < ly0 or ly1 < y0)) or
-               (vertical and (x1 < lx0 or lx1 < x0)))):
-            self.outfp.write('\n')
-          (lx0,ly0,lx1,ly1) = (x0,y0,x1,y1)
-          self.outfp.write(item.text.encode(self.codec, 'replace'))
-        self.outfp.write('\n\n')
+      clusters = cluster_textobjs(textobjs, self.cluster_margin)
+      for textbox in clusters:
+        for line in textbox.lines(self.word_margin):
+          self.outfp.write(line.encode(self.codec, 'replace')+'\n')
+        self.outfp.write('\n')
     else:
-      for item in page.objs:
-        if isinstance(item, TextItem):
-          self.outfp.write(item.text.encode(self.codec, 'replace'))
+      for obj in page.objs:
+        if isinstance(obj, TextItem):
+          self.outfp.write(obj.text.encode(self.codec, 'replace'))
           self.outfp.write('\n')
     self.outfp.write('\f')
     return

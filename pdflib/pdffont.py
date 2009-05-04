@@ -359,9 +359,6 @@ class PDFFont(object):
   def string_width(self, s):
     return sum( self.char_width(cid) for cid in self.decode(s) )
 
-  def space_width(self):
-    return max(self.char_width(32), self.char_width(44), self.char_width(46)) * 0.5
-
 
 # PDFSimpleFont
 class PDFSimpleFont(PDFFont):
@@ -571,9 +568,6 @@ class PDFCIDFont(PDFFont):
       raise PDFUnicodeNotDefined(self.cidcoding, cid)
     chars = unpack('>%dH' % (len(code)/2), code)
     return ''.join( unichr(c) for c in chars )
-
-  def space_width(self):
-    return 0
 
 
 # main
