@@ -2,7 +2,8 @@
 import sys
 from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
 from pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfdevice import PDFDevice, PageItem, Page, FigureItem, TextItem, PDFPageAggregator
+from pdfdevice import PDFDevice, PDFPageAggregator
+from layout import Page, FigureItem, TextItem, cluster_textobjs
 from pdffont import PDFUnicodeNotDefined
 from cmap import CMapDB
 
@@ -79,7 +80,6 @@ class HTMLConverter(PDFConverter):
     return
   
   def end_page(self, page):
-    from cluster import cluster_textobjs
     page = PDFConverter.end_page(self, page)
     self.yoffset += page.y1
     if self.pagenum:
@@ -142,7 +142,6 @@ class TextConverter(PDFConverter):
     return
   
   def end_page(self, page):
-    from cluster import cluster_textobjs
     page = PDFConverter.end_page(self, page)
     if self.pagenum:
       self.outfp.write('Page %d\n' % page.id)
