@@ -23,13 +23,6 @@ def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
   '''equiv to apply_matrix(M, (p,q)) - apply_matrix(M, (0,0))'''
   return (a*p+c*q, b*p+d*q)
 
-# display functions
-def matrix2str((a,b,c,d,e,f)):
-  return '[%.1f, %.1f, %.1f, %.1f, (%.1f, %.1f)]' % (a,b,c,d,e,f)
-def rect2str((x0,y0,x1,y1)):
-  return '(%.1f, %.1f)-(%.1f, %.1f)' % (x0,y0,x1,y1)
-def point2str((x,y)):
-  return '(%.1f, %.1f)' % (x,y)
 
 ##  Utilities
 ##
@@ -98,12 +91,3 @@ def decode_text(s):
     return unicode(s[2:], 'utf-16be', 'ignore')
   else:
     return ''.join( PDFDocEncoding[ord(c)] for c in s )
-
-##
-def pick(seq, func, maxobj=None):
-  maxscore = None
-  for obj in seq:
-    score = func(obj)
-    if maxscore == None or maxscore < score:
-      (maxscore,maxobj) = (score,obj)
-  return maxobj

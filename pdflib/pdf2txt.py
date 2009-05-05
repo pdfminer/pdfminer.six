@@ -3,167 +3,39 @@ import sys
 from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
 from pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfdevice import PDFDevice, PDFPageAggregator
-from layout import Page, FigureItem, TextItem, cluster_textobjs
+from layout import Page, LayoutContainer, TextItem, TextBox
 from pdffont import PDFUnicodeNotDefined
 from cmap import CMapDB
 
 
-def enc(x, codec):
+# e(x): encode string
+def e(x, codec='ascii'):
   x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
   return x.encode(codec, 'xmlcharrefreplace')
 
-def encprops(props, codec):
-  if not props: return ''
-  return ''.join( ' %s="%s"' % (enc(k,codec), enc(str(v),codec)) for (k,v) in sorted(props.iteritems()) )
-
-def get_textobjs(item, r=None):
-  if r == None: r = []
-  if isinstance(item, TextItem):
-    r.append(item)
-  elif isinstance(item, Page):
-    for child in item.objs:
-      get_textobjs(child, r)
-  return r
-
 
 ##  PDFConverter
+##
 class PDFConverter(PDFPageAggregator):
   
-  def __init__(self, rsrc, outfp, codec='ascii'):
+  def __init__(self, rsrc, outfp, codec='ascii', cluster_margin=None):
     PDFPageAggregator.__init__(self, rsrc)
+    self.cluster_margin = cluster_margin
     self.outfp = outfp
     self.codec = codec
     return
-  
-  
-##  SGMLConverter
-##
-class SGMLConverter(PDFConverter):
 
   def end_page(self, page):
-    page = PDFConverter.end_page(self, page)
-    def f(item):
-      bbox = '%.3f,%.3f,%.3f,%.3f' % item.bbox
-      if isinstance(item, FigureItem):
-        self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, bbox))
-        for child in item.objs:
-          f(child)
-        self.outfp.write('</figure>\n')
-      elif isinstance(item, TextItem):
-        self.outfp.write('<text font="%s" vertical="%s" bbox="%s" fontsize="%.3f">' %
-                         (enc(item.font.fontname, self.codec), item.vertical, bbox, item.fontsize))
-        self.outfp.write(enc(item.text, self.codec))
-        self.outfp.write('</text>\n')
-    bbox = '%.3f,%.3f,%.3f,%.3f' % page.bbox
-    self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
-                     (page.id, bbox, page.rotate))
-    for child in page.objs:
-      f(child)
-    self.outfp.write('</page>\n')
-    return
-
-
-##  HTMLConverter
-##
-class HTMLConverter(PDFConverter):
-
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True, pagepad=50, scale=1, cluster_margin=None):
-    PDFConverter.__init__(self, rsrc, outfp, codec=codec)
-    self.pagenum = pagenum
-    self.pagepad = pagepad
-    self.scale = scale
-    self.outfp.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % self.codec)
-    self.outfp.write('</head><body>\n')
-    self.yoffset = self.pagepad
-    self.cluster_margin = cluster_margin
-    self.show_text_border = False
-    return
-  
-  def end_page(self, page):
-    page = PDFConverter.end_page(self, page)
-    self.yoffset += page.y1
-    if self.pagenum:
-      self.outfp.write('<div style="position:absolute; top:%dpx;"><a name="%s">Page %s</a></div>' % 
-                       ((self.yoffset-page.y1)*self.scale, page.id, page.id))
-    self.outfp.write('<span style="position:absolute; border: 1px solid gray; '
-                     'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
-                     (page.x0*self.scale, (self.yoffset-page.y1)*self.scale,
-                      page.width*self.scale, page.height*self.scale))
-    def draw(item):
-      if isinstance(item, FigureItem):
-        for child in item.objs:
-          draw(child)
-      elif isinstance(item, TextItem):
-        if item.vertical:
-          wmode = 'tb-rl'
-        else:
-          wmode = 'lr-tb'
-        self.outfp.write('<span style="position:absolute; writing-mode:%s;'
-                         ' left:%dpx; top:%dpx; font-size:%dpx;">' %
-                         (wmode, item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
-                          item.fontsize*self.scale))
-        self.outfp.write(enc(item.text, self.codec))
-        self.outfp.write('</span>\n')
-        if self.show_text_border:
-          self.outfp.write('<span style="position:absolute; border: 1px solid red; '
-                           'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
-                           (item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
-                            item.width*self.scale, self.height*self.scale))
-    for child in page.objs:
-      draw(child)
+    page = PDFPageAggregator.end_page(self, page)
     if self.cluster_margin:
-      clusters = cluster_textobjs(get_textobjs(page), self.cluster_margin)
-      for textbox in clusters:
-        self.outfp.write('<span style="position:absolute; border: 1px solid red; '
-                         'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
-                       (textbox.x0*self.scale, (self.yoffset-textbox.y1)*self.scale,
-                        textbox.width*self.scale, textbox.height*self.scale))
-    self.yoffset += self.pagepad
-    return
+      page.group_text(self.cluster_margin)
+    return page
 
-  def close(self):
-    self.outfp.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' % 
-                     ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(1,self.pageno)))
-    self.outfp.write('</body></html>\n')
-    return
-
-
-##  TextConverter
-##
-class TextConverter(PDFConverter):
-
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=False, cluster_margin=None):
-    PDFConverter.__init__(self, rsrc, outfp, codec=codec)
-    self.pagenum = pagenum
-    if cluster_margin == None:
-      cluster_margin = 0.5
-    self.cluster_margin = cluster_margin
-    self.word_margin = 0.2
+  def write(self, text):
+    self.outfp.write(e(text, self.codec))
     return
   
-  def end_page(self, page):
-    page = PDFConverter.end_page(self, page)
-    if self.pagenum:
-      self.outfp.write('Page %d\n' % page.id)
-    if self.cluster_margin:
-      textobjs = get_textobjs(page)
-      clusters = cluster_textobjs(textobjs, self.cluster_margin)
-      for textbox in clusters:
-        for line in textbox.lines(self.word_margin):
-          self.outfp.write(line.encode(self.codec, 'replace')+'\n')
-        self.outfp.write('\n')
-    else:
-      for obj in page.objs:
-        if isinstance(obj, TextItem):
-          self.outfp.write(obj.text.encode(self.codec, 'replace'))
-          self.outfp.write('\n')
-    self.outfp.write('\f')
-    return
-
-  def close(self):
-    return
-
-
+  
 ##  TagExtractor
 ##
 class TagExtractor(PDFDevice):
@@ -191,7 +63,7 @@ class TagExtractor(PDFDevice):
           text += char
         except PDFUnicodeNotDefined, e:
           pass
-    self.outfp.write(enc(text, self.codec))
+    self.write(text)
     return
 
   def begin_page(self, page):
@@ -207,18 +79,150 @@ class TagExtractor(PDFDevice):
     return
   
   def begin_tag(self, tag, props=None):
-    self.outfp.write('<%s%s>' % (enc(tag.name, self.codec), encprops(props, self.codec)))
+    s = ''
+    if props:
+      s = ''.join( ' %s="%s"' % (e(k), e(str(v))) for (k,v)
+                   in sorted(props.iteritems()) )
+    self.outfp.write('<%s%s>' % (e(tag.name), s))
     self.tag = tag
     return
   
   def end_tag(self):
     assert self.tag
-    self.outfp.write('</%s>' % enc(self.tag.name, self.codec))
+    self.outfp.write('</%s>' % e(self.tag.name))
     self.tag = None
     return
   
   def do_tag(self, tag, props=None):
-    self.outfp.write('<%s%s/>' % (enc(tag.name, self.codec), encprops(props, self.codec)))
+    self.begin_tag(tag, props)
+    self.tag = None
+    return
+
+
+##  SGMLConverter
+##
+class SGMLConverter(PDFConverter):
+
+  def end_page(self, page):
+    def draw(item):
+      if isinstance(item, TextItem):
+        self.outfp.write('<text font="%s" direction="%s" bbox="%s" fontsize="%.3f">' %
+                         (e(item.font.fontname), item.get_direction(),
+                          item.get_bbox(), item.fontsize))
+        self.write(item.text)
+        self.outfp.write('</text>\n')
+      elif isinstance(item, LayoutContainer):
+        self.outfp.write('<group id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
+        for child in item:
+          draw(child)
+        self.outfp.write('</group>\n')
+      return
+    page = PDFConverter.end_page(self, page)
+    self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
+                     (page.id, page.get_bbox(), page.rotate))
+    draw(page)
+    self.outfp.write('</page>\n')
+    return
+
+
+##  HTMLConverter
+##
+class HTMLConverter(PDFConverter):
+
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True,
+               pagepad=50, scale=1, cluster_margin=None):
+    PDFConverter.__init__(self, rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
+    self.pagenum = pagenum
+    self.pagepad = pagepad
+    self.scale = scale
+    self.outfp.write('<html><head>\n')
+    self.outfp.write('<meta http-equiv="Content-Type" content="text/html; charset=%s">\n' %
+                     self.codec)
+    self.outfp.write('</head><body>\n')
+    self.yoffset = self.pagepad
+    self.show_text_border = False
+    return
+
+  def write_rect(self, color, x, y, w, h):
+    self.outfp.write('<span style="position:absolute; border: 1px solid %s; '
+                     'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
+                     (color, x*self.scale, y*self.scale, w*self.scale, h*self.scale))
+    return
+
+  def end_page(self, page):
+    def draw(item):
+      if isinstance(item, Page):
+        self.write_rect('gray', item.x0, self.yoffset-item.y1, item.width, item.height)
+        if self.pagenum:
+          self.outfp.write('<div style="position:absolute; top:%dpx;">' %
+                           ((self.yoffset-page.y1)*self.scale))
+          self.outfp.write('<a name="%s">Page %s</a></div>\n' % (page.id, page.id))
+        for child in item:
+          draw(child)
+      elif isinstance(item, TextItem):
+        if item.vertical:
+          wmode = 'tb-rl'
+        else:
+          wmode = 'lr-tb'
+        self.outfp.write('<span style="position:absolute; writing-mode:%s;'
+                         ' left:%dpx; top:%dpx; font-size:%dpx;">' %
+                         (wmode, item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
+                          item.fontsize*self.scale))
+        self.write(item.text)
+        self.outfp.write('</span>\n')
+        if self.show_text_border:
+          self.write_rect('red', item.x0, self.yoffset-item.y1, item.width, item.height)
+      elif isinstance(item, LayoutContainer):
+        self.write_rect('blue', item.x0, self.yoffset-item.y1, item.width, item.height)
+        for child in item:
+          draw(child)
+      return
+    page = PDFConverter.end_page(self, page)
+    self.yoffset += page.y1
+    draw(page)
+    self.yoffset += self.pagepad
+    return
+
+  def close(self):
+    self.outfp.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' % 
+                     ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(1,self.pageno)))
+    self.outfp.write('</body></html>\n')
+    return
+
+
+##  TextConverter
+##
+class TextConverter(PDFConverter):
+
+  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=False,
+               cluster_margin=None, word_margin=0.2):
+    if cluster_margin == None:
+      cluster_margin = 0.5
+    PDFConverter.__init__(self, rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
+    self.pagenum = pagenum
+    self.word_margin = word_margin
+    return
+  
+  def end_page(self, page):
+    def draw(item):
+      if isinstance(item, TextItem):
+        self.outfp.write(obj.text.encode(self.codec, 'replace'))
+        self.outfp.write('\n')
+      elif isinstance(item, TextBox):
+        for line in item.get_lines(self.word_margin):
+          self.outfp.write(line.encode(self.codec, 'replace')+'\n')
+        self.outfp.write('\n')
+      elif isinstance(item, LayoutContainer):
+        for child in item:
+          draw(child)
+    page = PDFConverter.end_page(self, page)
+    if self.pagenum:
+      self.outfp.write('Page %d\n' % page.id)
+    draw(page)
+    self.outfp.write('\f')
+    return
+
+  def close(self):
     return
 
 

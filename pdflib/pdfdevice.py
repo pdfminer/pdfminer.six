@@ -3,7 +3,7 @@ import sys
 stdout = sys.stdout
 stderr = sys.stderr
 from pdffont import PDFUnicodeNotDefined
-from layout import PageItem, Page, FigureItem, TextItem
+from layout import Page, FigureItem, TextItem
 from utils import mult_matrix, translate_matrix
 
 
@@ -68,7 +68,8 @@ class PDFPageAggregator(PDFDevice):
   
   def end_page(self, _):
     assert not self.stack
-    assert isinstance(self.cur_item, PageItem)
+    assert isinstance(self.cur_item, Page)
+    self.cur_item.fixate()
     self.pageno += 1
     return self.cur_item
 
@@ -79,6 +80,7 @@ class PDFPageAggregator(PDFDevice):
   
   def end_figure(self, _):
     fig = self.cur_item
+    self.cur_item.fixate()
     self.cur_item = self.stack.pop()
     self.cur_item.add(fig)
     return
