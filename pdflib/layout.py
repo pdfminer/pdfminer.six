@@ -365,7 +365,8 @@ class TextBox(LayoutContainer):
         s = ''
         y0 = -INF
         for obj in line:
-          margin = abs(obj.fontsize * ratio)
+          if not isinstance(obj, TextItem): continue
+          margin = obj.get_margin(ratio)
           if obj.y1+margin < y0:
             s += ' '
           s += obj.text
@@ -376,7 +377,8 @@ class TextBox(LayoutContainer):
         s = ''
         x1 = INF
         for obj in line:
-          margin = abs(obj.fontsize * ratio)
+          if not isinstance(obj, TextItem): continue
+          margin = obj.get_margin(ratio)
           if x1 < obj.x0-margin:
             s += ' '
           s += obj.text

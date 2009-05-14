@@ -263,7 +263,7 @@ def main(argv):
   debug = 0
   cmapdir = 'CMap'
   cdbcmapdir = 'CDBCMap'
-  codec = 'ascii'
+  codec = 'utf-8'
   pagenos = set()
   maxpages = 0
   outtype = 'html'
