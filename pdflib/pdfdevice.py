@@ -3,7 +3,7 @@ import sys
 stdout = sys.stdout
 stderr = sys.stderr
 from pdffont import PDFUnicodeNotDefined
-from layout import Page, FigureItem, TextItem
+from page import Page, FigureItem, TextItem
 from utils import mult_matrix, translate_matrix
 
 

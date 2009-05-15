@@ -3,8 +3,8 @@ import sys
 from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
 from pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfdevice import PDFDevice, PDFPageAggregator
-from layout import Page, LayoutContainer, TextItem, TextBox
 from pdffont import PDFUnicodeNotDefined
+from page import Page, LayoutContainer, TextItem, FigureItem, TextBox
 from cmap import CMapDB
 
 
@@ -104,24 +104,33 @@ class TagExtractor(PDFDevice):
 class SGMLConverter(PDFConverter):
 
   def end_page(self, page):
-    def draw(item):
-      if isinstance(item, TextItem):
-        self.outfp.write('<text font="%s" direction="%s" bbox="%s" fontsize="%.3f">' %
-                         (e(item.font.fontname), item.get_direction(),
+    def render(item):
+      if isinstance(item, Page):
+        self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
+                         (item.id, item.get_bbox(), item.rotate))
+        for child in item:
+          render(child)
+        self.outfp.write('</page>\n')
+      elif isinstance(item, TextItem):
+        self.outfp.write('<text font="%s" vertical="%s" bbox="%s" fontsize="%.3f">' %
+                         (e(item.font.fontname), item.is_vertical(),
                           item.get_bbox(), item.fontsize))
         self.write(item.text)
         self.outfp.write('</text>\n')
-      elif isinstance(item, LayoutContainer):
-        self.outfp.write('<group id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
+      elif isinstance(item, FigureItem):
+        self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
         for child in item:
-          draw(child)
-        self.outfp.write('</group>\n')
+          render(child)
+        self.outfp.write('</figure>\n')
+      elif isinstance(item, TextBox):
+        self.outfp.write('<textbox id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
+        print item
+        for child in item:
+          render(child)
+        self.outfp.write('</textbox>\n')
       return
     page = PDFConverter.end_page(self, page)
-    self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
-                     (page.id, page.get_bbox(), page.rotate))
-    draw(page)
-    self.outfp.write('</page>\n')
+    render(page)
     return
 
 
@@ -150,7 +159,7 @@ class HTMLConverter(PDFConverter):
     return
 
   def end_page(self, page):
-    def draw(item):
+    def render(item):
       if isinstance(item, Page):
         self.write_rect('gray', item.x0, self.yoffset-item.y1, item.width, item.height)
         if self.pagenum:
@@ -158,7 +167,7 @@ class HTMLConverter(PDFConverter):
                            ((self.yoffset-page.y1)*self.scale))
           self.outfp.write('<a name="%s">Page %s</a></div>\n' % (page.id, page.id))
         for child in item:
-          draw(child)
+          render(child)
       elif isinstance(item, TextItem):
         if item.vertical:
           wmode = 'tb-rl'
@@ -175,11 +184,11 @@ class HTMLConverter(PDFConverter):
       elif isinstance(item, LayoutContainer):
         self.write_rect('blue', item.x0, self.yoffset-item.y1, item.width, item.height)
         for child in item:
-          draw(child)
+          render(child)
       return
     page = PDFConverter.end_page(self, page)
     self.yoffset += page.y1
-    draw(page)
+    render(page)
     self.yoffset += self.pagepad
     return
 
@@ -204,7 +213,7 @@ class TextConverter(PDFConverter):
     return
   
   def end_page(self, page):
-    def draw(item):
+    def render(item):
       if isinstance(item, TextItem):
         self.outfp.write(obj.text.encode(self.codec, 'replace'))
         self.outfp.write('\n')
@@ -214,11 +223,11 @@ class TextConverter(PDFConverter):
         self.outfp.write('\n')
       elif isinstance(item, LayoutContainer):
         for child in item:
-          draw(child)
+          render(child)
     page = PDFConverter.end_page(self, page)
     if self.pagenum:
       self.outfp.write('Page %d\n' % page.id)
-    draw(page)
+    render(page)
     self.outfp.write('\f')
     return
 
@@ -294,7 +303,7 @@ def main(argv):
   CMapDB.initialize(cmapdir, cdbcmapdir)
   rsrc = PDFResourceManager()
   if outtype == 'sgml':
-    device = SGMLConverter(rsrc, outfp, codec=codec)
+    device = SGMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
   elif outtype == 'html':
     device = HTMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
   elif outtype == 'text':

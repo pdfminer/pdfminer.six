@@ -49,6 +49,7 @@ def bsearch(objs, v0, v1):
 
 
 ##  reorder_hv, reorder_vh
+##  chop_hv, chop_vh
 ##
 ##  Reorders objects according to its writing direction.
 ##
@@ -210,7 +211,7 @@ class LayoutItem(object):
     return 0
   
   def get_direction(self):
-    return False
+    return None
 
   
 ##  LayoutContainer
@@ -227,7 +228,7 @@ class LayoutContainer(LayoutItem):
     return
 
   def __repr__(self):
-    return ('<group %s(%d)>' % (self.get_bbox(), len(self.objs)))
+    return ('<group %s>' % (self.get_bbox()))
 
   def __iter__(self):
     return iter(self.objs)
@@ -267,8 +268,14 @@ class LayoutContainer(LayoutItem):
     return self.weight
   
   def get_direction(self):
-    return ((sum( obj.get_weight() for obj in self.objs )/2) <
-            sum( obj.get_weight() for obj in self.objs if obj.get_direction() ))
+    if not self.objs: return None
+    d = {}
+    for obj in self.objs:
+      k = obj.get_direction()
+      if k not in d: d[k] = 0
+      d[k] += 1
+    (direction,_) = sorted(d.iteritems(), key=lambda (k,v):v)[0]
+    return direction
 
 
 ##  FigureItem
@@ -327,7 +334,7 @@ class TextItem(LayoutItem):
   def get_weight(self):
     return len(self.text)
   
-  def get_direction(self):
+  def is_vertical(self):
     return self.vertical
 
 
@@ -340,40 +347,41 @@ class TextBox(LayoutContainer):
 
   def __init__(self, objs):
     LayoutContainer.__init__(self, None, (0,0,0,0), objs)
-    self.vertical = False
+    self.direction = None
     return
+
+  def __repr__(self):
+    return ('<textbox %s(%s)>' % (self.get_bbox(), self.direction))
 
   def fixate(self):
     LayoutContainer.fixate(self)
+    self.direction = 'H'
     for obj in self.objs:
-      self.vertical = bool(obj.get_direction())
+      if obj.is_vertical():
+        self.direction = 'V'
       break
     if 2 <= len(self.objs):
       objs = sorted(self.objs, key=lambda obj: -obj.x1-obj.y1)
       if objs[0].get_weight() == 1 and objs[1].get_weight() == 1:
         h = objs[0].voverlap(objs[1])
         v = objs[0].hoverlap(objs[1])
-        self.vertical = (h < v)
+        if h < v:
+          self.direction = 'V'
+    if self.direction == 'H':
+      self.lines = reorder_vh(self.objs, +1)
+    else:
+      self.lines = reorder_hv(self.objs, -1)
+    self.objs = []
+    for line in self.lines:
+      self.objs.extend(line)
     return
 
   def get_direction(self):
-    return self.vertical
+    return self.direction
 
   def get_lines(self, ratio):
-    if self.get_direction():
-      for line in reorder_hv(self.objs, -1):
-        s = ''
-        y0 = -INF
-        for obj in line:
-          if not isinstance(obj, TextItem): continue
-          margin = obj.get_margin(ratio)
-          if obj.y1+margin < y0:
-            s += ' '
-          s += obj.text
-          y0 = obj.y0
-        yield s
-    else:
-      for line in reorder_vh(self.objs, +1):
+    if self.get_direction() == 'H':
+      for line in self.lines:
         s = ''
         x1 = INF
         for obj in line:
@@ -383,6 +391,18 @@ class TextBox(LayoutContainer):
             s += ' '
           s += obj.text
           x1 = obj.x1
+        yield s
+    else:
+      for line in self.lines:
+        s = ''
+        y0 = -INF
+        for obj in line:
+          if not isinstance(obj, TextItem): continue
+          margin = obj.get_margin(ratio)
+          if obj.y1+margin < y0:
+            s += ' '
+          s += obj.text
+          y0 = obj.y0
         yield s
     return
 
@@ -404,10 +424,10 @@ class Page(LayoutContainer):
 
   def group_text(self, ratio):
     self.group_objs(ratio, TextBox)
-    if self.get_direction():
-      lines = reorder_hv(self.objs, -1)
-    else:
+    if self.get_direction() == 'H':
       lines = reorder_vh(self.objs, +1)
+    else:
+      lines = reorder_hv(self.objs, -1)
     self.objs = []
     for line in lines:
       self.objs.extend(line)
