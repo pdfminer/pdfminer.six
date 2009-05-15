@@ -9,8 +9,6 @@
 import sys, re
 from pdflib.pdfparser import PDFDocument, PDFParser
 from pdflib.pdftypes import PDFStream, PDFObjRef, PSKeyword, PSLiteral, resolve1
-stdout = sys.stdout
-stderr = sys.stderr
 
 
 ESC_PAT = re.compile(r'[\000-\037&<>()\042\047\134\177-\377]')
@@ -163,7 +161,7 @@ def main(argv):
   password = ''
   dumpall = False
   proc = dumppdf
-  outfp = stdout
+  outfp = sys.stdout
   for (k, v) in opts:
     if k == '-d': debug += 1
     elif k == '-i': objids.extend( int(x) for x in v.split(',') )

@@ -1,8 +1,9 @@
 # GNUMakefile for test
 
 PYTHON=python
+CMAPDIR=../CMap
 CDBCMAPDIR=../CDBCMap
-PDF2TXT=$(PYTHON) ../pdflib/pdf2txt.py
+PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -C$(CMAPDIR) -D$(CDBCMAPDIR)
 
 HTMLS= \
 	simple1.html \
@@ -20,6 +21,10 @@ all: $(HTMLS)
 clean:
 	-rm $(HTMLS)
 
-.SUFFIXES: .pdf .html
+.SUFFIXES: .pdf .html .sgml .txt
 .pdf.html:
-	$(PDF2TXT) -D$(CDBCMAPDIR) -o $@ $<
+	$(PDF2TXT) -t html -o $@ $<
+.pdf.sgml:
+	$(PDF2TXT) -t sgml -o $@ $<
+.pdf.txt:
+	$(PDF2TXT) -t text -o $@ $<
