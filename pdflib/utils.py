@@ -91,3 +91,8 @@ def decode_text(s):
     return unicode(s[2:], 'utf-16be', 'ignore')
   else:
     return ''.join( PDFDocEncoding[ord(c)] for c in s )
+
+# enc(x): encode string in SGML/XML/HTML
+def enc(x, codec='ascii'):
+  x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
+  return x.encode(codec, 'xmlcharrefreplace')

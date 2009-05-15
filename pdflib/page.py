@@ -134,10 +134,10 @@ class Plane(object):
 
 ##  ClusterSet
 ##
-##  Maintains a set of TextBox objects.
-##  It incrementally constructs TextBox objects
+##  Maintains a set of LTTextBox objects.
+##  It incrementally constructs LTTextBox objects
 ##  and group them when necessary. It gives
-##  a sequence of TextBox objects that represent
+##  a sequence of LTTextBox objects that represent
 ##  the text stream of that page.
 ##
 class ClusterSet(object):
@@ -145,11 +145,13 @@ class ClusterSet(object):
   def __init__(self, klass):
     self.clusters = {}
     self.klass = klass
+    self.i = 0
     return
 
   # add(objs): groups text objects if necessary.
   def add(self, objs):
-    group = self.klass(objs)
+    group = self.klass(objs, self.i)
+    self.i += 1
     for obj in objs:
       if obj in self.clusters:
         group.merge(self.clusters[obj])
@@ -157,7 +159,7 @@ class ClusterSet(object):
       self.clusters[obj] = group
     return
 
-  # finish(): returns all the TextBoxes in a page.
+  # finish(): returns all the LTTextBoxes in a page.
   def finish(self):
     r = set(self.clusters.itervalues())
     for group in r:
@@ -169,9 +171,8 @@ class ClusterSet(object):
 ##
 class LayoutItem(object):
 
-  def __init__(self, id, bbox):
+  def __init__(self, bbox):
     #assert x0 <= x1 and y0 <= y1
-    self.id = id
     self.set_bbox(bbox)
     return
 
@@ -219,7 +220,8 @@ class LayoutItem(object):
 class LayoutContainer(LayoutItem):
   
   def __init__(self, id, bbox, objs=None):
-    LayoutItem.__init__(self, id, bbox)
+    LayoutItem.__init__(self, bbox)
+    self.id = id
     if objs:
       self.objs = set(objs)
     else:
@@ -278,17 +280,38 @@ class LayoutContainer(LayoutItem):
     return direction
 
 
-##  FigureItem
+##  LTLine
 ##
-class FigureItem(LayoutContainer):
+class LTLine(LayoutItem):
+
+  def __init__(self, linewidth, direction, bbox):
+    LayoutItem.__init__(self, bbox)
+    self.linewidth = linewidth
+    self.direction = direction
+    return
+
+
+##  LTRect
+##
+class LTRect(LayoutItem):
+
+  def __init__(self, linewidth, bbox):
+    LayoutItem.__init__(self, bbox)
+    self.linewidth = linewidth
+    return
+  
+
+##  LTFigure
+##
+class LTFigure(LayoutContainer):
   
   def __repr__(self):
     return ('<figure id=%r bbox=%s>' % (self.id, self.get_bbox()))
-  
 
-##  TextItem
+
+##  LTText
 ##
-class TextItem(LayoutItem):
+class LTText(LayoutItem):
   
   def __init__(self, matrix, font, fontsize, charspace, scaling, chars):
     assert chars
@@ -318,7 +341,7 @@ class TextItem(LayoutItem):
       self.adv = (0, dy)
       bbox = (tx, ty+dy, tx+dx, ty)
     self.fontsize = max(apply_matrix_norm(self.matrix, (size,size)))
-    LayoutItem.__init__(self, None, bbox)
+    LayoutItem.__init__(self, bbox)
     return
 
   def __repr__(self):
@@ -338,15 +361,15 @@ class TextItem(LayoutItem):
     return self.vertical
 
 
-##  TextBox
+##  LTTextBox
 ##
-##  A set of text objects that are clustered in
+##  A set of text objects that are grouped within
 ##  a certain rectangular area.
 ##
-class TextBox(LayoutContainer):
+class LTTextBox(LayoutContainer):
 
-  def __init__(self, objs):
-    LayoutContainer.__init__(self, None, (0,0,0,0), objs)
+  def __init__(self, id, objs):
+    LayoutContainer.__init__(self, id, (0,0,0,0), objs)
     self.direction = None
     return
 
@@ -385,7 +408,7 @@ class TextBox(LayoutContainer):
         s = ''
         x1 = INF
         for obj in line:
-          if not isinstance(obj, TextItem): continue
+          if not isinstance(obj, LTText): continue
           margin = obj.get_margin(ratio)
           if x1 < obj.x0-margin:
             s += ' '
@@ -397,7 +420,7 @@ class TextBox(LayoutContainer):
         s = ''
         y0 = -INF
         for obj in line:
-          if not isinstance(obj, TextItem): continue
+          if not isinstance(obj, LTText): continue
           margin = obj.get_margin(ratio)
           if obj.y1+margin < y0:
             s += ' '
@@ -407,9 +430,9 @@ class TextBox(LayoutContainer):
     return
 
 
-##  Page
+##  LTPage
 ##
-class Page(LayoutContainer):
+class LTPage(LayoutContainer):
   
   def __init__(self, id, bbox, rotate=0):
     LayoutContainer.__init__(self, id, bbox)
@@ -423,7 +446,7 @@ class Page(LayoutContainer):
     return
 
   def group_text(self, ratio):
-    self.group_objs(ratio, TextBox)
+    self.group_objs(ratio, LTTextBox)
     if self.get_direction() == 'H':
       lines = reorder_vh(self.objs, +1)
     else:

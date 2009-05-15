@@ -205,6 +205,10 @@ class PDFXRefStream(PDFBaseXRef):
 
 ##  PDFPage
 ##
+##  A PDFPage object is nothing more than a bunch of keys and values
+##  that describe the properties of the page and point to its contents,
+##  and has nothing to do with a real graphical entity. 
+##
 class PDFPage(object):
 
   def __init__(self, doc, pageid, attrs):

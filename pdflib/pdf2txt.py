@@ -1,38 +1,125 @@
 #!/usr/bin/env python
 import sys
-from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
-from pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfdevice import PDFDevice, PDFPageAggregator
+from pdfdevice import PDFDevice
 from pdffont import PDFUnicodeNotDefined
-from page import Page, LayoutContainer, TextItem, FigureItem, TextBox
+from page import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextBox
+from utils import mult_matrix, translate_matrix, enc
+from pdfparser import PDFDocument, PDFParser
+from pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
 from cmap import CMapDB
 
 
-# e(x): encode string
-def e(x, codec='ascii'):
-  x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
-  return x.encode(codec, 'xmlcharrefreplace')
+
+##  PDFPageAggregator
+##
+class PDFPageAggregator(PDFDevice):
+
+  def __init__(self, rsrc, pageno=1, cluster_margin=None):
+    PDFDevice.__init__(self, rsrc)
+    self.cluster_margin = cluster_margin
+    self.undefined_char = '?'
+    self.pageno = pageno
+    self.stack = []
+    return
+
+  def begin_page(self, page):
+    self.cur_item = LTPage(self.pageno, page.mediabox, page.rotate)
+    return
+  
+  def end_page(self, _):
+    assert not self.stack
+    assert isinstance(self.cur_item, LTPage)
+    self.cur_item.fixate()
+    self.pageno += 1
+    if self.cluster_margin:
+      self.cur_item.group_text(self.cluster_margin)
+    return self.cur_item
+
+  def begin_figure(self, name, bbox):
+    self.stack.append(self.cur_item)
+    self.cur_item = LTFigure(name, bbox)
+    return
+  
+  def end_figure(self, _):
+    fig = self.cur_item
+    self.cur_item.fixate()
+    self.cur_item = self.stack.pop()
+    self.cur_item.add(fig)
+    return
+
+  def handle_undefined_char(self, cidcoding, cid):
+    if self.debug:
+      print >>stderr, 'undefined: %r, %r' % (cidcoding, cid)
+    return self.undefined_char
+
+  def paint_path(self, gstate, matrix, stroke, fill, evenodd, path):
+    shape = ''.join(x[0] for x in path)
+    if shape == 'ml': # horizontal/vertical line
+      (_,x0,y0) = path[0]
+      (_,x1,y1) = path[1]
+      if y0 == y1:
+        # horizontal ruler
+        self.cur_item.add(LTLine(gstate.linewidth, 'H', (x0,y0,x1,y1)))
+      elif x0 == x1:
+        # vertical ruler
+        self.cur_item.add(LTLine(gstate.linewidth, 'V', (x0,y0,x1,y1)))
+    elif shape == 'mlllh':
+      # rectangle
+      (_,x0,y0) = path[0]
+      (_,x1,y1) = path[1]
+      (_,x2,y2) = path[2]
+      (_,x3,y3) = path[3]
+      if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
+          (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
+        self.cur_item.add(LTRect(gstate.linewidth, (x0,y0,x2,y2)))
+    return
+  
+  def render_chars(self, textmatrix, textstate, chars):
+    if not chars: return (0, 0)
+    item = LTText(textmatrix, textstate.font, textstate.fontsize,
+                  textstate.charspace, textstate.scaling, chars)
+    self.cur_item.add(item)
+    return item.adv
+
+  def render_string(self, textstate, textmatrix, seq):
+    font = textstate.font
+    textmatrix = mult_matrix(textmatrix, self.ctm)
+    chars = []
+    for x in seq:
+      if isinstance(x, int) or isinstance(x, float):
+        (dx,dy) = self.render_chars(textmatrix, textstate, chars)
+        dx -= x * textstate.scaling * .0001
+        textmatrix = translate_matrix(textmatrix, (dx, dy))
+        chars = []
+      else:
+        for cid in font.decode(x):
+          try:
+            char = font.to_unicode(cid)
+          except PDFUnicodeNotDefined, e:
+            (cidcoding, cid) = e.args
+            char = self.handle_undefined_char(cidcoding, cid)
+          chars.append((char, cid))
+          if textstate.wordspace and not font.is_multibyte() and cid == 32:
+            (dx,dy) = self.render_chars(textmatrix, textstate, chars)
+            dx += textstate.wordspace * textstate.scaling * .01
+            textmatrix = translate_matrix(textmatrix, (dx, dy))
+            chars = []
+    self.render_chars(textmatrix, textstate, chars)
+    return
 
 
 ##  PDFConverter
 ##
 class PDFConverter(PDFPageAggregator):
   
-  def __init__(self, rsrc, outfp, codec='ascii', cluster_margin=None):
-    PDFPageAggregator.__init__(self, rsrc)
-    self.cluster_margin = cluster_margin
+  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, codec='utf-8'):
+    PDFPageAggregator.__init__(self, rsrc, pageno=pageno, cluster_margin=cluster_margin)
     self.outfp = outfp
     self.codec = codec
     return
 
-  def end_page(self, page):
-    page = PDFPageAggregator.end_page(self, page)
-    if self.cluster_margin:
-      page.group_text(self.cluster_margin)
-    return page
-
   def write(self, text):
-    self.outfp.write(e(text, self.codec))
+    self.outfp.write(enc(text, self.codec))
     return
   
   
@@ -61,7 +148,7 @@ class TagExtractor(PDFDevice):
         try:
           char = font.to_unicode(cid)
           text += char
-        except PDFUnicodeNotDefined, e:
+        except PDFUnicodeNotDefined:
           pass
     self.write(text)
     return
@@ -81,15 +168,15 @@ class TagExtractor(PDFDevice):
   def begin_tag(self, tag, props=None):
     s = ''
     if props:
-      s = ''.join( ' %s="%s"' % (e(k), e(str(v))) for (k,v)
+      s = ''.join( ' %s="%s"' % (enc(k), enc(str(v))) for (k,v)
                    in sorted(props.iteritems()) )
-    self.outfp.write('<%s%s>' % (e(tag.name), s))
+    self.outfp.write('<%s%s>' % (enc(tag.name), s))
     self.tag = tag
     return
   
   def end_tag(self):
     assert self.tag
-    self.outfp.write('</%s>' % e(self.tag.name))
+    self.outfp.write('</%s>' % enc(self.tag.name))
     self.tag = None
     return
   
@@ -105,26 +192,29 @@ class SGMLConverter(PDFConverter):
 
   def end_page(self, page):
     def render(item):
-      if isinstance(item, Page):
+      if isinstance(item, LTPage):
         self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
                          (item.id, item.get_bbox(), item.rotate))
         for child in item:
           render(child)
         self.outfp.write('</page>\n')
-      elif isinstance(item, TextItem):
+      elif isinstance(item, LTText):
         self.outfp.write('<text font="%s" vertical="%s" bbox="%s" fontsize="%.3f">' %
-                         (e(item.font.fontname), item.is_vertical(),
+                         (enc(item.font.fontname), item.is_vertical(),
                           item.get_bbox(), item.fontsize))
         self.write(item.text)
         self.outfp.write('</text>\n')
-      elif isinstance(item, FigureItem):
+      elif isinstance(item, LTLine):
+        self.outfp.write('<line linewidth="%d" direction="%s" bbox="%s" />' % (item.linewidth, item.direction, item.get_bbox()))
+      elif isinstance(item, LTRect):
+        self.outfp.write('<rect linewidth="%d" bbox="%s" />' % (item.linewidth, item.get_bbox()))
+      elif isinstance(item, LTFigure):
         self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
         for child in item:
           render(child)
         self.outfp.write('</figure>\n')
-      elif isinstance(item, TextBox):
+      elif isinstance(item, LTTextBox):
         self.outfp.write('<textbox id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
-        print item
         for child in item:
           render(child)
         self.outfp.write('</textbox>\n')
@@ -138,10 +228,10 @@ class SGMLConverter(PDFConverter):
 ##
 class HTMLConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=True,
-               pagepad=50, scale=1, cluster_margin=None):
-    PDFConverter.__init__(self, rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
-    self.pagenum = pagenum
+  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, codec='utf-8',
+               scale=1, showpageno=True, pagepad=50):
+    PDFConverter.__init__(self, rsrc, outfp, pageno=pageno, cluster_margin=cluster_margin, codec=codec)
+    self.showpageno = showpageno
     self.pagepad = pagepad
     self.scale = scale
     self.outfp.write('<html><head>\n')
@@ -152,23 +242,23 @@ class HTMLConverter(PDFConverter):
     self.show_text_border = False
     return
 
-  def write_rect(self, color, x, y, w, h):
-    self.outfp.write('<span style="position:absolute; border: 1px solid %s; '
+  def write_rect(self, color, width, x, y, w, h):
+    self.outfp.write('<span style="position:absolute; border: %s %dpx solid; '
                      'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' % 
-                     (color, x*self.scale, y*self.scale, w*self.scale, h*self.scale))
+                     (color, width, x*self.scale, y*self.scale, w*self.scale, h*self.scale))
     return
 
   def end_page(self, page):
     def render(item):
-      if isinstance(item, Page):
-        self.write_rect('gray', item.x0, self.yoffset-item.y1, item.width, item.height)
-        if self.pagenum:
+      if isinstance(item, LTPage):
+        self.write_rect('gray', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
+        if self.showpageno:
           self.outfp.write('<div style="position:absolute; top:%dpx;">' %
                            ((self.yoffset-page.y1)*self.scale))
           self.outfp.write('<a name="%s">Page %s</a></div>\n' % (page.id, page.id))
         for child in item:
           render(child)
-      elif isinstance(item, TextItem):
+      elif isinstance(item, LTText):
         if item.vertical:
           wmode = 'tb-rl'
         else:
@@ -180,9 +270,11 @@ class HTMLConverter(PDFConverter):
         self.write(item.text)
         self.outfp.write('</span>\n')
         if self.show_text_border:
-          self.write_rect('red', item.x0, self.yoffset-item.y1, item.width, item.height)
+          self.write_rect('red', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
+      elif isinstance(item, LTLine) or isinstance(item, LTRect):
+        self.write_rect('black', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
       elif isinstance(item, LayoutContainer):
-        self.write_rect('blue', item.x0, self.yoffset-item.y1, item.width, item.height)
+        self.write_rect('blue', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
         for child in item:
           render(child)
       return
@@ -203,21 +295,21 @@ class HTMLConverter(PDFConverter):
 ##
 class TextConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, codec='utf-8', pagenum=False,
-               cluster_margin=None, word_margin=0.2):
+  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, codec='utf-8',
+               showpageno=False, word_margin=0.2):
     if cluster_margin == None:
       cluster_margin = 0.5
-    PDFConverter.__init__(self, rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
-    self.pagenum = pagenum
+    PDFConverter.__init__(self, rsrc, outfp, pageno=pageno, cluster_margin=cluster_margin, codec=codec)
+    self.showpageno = showpageno
     self.word_margin = word_margin
     return
   
   def end_page(self, page):
     def render(item):
-      if isinstance(item, TextItem):
+      if isinstance(item, LTText):
         self.outfp.write(obj.text.encode(self.codec, 'replace'))
         self.outfp.write('\n')
-      elif isinstance(item, TextBox):
+      elif isinstance(item, LTTextBox):
         for line in item.get_lines(self.word_margin):
           self.outfp.write(line.encode(self.codec, 'replace')+'\n')
         self.outfp.write('\n')
@@ -225,7 +317,7 @@ class TextConverter(PDFConverter):
         for child in item:
           render(child)
     page = PDFConverter.end_page(self, page)
-    if self.pagenum:
+    if self.showpageno:
       self.outfp.write('Page %d\n' % page.id)
     render(page)
     self.outfp.write('\f')
@@ -233,29 +325,6 @@ class TextConverter(PDFConverter):
 
   def close(self):
     return
-
-
-# pdf2txt
-class TextExtractionNotAllowed(RuntimeError): pass
-
-def convert(rsrc, device, fname, pagenos=None, maxpages=0, password=''):
-  doc = PDFDocument()
-  fp = file(fname, 'rb')
-  parser = PDFParser(doc, fp)
-  try:
-    doc.initialize(password)
-  except PDFPasswordIncorrect:
-    raise TextExtractionNotAllowed('Incorrect password')
-  if not doc.is_extractable:
-    raise TextExtractionNotAllowed('Text extraction is not allowed: %r' % fname)
-  interpreter = PDFPageInterpreter(rsrc, device)
-  for (pageno,page) in enumerate(doc.get_pages()):
-    if pagenos and (pageno not in pagenos): continue
-    interpreter.process_page(page)
-    if maxpages and maxpages <= pageno+1: break
-  device.close()
-  fp.close()
-  return
 
 
 # main
@@ -269,30 +338,35 @@ def main(argv):
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
+  # debug option
   debug = 0
+  # path option
   cmapdir = 'CMap'
   cdbcmapdir = 'CDBCMap'
-  codec = 'utf-8'
+  # input option
+  password = ''
   pagenos = set()
   maxpages = 0
+  # output option
   outtype = 'html'
-  password = ''
-  pagenum = True
-  splitwords = False
-  cluster_margin = None
+  codec = 'utf-8'
   outfp = sys.stdout
+  cluster_margin = None
+  pageno = 1
+  scale = 1
+  showpageno = True
   for (k, v) in opts:
     if k == '-d': debug += 1
-    elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
-    elif k == '-P': password = v
-    elif k == '-c': codec = v
-    elif k == '-m': maxpages = int(v)
     elif k == '-C': cmapdir = v
     elif k == '-D': cdbcmapdir = v
-    elif k == '-T': cluster_margin = float(v)
+    elif k == '-P': password = v
+    elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
+    elif k == '-m': maxpages = int(v)
     elif k == '-t': outtype = v
+    elif k == '-c': codec = v
     elif k == '-o': outfp = file(v, 'wb')
-    elif k == '-w': splitwords = True
+    elif k == '-s': scale = float(v)
+    elif k == '-T': cluster_margin = float(v)
   #
   CMapDB.debug = debug
   PDFResourceManager.debug = debug
@@ -305,7 +379,7 @@ def main(argv):
   if outtype == 'sgml':
     device = SGMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
   elif outtype == 'html':
-    device = HTMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
+    device = HTMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin, scale=scale)
   elif outtype == 'text':
     device = TextConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
   elif outtype == 'tag':
@@ -313,8 +387,8 @@ def main(argv):
   else:
     return usage()
   for fname in args:
-    convert(rsrc, device, fname, pagenos, 
-            maxpages=maxpages, password=password)
+    process_pdf(rsrc, device, fname, pagenos, maxpages=maxpages, password=password)
+  device.close()
   return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

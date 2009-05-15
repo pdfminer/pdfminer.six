@@ -14,7 +14,8 @@ from pdftypes import PDFException, PDFStream, PDFObjRef, \
      str_value, list_value, dict_value, stream_value
 from utils import choplist, mult_matrix, translate_matrix, apply_matrix, apply_matrix_norm, MATRIX_IDENTITY
 from pdffont import PDFFontError, PDFType1Font, PDFTrueTypeFont, PDFType3Font, PDFCIDFont
-from pdfcolor import ColorSpace, PREDEFINED_COLORSPACE, \
+from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
+from pdfcolor import PDFColorSpace, PREDEFINED_COLORSPACE, \
      LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
 from cmap import CMapDB
 
@@ -33,6 +34,56 @@ LITERAL_FONT = PSLiteralTable.intern('Font')
 LITERAL_FORM = PSLiteralTable.intern('Form')
 LITERAL_IMAGE = PSLiteralTable.intern('Image')
 
+
+##  PDFTextState
+##
+class PDFTextState(object):
+
+  def __init__(self):
+    self.font = None
+    self.fontsize = 0
+    self.charspace = 0
+    self.wordspace = 0
+    self.scaling = 100
+    self.leading = 0
+    self.render = 0
+    self.rise = 0
+    self.reset()
+    return
+
+  def __repr__(self):
+    return ('<PDFTextState: font=%r, fontsize=%r, charspace=%r, wordspace=%r, '
+            ' scaling=%r, leading=%r, render=%r, rise=%r, '
+            ' matrix=%r, linematrix=%r>' %
+            (self.font, self.fontsize, self.charspace, self.wordspace, 
+             self.scaling, self.leading, self.render, self.rise,
+             self.matrix, self.linematrix))
+
+  def reset(self):
+    self.matrix = MATRIX_IDENTITY
+    self.linematrix = (0, 0)
+    return
+
+
+##  PDFGraphicState
+##
+class PDFGraphicState(object):
+
+  def __init__(self):
+    self.linewidth = 0
+    self.linecap = None
+    self.linejoin = None
+    self.miterlimit = None
+    self.dash = None
+    self.intent = None
+    self.flatness = None
+    return
+
+  def __repr__(self):
+    return ('<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, '
+            ' miterlimit=%r, dash=%r, intent=%r, flatness=%r>' %
+            (self.linewidth, self.linecap, self.linejoin,
+             self.miterlimit, self.dash, self.intent, self.flatness))
 
 ##  Resource Manager
 ##
@@ -207,46 +258,6 @@ class PDFPageInterpreter(object):
 
   debug = 0
   
-  class TextState(object):
-    def __init__(self):
-      self.font = None
-      self.fontsize = 0
-      self.charspace = 0
-      self.wordspace = 0
-      self.scaling = 100
-      self.leading = 0
-      self.render = 0
-      self.rise = 0
-      self.reset()
-      return
-    def __repr__(self):
-      return ('<TextState: font=%r, fontsize=%r, charspace=%r, wordspace=%r, '
-              ' scaling=%r, leading=%r, render=%r, rise=%r, '
-              ' matrix=%r, linematrix=%r>' %
-              (self.font, self.fontsize, self.charspace, self.wordspace, 
-               self.scaling, self.leading, self.render, self.rise,
-               self.matrix, self.linematrix))
-    def reset(self):
-      self.matrix = MATRIX_IDENTITY
-      self.linematrix = (0, 0)
-      return
-
-  class GraphicState(object):
-    def __init__(self):
-      self.linewidth = None
-      self.linecap = None
-      self.linejoin = None
-      self.miterlimit = None
-      self.dash = None
-      self.intent = None
-      self.flatness = None
-      return
-    def __repr__(self):
-      return ('<GraphicState: linewidth=%r, linecap=%r, linejoin=%r, '
-              ' miterlimit=%r, dash=%r, intent=%r, flatness=%r>' %
-              (self.linewidth, self.linecap, self.linejoin,
-               self.miterlimit, self.dash, self.intent, self.flatness))
-    
   def __init__(self, rsrc, device):
     self.rsrc = rsrc
     self.device = device
@@ -255,50 +266,53 @@ class PDFPageInterpreter(object):
   def dup(self):
     return PDFPageInterpreter(self.rsrc, self.device)
 
+  # init_resources(resources):
+  #   Prepare the fonts and XObjects listed in the Resource attribute.
   def init_resources(self, resources):
     self.fontmap = {}
     self.xobjmap = {}
     self.csmap = PREDEFINED_COLORSPACE.copy()
-    # Handle resource declarations.
+    if not resources: return
     def get_colorspace(spec):
       if isinstance(spec, list):
         name = literal_name(spec[0])
       else:
         name = literal_name(spec)
       if name == 'ICCBased' and isinstance(spec, list) and 2 <= len(spec):
-        return ColorSpace(name, stream_value(spec[1]).dic['N'])
+        return PDFColorSpace(name, stream_value(spec[1]).dic['N'])
       elif name == 'DeviceN' and isinstance(spec, list) and 2 <= len(spec):
-        return ColorSpace(name, len(list_value(spec[1])))
+        return PDFColorSpace(name, len(list_value(spec[1])))
       else:
         return PREDEFINED_COLORSPACE[name]
-    if resources:
-      for (k,v) in dict_value(resources).iteritems():
-        if 1 <= self.debug:
-          print >>stderr, 'Resource: %r: %r' % (k,v)
-        if k == 'Font':
-          for (fontid,spec) in dict_value(v).iteritems():
-            objid = None
-            if isinstance(spec, PDFObjRef):
-              objid = spec.objid
-            spec = dict_value(spec)
-            self.fontmap[fontid] = self.rsrc.get_font(objid, spec)
-        elif k == 'ColorSpace':
-          for (csid,spec) in dict_value(v).iteritems():
-            self.csmap[csid] = get_colorspace(resolve1(spec))
-        elif k == 'ProcSet':
-          self.rsrc.get_procset(list_value(v))
-        elif k == 'XObject':
-          for (xobjid,xobjstrm) in dict_value(v).iteritems():
-            self.xobjmap[xobjid] = xobjstrm
+    for (k,v) in dict_value(resources).iteritems():
+      if 1 <= self.debug:
+        print >>stderr, 'Resource: %r: %r' % (k,v)
+      if k == 'Font':
+        for (fontid,spec) in dict_value(v).iteritems():
+          objid = None
+          if isinstance(spec, PDFObjRef):
+            objid = spec.objid
+          spec = dict_value(spec)
+          self.fontmap[fontid] = self.rsrc.get_font(objid, spec)
+      elif k == 'ColorSpace':
+        for (csid,spec) in dict_value(v).iteritems():
+          self.csmap[csid] = get_colorspace(resolve1(spec))
+      elif k == 'ProcSet':
+        self.rsrc.get_procset(list_value(v))
+      elif k == 'XObject':
+        for (xobjid,xobjstrm) in dict_value(v).iteritems():
+          self.xobjmap[xobjid] = xobjstrm
     return
-  
+
+  # init_state(ctm)
+  #   Initialize the text and graphic states for rendering a page.
   def init_state(self, ctm):
     # gstack: stack for graphical states.
     self.gstack = []
     self.ctm = ctm
     self.device.set_ctm(self.ctm)
-    self.textstate = self.TextState()
-    self.graphicstate = self.GraphicState()
+    self.textstate = PDFTextState()
+    self.graphicstate = PDFGraphicState()
     self.curpath = []
     # argstack: stack for command arguments.
     self.argstack = []
@@ -700,10 +714,13 @@ class PDFPageInterpreter(object):
     self.device.end_page(page)
     return
 
-  def render_contents(self, resources, contents, ctm=MATRIX_IDENTITY):
+  # render_contents(resources, streams, ctm)
+  #   Render the content streams.
+  #   This method may be called recursively.
+  def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY):
     self.init_resources(resources)
     self.init_state(ctm)
-    self.execute(list_value(contents))
+    self.execute(list_value(streams))
     return
   
   def execute(self, streams):
@@ -738,3 +755,26 @@ class PDFPageInterpreter(object):
       else:
         self.push(obj)
     return
+
+
+##  process_pdf
+##
+class TextExtractionNotAllowed(RuntimeError): pass
+
+def process_pdf(rsrc, device, fname, pagenos=None, maxpages=0, password=''):
+  doc = PDFDocument()
+  fp = file(fname, 'rb')
+  parser = PDFParser(doc, fp)
+  try:
+    doc.initialize(password)
+  except PDFPasswordIncorrect:
+    raise TextExtractionNotAllowed('Incorrect password')
+  if not doc.is_extractable:
+    raise TextExtractionNotAllowed('Text extraction is not allowed: %r' % fname)
+  interpreter = PDFPageInterpreter(rsrc, device)
+  for (pageno,page) in enumerate(doc.get_pages()):
+    if pagenos and (pageno not in pagenos): continue
+    interpreter.process_page(page)
+    if maxpages and maxpages <= pageno+1: break
+  fp.close()
+  return

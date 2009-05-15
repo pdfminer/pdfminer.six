@@ -22,9 +22,10 @@ test:
 	cd samples && make
 
 clean:
-	cd pdflib && make clean
-	cd tools && make clean
-	cd samples && make clean
+	-cd pdflib && make clean
+	-cd tools && make clean
+	-cd samples && make clean
+	-rm -rf build
 
 # Maintainance:
 
@@ -32,7 +33,7 @@ pack: clean
 	$(SVN) cleanup
 	$(SVN) export . $(WORKDIR)/$(DISTNAME)
 	$(GNUTAR) c -z -C$(WORKDIR) -f $(WORKDIR)/$(DISTFILE) $(DISTNAME) --dereference --numeric-owner
-	rm -rf $(WORKDIR)/$(DISTNAME)
+	-rm -rf $(WORKDIR)/$(DISTNAME)
 
 check:
 	-pychecker --limit=0 *.py

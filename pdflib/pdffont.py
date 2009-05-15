@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import sys
-stderr = sys.stderr
 from struct import pack, unpack
 try:
   from cStringIO import StringIO

@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 import sys
-stderr = sys.stderr
 from psparser import PSLiteralTable
 
 
-##  ColorSpace
+##  PDFColorSpace
 ##
 LITERAL_DEVICE_GRAY = PSLiteralTable.intern('DeviceGray')
 LITERAL_DEVICE_RGB = PSLiteralTable.intern('DeviceRGB')
 LITERAL_DEVICE_CMYK = PSLiteralTable.intern('DeviceCMYK')
 
-class ColorSpace(object):
+class PDFColorSpace(object):
   
   def __init__(self, name, ncomponents):
     self.name = name
@@ -18,11 +17,11 @@ class ColorSpace(object):
     return
   
   def __repr__(self):
-    return '<ColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
+    return '<PDFColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
 
 
 PREDEFINED_COLORSPACE = dict(
-  (name, ColorSpace(name,n)) for (name,n) in {
+  (name, PDFColorSpace(name,n)) for (name,n) in {
   'CalRGB': 3,
   'CalGray': 1,
   'Lab': 3,
