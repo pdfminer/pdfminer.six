@@ -2,7 +2,7 @@
 import sys
 from pdfdevice import PDFDevice
 from pdffont import PDFUnicodeNotDefined
-from page import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextBox
+from layout import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextBox
 from utils import mult_matrix, translate_matrix, enc
 from pdfparser import PDFDocument, PDFParser
 from pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
