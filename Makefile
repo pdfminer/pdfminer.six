@@ -14,6 +14,9 @@ CONV_CMAP=$(PYTHON) -m tools.conv_cmap
 
 all:
 
+install:
+	$(PYTHON) setup.py install
+
 clean:
 	-rm -rf build
 	-cd $(PACKAGE) && make clean

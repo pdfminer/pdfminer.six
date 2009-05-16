@@ -204,7 +204,8 @@ class PDFXRefStream(PDFBaseXRef):
 ##
 ##  A PDFPage object is nothing more than a bunch of keys and values
 ##  that describe the properties of the page and point to its contents,
-##  and has nothing to do with a real graphical entity. 
+##  and has nothing to do with a real graphical entity. For a real graphical
+##  object, look at layout.LTPage.
 ##
 class PDFPage(object):
 
