@@ -330,6 +330,7 @@ class PDFFont(object):
     self.default_width = default_width or descriptor.get('MissingWidth', 0)
     self.leading = num_value(descriptor.get('Leading', 0))
     self.bbox = list_value(descriptor.get('FontBBox', (0,0,0,0)))
+    self.hscale = self.vscale = .001
     return
 
   def __repr__(self):
@@ -345,12 +346,12 @@ class PDFFont(object):
     return map(ord, bytes)
 
   def get_ascent(self):
-    return self.ascent * .001
+    return self.ascent * self.vscale
   def get_descent(self):
-    return self.descent * .001
+    return self.descent * self.vscale
 
   def char_width(self, cid):
-    return self.widths.get(cid, self.default_width) * .001
+    return self.widths.get(cid, self.default_width) * self.hscale
 
   def char_disp(self, cid):
     return 0
@@ -447,14 +448,6 @@ class PDFType3Font(PDFSimpleFont):
 
   def __repr__(self):
     return '<PDFType3Font>'
-
-  def get_ascent(self):
-    return self.ascent * self.vscale
-  def get_descent(self):
-    return self.descent * self.vscale
-
-  def char_width(self, cid):
-    return self.widths.get(cid, self.default_width) * self.hscale
 
 
 # PDFCIDFont

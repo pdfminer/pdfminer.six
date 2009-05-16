@@ -86,12 +86,14 @@ class PDFPageAggregator(PDFDevice):
   def render_string(self, textstate, textmatrix, seq):
     font = textstate.font
     textmatrix = mult_matrix(textmatrix, self.ctm)
+    scaling = textstate.scaling * .01
+    dxscale = scaling / (font.hscale*1000) * .01
+    wordspace = textstate.wordspace * scaling
     chars = []
     for x in seq:
       if isinstance(x, int) or isinstance(x, float):
         (dx,dy) = self.render_chars(textmatrix, textstate, chars)
-        dx -= x * textstate.scaling * .0001
-        textmatrix = translate_matrix(textmatrix, (dx, dy))
+        textmatrix = translate_matrix(textmatrix, (dx-x*dxscale, dy))
         chars = []
       else:
         for cid in font.decode(x):
@@ -101,10 +103,9 @@ class PDFPageAggregator(PDFDevice):
             (cidcoding, cid) = e.args
             char = self.handle_undefined_char(cidcoding, cid)
           chars.append((char, cid))
-          if textstate.wordspace and not font.is_multibyte() and cid == 32:
+          if cid == 32 and textstate.wordspace and not font.is_multibyte():
             (dx,dy) = self.render_chars(textmatrix, textstate, chars)
-            dx += textstate.wordspace * textstate.scaling * .01
-            textmatrix = translate_matrix(textmatrix, (dx, dy))
+            textmatrix = translate_matrix(textmatrix, (dx+wordspace, dy))
             chars = []
     self.render_chars(textmatrix, textstate, chars)
     return
@@ -238,7 +239,6 @@ class HTMLConverter(PDFConverter):
                      self.codec)
     self.outfp.write('</head><body>\n')
     self.yoffset = self.pagepad
-    self.show_text_border = False
     return
 
   def write_rect(self, color, width, x, y, w, h):
@@ -268,7 +268,7 @@ class HTMLConverter(PDFConverter):
                           item.fontsize*self.scale))
         self.write(item.text)
         self.outfp.write('</span>\n')
-        if self.show_text_border:
+        if self.debug:
           self.write_rect('red', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
       elif isinstance(item, LTLine) or isinstance(item, LTRect):
         self.write_rect('black', 1, item.x0, self.yoffset-item.y1, item.width, item.height)

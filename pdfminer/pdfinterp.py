@@ -754,18 +754,15 @@ class PDFPageInterpreter(object):
 
 ##  process_pdf
 ##
-class TextExtractionNotAllowed(RuntimeError): pass
+class PDFTextExtractionNotAllowed(PDFInterpreterError): pass
 
 def process_pdf(rsrc, device, fname, pagenos=None, maxpages=0, password=''):
   doc = PDFDocument()
   fp = file(fname, 'rb')
   parser = PDFParser(doc, fp)
-  try:
-    doc.initialize(password)
-  except PDFPasswordIncorrect:
-    raise TextExtractionNotAllowed('Incorrect password')
+  doc.initialize(password)
   if not doc.is_extractable:
-    raise TextExtractionNotAllowed('Text extraction is not allowed: %r' % fname)
+    raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fname)
   interpreter = PDFPageInterpreter(rsrc, device)
   for (pageno,page) in enumerate(doc.get_pages()):
     if pagenos and (pageno not in pagenos): continue

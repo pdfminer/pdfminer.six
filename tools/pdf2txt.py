@@ -2,6 +2,7 @@
 import sys
 from pdfminer.pdfparser import PDFDocument, PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
+from pdfminer.pdfdevice import PDFDevice
 from pdfminer.converter import SGMLConverter, HTMLConverter, TextConverter, TagExtractor
 from pdfminer.cmap import CMapDB
 
@@ -51,6 +52,7 @@ def main(argv):
   PDFDocument.debug = debug
   PDFParser.debug = debug
   PDFPageInterpreter.debug = debug
+  PDFDevice.debug = debug
   #
   CMapDB.initialize(cmapdir, cdbcmapdir)
   rsrc = PDFResourceManager()
