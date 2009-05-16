@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import sys
-from pdflib.pdfparser import PDFDocument, PDFParser
-from pdflib.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
-from pdflib.converter import SGMLConverter, HTMLConverter, TextConverter, TagExtractor
-from pdflib.cmap import CMapDB
+from pdfminer.pdfparser import PDFDocument, PDFParser
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
+from pdfminer.converter import SGMLConverter, HTMLConverter, TextConverter, TagExtractor
+from pdfminer.cmap import CMapDB
 
 # main
 def main(argv):
