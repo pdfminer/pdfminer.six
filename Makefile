@@ -1,12 +1,12 @@
 # Makefile for pdfminer
 
 PACKAGE=pdfminer
-VERSION=20090330
-GNUTAR=tar
-SVN=svn
-PYTHON=python
 
-WORKDIR=/tmp
+SVN=svn
+GNUTAR=tar
+PYTHON=python
+TMPDIR=/tmp
+VERSION=`$(PYTHON) $(PACKAGE)/__init__.py`
 DISTNAME=$(PACKAGE)-dist-$(VERSION)
 DISTFILE=$(DISTNAME).tar.gz
 
@@ -14,34 +14,33 @@ CONV_CMAP=$(PYTHON) -m tools.conv_cmap
 
 all:
 
+clean:
+	-rm -rf build
+	-cd $(PACKAGE) && make clean
+	-cd tools && make clean
+	-cd samples && make clean
+
+test:
+	cd samples && make test
+
 cdbcmap: CMap
 	-mkdir CDBCMap
 	$(CONV_CMAP) CMap/*
 
-test:
-	cd samples && make
-
-clean:
-	-cd pdflib && make clean
-	-cd tools && make clean
-	-cd samples && make clean
-	-rm -rf build
-
 # Maintainance:
-
-pack: clean
-	$(SVN) cleanup
-	$(SVN) export . $(WORKDIR)/$(DISTNAME)
-	$(GNUTAR) c -z -C$(WORKDIR) -f $(WORKDIR)/$(DISTFILE) $(DISTNAME) --dereference --numeric-owner
-	-rm -rf $(WORKDIR)/$(DISTNAME)
-
-check:
-	-pychecker --limit=0 *.py
-
 commit: clean
 	$(SVN) commit
 
+check:
+	cd $(PACKAGE) && make check
+
+dist: clean
+	$(SVN) cleanup
+	$(SVN) export . $(TMPDIR)/$(DISTNAME)
+	$(GNUTAR) c -z -C$(TMPDIR) -f $(TMPDIR)/$(DISTFILE) $(DISTNAME) --dereference --numeric-owner
+	-rm -rf $(TMPDIR)/$(DISTNAME)
+
 WEBDIR=$$HOME/Site/unixuser.org/python/pdfminer
-publish: pack
-	cp $(WORKDIR)/$(DISTFILE) $(WEBDIR)
+publish: dist
+	cp $(TMPDIR)/$(DISTFILE) $(WEBDIR)
 	cp README.html $(WEBDIR)/index.html

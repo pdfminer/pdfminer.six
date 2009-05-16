@@ -152,7 +152,7 @@ class PDFResourceManager(object):
       else:
         if STRICT:
           raise PDFFontError('Invalid Font spec: %r' % spec)
-        font = PDFType1Font(spec) # this is so wrong!
+        font = PDFType1Font(self, spec) # this is so wrong!
       if objid:
         self.fonts[objid] = font
     return font

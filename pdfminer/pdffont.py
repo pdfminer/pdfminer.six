@@ -243,7 +243,7 @@ class TrueTypeFont(object):
     self.tables = {}
     fonttype = fp.read(4)
     (ntables, _1, _2, _3) = unpack('>HHHH', fp.read(8))
-    for i in xrange(ntables):
+    for _ in xrange(ntables):
       (name, tsum, offset, length) = unpack('>4sLLL', fp.read(16))
       self.tables[name] = (offset, length)
     return

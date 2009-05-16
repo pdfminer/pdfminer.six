@@ -55,7 +55,6 @@ class XRefObjRange(object):
 class PDFBaseXRef(object):
   def __init__(self):
     self.objid_ranges = None
-    self.objid_list = None
     return
 
   def objids(self):
@@ -63,10 +62,8 @@ class PDFBaseXRef(object):
       for objid_range in self.objid_ranges:
         for objid in xrange(objid_range.get_start_id(), objid_range.get_end_id() + 1):
           yield objid
-    else:
-      for objid in self.offsets:
-        yield objid
     return
+
 
 ##  PDFXRef
 ##
@@ -154,7 +151,7 @@ class PDFXRefStream(PDFBaseXRef):
     return
 
   def __repr__(self):
-    return '<PDFXRef: objid=%d-%d>' % (self.objid_first, self.objid_last)
+    return '<PDFXRefStream: fields=%d,%d,%d>' % (self.fl1, self.fl2, self.fl3)
 
   def load(self, parser, debug=0):
     (_,objid) = parser.nexttoken() # ignored

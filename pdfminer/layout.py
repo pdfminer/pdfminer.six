@@ -362,7 +362,7 @@ class LTFigure(LayoutContainer):
     return
 
   def __repr__(self):
-    return ('<figure id=%r bbox=%s ctm=%r>' % (self.id, self.get_bbox(), self.ctm))
+    return ('<figure id=%r bbox=%s matrix=%r>' % (self.id, self.get_bbox(), self.matrix))
 
 
 ##  LTTextBox

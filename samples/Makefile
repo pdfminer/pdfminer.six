@@ -16,10 +16,12 @@ HTMLS= \
 	naacl06-shinyama.html \
 	nlp2004slides.html
 
-all: $(HTMLS)
+all:
 
 clean:
 	-rm $(HTMLS)
+
+test: $(HTMLS)
 
 .SUFFIXES: .pdf .html .sgml .txt
 .pdf.html:

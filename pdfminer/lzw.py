@@ -86,12 +86,12 @@ class LZWDecoder(object):
 
 def main(argv):
   import StringIO
-  input = '\x80\x0b\x60\x50\x22\x0c\x0c\x85\x01'
-  fp = StringIO.StringIO(input)
+  data = '\x80\x0b\x60\x50\x22\x0c\x0c\x85\x01'
+  fp = StringIO.StringIO(data)
   expected = '\x2d\x2d\x2d\x2d\x2d\x41\x2d\x2d\x2d\x42'
   LZWDecoder.debug = 1
   output = ''.join(LZWDecoder(fp).run())
-  print (input, expected, output)
+  print (data, expected, output)
   print output == expected
   return 0
 

@@ -45,7 +45,7 @@ class PDFPageAggregator(PDFDevice):
 
   def handle_undefined_char(self, cidcoding, cid):
     if self.debug:
-      print >>stderr, 'undefined: %r, %r' % (cidcoding, cid)
+      print >>sys.stderr, 'undefined: %r, %r' % (cidcoding, cid)
     return self.undefined_char
 
   def paint_path(self, gstate, stroke, fill, evenodd, path):
@@ -149,7 +149,7 @@ class TagExtractor(PDFDevice):
           text += char
         except PDFUnicodeNotDefined:
           pass
-    self.write(text)
+    self.outfp.write(enc(text, self.codec))
     return
 
   def begin_page(self, page):
@@ -306,18 +306,17 @@ class TextConverter(PDFConverter):
   def end_page(self, page):
     def render(item):
       if isinstance(item, LTText):
-        self.outfp.write(obj.text.encode(self.codec, 'replace'))
-        self.outfp.write('\n')
+        self.write(item.text+'\n')
       elif isinstance(item, LTTextBox):
         for line in item.get_lines(self.word_margin):
-          self.outfp.write(line.encode(self.codec, 'replace')+'\n')
-        self.outfp.write('\n')
+          self.write(line+'\n')
+        self.write('\n')
       elif isinstance(item, LayoutContainer):
         for child in item:
           render(child)
     page = PDFConverter.end_page(self, page)
     if self.showpageno:
-      self.outfp.write('Page %d\n' % page.id)
+      self.write('Page %d\n' % page.id)
     render(page)
-    self.outfp.write('\f')
+    self.write('\f')
     return
