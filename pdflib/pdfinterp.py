@@ -12,7 +12,7 @@ from psparser import PSException, PSTypeError, PSEOF, \
 from pdftypes import PDFException, PDFStream, PDFObjRef, \
      resolve1, int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
-from utils import choplist, mult_matrix, translate_matrix, apply_matrix, apply_matrix_norm, MATRIX_IDENTITY
+from utils import choplist, mult_matrix, translate_matrix, MATRIX_IDENTITY
 from pdffont import PDFFontError, PDFType1Font, PDFTrueTypeFont, PDFType3Font, PDFCIDFont
 from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
 from pdfcolor import PDFColorSpace, PREDEFINED_COLORSPACE, \
@@ -424,7 +424,7 @@ class PDFPageInterpreter(object):
   
   # stroke
   def do_S(self):
-    self.device.paint_path(self.graphicstate, self.ctm, True, False, False, self.curpath)
+    self.device.paint_path(self.graphicstate, True, False, False, self.curpath)
     self.curpath = []
     return
   # close-and-stroke
@@ -434,24 +434,24 @@ class PDFPageInterpreter(object):
     return
   # fill
   def do_f(self):
-    self.device.paint_path(self.graphicstate, self.ctm, False, True, False, self.curpath)
+    self.device.paint_path(self.graphicstate, False, True, False, self.curpath)
     self.curpath = []
     return
   # fill (obsolete)
   do_F = do_f
   # fill-even-odd
   def do_f_a(self):
-    self.device.paint_path(self.graphicstate, self.ctm, False, True, True, self.curpath)
+    self.device.paint_path(self.graphicstate, False, True, True, self.curpath)
     self.curpath = []
     return
   # fill-and-stroke
   def do_B(self):
-    self.device.paint_path(self.graphicstate, self.ctm, True, True, False, self.curpath)
+    self.device.paint_path(self.graphicstate, True, True, False, self.curpath)
     self.curpath = []
     return
   # fill-and-stroke-even-odd
   def do_B_a(self):
-    self.device.paint_path(self.graphicstate, self.ctm, True, True, True, self.curpath)
+    self.device.paint_path(self.graphicstate, True, True, True, self.curpath)
     self.curpath = []
     return
   # close-fill-and-stroke
@@ -686,20 +686,15 @@ class PDFPageInterpreter(object):
     subtype = xobj.dic.get('Subtype')
     if subtype is LITERAL_FORM and 'BBox' in xobj.dic:
       interpreter = self.dup()
-      (x0,y0,x1,y1) = list_value(xobj.dic['BBox'])
-      ctm = mult_matrix(list_value(xobj.dic.get('Matrix', MATRIX_IDENTITY)), self.ctm)
-      (x0,y0) = apply_matrix(ctm, (x0,y0))
-      (x1,y1) = apply_matrix(ctm, (x1,y1))
-      bbox = (x0,y0,x1,y1)
-      self.device.begin_figure(xobjid, bbox)
-      interpreter.render_contents(dict_value(xobj.dic.get('Resources')), [xobj], ctm=ctm)
+      bbox = list_value(xobj.dic['BBox'])
+      matrix = list_value(xobj.dic.get('Matrix', MATRIX_IDENTITY))
+      self.device.begin_figure(xobjid, bbox, matrix)
+      interpreter.render_contents(dict_value(xobj.dic.get('Resources')), [xobj], ctm=mult_matrix(matrix, self.ctm))
       self.device.end_figure(xobjid)
     elif subtype is LITERAL_IMAGE and 'Width' in xobj.dic and 'Height' in xobj.dic:
-      (x0,y0) = apply_matrix(self.ctm, (0,0))
-      (x1,y1) = apply_matrix(self.ctm, (1,1))
-      self.device.begin_figure(xobjid, (x0,y0,x1,y1))
+      self.device.begin_figure(xobjid, (0,0,1,1), MATRIX_IDENTITY)
       (w,h) = (xobj.dic['Width'], xobj.dic['Height'])
-      self.device.render_image(xobj, (w,h), self.ctm)
+      self.device.render_image(xobj, (w,h))
       self.device.end_figure(xobjid)
     else:
       # unsupported xobject type.

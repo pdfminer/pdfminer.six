@@ -15,12 +15,12 @@ def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
 def translate_matrix((a,b,c,d,e,f), (x,y)):
   return (a,b,c,d,e+x,f+y)
   
-def apply_matrix((a,b,c,d,e,f), (x,y)):
-  '''Applies a matrix to coordinates.'''
+def apply_matrix_pt((a,b,c,d,e,f), (x,y)):
+  '''Applies a matrix to a point.'''
   return (a*x+c*y+e, b*x+d*y+f)
 
 def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
-  '''equiv to apply_matrix(M, (p,q)) - apply_matrix(M, (0,0))'''
+  '''equiv to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))'''
   return (a*p+c*q, b*p+d*q)
 
 

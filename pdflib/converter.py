@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+import sys
 from pdfdevice import PDFDevice
 from pdffont import PDFUnicodeNotDefined
 from layout import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextBox
-from utils import mult_matrix, translate_matrix, enc
+from utils import mult_matrix, translate_matrix, apply_matrix_pt, enc
 
 
 ##  PDFPageAggregator
@@ -30,9 +31,9 @@ class PDFPageAggregator(PDFDevice):
       self.cur_item.group_text(self.cluster_margin)
     return self.cur_item
 
-  def begin_figure(self, name, bbox):
+  def begin_figure(self, name, bbox, matrix):
     self.stack.append(self.cur_item)
-    self.cur_item = LTFigure(name, bbox)
+    self.cur_item = LTFigure(name, bbox, matrix)
     return
   
   def end_figure(self, _):
@@ -47,11 +48,13 @@ class PDFPageAggregator(PDFDevice):
       print >>stderr, 'undefined: %r, %r' % (cidcoding, cid)
     return self.undefined_char
 
-  def paint_path(self, gstate, matrix, stroke, fill, evenodd, path):
+  def paint_path(self, gstate, stroke, fill, evenodd, path):
     shape = ''.join(x[0] for x in path)
     if shape == 'ml': # horizontal/vertical line
       (_,x0,y0) = path[0]
       (_,x1,y1) = path[1]
+      (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
+      (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
       if y0 == y1:
         # horizontal ruler
         self.cur_item.add(LTLine(gstate.linewidth, 'H', (x0,y0,x1,y1)))
@@ -64,6 +67,10 @@ class PDFPageAggregator(PDFDevice):
       (_,x1,y1) = path[1]
       (_,x2,y2) = path[2]
       (_,x3,y3) = path[3]
+      (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
+      (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
+      (x2,y2) = apply_matrix_pt(self.ctm, (x2,y2))
+      (x3,y3) = apply_matrix_pt(self.ctm, (x3,y2))
       if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
           (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
         self.cur_item.add(LTRect(gstate.linewidth, (x0,y0,x2,y2)))
@@ -130,9 +137,6 @@ class TagExtractor(PDFDevice):
     self.tag = None
     return
   
-  def render_image(self, stream, size, matrix):
-    return
-
   def render_string(self, textstate, textmatrix, seq):
     font = textstate.font
     text = ''
@@ -204,7 +208,7 @@ class SGMLConverter(PDFConverter):
       elif isinstance(item, LTRect):
         self.outfp.write('<rect linewidth="%d" bbox="%s" />' % (item.linewidth, item.get_bbox()))
       elif isinstance(item, LTFigure):
-        self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
+        self.outfp.write('<figure id="%s">\n' % (item.id))
         for child in item:
           render(child)
         self.outfp.write('</figure>\n')
@@ -268,7 +272,7 @@ class HTMLConverter(PDFConverter):
           self.write_rect('red', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
       elif isinstance(item, LTLine) or isinstance(item, LTRect):
         self.write_rect('black', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
-      elif isinstance(item, LayoutContainer):
+      elif isinstance(item, LTTextBox):
         self.write_rect('blue', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
         for child in item:
           render(child)

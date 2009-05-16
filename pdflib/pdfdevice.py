@@ -32,14 +32,14 @@ class PDFDevice(object):
     return
   def end_page(self, page):
     return
-  def begin_figure(self, name, bbox):
+  def begin_figure(self, name, bbox, matrix):
     return
   def end_figure(self, name):
     return
 
-  def paint_path(self, graphicstate, matrix, stroke, fill, evenodd, path):
+  def paint_path(self, graphicstate, stroke, fill, evenodd, path):
     return
   def render_string(self, textstate, textmatrix, seq):
     return
-  def render_image(self, stream, size, matrix):
+  def render_image(self, stream, size):
     return

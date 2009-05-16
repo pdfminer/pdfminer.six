@@ -150,7 +150,7 @@ class ClusterSet(object):
 
   # add(objs): groups text objects if necessary.
   def add(self, objs):
-    group = self.klass(objs, self.i)
+    group = self.klass(self.i, objs)
     self.i += 1
     for obj in objs:
       if obj in self.clusters:
@@ -164,7 +164,16 @@ class ClusterSet(object):
     r = set(self.clusters.itervalues())
     for group in r:
       group.fixate()
-    return r
+    return list(r)
+
+def group_objs(objs, ratio, klass):
+  plane = Plane(objs)
+  cset = ClusterSet(klass)
+  for obj in objs:
+    margin = abs(obj.get_margin(ratio))
+    neighbors = plane.find((obj.x0-margin, obj.y0-margin, obj.x1+margin, obj.y1+margin))
+    cset.add(neighbors)
+  return cset.finish()
 
 
 ##  LayoutItem
@@ -256,16 +265,6 @@ class LayoutContainer(LayoutItem):
     self.weight = sum( obj.get_weight() for obj in self.objs )
     return
 
-  def group_objs(self, ratio, klass):
-    plane = Plane(self.objs)
-    cset = ClusterSet(klass)
-    for obj in self.objs:
-      margin = abs(obj.get_margin(ratio))
-      neighbors = plane.find((obj.x0-margin, obj.y0-margin, obj.x1+margin, obj.y1+margin))
-      cset.add(neighbors)
-    self.objs = cset.finish()
-    return
-  
   def get_weight(self):
     return self.weight
   
@@ -300,14 +299,6 @@ class LTRect(LayoutItem):
     self.linewidth = linewidth
     return
   
-
-##  LTFigure
-##
-class LTFigure(LayoutContainer):
-  
-  def __repr__(self):
-    return ('<figure id=%r bbox=%s>' % (self.id, self.get_bbox()))
-
 
 ##  LTText
 ##
@@ -359,6 +350,19 @@ class LTText(LayoutItem):
   
   def is_vertical(self):
     return self.vertical
+
+
+##  LTFigure
+##
+class LTFigure(LayoutContainer):
+  
+  def __init__(self, id, bbox, matrix):
+    LayoutContainer.__init__(self, id, bbox)
+    self.matrix = matrix
+    return
+
+  def __repr__(self):
+    return ('<figure id=%r bbox=%s ctm=%r>' % (self.id, self.get_bbox(), self.ctm))
 
 
 ##  LTTextBox
@@ -446,7 +450,9 @@ class LTPage(LayoutContainer):
     return
 
   def group_text(self, ratio):
-    self.group_objs(ratio, LTTextBox)
+    textobjs = [ obj for obj in self.objs if isinstance(obj, LTText) ]
+    otherobjs = [ obj for obj in self.objs if not isinstance(obj, LTText) ]
+    self.objs = group_objs(textobjs, ratio, LTTextBox) + otherobjs
     if self.get_direction() == 'H':
       lines = reorder_vh(self.objs, +1)
     else:
