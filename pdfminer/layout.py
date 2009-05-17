@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from utils import apply_matrix_norm
+from pdfminer.utils import apply_matrix_norm
 INF = sys.maxint
 
 

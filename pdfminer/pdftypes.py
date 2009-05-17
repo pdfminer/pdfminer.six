@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 import sys, zlib
-stderr = sys.stderr
-from lzw import LZWDecoder
-from psparser import PSException, PSObject, \
+from pdfminer.lzw import LZWDecoder
+from pdfminer.psparser import PSException, PSObject, \
      PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
      literal_name, keyword_name, STRICT
 

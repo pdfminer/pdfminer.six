@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 import sys, re
 stderr = sys.stderr
-
-from utils import choplist
+from pdfminer.utils import choplist
 
 STRICT = 0
 

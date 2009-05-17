@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import sys
-from pdfdevice import PDFDevice
-from pdffont import PDFUnicodeNotDefined
-from layout import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextBox
-from utils import mult_matrix, translate_matrix, apply_matrix_pt, enc
+from pdfminer.pdfdevice import PDFDevice
+from pdfminer.pdffont import PDFUnicodeNotDefined
+from pdfminer.layout import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextBox
+from pdfminer.utils import mult_matrix, translate_matrix, apply_matrix_pt, enc
 
 
 ##  PDFPageAggregator

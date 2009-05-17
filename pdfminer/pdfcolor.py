@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from psparser import PSLiteralTable
+from pdfminer.psparser import PSLiteralTable
 
 
 ##  PDFColorSpace

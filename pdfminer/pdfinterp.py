@@ -6,18 +6,18 @@ try:
   from cStringIO import StringIO
 except ImportError:
   from StringIO import StringIO
-from psparser import PSException, PSTypeError, PSEOF, \
+from pdfminer.psparser import PSException, PSTypeError, PSEOF, \
      PSLiteralTable, PSKeywordTable, literal_name, keyword_name, \
      PSStackParser, PSKeyword, STRICT
-from pdftypes import PDFException, PDFStream, PDFObjRef, \
+from pdfminer.pdftypes import PDFException, PDFStream, PDFObjRef, \
      resolve1, int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
-from utils import choplist, mult_matrix, translate_matrix, MATRIX_IDENTITY
-from pdffont import PDFFontError, PDFType1Font, PDFTrueTypeFont, PDFType3Font, PDFCIDFont
-from pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
-from pdfcolor import PDFColorSpace, PREDEFINED_COLORSPACE, \
+from pdfminer.utils import choplist, mult_matrix, translate_matrix, MATRIX_IDENTITY
+from pdfminer.pdffont import PDFFontError, PDFType1Font, PDFTrueTypeFont, PDFType3Font, PDFCIDFont
+from pdfminer.pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
+from pdfminer.pdfcolor import PDFColorSpace, PREDEFINED_COLORSPACE, \
      LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
-from cmap import CMapDB
+from pdfminer.cmap import CMapDB
 
 
 ##  Exceptions

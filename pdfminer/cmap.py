@@ -2,14 +2,17 @@
 import sys, re, os, os.path
 stderr = sys.stderr
 from struct import pack, unpack
-from utils import choplist, nunpack
-from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
+from pdfminer.utils import choplist, nunpack
+from pdfminer.fontmetrics import FONT_METRICS
+from pdfminer.latin_enc import ENCODING
+from pdfminer.glyphlist import charname2unicode
+from pdfminer.psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
      PSLiteral, PSKeyword, literal_name, keyword_name, \
      PSStackParser
 try:
   import cdb
 except ImportError:
-  import pycdb as cdb
+  import pdfminer.pycdb as cdb
 
 
 class CMapError(Exception): pass
@@ -28,7 +31,6 @@ def find_cmap_path():
 
 STRIP_NAME = re.compile(r'[0-9]+')
 def name2unicode(name):
-  from glyphlist import charname2unicode
   if name in charname2unicode:
     return charname2unicode[name]
   m = STRIP_NAME.search(name)
@@ -360,19 +362,16 @@ class CMapParser(PSStackParser):
 ##  FontMetricsDB
 ##
 class FontMetricsDB(object):
-  from fontmetrics import FONT_METRICS
   
   @classmethod
   def get_metrics(klass, fontname):
-    return klass.FONT_METRICS[fontname]
+    return FONT_METRICS[fontname]
 
 
 ##  EncodingDB
 ##
 class EncodingDB(object):
       
-  from latin_enc import ENCODING
-  
   std2unicode = {}
   mac2unicode = {}
   win2unicode = {}
@@ -447,8 +446,10 @@ def main(argv):
     (opts, args) = getopt.getopt(argv[1:], 'C:D:f')
   except getopt.GetoptError:
     return usage()
-  if not args: usage()
-  cmapdir = args.pop(0)
+  if args:
+    cmapdir = args.pop(0)
+  else:
+    cmapdir = find_cmap_path()
   outputdir = cmapdir
   force = False
   for (k, v) in opts:
@@ -456,9 +457,11 @@ def main(argv):
     elif k == '-C': cmapdir = v
     elif k == '-D': outputdir = v
   if not os.path.isdir(cmapdir):
-    raise ValueError('not directory: %r' % cmapdir)
+    print >>stderr, 'directory does not exist: %r' % cmapdir
+    return 111
   if not os.path.isdir(outputdir):
-    raise ValueError('not directory: %r' % outputdir)
+    print >>stderr, 'directory does not exist: %r' % outputdir
+    return 111
   return convert_cmap(cmapdir, outputdir, force=force)
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

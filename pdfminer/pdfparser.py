@@ -7,12 +7,11 @@
 import sys, re
 import md5, struct
 stderr = sys.stderr
-from utils import choplist, nunpack, decode_text
-from arcfour import Arcfour
-from psparser import PSStackParser, PSSyntaxError, PSEOF, \
-     PSLiteralTable, PSKeywordTable, literal_name, keyword_name, \
-     STRICT
-from pdftypes import PDFException, PDFTypeError, PDFNotImplementedError, \
+from pdfminer.utils import choplist, nunpack, decode_text
+from pdfminer.arcfour import Arcfour
+from pdfminer.psparser import PSStackParser, PSSyntaxError, PSEOF, \
+     PSLiteralTable, PSKeywordTable, literal_name, keyword_name, STRICT
+from pdfminer.pdftypes import PDFException, PDFTypeError, PDFNotImplementedError, \
      PDFStream, PDFObjRef, resolve1, decipher_all, \
      int_value, float_value, num_value, str_value, list_value, dict_value, stream_value
 

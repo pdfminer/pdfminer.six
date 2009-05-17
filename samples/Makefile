@@ -1,8 +1,7 @@
 # GNUMakefile for test
 
 PYTHON=python
-CMAPDIR=../CMap
-PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -C$(CMAPDIR)
+PDF2TXT=$(PYTHON) ../tools/pdf2txt.py
 
 HTMLS= \
 	simple1.html \

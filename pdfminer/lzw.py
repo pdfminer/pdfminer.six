@@ -2,6 +2,7 @@
 import sys
 stderr = sys.stderr
 
+
 ##  LZWDecoder
 ##
 class LZWDecoder(object):

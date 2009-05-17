@@ -5,13 +5,13 @@ try:
   from cStringIO import StringIO
 except ImportError:
   from StringIO import StringIO
-from psparser import PSLiteralTable, PSKeywordTable, PSLiteral, \
+from pdfminer.psparser import PSLiteralTable, PSKeywordTable, PSLiteral, \
      literal_name, keyword_name, STRICT
-from pdftypes import PDFException, \
+from pdfminer.pdftypes import PDFException, \
      resolve1, int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
-from cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
-from utils import apply_matrix_norm, nunpack
+from pdfminer.cmap import CMap, CMapDB, CMapParser, FontMetricsDB, EncodingDB
+from pdfminer.utils import apply_matrix_norm, nunpack
 
 
 ##  CFFFont
