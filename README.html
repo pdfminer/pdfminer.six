@@ -18,7 +18,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sat May 16 19:58:11 JST 2009
+Last Modified: Sun May 17 15:39:06 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -114,19 +114,21 @@ which is distributed from Adobe.
 Here is how:
 
 <ol>
-<li> Get 
+<li> Get a CMap archive file from
 <a href="http://www.unixuser.org/~euske/pub/CMap.tar.bz2">
 http://www.unixuser.org/~euske/pub/CMap.tar.bz2
 </a>
-<li> Do the follwoing:
+<li> Expand the archive and put the <code>CMap</code> directory under the directory 
+where <code>pdfminer</code> is installed.
+(Normally this should be something like <code>/usr/lib/python2.5/site-packages</code>.)
+For example:
 <blockquote><pre>
+$ <strong>cd /usr/lib/python2.5/site-packages</strong>
 $ <strong>tar jxf CMap.tar.bz2</strong>
 </pre></blockquote>
-<li> Put the <code>CMap</code> directory into the <code>pdfminer</code> directory.
-<li> Go to the <code>pdfminer</code> directory.
 <li> Do the follwoing: (this is optional but highly recommended)<br>
 <blockquote><pre>
-$ <strong>make cdbcmap</strong>
+$ <strong>python -m pdfminer.cmap /usr/lib/python2.5/site-packages/CMap</strong>
 </pre></blockquote>
 </ol>
 
@@ -135,38 +137,36 @@ $ <strong>make cdbcmap</strong>
 <h2>How to Use</h2>
 
 <p>
-PDFMiner comes with two programs:
+PDFMiner comes with two handy tools:
 <code>pdf2txt.py</code> and <code>dumppdf.py</code>.
 
 <a name="pdf2txt"></a>
 <h3>pdf2txt.py</h3>
 <p>
 <code>pdf2txt.py</code> extracts text contents from a PDF file.
-It extracts all the texts that are to be rendered programatically.
-It also extracts the corresponding locations, font names,
-and font sizes for each text portion. However,
-it cannot extract texts embedded within images
-(i.e. it does not do optical character recognition).
-You can provide a password for protected PDF documents 
-whose access is limited.
+It extracts all the texts that are to be rendered programatically,
+i.e. it cannot extract texts drawn as images that require optical character recognition.
+It also extracts the corresponding locations, font names, font sizes, writing
+direction (horizontal or vertical) for each text portion.
+You need to provide a password for protected PDF documents when its access is restricted.
+You cannot extract any text from a PDF document which does not have extraction permission.
 <p>
 For non-ASCII languages, you can specify the output encoding 
 (such as UTF-8).
-Note that not all characters in a PDF can be converted safely
-to Unicode, as some of them are not included in the current
-Unicode Standard.
+<p>
+<strong>Note:</strong> Not all characters in a PDF can be safely converted to Unicode.
 
 <p>
 Examples:
 <blockquote><pre>
-$ <strong>python -m pdflib.pdf2txt -o output.html samples/naacl06-shinyama.pdf</strong>
+$ <strong>pdf2txt.py samples/naacl06-shinyama.pdf &gt; output.html</strong>
 (extract text as an HTML file whose filename is output.html)
 
-$ <strong>python -m pdflib.pdf2txt -c euc-jp samples/jo.pdf</strong>
-(extract Japanese texts in vertical writing, CMap is required)
+$ <strong>pdf2txt.py -c euc-jp samples/jo.pdf &gt; output.html</strong>
+(extract a Japanese HTML file in vertical writing, CMap is required)
 
-$ <strong>python -m pdflib.pdf2txt -P mypassword secret.pdf</strong>
-(extract texts from an encrypted PDF file with a password)
+$ <strong>pdf2txt.py -P mypassword -t text secret.pdf &gt; output.txt</strong>
+(extract a text from an encrypted PDF file)
 </pre></blockquote>
 
 <p>
@@ -183,10 +183,6 @@ By default, it extracts texts from all the pages.
 <p>
 <dt> <code>-c <em>codec</em></code> 
 <dd> Specifies the output codec for non-ASCII texts.
-<p>
-<dt> <code>-w</code> 
-<dd> Split each word into a different chunk in the output.
-This makes the word spacing correctly handled.
 <p>
 <dt> <code>-t <em>type</em></code> 
 <dd> Specifies the output format. The following formats are currently supported.
@@ -217,13 +213,13 @@ but it's also possible to extract some meaningful contents
 <p>
 Examples:
 <blockquote><pre>
-$ <strong>python -m tools.dumppdf -a foo.pdf</strong>
+$ <strong>dumppdf.py -a foo.pdf</strong>
 (dump all the headers and contents, except stream objects)
 
-$ <strong>python -m tools.dumppdf -T foo.pdf</strong>
+$ <strong>dumppdf.py -T foo.pdf</strong>
 (dump the table of contents)
 
-$ <strong>python -m tools.dumppdf -r -i6 foo.pdf &gt; pic.jpeg</strong>
+$ <strong>dumppdf.py -r -i6 foo.pdf &gt; pic.jpeg</strong>
 (extract a JPEG image)
 </pre></blockquote>
 

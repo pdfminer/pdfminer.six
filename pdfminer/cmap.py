@@ -204,7 +204,6 @@ class CMapDB(object):
 
   @classmethod
   def get_cmap(klass, cmapname, strict=True):
-    import os.path
     cmapname = klass.CMAP_ALIAS.get(cmapname, cmapname)
     if cmapname in klass.cmapdb:
       cmap = klass.cmapdb[cmapname]

@@ -26,9 +26,6 @@ clean:
 test:
 	cd samples && make test
 
-cdbcmap: CMap
-	$(CONV_CMAP) CMap
-
 # Maintainance:
 commit: clean
 	$(SVN) commit
