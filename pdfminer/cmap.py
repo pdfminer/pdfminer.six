@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, re
+import sys, re, os, os.path
 stderr = sys.stderr
 from struct import pack, unpack
 from utils import choplist, nunpack
@@ -13,6 +13,17 @@ except ImportError:
 
 
 class CMapError(Exception): pass
+
+
+##  find_cmap_path
+##
+def find_cmap_path():
+  try:
+    return os.environ['CMAP_PATH']
+  except KeyError:
+    pass
+  basedir = os.path.dirname(__file__)
+  return os.path.join(basedir, 'CMap')
 
 
 STRIP_NAME = re.compile(r'[0-9]+')
@@ -397,3 +408,58 @@ class EncodingDB(object):
             pass
           cid += 1
     return cid2unicode
+
+
+##  CMap -> CMapCDB conversion
+##
+def dumpcdb(cmap, cdbfile, verbose=1):
+  m = cdb.cdbmake(cdbfile, cdbfile+'.tmp')
+  if verbose:
+    print >>stderr, 'Writing: %r...' % cdbfile
+  for (k,v) in cmap.getall_attrs():
+    m.add('/'+k, repr(v))
+  for (code,cid) in cmap.getall_code2cid():
+    m.add('c'+code, pack('>L',cid))
+  for (cid,code) in cmap.getall_cid2code():
+    m.add('i'+pack('>L',cid), code)
+  m.finish()
+  return
+
+def convert_cmap(cmapdir, outputdir, force=False):
+  CMapDB.initialize(cmapdir)
+  for fname in os.listdir(cmapdir):
+    if '.' in fname: continue
+    cmapname = os.path.basename(fname)
+    cdbname = os.path.join(outputdir, cmapname+'.cmap.cdb')
+    if not force and os.path.exists(cdbname):
+      print >>stderr, 'Skipping: %r' % cmapname
+      continue
+    print >>stderr, 'Reading: %r...' % cmapname
+    cmap = CMapDB.get_cmap(cmapname)
+    dumpcdb(cmap, cdbname)
+  return
+
+def main(argv):
+  import getopt
+  def usage():
+    print 'usage: %s [-D outputdir] [-f] cmap_dir' % argv[0]
+    return 100
+  try:
+    (opts, args) = getopt.getopt(argv[1:], 'C:D:f')
+  except getopt.GetoptError:
+    return usage()
+  if not args: usage()
+  cmapdir = args.pop(0)
+  outputdir = cmapdir
+  force = False
+  for (k, v) in opts:
+    if k == '-f': force = True
+    elif k == '-C': cmapdir = v
+    elif k == '-D': outputdir = v
+  if not os.path.isdir(cmapdir):
+    raise ValueError('not directory: %r' % cmapdir)
+  if not os.path.isdir(outputdir):
+    raise ValueError('not directory: %r' % outputdir)
+  return convert_cmap(cmapdir, outputdir, force=force)
+
+if __name__ == '__main__': sys.exit(main(sys.argv))
