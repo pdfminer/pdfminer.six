@@ -10,7 +10,7 @@ VERSION=`$(PYTHON) $(PACKAGE)/__init__.py`
 DISTNAME=$(PACKAGE)-dist-$(VERSION)
 DISTFILE=$(DISTNAME).tar.gz
 
-CONV_CMAP=$(PYTHON) -m tools.conv_cmap
+CONV_CMAP=$(PYTHON) pdfminer/cmap.py
 
 all:
 
@@ -27,8 +27,7 @@ test:
 	cd samples && make test
 
 cdbcmap: CMap
-	-mkdir CDBCMap
-	$(CONV_CMAP) CMap/*
+	$(CONV_CMAP) CMap
 
 # Maintainance:
 commit: clean

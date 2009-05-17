@@ -4,7 +4,7 @@ from pdfminer.pdfparser import PDFDocument, PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
 from pdfminer.pdfdevice import PDFDevice
 from pdfminer.converter import SGMLConverter, HTMLConverter, TextConverter, TagExtractor
-from pdfminer.cmap import CMapDB
+from pdfminer.cmap import CMapDB, find_cmap_path
 
 # main
 def main(argv):
@@ -20,8 +20,7 @@ def main(argv):
   # debug option
   debug = 0
   # path option
-  cmapdir = 'CMap'
-  cdbcmapdir = 'CDBCMap'
+  cmapdir = find_cmap_path()
   # input option
   password = ''
   pagenos = set()
@@ -37,7 +36,6 @@ def main(argv):
   for (k, v) in opts:
     if k == '-d': debug += 1
     elif k == '-C': cmapdir = v
-    elif k == '-D': cdbcmapdir = v
     elif k == '-P': password = v
     elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
     elif k == '-m': maxpages = int(v)
@@ -54,7 +52,7 @@ def main(argv):
   PDFPageInterpreter.debug = debug
   PDFDevice.debug = debug
   #
-  CMapDB.initialize(cmapdir, cdbcmapdir)
+  CMapDB.initialize(cmapdir)
   rsrc = PDFResourceManager()
   if outtype == 'sgml':
     device = SGMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)

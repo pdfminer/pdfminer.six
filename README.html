@@ -18,7 +18,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sat Apr  4 09:14:28 JST 2009
+Last Modified: Sat May 16 19:58:11 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -26,23 +26,22 @@ Last Modified: Sat Apr  4 09:14:28 JST 2009
 <hr noshade>
 <h2>What's It?</h2>
 <p>
-PDFMiner is a suite of programs that aims to help
-analyzing text data from PDF documents.
-It includes a PDF parser, a PDF renderer
-(though only rendering text is supported for now),
-and a couple of nice tools to extract texts.
+PDFMiner is a suite of programs that help
+extracting and analyzing text data of PDF documents.
 Unlike other PDF-related tools, it allows to obtain
 the exact location of texts in a page, as well as 
-other layout information such as font size or font name,
-which could be useful for analyzing the document.
+other extra information such as font information or ruled lines.
+It includes a PDF converter that can transform PDF files
+into other text formats (such as HTML). It has an extensible
+PDF parser that can be used for other purpoes instead of text analysis.
 <p>
 <strong>Features:</strong>
 <ul>
-<li> Written entirely in Python. (for version 2.5 or newer)
-<li> PDF-1.7 specification support.
+<li> Written entirely in Python. (version 2.4 or newer required)
+<li> PDF-1.7 specification support. (well, almost)
 <li> Non-ASCII languages and vertical writing scripts support.
 <li> Various font types (Type1, TrueType, Type3, and CID) support.
-<li> Basic encryption (RC4).
+<li> Basic encryption (RC4) support.
 <li> PDF to HTML conversion (with a sample converter web app).
 <li> Outline (TOC) extraction.
 <li> Tagged contents extraction.
@@ -78,33 +77,28 @@ http://pdf2html.tabesugi.net:8080/
 <a name="install"></a>
 <hr noshade>
 <h2>How to Install</h2>
-<p>
-<strong>Note:</strong>
-This software is not yet out-of-the-box.
-You have to download and unpack it manually, 
-and spend some time to make it work.
-<strong>Your will</strong> is needed!
-I do not support easy_install or setup.py or any automated installation until
-this is very matured to the point that it really should be widely distributed.
-(For now, it's not yet up to the standard, IMO.)
 
 <ol>
 <li> Install <a href="http://www.python.org/download/">Python</a> 2.4 or newer.
 <li> Download the <a href="#source">PDFMiner source</a>.
 <li> Extract it.
-<li> Go to the <code>pdfminer</code> directory.
+<li> Run <code>setup.py</code> to install:<br>
+<blockquote><pre>
+# <strong>python setup.py install</strong>
+</pre></blockquote>
 <li> Do the following test:<br>
 <blockquote><pre>
-$ <strong>python pdflib/pdf2txt.py samples/simple1.pdf</strong>
-&lt;html&gt;&lt;head&gt;&lt;meta http-equiv="Content-Type" content="text/html; charset=ascii"&gt;
+$ <strong>pdf2txt.py samples/simple1.pdf</strong>
+&lt;html&gt;&lt;head&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
 &lt;/head&gt;&lt;body&gt;
-&lt;div style="position:absolute; top:50px;"&gt;&lt;a name="1"&gt;Page 1&lt;/a&gt;&lt;/div&gt;&lt;span style="position:absolute; border: 1px solid gray; left:0px; top:50px; width:612px; height:792px;"&gt;&lt;/span&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:100px; top:224px; font-size:22px;"&gt; &lt;/span&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:106px; top:224px; font-size:22px;"&gt;Hello &lt;/span&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:168px; top:224px; font-size:22px;"&gt;World &lt;/span&gt;
+&lt;span style="position:absolute; border: gray 1px solid; left:0px; top:50px; width:612px; height:792px;"&gt;&lt;/span&gt;
+&lt;div style="position:absolute; top:50px;"&gt;&lt;a name="1"&gt;Page 1&lt;/a&gt;&lt;/div&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:158px; top:224px; font-size:22px;"&gt; World &lt;/span&gt;
 &lt;span style="position:absolute; writing-mode:lr-tb; left:100px; top:124px; font-size:22px;"&gt; &lt;/span&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:206px; top:124px; font-size:22px;"&gt;Hello &lt;/span&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:100px; top:224px; font-size:22px;"&gt; Hello &lt;/span&gt;
 &lt;span style="position:absolute; writing-mode:lr-tb; left:368px; top:124px; font-size:22px;"&gt;World &lt;/span&gt;
+&lt;span style="position:absolute; writing-mode:lr-tb; left:206px; top:124px; font-size:22px;"&gt;Hello &lt;/span&gt;
 &lt;div style="position:absolute; top:0px;"&gt;Page: &lt;a href="#1"&gt;1&lt;/a&gt;&lt;/div&gt;
 &lt;/body&gt;&lt;/html&gt;
 </pre></blockquote>

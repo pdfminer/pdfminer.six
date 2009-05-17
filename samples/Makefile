@@ -2,8 +2,7 @@
 
 PYTHON=python
 CMAPDIR=../CMap
-CDBCMAPDIR=../CDBCMap
-PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -C$(CMAPDIR) -D$(CDBCMAPDIR)
+PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -C$(CMAPDIR)
 
 HTMLS= \
 	simple1.html \
