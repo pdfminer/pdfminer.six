@@ -19,12 +19,12 @@ install:
 
 clean:
 	-rm -rf build
-	-cd $(PACKAGE) && make clean
-	-cd tools && make clean
-	-cd samples && make clean
+	-cd $(PACKAGE) && $(MAKE) clean
+	-cd tools && $(MAKE) clean
+	-cd samples && $(MAKE) clean
 
 test:
-	cd samples && make test
+	cd samples && $(MAKE) test
 
 # Maintainance:
 commit: clean

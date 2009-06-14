@@ -303,6 +303,10 @@ class TextConverter(PDFConverter):
     self.word_margin = word_margin
     return
   
+  def write(self, text):
+    self.outfp.write(text.encode(self.codec, 'ignore'))
+    return
+  
   def end_page(self, page):
     def render(item):
       if isinstance(item, LTText):

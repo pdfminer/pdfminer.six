@@ -18,16 +18,24 @@ class PSValueError(PSException): pass
 ##  Basic PostScript Types
 ##
 
-# PSLiteral
+##  PSObject
+##
+##  Base class for all PS or PDF-related data types.
+##
 class PSObject(object): pass
 
+
+##  PSLiteral
+##
+##  Postscript literals are used as identifiers, such as
+##  variable names, property names and dictionary keys.
+##  Literals are case sensitive and denoted by a preceding
+##  slash sign (e.g. "/Name")
+##
+##  Note: Never create an instance of PSLiteral by hand.
+##  Always use PSLiteralTable.intern().
+##
 class PSLiteral(PSObject):
-  
-  '''
-  PS literals (e.g. "/Name").
-  Caution: Never create these objects directly.
-  Use PSLiteralTable.intern() instead.
-  '''
   
   def __init__(self, name):
     self.name = name
@@ -36,14 +44,13 @@ class PSLiteral(PSObject):
   def __repr__(self):
     return '/%s' % self.name
 
-# PSKeyword
+
+##  PSKeyword
+##
+##  Note: Never create an instance of PSLiteral by hand.
+##  Always use PSKeywordTable.intern().
+##
 class PSKeyword(PSObject):
-  
-  '''
-  PS keywords (e.g. "showpage").
-  Caution: Never create these objects directly.
-  Use PSKeywordTable.intern() instead.
-  '''
   
   def __init__(self, name):
     self.name = name
@@ -52,23 +59,27 @@ class PSKeyword(PSObject):
   def __repr__(self):
     return self.name
 
-# PSSymbolTable
+
+##  PSSymbolTable
+##
+##  A dictionary-like object that is used for
+##  storing PSLiteral/PSKeyword objects so that
+##  an object that has the same name can never be defined
+##  twice and it is always assured that the same name is
+##  referred to as the same PSLiteral/PSKeyword object.
+##
 class PSSymbolTable(object):
   
-  '''
-  Symbol table that stores PSLiteral or PSKeyword.
-  '''
-  
-  def __init__(self, classe):
+  def __init__(self, klass):
     self.dic = {}
-    self.classe = classe
+    self.klass = klass
     return
   
   def intern(self, name):
     if name in self.dic:
       lit = self.dic[name]
     else:
-      lit = self.classe(name)
+      lit = self.klass(name)
       self.dic[name] = lit
     return lit
 
@@ -118,7 +129,7 @@ ESC_STRING = { 'b':8, 't':9, 'n':10, 'f':12, 'r':13, '(':40, ')':41, '\\':92 }
 class PSBaseParser(object):
 
   '''
-  Most basic PostScript parser that performs only basic tokenization.
+  Most basic PostScript parser that performs only tokenization.
   '''
   BUFSIZ = 4096
 
@@ -163,8 +174,10 @@ class PSBaseParser(object):
     self.buf = ''
     self.charpos = 0
     # reset the status for nexttoken()
-    self.parse1 = self.parse_main
-    self.tokens = []
+    self._parse1 = self._parse_main
+    self._curtoken = ''
+    self._curtokenpos = 0
+    self._tokens = []
     return
 
   def fillbuf(self):
@@ -177,192 +190,6 @@ class PSBaseParser(object):
     self.charpos = 0
     return
   
-  def parse_main(self, s, i):
-    m = NONSPC.search(s, i)
-    if not m:
-      return (self.parse_main, len(s))
-    j = m.start(0)
-    c = s[j]
-    self.tokenstart = self.bufpos+j
-    if c == '%':
-      self.token = '%'
-      return (self.parse_comment, j+1)
-    if c == '/':
-      self.token = ''
-      return (self.parse_literal, j+1)
-    if c in '-+' or c.isdigit():
-      self.token = c
-      return (self.parse_number, j+1)
-    if c == '.':
-      self.token = c
-      return (self.parse_float, j+1)
-    if c.isalpha():
-      self.token = c
-      return (self.parse_keyword, j+1)
-    if c == '(':
-      self.token = ''
-      self.paren = 1
-      return (self.parse_string, j+1)
-    if c == '<':
-      self.token = ''
-      return (self.parse_wopen, j+1)
-    if c == '>':
-      self.token = ''
-      return (self.parse_wclose, j+1)
-    self.add_token(KWD(c))
-    return (self.parse_main, j+1)
-              
-  def add_token(self, obj):
-    self.tokens.append((self.tokenstart, obj))
-    return
-  
-  def parse_comment(self, s, i):
-    m = EOL.search(s, i)
-    if not m:
-      self.token += s[i:]
-      return (self.parse_comment, len(s))
-    j = m.start(0)
-    self.token += s[i:j]
-    # We ignore comments.
-    #self.tokens.append(self.token)
-    return (self.parse_main, j)
-  
-  def parse_literal(self, s, i):
-    m = END_LITERAL.search(s, i)
-    if not m:
-      self.token += s[i:]
-      return (self.parse_literal, len(s))
-    j = m.start(0)
-    self.token += s[i:j]
-    c = s[j]
-    if c == '#':
-      self.hex = ''
-      return (self.parse_literal_hex, j+1)
-    self.add_token(LIT(self.token))
-    return (self.parse_main, j)
-  
-  def parse_literal_hex(self, s, i):
-    c = s[i]
-    if HEX.match(c) and len(self.hex) < 2:
-      self.hex += c
-      return (self.parse_literal_hex, i+1)
-    if self.hex:
-      self.token += chr(int(self.hex, 16))
-    return (self.parse_literal, i)
-
-  def parse_number(self, s, i):
-    m = END_NUMBER.search(s, i)
-    if not m:
-      self.token += s[i:]
-      return (self.parse_number, len(s))
-    j = m.start(0)
-    self.token += s[i:j]
-    c = s[j]
-    if c == '.':
-      self.token += c
-      return (self.parse_float, j+1)
-    try:
-      self.add_token(int(self.token))
-    except ValueError:
-      pass
-    return (self.parse_main, j)
-  def parse_float(self, s, i):
-    m = END_NUMBER.search(s, i)
-    if not m:
-      self.token += s[i:]
-      return (self.parse_float, len(s))
-    j = m.start(0)
-    self.token += s[i:j]
-    self.add_token(float(self.token))
-    return (self.parse_main, j)
-  
-  def parse_keyword(self, s, i):
-    m = END_KEYWORD.search(s, i)
-    if not m:
-      self.token += s[i:]
-      return (self.parse_keyword, len(s))
-    j = m.start(0)
-    self.token += s[i:j]
-    if self.token == 'true':
-      token = True
-    elif self.token == 'false':
-      token = False
-    else:
-      token = KWD(self.token)
-    self.add_token(token)
-    return (self.parse_main, j)
-
-  def parse_string(self, s, i):
-    m = END_STRING.search(s, i)
-    if not m:
-      self.token += s[i:]
-      return (self.parse_string, len(s))
-    j = m.start(0)
-    self.token += s[i:j]
-    c = s[j]
-    if c == '\\':
-      self.oct = ''
-      return (self.parse_string_1, j+1)
-    if c == '(':
-      self.paren += 1
-      self.token += c
-      return (self.parse_string, j+1)
-    if c == ')':
-      self.paren -= 1
-      if self.paren: # WTF, they said balanced parens need no special treatment.
-        self.token += c
-        return (self.parse_string, j+1)
-    self.add_token(self.token)
-    return (self.parse_main, j+1)
-  def parse_string_1(self, s, i):
-    c = s[i]
-    if OCT_STRING.match(c) and len(self.oct) < 3:
-      self.oct += c
-      return (self.parse_string_1, i+1)
-    if self.oct:
-      self.token += chr(int(self.oct, 8))
-      return (self.parse_string, i)
-    if c in ESC_STRING:
-      self.token += chr(ESC_STRING[c])
-    return (self.parse_string, i+1)
-
-  def parse_wopen(self, s, i):
-    c = s[i]
-    if c.isspace() or HEX.match(c):
-      return (self.parse_hexstring, i)
-    if c == '<':
-      self.add_token(KEYWORD_DICT_BEGIN)
-      i += 1
-    return (self.parse_main, i)
-
-  def parse_wclose(self, s, i):
-    c = s[i]
-    if c == '>':
-      self.add_token(KEYWORD_DICT_END)
-      i += 1
-    return (self.parse_main, i)
-
-  def parse_hexstring(self, s, i):
-    m = END_HEX_STRING.search(s, i)
-    if not m:
-      self.token += s[i:]
-      return (self.parse_hexstring, len(s))
-    j = m.start(0)
-    self.token += s[i:j]
-    token = HEX_PAIR.sub(lambda m: chr(int(m.group(0), 16)),
-                         SPC.sub('', self.token))
-    self.add_token(token)
-    return (self.parse_main, j)
-
-  def nexttoken(self):
-    while not self.tokens:
-      self.fillbuf()
-      (self.parse1, self.charpos) = self.parse1(self.buf, self.charpos)
-    token = self.tokens.pop(0)
-    if 2 <= self.debug:
-      print >>stderr, 'nexttoken: %r' % (token,)
-    return token
-
   def nextline(self):
     '''
     Fetches a next line that ends either with \\r or \\n.
@@ -416,6 +243,195 @@ class PSBaseParser(object):
         s = s[:n]
         buf = ''
     return
+
+  def _parse_main(self, s, i):
+    m = NONSPC.search(s, i)
+    if not m:
+      return (self._parse_main, len(s))
+    j = m.start(0)
+    c = s[j]
+    self._curtokenpos = self.bufpos+j
+    if c == '%':
+      self._curtoken = '%'
+      return (self._parse_comment, j+1)
+    elif c == '/':
+      self._curtoken = ''
+      return (self._parse_literal, j+1)
+    elif c in '-+' or c.isdigit():
+      self._curtoken = c
+      return (self._parse_number, j+1)
+    elif c == '.':
+      self._curtoken = c
+      return (self._parse_float, j+1)
+    elif c.isalpha():
+      self._curtoken = c
+      return (self._parse_keyword, j+1)
+    elif c == '(':
+      self._curtoken = ''
+      self.paren = 1
+      return (self._parse_string, j+1)
+    elif c == '<':
+      self._curtoken = ''
+      return (self._parse_wopen, j+1)
+    elif c == '>':
+      self._curtoken = ''
+      return (self._parse_wclose, j+1)
+    else:
+      self._add_token(KWD(c))
+      return (self._parse_main, j+1)
+              
+  def _add_token(self, obj):
+    self._tokens.append((self._curtokenpos, obj))
+    return
+  
+  def _parse_comment(self, s, i):
+    m = EOL.search(s, i)
+    if not m:
+      self._curtoken += s[i:]
+      return (self._parse_comment, len(s))
+    j = m.start(0)
+    self._curtoken += s[i:j]
+    # We ignore comments.
+    #self._tokens.append(self._curtoken)
+    return (self._parse_main, j)
+  
+  def _parse_literal(self, s, i):
+    m = END_LITERAL.search(s, i)
+    if not m:
+      self._curtoken += s[i:]
+      return (self._parse_literal, len(s))
+    j = m.start(0)
+    self._curtoken += s[i:j]
+    c = s[j]
+    if c == '#':
+      self.hex = ''
+      return (self._parse_literal_hex, j+1)
+    self._add_token(LIT(self._curtoken))
+    return (self._parse_main, j)
+  
+  def _parse_literal_hex(self, s, i):
+    c = s[i]
+    if HEX.match(c) and len(self.hex) < 2:
+      self.hex += c
+      return (self._parse_literal_hex, i+1)
+    if self.hex:
+      self._curtoken += chr(int(self.hex, 16))
+    return (self._parse_literal, i)
+
+  def _parse_number(self, s, i):
+    m = END_NUMBER.search(s, i)
+    if not m:
+      self._curtoken += s[i:]
+      return (self._parse_number, len(s))
+    j = m.start(0)
+    self._curtoken += s[i:j]
+    c = s[j]
+    if c == '.':
+      self._curtoken += c
+      return (self._parse_float, j+1)
+    try:
+      self._add_token(int(self._curtoken))
+    except ValueError:
+      pass
+    return (self._parse_main, j)
+  
+  def _parse_float(self, s, i):
+    m = END_NUMBER.search(s, i)
+    if not m:
+      self._curtoken += s[i:]
+      return (self._parse_float, len(s))
+    j = m.start(0)
+    self._curtoken += s[i:j]
+    self._add_token(float(self._curtoken))
+    return (self._parse_main, j)
+  
+  def _parse_keyword(self, s, i):
+    m = END_KEYWORD.search(s, i)
+    if not m:
+      self._curtoken += s[i:]
+      return (self._parse_keyword, len(s))
+    j = m.start(0)
+    self._curtoken += s[i:j]
+    if self._curtoken == 'true':
+      token = True
+    elif self._curtoken == 'false':
+      token = False
+    else:
+      token = KWD(self._curtoken)
+    self._add_token(token)
+    return (self._parse_main, j)
+
+  def _parse_string(self, s, i):
+    m = END_STRING.search(s, i)
+    if not m:
+      self._curtoken += s[i:]
+      return (self._parse_string, len(s))
+    j = m.start(0)
+    self._curtoken += s[i:j]
+    c = s[j]
+    if c == '\\':
+      self.oct = ''
+      return (self._parse_string_1, j+1)
+    if c == '(':
+      self.paren += 1
+      self._curtoken += c
+      return (self._parse_string, j+1)
+    if c == ')':
+      self.paren -= 1
+      if self.paren: # WTF, they said balanced parens need no special treatment.
+        self._curtoken += c
+        return (self._parse_string, j+1)
+    self._add_token(self._curtoken)
+    return (self._parse_main, j+1)
+  
+  def _parse_string_1(self, s, i):
+    c = s[i]
+    if OCT_STRING.match(c) and len(self.oct) < 3:
+      self.oct += c
+      return (self._parse_string_1, i+1)
+    if self.oct:
+      self._curtoken += chr(int(self.oct, 8))
+      return (self._parse_string, i)
+    if c in ESC_STRING:
+      self._curtoken += chr(ESC_STRING[c])
+    return (self._parse_string, i+1)
+
+  def _parse_wopen(self, s, i):
+    c = s[i]
+    if c.isspace() or HEX.match(c):
+      return (self._parse_hexstring, i)
+    if c == '<':
+      self._add_token(KEYWORD_DICT_BEGIN)
+      i += 1
+    return (self._parse_main, i)
+
+  def _parse_wclose(self, s, i):
+    c = s[i]
+    if c == '>':
+      self._add_token(KEYWORD_DICT_END)
+      i += 1
+    return (self._parse_main, i)
+
+  def _parse_hexstring(self, s, i):
+    m = END_HEX_STRING.search(s, i)
+    if not m:
+      self._curtoken += s[i:]
+      return (self._parse_hexstring, len(s))
+    j = m.start(0)
+    self._curtoken += s[i:j]
+    token = HEX_PAIR.sub(lambda m: chr(int(m.group(0), 16)),
+                         SPC.sub('', self._curtoken))
+    self._add_token(token)
+    return (self._parse_main, j)
+
+  def nexttoken(self):
+    while not self._tokens:
+      self.fillbuf()
+      (self._parse1, self.charpos) = self._parse1(self.buf, self.charpos)
+    token = self._tokens.pop(0)
+    if 2 <= self.debug:
+      print >>stderr, 'nexttoken: %r' % (token,)
+    return token
 
 
 ##  PSStackParser

@@ -18,7 +18,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun May 17 23:10:42 JST 2009
+Last Modified: Sat May 23 10:06:04 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -146,7 +146,7 @@ PDFMiner comes with two handy tools:
 <p>
 <code>pdf2txt.py</code> extracts text contents from a PDF file.
 It extracts all the texts that are to be rendered programatically,
-i.e. it cannot extract texts drawn as images that require optical character recognition.
+It cannot recognize texts drawn as images that would require optical character recognition.
 It also extracts the corresponding locations, font names, font sizes, writing
 direction (horizontal or vertical) for each text portion.
 You need to provide a password for protected PDF documents when its access is restricted.
@@ -243,9 +243,9 @@ Note that page numbers start from one.
 Because the contents of stream objects can be very large,
 they are omitted when none of the options above is specified.
 <p>
-With <code>-r</code> option, all the stream contents are dumped without decoding. 
-With <code>-b</code> option, the contents are dumped as a binary blob.
-With <code>-t</code> option, the contents are dumped in a text format,
+With <code>-r</code> option, the "raw" stream contents are dumped without decompression. 
+With <code>-b</code> option, the decompressed contents are dumped as a binary blob.
+With <code>-t</code> option, the decompressed contents are dumped in a text format,
 similar to <code>repr()</code> manner. When 
 <code>-r</code> or <code>-b</code> option is given, 
 no stream header is displayed for the ease of saving it to a file.
