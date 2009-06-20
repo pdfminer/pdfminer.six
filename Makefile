@@ -5,6 +5,7 @@ PACKAGE=pdfminer
 SVN=svn
 GNUTAR=tar
 PYTHON=python
+PREFIX=/usr/local
 TMPDIR=/tmp
 VERSION=`$(PYTHON) $(PACKAGE)/__init__.py`
 DISTNAME=$(PACKAGE)-dist-$(VERSION)
@@ -15,7 +16,7 @@ CONV_CMAP=$(PYTHON) pdfminer/cmap.py
 all:
 
 install:
-	$(PYTHON) setup.py install
+	$(PYTHON) setup.py install --prefix=$(PREFIX)
 
 clean:
 	-rm -rf build

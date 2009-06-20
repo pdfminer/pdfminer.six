@@ -26,9 +26,9 @@ def main(argv):
   pagenos = set()
   maxpages = 0
   # output option
-  outtype = 'html'
+  outfile = None
+  outtype = None
   codec = 'utf-8'
-  outfp = sys.stdout
   cluster_margin = None
   pageno = 1
   scale = 1
@@ -41,7 +41,7 @@ def main(argv):
     elif k == '-m': maxpages = int(v)
     elif k == '-t': outtype = v
     elif k == '-c': codec = v
-    elif k == '-o': outfp = file(v, 'wb')
+    elif k == '-o': outfile = v
     elif k == '-s': scale = float(v)
     elif k == '-T': cluster_margin = float(v)
   #
@@ -54,6 +54,19 @@ def main(argv):
   #
   CMapDB.initialize(cmapdir)
   rsrc = PDFResourceManager()
+  if not outtype:
+    outtype = 'text'
+    if outfile:
+      if outfile.endswith('.htm') or outfile.endswith('.html'):
+        outtype = 'html'
+      elif outfile.endswith('.sgml'):
+        outtype = 'sgml'
+      elif outfile.endswith('.tag'):
+        outtype = 'tag'
+  if outfile:
+    outfp = file(outfile, 'w')
+  else:
+    outfp = sys.stdout
   if outtype == 'sgml':
     device = SGMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
   elif outtype == 'html':
