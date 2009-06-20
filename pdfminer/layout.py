@@ -195,7 +195,7 @@ class LayoutItem(object):
     return
 
   def __repr__(self):
-    return ('<pageitem bbox=%s>' % (self.get_bbox()))
+    return ('<item bbox=%s>' % (self.get_bbox()))
   
   def hoverlap(self, obj):
     assert isinstance(obj, LayoutItem)
@@ -223,7 +223,7 @@ class LayoutItem(object):
   def get_direction(self):
     return None
 
-  
+
 ##  LayoutContainer
 ##
 class LayoutContainer(LayoutItem):
@@ -299,6 +299,18 @@ class LTRect(LayoutItem):
     self.linewidth = linewidth
     return
   
+
+##  LTAnon
+##
+class LTAnon(object):
+
+  def __init__(self, text):
+    self.text = text
+    return
+
+  def get_weight(self):
+    return 0
+
 
 ##  LTText
 ##
@@ -409,28 +421,28 @@ class LTTextBox(LayoutContainer):
   def get_lines(self, ratio):
     if self.get_direction() == 'H':
       for line in self.lines:
-        s = ''
         x1 = INF
         for obj in line:
           if not isinstance(obj, LTText): continue
-          margin = obj.get_margin(ratio)
-          if x1 < obj.x0-margin:
-            s += ' '
-          s += obj.text
+          if ratio:
+            margin = obj.get_margin(ratio)
+            if x1 < obj.x0-margin:
+              yield LTAnon(' ')
+          yield obj
           x1 = obj.x1
-        yield s
+        yield LTAnon('\n')
     else:
       for line in self.lines:
-        s = ''
         y0 = -INF
         for obj in line:
           if not isinstance(obj, LTText): continue
-          margin = obj.get_margin(ratio)
-          if obj.y1+margin < y0:
-            s += ' '
-          s += obj.text
+          if ratio:
+            margin = obj.get_margin(ratio)
+            if obj.y1+margin < y0:
+              yield LTAnon(' ')
+          yield obj
           y0 = obj.y0
-        yield s
+        yield LTAnon('\n')
     return
 
 

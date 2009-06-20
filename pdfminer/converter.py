@@ -2,7 +2,7 @@
 import sys
 from pdfminer.pdfdevice import PDFDevice
 from pdfminer.pdffont import PDFUnicodeNotDefined
-from pdfminer.layout import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextBox
+from pdfminer.layout import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextBox, LTAnon
 from pdfminer.utils import mult_matrix, translate_matrix, apply_matrix_pt, enc
 
 
@@ -115,10 +115,11 @@ class PDFPageAggregator(PDFDevice):
 ##
 class PDFConverter(PDFPageAggregator):
   
-  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, codec='utf-8'):
+  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, word_margin=None, codec='utf-8'):
     PDFPageAggregator.__init__(self, rsrc, pageno=pageno, cluster_margin=cluster_margin)
     self.outfp = outfp
     self.codec = codec
+    self.word_margin = word_margin
     return
 
   def write(self, text):
@@ -204,6 +205,11 @@ class SGMLConverter(PDFConverter):
                           item.get_bbox(), item.fontsize))
         self.write(item.text)
         self.outfp.write('</text>\n')
+      elif isinstance(item, LTAnon):
+        if item.text == ' ':
+          self.outfp.write('<space>\n')
+        elif item.text == '\n':
+          self.outfp.write('<newline>\n')
       elif isinstance(item, LTLine):
         self.outfp.write('<line linewidth="%d" direction="%s" bbox="%s" />' % (item.linewidth, item.direction, item.get_bbox()))
       elif isinstance(item, LTRect):
@@ -215,7 +221,7 @@ class SGMLConverter(PDFConverter):
         self.outfp.write('</figure>\n')
       elif isinstance(item, LTTextBox):
         self.outfp.write('<textbox id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
-        for child in item:
+        for child in item.get_lines(self.word_margin):
           render(child)
         self.outfp.write('</textbox>\n')
       return
@@ -228,9 +234,9 @@ class SGMLConverter(PDFConverter):
 ##
 class HTMLConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, codec='utf-8',
+  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, word_margin=None, codec='utf-8',
                scale=1, showpageno=True, pagepad=50):
-    PDFConverter.__init__(self, rsrc, outfp, pageno=pageno, cluster_margin=cluster_margin, codec=codec)
+    PDFConverter.__init__(self, rsrc, outfp, pageno=pageno, cluster_margin=cluster_margin, word_margin=word_margin, codec=codec)
     self.showpageno = showpageno
     self.pagepad = pagepad
     self.scale = scale
@@ -270,11 +276,13 @@ class HTMLConverter(PDFConverter):
         self.outfp.write('</span>\n')
         if self.debug:
           self.write_rect('red', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
+      elif isinstance(item, LTAnon):
+        self.write(item.text)
       elif isinstance(item, LTLine) or isinstance(item, LTRect):
         self.write_rect('black', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
       elif isinstance(item, LTTextBox):
         self.write_rect('blue', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
-        for child in item:
+        for child in item.get_lines(self.word_margin):
           render(child)
       return
     page = PDFConverter.end_page(self, page)
@@ -295,12 +303,9 @@ class HTMLConverter(PDFConverter):
 class TextConverter(PDFConverter):
 
   def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, codec='utf-8',
-               showpageno=False, word_margin=0.2):
-    if cluster_margin == None:
-      cluster_margin = 0.5
-    PDFConverter.__init__(self, rsrc, outfp, pageno=pageno, cluster_margin=cluster_margin, codec=codec)
+               showpageno=False, word_margin=None):
+    PDFConverter.__init__(self, rsrc, outfp, pageno=pageno, cluster_margin=cluster_margin, word_margin=word_margin, codec=codec)
     self.showpageno = showpageno
-    self.word_margin = word_margin
     return
   
   def write(self, text):
@@ -312,8 +317,8 @@ class TextConverter(PDFConverter):
       if isinstance(item, LTText):
         self.write(item.text+'\n')
       elif isinstance(item, LTTextBox):
-        for line in item.get_lines(self.word_margin):
-          self.write(line+'\n')
+        for obj in item.get_lines(self.word_margin):
+          self.write(obj.text)
         self.write('\n')
       elif isinstance(item, LayoutContainer):
         for child in item:

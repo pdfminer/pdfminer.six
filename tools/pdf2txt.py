@@ -10,10 +10,10 @@ from pdfminer.cmap import CMapDB, find_cmap_path
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-w] [-t text|html|sgml|tag] [-o output] file ...' % argv[0]
+    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-T cluster_threshold] [-W word_margin] [-t text|html|sgml|tag] [-o output] file ...' % argv[0]
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:T:t:o:C:D:m:w')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:T:W:t:o:C:D:m:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -29,7 +29,8 @@ def main(argv):
   outfile = None
   outtype = None
   codec = 'utf-8'
-  cluster_margin = None
+  cluster_margin = 0.5
+  word_margin = 0.2
   pageno = 1
   scale = 1
   showpageno = True
@@ -44,6 +45,7 @@ def main(argv):
     elif k == '-o': outfile = v
     elif k == '-s': scale = float(v)
     elif k == '-T': cluster_margin = float(v)
+    elif k == '-W': word_margin = float(v)
   #
   CMapDB.debug = debug
   PDFResourceManager.debug = debug
@@ -68,11 +70,11 @@ def main(argv):
   else:
     outfp = sys.stdout
   if outtype == 'sgml':
-    device = SGMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
+    device = SGMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin, word_margin=word_margin)
   elif outtype == 'html':
-    device = HTMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin, scale=scale)
+    device = HTMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin, word_margin=word_margin, scale=scale)
   elif outtype == 'text':
-    device = TextConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin)
+    device = TextConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin, word_margin=word_margin)
   elif outtype == 'tag':
     device = TagExtractor(rsrc, outfp, codec=codec)
   else:
