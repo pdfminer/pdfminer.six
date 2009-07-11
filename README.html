@@ -18,7 +18,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Jul 12 00:27:23 JST 2009
+Last Modified: Sun Jul 12 00:36:44 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -33,7 +33,7 @@ the exact location of texts in a page, as well as
 other extra information such as font information or ruled lines.
 It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
-PDF parser that can be used for other purpoes instead of text analysis.
+PDF parser that can be used for other purposes instead of text analysis.
 <p>
 <strong>Features:</strong>
 <ul>
@@ -121,7 +121,7 @@ For example:
 $ <strong>cd /usr/lib/python2.5/site-packages</strong>
 $ <strong>tar jxf CMap.tar.bz2</strong>
 </pre></blockquote>
-<li> Do the follwoing. (this is optional, but highly recommended)<br>
+<li> Do the following. (this is optional, but highly recommended)<br>
 <blockquote><pre>
 $ <strong>python -m pdfminer.cmap</strong>
 </pre></blockquote>
@@ -140,7 +140,7 @@ PDFMiner comes with two handy tools:
 <h3>pdf2txt.py</h3>
 <p>
 <code>pdf2txt.py</code> extracts text contents from a PDF file.
-It extracts all the texts that are to be rendered programatically,
+It extracts all the texts that are to be rendered programmatically,
 It cannot recognize texts drawn as images that would require optical character recognition.
 It also extracts the corresponding locations, font names, font sizes, writing
 direction (horizontal or vertical) for each text portion.
@@ -202,7 +202,7 @@ In the figure below, two text chunks whose distance is closer than
 the <em>char_margin</em> (shown as <em><font color="red">M</font></em>) is considered
 continuous and get grouped into one. Also, two lines whose distance is closer than
 the <em>line_margin</em> (<em><font color="blue">L</font></em>) is grouped
-as a text box, which is a recutangular area that contains a "cluster" of texts.
+as a text box, which is a rectangular area that contains a "cluster" of texts.
 Furthermore, it may be required to insert blank characters (spaces) as necessary
 if the distance between two words is greater than the <em>word_margin</em> 
 (<em><font color="green">W</font></em>), as a blank between words might not be
