@@ -10,9 +10,10 @@ from pdfminer.utils import mult_matrix, translate_matrix, apply_matrix_pt, enc
 ##
 class PDFPageAggregator(PDFDevice):
 
-  def __init__(self, rsrc, pageno=1, cluster_margin=None):
+  def __init__(self, rsrc, pageno=1, char_margin=None, line_margin=None):
     PDFDevice.__init__(self, rsrc)
-    self.cluster_margin = cluster_margin
+    self.char_margin = char_margin
+    self.line_margin = line_margin
     self.undefined_char = '?'
     self.pageno = pageno
     self.stack = []
@@ -27,8 +28,8 @@ class PDFPageAggregator(PDFDevice):
     assert isinstance(self.cur_item, LTPage)
     self.cur_item.fixate()
     self.pageno += 1
-    if self.cluster_margin:
-      self.cur_item.group_text(self.cluster_margin)
+    if self.char_margin != None and self.line_margin != None:
+      self.cur_item.group_text(self.char_margin, self.line_margin)
     return self.cur_item
 
   def begin_figure(self, name, bbox, matrix):
@@ -115,8 +116,10 @@ class PDFPageAggregator(PDFDevice):
 ##
 class PDFConverter(PDFPageAggregator):
   
-  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, word_margin=None, codec='utf-8'):
-    PDFPageAggregator.__init__(self, rsrc, pageno=pageno, cluster_margin=cluster_margin)
+  def __init__(self, rsrc, outfp, codec='utf-8', pageno=1,
+               char_margin=None, line_margin=None, word_margin=None):
+    PDFPageAggregator.__init__(self, rsrc, pageno=pageno,
+                               char_margin=char_margin, line_margin=line_margin)
     self.outfp = outfp
     self.codec = codec
     self.word_margin = word_margin
@@ -234,9 +237,11 @@ class SGMLConverter(PDFConverter):
 ##
 class HTMLConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, word_margin=None, codec='utf-8',
+  def __init__(self, rsrc, outfp, codec='utf-8', pageno=1,
+               char_margin=None, line_margin=None, word_margin=None, 
                scale=1, showpageno=True, pagepad=50):
-    PDFConverter.__init__(self, rsrc, outfp, pageno=pageno, cluster_margin=cluster_margin, word_margin=word_margin, codec=codec)
+    PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno,
+                          char_margin=char_margin, line_margin=line_margin, word_margin=word_margin)
     self.showpageno = showpageno
     self.pagepad = pagepad
     self.scale = scale
@@ -277,7 +282,7 @@ class HTMLConverter(PDFConverter):
         if self.debug:
           self.write_rect('red', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
       elif isinstance(item, LTAnon):
-        self.write(item.text)
+        pass
       elif isinstance(item, LTLine) or isinstance(item, LTRect):
         self.write_rect('black', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
       elif isinstance(item, LTTextBox):
@@ -302,9 +307,11 @@ class HTMLConverter(PDFConverter):
 ##
 class TextConverter(PDFConverter):
 
-  def __init__(self, rsrc, outfp, pageno=1, cluster_margin=None, codec='utf-8',
-               showpageno=False, word_margin=None):
-    PDFConverter.__init__(self, rsrc, outfp, pageno=pageno, cluster_margin=cluster_margin, word_margin=word_margin, codec=codec)
+  def __init__(self, rsrc, outfp, codec='utf-8', pageno=1,
+               char_margin=None, line_margin=None, word_margin=None, 
+               showpageno=False):
+    PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno,
+                          char_margin=char_margin, line_margin=line_margin, word_margin=word_margin)
     self.showpageno = showpageno
     return
   

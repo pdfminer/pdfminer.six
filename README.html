@@ -18,7 +18,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sat May 23 10:06:04 JST 2009
+Last Modified: Sat Jun 20 19:51:02 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -89,18 +89,13 @@ http://pdf2html.tabesugi.net:8080/
 <li> Do the following test:<br>
 <blockquote><pre>
 $ <strong>pdf2txt.py samples/simple1.pdf</strong>
-&lt;html&gt;&lt;head&gt;
-&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
-&lt;/head&gt;&lt;body&gt;
-&lt;span style="position:absolute; border: gray 1px solid; left:0px; top:50px; width:612px; height:792px;"&gt;&lt;/span&gt;
-&lt;div style="position:absolute; top:50px;"&gt;&lt;a name="1"&gt;Page 1&lt;/a&gt;&lt;/div&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:158px; top:224px; font-size:22px;"&gt; World &lt;/span&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:100px; top:124px; font-size:22px;"&gt; &lt;/span&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:100px; top:224px; font-size:22px;"&gt; Hello &lt;/span&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:368px; top:124px; font-size:22px;"&gt;World &lt;/span&gt;
-&lt;span style="position:absolute; writing-mode:lr-tb; left:206px; top:124px; font-size:22px;"&gt;Hello &lt;/span&gt;
-&lt;div style="position:absolute; top:0px;"&gt;Page: &lt;a href="#1"&gt;1&lt;/a&gt;&lt;/div&gt;
-&lt;/body&gt;&lt;/html&gt;
+
+
+Hello
+
+World
+
+ Hello  World
 </pre></blockquote>
 <li> Done!
 </ol>
@@ -160,13 +155,13 @@ For non-ASCII languages, you can specify the output encoding
 <p>
 Examples:
 <blockquote><pre>
-$ <strong>pdf2txt.py samples/naacl06-shinyama.pdf &gt; output.html</strong>
+$ <strong>pdf2txt.py samples/naacl06-shinyama.pdf -o output.html</strong>
 (extract text as an HTML file whose filename is output.html)
 
-$ <strong>pdf2txt.py -c euc-jp samples/jo.pdf &gt; output.html</strong>
+$ <strong>pdf2txt.py -c euc-jp samples/jo.pdf -o output.html</strong>
 (extract a Japanese HTML file in vertical writing, CMap is required)
 
-$ <strong>pdf2txt.py -P mypassword -t text secret.pdf &gt; output.txt</strong>
+$ <strong>pdf2txt.py -P mypassword secret.pdf -o output.txt</strong>
 (extract a text from an encrypted PDF file)
 </pre></blockquote>
 
@@ -175,7 +170,7 @@ Options:
 <dl>
 <dt> <code>-o <em>filename</em></code> 
 <dd> Specifies the output file name.
-By default, it prints the extracted contents to stdout.
+By default, it prints the extracted contents to stdout in text format.
 <p>
 <dt> <code>-p <em>pageno[,pageno,...]</em></code> 
 <dd> Specifies the comma-separated list of the page numbers to be extracted. 
@@ -196,8 +191,23 @@ HTML-like tags. pdf2txt tries to extract its content streams rather than inferri
 Tags used here are defined in the PDF specification (See &sect;10.7 "<em>Tagged PDF</em>").
 </ul>
 <p>
+<dt> <code>-T <em>cluster_margin</em></code> 
+<dd> 
+<p>
+<dt> <code>-W <em>word_margin</em></code> 
+<dd> 
+<p>
+<dt> <code>-s <em>scale</em></code> 
+<dd> 
+<p>
+<dt> <code>-m <em>maxpages</em></code> 
+<dd> 
+<p>
 <dt> <code>-P <em>password</em></code> 
 <dd> Provides the user password to open the PDF file.
+<p>
+<dt> <code>-C <em>CMap directory</em></code> 
+<dd> 
 <p>
 <dt> <code>-d</code> 
 <dd> Increases the debug level.
@@ -231,7 +241,10 @@ Options:
 <dd> Instructs to dump all the objects.
 By default, it only prints the document trailer (like a header).
 <p>
-<dt> <code>-p <em>pageno</em></code> 
+<dt> <code>-i <em>objno,objno, ...</em></code> 
+<dd> 
+<p>
+<dt> <code>-p <em>pageno,pageno, ...</em></code> 
 <dd> Specifies the page number to be extracted.
 Multiple <code>-p</code> options are allowed.
 Note that page numbers start from one.
@@ -252,6 +265,9 @@ no stream header is displayed for the ease of saving it to a file.
 <p>
 <dt> <code>-P <em>password</em></code> 
 <dd> Provides the user password to open the PDF file.
+<p>
+<dt> <code>-T</code> 
+<dd> 
 <p>
 <dt> <code>-d</code> 
 <dd> Increases the debug level.

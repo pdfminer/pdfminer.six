@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 from distutils.core import setup
+from pdfminer import __version__
 
 setup(name='pdfminer',
-      version='20090330',
+      version=__version__,
       description='PDF parser and analyzer',
       license='MIT/X',
       author='Yusuke Shinyama',

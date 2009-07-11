@@ -10,10 +10,12 @@ from pdfminer.cmap import CMapDB, find_cmap_path
 def main(argv):
   import getopt
   def usage():
-    print 'usage: %s [-d] [-p pagenos] [-P password] [-c codec] [-T cluster_threshold] [-W word_margin] [-t text|html|sgml|tag] [-o output] file ...' % argv[0]
+    print ('usage: %s [-d] [-p pagenos] [-P password] [-c codec] '
+           '[-M char_margin] [-L line_margin] [-W word_margin] '
+           '[-t text|html|sgml|tag] [-o output] file ...' % argv[0])
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:T:W:t:o:C:D:m:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:M:L:W:t:o:C:D:m:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -29,7 +31,8 @@ def main(argv):
   outfile = None
   outtype = None
   codec = 'utf-8'
-  cluster_margin = 0.5
+  char_margin = 1.0
+  line_margin = 0.3
   word_margin = 0.2
   pageno = 1
   scale = 1
@@ -44,7 +47,8 @@ def main(argv):
     elif k == '-c': codec = v
     elif k == '-o': outfile = v
     elif k == '-s': scale = float(v)
-    elif k == '-T': cluster_margin = float(v)
+    elif k == '-M': char_margin = float(v)
+    elif k == '-L': line_margin = float(v)
     elif k == '-W': word_margin = float(v)
   #
   CMapDB.debug = debug
@@ -69,12 +73,15 @@ def main(argv):
     outfp = file(outfile, 'w')
   else:
     outfp = sys.stdout
-  if outtype == 'sgml':
-    device = SGMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin, word_margin=word_margin)
+  if outtype == 'text':
+    device = TextConverter(rsrc, outfp, codec=codec, 
+                           char_margin=char_margin, line_margin=line_margin, word_margin=word_margin)
+  elif outtype == 'sgml':
+    device = SGMLConverter(rsrc, outfp, codec=codec,
+                           char_margin=char_margin, line_margin=line_margin, word_margin=word_margin)
   elif outtype == 'html':
-    device = HTMLConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin, word_margin=word_margin, scale=scale)
-  elif outtype == 'text':
-    device = TextConverter(rsrc, outfp, codec=codec, cluster_margin=cluster_margin, word_margin=word_margin)
+    device = HTMLConverter(rsrc, outfp, codec=codec, scale=scale,
+                           char_margin=char_margin, line_margin=line_margin, word_margin=word_margin)
   elif outtype == 'tag':
     device = TagExtractor(rsrc, outfp, codec=codec)
   else:
