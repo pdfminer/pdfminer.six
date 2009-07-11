@@ -18,7 +18,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sat Jun 20 19:51:02 JST 2009
+Last Modified: Sun Jul 12 00:27:23 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -51,8 +51,8 @@ PDF parser that can be used for other purpoes instead of text analysis.
 <a name="source"></a>
 <p>
 <strong>Download:</strong><br>
-<a href="http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20090517.tar.gz">
-http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20090517.tar.gz
+<a href="http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20090711.tar.gz">
+http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20090711.tar.gz
 </a>
 (1.8Mbytes)
 
@@ -191,23 +191,63 @@ HTML-like tags. pdf2txt tries to extract its content streams rather than inferri
 Tags used here are defined in the PDF specification (See &sect;10.7 "<em>Tagged PDF</em>").
 </ul>
 <p>
-<dt> <code>-T <em>cluster_margin</em></code> 
-<dd> 
-<p>
+<dt> <code>-M <em>char_margin</em></code> 
+<dt> <code>-L <em>line_margin</em></code> 
 <dt> <code>-W <em>word_margin</em></code> 
-<dd> 
+<dd> These are the parameters used for layout analysis.
+In an actual PDF file, texts might be split into several chunks
+in the middle of its running, depending on the authoring software.
+Therefore, text extraction needs to splice text chunks.
+In the figure below, two text chunks whose distance is closer than
+the <em>char_margin</em> (shown as <em><font color="red">M</font></em>) is considered
+continuous and get grouped into one. Also, two lines whose distance is closer than
+the <em>line_margin</em> (<em><font color="blue">L</font></em>) is grouped
+as a text box, which is a recutangular area that contains a "cluster" of texts.
+Furthermore, it may be required to insert blank characters (spaces) as necessary
+if the distance between two words is greater than the <em>word_margin</em> 
+(<em><font color="green">W</font></em>), as a blank between words might not be
+represented as a space, but indicated by the positioning of each word.
+<p>
+Each value is specified not as an actual length, but as a proportion of
+the length to the size of each character in question. The default values 
+are M = 1.0, L = 0.3, and W = 0.2, respectively.
+<table style="border:2px gray solid; margin: 10px; padding: 10px;"><tr>
+<td style="border-right:1px red solid" align=right>&rarr;</td>
+<td style="border-left:1px red solid" colspan="4" align=left>&larr; <em><font color="red">M</font></em></td>
+<td></td>
+</tr><tr>
+<td style="border:1px solid"><code>Q u i</code></td>
+<td style="border:1px solid"><code>c k</code></td>
+<td width="10px"></td>
+<td style="border:1px solid"><code>b r o w</code></td>
+<td style="border:1px solid"><code>n &nbsp; f o x</code></td>
+<td style="border-bottom:1px blue solid" align=right>&darr;</td>
+</tr><tr>
+<td style="border-right:1px green solid" colspan="2" align=right>&rarr;</td><td></td>
+<td style="border-left:1px green solid" colspan="2" align=left>&larr; <em><font color="green">W</font></em></td>
+<td rowspan="2" valign=center align=center><em><font color="blue">L</font></em></td>
+</tr><tr height="10px">
+</tr><tr>
+<td style="padding:0px;" colspan="5">
+<table style="border:1px solid"><tr><td><code>j u m p s</code></td><td>...</td></tr></table>
+</td>
+<td style="border-top:1px blue solid" align=right>&uarr;</td>
+</tr></table>
 <p>
 <dt> <code>-s <em>scale</em></code> 
-<dd> 
+<dd> Specifies the output scale. Can be used in HTML format only.
 <p>
 <dt> <code>-m <em>maxpages</em></code> 
-<dd> 
+<dd> Specifies the maximum number of pages to extract.
+By default, it extracts all the pages in a document.
 <p>
 <dt> <code>-P <em>password</em></code> 
-<dd> Provides the user password to open the PDF file.
+<dd> Provides the user password to access PDF contents.
 <p>
 <dt> <code>-C <em>CMap directory</em></code> 
-<dd> 
+<dd> Specifies the path of CMap directory. CMap is needed when extracting 
+non-ASCII texts (especially in Asian languages). The CMap location can be
+also specified with <code>CMAP_PATH</code> environment variable.
 <p>
 <dt> <code>-d</code> 
 <dd> Increases the debug level.
@@ -242,12 +282,13 @@ Options:
 By default, it only prints the document trailer (like a header).
 <p>
 <dt> <code>-i <em>objno,objno, ...</em></code> 
-<dd> 
+<dd> Specifies PDF object IDs to display.
+Comma-separated IDs, or multiple <code>-i</code> options are accepted.
 <p>
 <dt> <code>-p <em>pageno,pageno, ...</em></code> 
 <dd> Specifies the page number to be extracted.
-Multiple <code>-p</code> options are allowed.
-Note that page numbers start from one.
+Comma-separated page numbers, or multiple <code>-p</code> options are accepted.
+Note that page numbers start from one, not zero.
 <p>
 <dt> <code>-r</code> (raw)
 <dt> <code>-b</code> (binary)
@@ -263,11 +304,11 @@ similar to <code>repr()</code> manner. When
 <code>-r</code> or <code>-b</code> option is given, 
 no stream header is displayed for the ease of saving it to a file.
 <p>
-<dt> <code>-P <em>password</em></code> 
-<dd> Provides the user password to open the PDF file.
-<p>
 <dt> <code>-T</code> 
-<dd> 
+<dd> Shows the table of contents.
+<p>
+<dt> <code>-P <em>password</em></code> 
+<dd> Provides the user password to access PDF contents.
 <p>
 <dt> <code>-d</code> 
 <dd> Increases the debug level.
@@ -277,6 +318,7 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2009/07/11: Improvement in layout analysis. Thanks to Lubos Pintes.
 <li> 2009/05/17: Bugfixes, massive code restructuring, and simple graphic element support added. setup.py is supported.
 <li> 2009/03/30: Text output mode added.
 <li> 2009/03/25: Encoding problems fixed. Word splitting option added. 

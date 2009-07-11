@@ -20,12 +20,41 @@ def apply_matrix_pt((a,b,c,d,e,f), (x,y)):
   return (a*x+c*y+e, b*x+d*y+f)
 
 def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
-  '''equiv to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))'''
+  '''Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))'''
   return (a*p+c*q, b*p+d*q)
 
 
-##  Utilities
+##  Utility functions
 ##
+
+# pick
+def pick(seq, func, maxobj=None):
+  '''Picks the object that has the highest value of func(obj).'''
+  maxscore = None
+  for obj in seq:
+    score = func(obj)
+    if maxscore == None or maxscore < score:
+      (maxscore,maxobj) = (score,obj)
+  return maxobj
+
+# bsearch
+def bsearch(objs, v0):
+  '''Tries to find the closest value to v0.'''
+  i0 = 0
+  i1 = len(objs)
+  while i0 < i1:
+    i = (i0+i1)/2
+    (v, obj) = objs[i]
+    if v0 == v:
+      (i0,i1) = (i,i+1)
+      break
+    elif v0 < v:
+      i1 = i
+    else:
+      i0 = i+1
+  return (i0,i1)
+
+# choplist
 def choplist(n, seq):
   '''Groups every n elements of the list.'''
   r = []
@@ -36,6 +65,7 @@ def choplist(n, seq):
       r = []
   return
 
+# nunpack
 def nunpack(s, default=0):
   '''Unpacks up to 4 bytes big endian.'''
   l = len(s)
@@ -52,6 +82,7 @@ def nunpack(s, default=0):
   else:
     return TypeError('invalid length: %d' % l)
 
+# decode_text
 PDFDocEncoding = ''.join( unichr(x) for x in (
   0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
   0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
@@ -87,12 +118,14 @@ PDFDocEncoding = ''.join( unichr(x) for x in (
   0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff,
 ))
 def decode_text(s):
+  '''Decodes a PDFDocEncoding string to Unicode.'''
   if s.startswith('\xfe\xff'):
     return unicode(s[2:], 'utf-16be', 'ignore')
   else:
     return ''.join( PDFDocEncoding[ord(c)] for c in s )
 
-# enc(x): encode string in SGML/XML/HTML
+# enc
 def enc(x, codec='ascii'):
+  '''Encodes a string for SGML/XML/HTML'''
   x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
   return x.encode(codec, 'xmlcharrefreplace')

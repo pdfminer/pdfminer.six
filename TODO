@@ -1,4 +1,5 @@
 TODOs:
+  - Better text extraction / layout analysis.
   - Better API Documentation.
   - Robust error handling.
   - Any special handling for linearized PDFs?

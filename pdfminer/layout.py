@@ -1,40 +1,7 @@
 #!/usr/bin/env python
 import sys
-from pdfminer.utils import apply_matrix_norm
+from pdfminer.utils import apply_matrix_norm, bsearch
 INF = sys.maxint
-
-
-##  pick
-##
-def pick(seq, func, maxobj=None):
-  maxscore = None
-  for obj in seq:
-    score = func(obj)
-    if maxscore == None or maxscore < score:
-      (maxscore,maxobj) = (score,obj)
-  return maxobj
-
-
-##  bsearch
-##
-##  Finds objects whose coordinates overlap with [v0,v1].
-##  It performs binary search so that the processing time
-##  should be around O(log n).
-##
-def bsearch(objs, v0):
-  i0 = 0
-  i1 = len(objs)
-  while i0 < i1:
-    i = (i0+i1)/2
-    (v, obj) = objs[i]
-    if v0 == v:
-      (i0,i1) = (i,i+1)
-      break
-    elif v0 < v:
-      i1 = i
-    else:
-      i0 = i+1
-  return (i0,i1)
 
 
 ##  reorder_hv, reorder_vh
@@ -387,10 +354,8 @@ class LTTextBox(LayoutContainer):
   def fixate(self, direction='H'):
     LayoutContainer.fixate(self, direction=direction)
     if not direction:
-      for obj in self.objs:
-        if obj.is_vertical():
-          direction = 'V'
-        break
+      if any( obj.is_vertical() for obj in self.objs ):
+        direction = 'V'
       if 2 <= len(self.objs):
         objs = sorted(self.objs, key=lambda obj: -obj.x1-obj.y1)
         if objs[0].get_weight() == 1 and objs[1].get_weight() == 1:
