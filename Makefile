@@ -1,17 +1,16 @@
-# Makefile for pdfminer
+##  Makefile (for maintainance purpose)
+##
 
 PACKAGE=pdfminer
+PREFIX=/usr/local
 
 SVN=svn
-GNUTAR=tar
 PYTHON=python
-PREFIX=/usr/local
-TMPDIR=/tmp
-VERSION=`$(PYTHON) $(PACKAGE)/__init__.py`
-DISTNAME=$(PACKAGE)-dist-$(VERSION)
-DISTFILE=$(DISTNAME).tar.gz
+RM=rm -f
+CP=cp -f
 
-CONV_CMAP=$(PYTHON) pdfminer/cmap.py
+VERSION=`$(PYTHON) $(PACKAGE)/__init__.py`
+DISTFILE=$(PACKAGE)-$(VERSION).tar.gz
 
 all:
 
@@ -19,7 +18,8 @@ install:
 	$(PYTHON) setup.py install --prefix=$(PREFIX)
 
 clean:
-	-rm -rf build
+	-$(PYTHON) setup.py clean
+	-$(RM) -r build dist
 	-cd $(PACKAGE) && $(MAKE) clean
 	-cd tools && $(MAKE) clean
 	-cd samples && $(MAKE) clean
@@ -27,20 +27,16 @@ clean:
 test:
 	cd samples && $(MAKE) test
 
-# Maintainance:
 commit: clean
 	$(SVN) commit
 
 check:
 	cd $(PACKAGE) && make check
 
-dist: clean
-	$(SVN) cleanup
-	$(SVN) export . $(TMPDIR)/$(DISTNAME)
-	$(GNUTAR) c -z -C$(TMPDIR) -f $(TMPDIR)/$(DISTFILE) $(DISTNAME) --dereference --numeric-owner
-	-rm -rf $(TMPDIR)/$(DISTNAME)
+dist/$(DISTFILE): clean
+	$(PYTHON) setup.py sdist
 
-WEBDIR=$$HOME/Site/unixuser.org/python/pdfminer
-publish: dist
-	cp $(TMPDIR)/$(DISTFILE) $(WEBDIR)
-	cp README.html $(WEBDIR)/index.html
+WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
+publish: dist/$(DISTFILE)
+	$(CP) dist/$(DISTFILE) $(WEBDIR)
+	$(CP) README.html $(WEBDIR)/index.html

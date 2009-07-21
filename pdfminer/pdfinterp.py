@@ -761,7 +761,7 @@ def process_pdf(rsrc, device, fp, pagenos=None, maxpages=0, password=''):
   parser = PDFParser(doc, fp)
   doc.initialize(password)
   if not doc.is_extractable:
-    raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fname)
+    raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fp.name)
   interpreter = PDFPageInterpreter(rsrc, device)
   for (pageno,page) in enumerate(doc.get_pages()):
     if pagenos and (pageno not in pagenos): continue

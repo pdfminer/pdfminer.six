@@ -18,7 +18,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Tue Jul 21 16:24:26 JST 2009
+Last Modified: Tue Jul 21 23:22:42 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -37,7 +37,7 @@ PDF parser that can be used for other purposes instead of text analysis.
 <p>
 <strong>Features:</strong>
 <ul>
-<li> Written entirely in Python. (version 2.4 or newer required)
+<li> Written entirely in Python. (for version 2.4 or newer)
 <li> PDF-1.7 specification support. (well, almost)
 <li> Non-ASCII languages and vertical writing scripts support.
 <li> Various font types (Type1, TrueType, Type3, and CID) support.
@@ -51,8 +51,8 @@ PDF parser that can be used for other purposes instead of text analysis.
 <a name="source"></a>
 <p>
 <strong>Download:</strong><br>
-<a href="http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20090711.tar.gz">
-http://www.unixuser.org/~euske/python/pdfminer/pdfminer-dist-20090711.tar.gz
+<a href="http://www.unixuser.org/~euske/python/pdfminer/pdfminer-20090721.tar.gz">
+http://www.unixuser.org/~euske/python/pdfminer/pdfminer-20090721.tar.gz
 </a>
 (1.8Mbytes)
 
@@ -158,7 +158,7 @@ Examples:
 $ <strong>pdf2txt.py samples/naacl06-shinyama.pdf -o output.html</strong>
 (extract text as an HTML file whose filename is output.html)
 
-$ <strong>pdf2txt.py -c euc-jp samples/jo.pdf -o output.html</strong>
+$ <strong>pdf2txt.py -c euc-jp samples/jo.pdf -D V -o output.html</strong>
 (extract a Japanese HTML file in vertical writing, CMap is required)
 
 $ <strong>pdf2txt.py -P mypassword secret.pdf -o output.txt</strong>
