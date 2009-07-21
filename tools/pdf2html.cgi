@@ -19,7 +19,10 @@ import sys
 # comment out at runtime.
 import cgitb; cgitb.enable()
 import os, os.path, re, cgi, time, random, codecs, logging, traceback
-import pdflib.pdf2txt
+from pdfminer.pdfinterp import PDFResourceManager, process_pdf
+from pdfminer.converter import HTMLConverter, TextConverter
+from pdfminer.layout import LAParams
+from pdfminer.cmap import CMapDB
 
 
 # quote HTML metacharacters
@@ -34,6 +37,7 @@ def url(base, **kw):
     v = Q.sub(lambda m: '%%%02X' % ord(m.group(0)), encoder(q(v), 'replace')[0])
     r.append('%s=%s' % (k, v))
   return base+'&'.join(r)
+
 
 ##  convert
 ##
@@ -54,13 +58,16 @@ def convert(outfp, infp, path, codec='utf-8', maxpages=10,
   infp.close()
   # perform conversion and
   # send the results over the network.
-  pdflib.pdf2txt.CMapDB.initialize('.', './CDBCMap')
-  rsrc = pdflib.pdf2txt.PDFResourceManager()
+  CMapDB.initialize()
+  rsrc = PDFResourceManager()
+  laparams = LAParams()
   if html:
-    device = pdflib.pdf2txt.HTMLConverter(rsrc, outfp, codec=codec)
+    device = HTMLConverter(rsrc, outfp, codec=codec, laparams=laparams)
   else:
-    device = pdflib.pdf2txt.TextConverter(rsrc, outfp, codec=codec)
-  pdflib.pdf2txt.convert(rsrc, device, path, pagenos, maxpages=maxpages)
+    device = TextConverter(rsrc, outfp, codec=codec, laparams=laparams)
+  fp = file(path, 'rb')
+  process_pdf(rsrc, device, fp, pagenos, maxpages=maxpages)
+  fp.close()
   return
 
 

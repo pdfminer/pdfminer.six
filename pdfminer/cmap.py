@@ -199,7 +199,9 @@ class CMapDB(object):
   cmapdb = {}
 
   @classmethod
-  def initialize(klass, dirname, cdbdirname=None):
+  def initialize(klass, dirname=None, cdbdirname=None):
+    if not dirname:
+      dirname = find_cmap_path()
     klass.dirname = dirname
     klass.cdbdirname = cdbdirname or dirname
     return

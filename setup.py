@@ -14,7 +14,7 @@ other extra information such as font information or ruled lines.
 It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
 PDF parser that can be used for other purposes instead of text analysis.''',
-  keywords='pdf parser, pdf converter, text mining',
+  keywords=['pdf parser', 'pdf converter', 'text mining'],
   license='MIT/X',
   author='Yusuke Shinyama',
   author_email='yusuke at cs dot nyu dot edu',

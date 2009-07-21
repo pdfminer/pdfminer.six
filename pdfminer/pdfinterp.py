@@ -756,9 +756,8 @@ class PDFPageInterpreter(object):
 ##
 class PDFTextExtractionNotAllowed(PDFInterpreterError): pass
 
-def process_pdf(rsrc, device, fname, pagenos=None, maxpages=0, password=''):
+def process_pdf(rsrc, device, fp, pagenos=None, maxpages=0, password=''):
   doc = PDFDocument()
-  fp = file(fname, 'rb')
   parser = PDFParser(doc, fp)
   doc.initialize(password)
   if not doc.is_extractable:
@@ -768,5 +767,4 @@ def process_pdf(rsrc, device, fname, pagenos=None, maxpages=0, password=''):
     if pagenos and (pageno not in pagenos): continue
     interpreter.process_page(page)
     if maxpages and maxpages <= pageno+1: break
-  fp.close()
   return

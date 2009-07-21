@@ -5,17 +5,18 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_p
 from pdfminer.pdfdevice import PDFDevice
 from pdfminer.converter import SGMLConverter, HTMLConverter, TextConverter, TagExtractor
 from pdfminer.cmap import CMapDB, find_cmap_path
+from pdfminer.layout import LAParams
 
 # main
 def main(argv):
   import getopt
   def usage():
     print ('usage: %s [-d] [-p pagenos] [-P password] [-c codec] '
-           '[-M char_margin] [-L line_margin] [-W word_margin] '
+           '[-D direction] [-M char_margin] [-L line_margin] [-W word_margin] '
            '[-t text|html|sgml|tag] [-o output] file ...' % argv[0])
     return 100
   try:
-    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:M:L:W:t:o:C:D:m:')
+    (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:D:M:L:W:t:o:C:D:m:')
   except getopt.GetoptError:
     return usage()
   if not args: return usage()
@@ -31,12 +32,10 @@ def main(argv):
   outfile = None
   outtype = None
   codec = 'utf-8'
-  char_margin = 1.0
-  line_margin = 0.3
-  word_margin = 0.2
   pageno = 1
   scale = 1
   showpageno = True
+  laparams = LAParams()
   for (k, v) in opts:
     if k == '-d': debug += 1
     elif k == '-C': cmapdir = v
@@ -47,9 +46,10 @@ def main(argv):
     elif k == '-c': codec = v
     elif k == '-o': outfile = v
     elif k == '-s': scale = float(v)
-    elif k == '-M': char_margin = float(v)
-    elif k == '-L': line_margin = float(v)
-    elif k == '-W': word_margin = float(v)
+    elif k == '-D': laparams.direction = v
+    elif k == '-M': laparams.char_margin = float(v)
+    elif k == '-L': laparams.line_margin = float(v)
+    elif k == '-W': laparams.word_margin = float(v)
   #
   CMapDB.debug = debug
   PDFResourceManager.debug = debug
@@ -74,20 +74,19 @@ def main(argv):
   else:
     outfp = sys.stdout
   if outtype == 'text':
-    device = TextConverter(rsrc, outfp, codec=codec, 
-                           char_margin=char_margin, line_margin=line_margin, word_margin=word_margin)
+    device = TextConverter(rsrc, outfp, codec=codec, laparams=laparams)
   elif outtype == 'sgml':
-    device = SGMLConverter(rsrc, outfp, codec=codec,
-                           char_margin=char_margin, line_margin=line_margin, word_margin=word_margin)
+    device = SGMLConverter(rsrc, outfp, codec=codec, laparams=laparams)
   elif outtype == 'html':
-    device = HTMLConverter(rsrc, outfp, codec=codec, scale=scale,
-                           char_margin=char_margin, line_margin=line_margin, word_margin=word_margin)
+    device = HTMLConverter(rsrc, outfp, codec=codec, scale=scale, laparams=laparams)
   elif outtype == 'tag':
     device = TagExtractor(rsrc, outfp, codec=codec)
   else:
     return usage()
   for fname in args:
-    process_pdf(rsrc, device, fname, pagenos, maxpages=maxpages, password=password)
+    fp = file(fname, 'rb')
+    process_pdf(rsrc, device, fp, pagenos, maxpages=maxpages, password=password)
+    fp.close()
   device.close()
   return
 

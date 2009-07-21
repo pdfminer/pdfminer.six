@@ -47,6 +47,10 @@ def bsearch(objs, v0):
     (v, obj) = objs[i]
     if v0 == v:
       (i0,i1) = (i,i+1)
+      while 0 < i0 and objs[i0-1][0] == v0:
+        i0 -= 1
+      while i1 < len(objs)-1 and objs[i1][0] == v0:
+        i1 += 1
       break
     elif v0 < v:
       i1 = i

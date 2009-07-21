@@ -1,7 +1,7 @@
 # GNUMakefile for test
 
 PYTHON=python
-PDF2TXT=$(PYTHON) ../tools/pdf2txt.py
+PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py
 
 HTMLS= \
 	simple1.html \

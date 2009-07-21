@@ -4,50 +4,24 @@ from pdfminer.utils import apply_matrix_norm, bsearch
 INF = sys.maxint
 
 
-##  reorder_hv, reorder_vh
-##  chop_hv, chop_vh
+##  LAParams
 ##
-##  Reorders objects according to its writing direction.
-##
-def reorder_vh(objs, hdir):
-  if 0 < hdir:
-    hkey = (lambda obj: obj.x0)
-    vkey = (lambda obj: -obj.y1)
-  else:
-    hkey = (lambda obj: -obj.x1)
-    vkey = (lambda obj: -obj.y1)
-  r = []
-  line = []
-  for obj in sorted(objs, key=vkey):
-    if line:
-      v = line[-1].voverlap(obj) * 2
-      if v < obj.height or v < line[-1].height:
-        line.sort(key=hkey)
-        r.append(line)
-        line = []
-    line.append(obj)
-  line.sort(key=hkey)
-  r.append(line)
-  return r
+class LAParams(object):
+  
+  def __init__(self,
+               direction=None,
+               char_margin=1.0,
+               line_margin=0.5,
+               word_margin=0.1):
+    self.direction = direction
+    self.char_margin = char_margin
+    self.line_margin = line_margin
+    self.word_margin = word_margin
+    return
 
-def reorder_hv(objs, hdir):
-  if 0 < hdir:
-    hkey = (lambda obj: obj.x0)
-    vkey = (lambda obj: -obj.y1)
-  else:
-    hkey = (lambda obj: -obj.x1)
-    vkey = (lambda obj: -obj.y1)
-  r = []
-  line = []
-  for obj in sorted(objs, key=hkey):
-    if line and not line[-1].hoverlap(obj):
-      line.sort(key=vkey)
-      r.append(line)
-      line = []
-    line.append(obj)
-  line.sort(key=vkey)
-  r.append(line)
-  return r
+  def __repr__(self):
+    return ('<LAParams: direction=%r, char_margin=%.1f, line_margin=%.1f, word_margin=%.1f>' %
+            (self.direction, self.char_margin, self.line_margin, self.word_margin))
 
 
 ##  Plane
@@ -91,12 +65,6 @@ class Plane(object):
 
 ##  ClusterSet
 ##
-##  Maintains a set of LTTextBox objects.
-##  It incrementally constructs LTTextBox objects
-##  and group them when necessary. It gives
-##  a sequence of LTTextBox objects that represent
-##  the text stream of that page.
-##
 class ClusterSet(object):
 
   def __init__(self, klass):
@@ -123,16 +91,18 @@ class ClusterSet(object):
       group.fixate()
     return list(r)
 
-def group_objs(objs, hratio, vratio, klass):
-  plane = Plane(objs)
-  cset = ClusterSet(klass)
-  for obj in objs:
-    margin = obj.get_margin()
-    hmargin = hratio * margin
-    vmargin = vratio * margin
-    neighbors = plane.find((obj.x0-hmargin, obj.y0-vmargin, obj.x1+hmargin, obj.y1+vmargin))
-    cset.add(neighbors)
-  return cset.finish()
+  @classmethod
+  def build(klass, objs, hratio, vratio, objtype):
+    plane = Plane(objs)
+    cset = ClusterSet(objtype)
+    for obj in objs:
+      margin = obj.get_margin()
+      hmargin = hratio * margin
+      vmargin = vratio * margin
+      neighbors = plane.find((obj.x0-hmargin, obj.y0-vmargin, obj.x1+hmargin, obj.y1+vmargin))
+      assert obj in neighbors, obj
+      cset.add(neighbors)
+    return cset.finish()
 
 
 ##  LayoutItem
@@ -140,11 +110,12 @@ def group_objs(objs, hratio, vratio, klass):
 class LayoutItem(object):
 
   def __init__(self, bbox):
-    #assert x0 <= x1 and y0 <= y1
     self.set_bbox(bbox)
     return
 
   def set_bbox(self, (x0,y0,x1,y1)):
+    if x1 < x0: (x0,x1) = (x1,x0)
+    if y1 < y0: (y0,y1) = (y1,y0)
     self.x0 = x0
     self.y0 = y0
     self.x1 = x1
@@ -202,6 +173,9 @@ class LayoutContainer(LayoutItem):
 
   def __iter__(self):
     return iter(self.objs)
+
+  def __len__(self):
+    return len(self.objs)
   
   def add(self, obj):
     self.objs.add(obj)
@@ -212,7 +186,7 @@ class LayoutContainer(LayoutItem):
     return
 
   # fixate(): determines its boundery and writing direction.
-  def fixate(self, direction=None):
+  def fixate(self):
     if not self.width and self.objs:
       (bx0, by0, bx1, by1) = (INF, INF, -INF, -INF)
       for obj in self.objs:
@@ -228,14 +202,7 @@ class LayoutContainer(LayoutItem):
     return self.weight
   
   def get_direction(self):
-    if not self.objs: return None
-    d = {}
-    for obj in self.objs:
-      k = obj.get_direction()
-      if k not in d: d[k] = 0
-      d[k] += 1
-    (direction,_) = sorted(d.iteritems(), key=lambda (k,v):v)[0]
-    return direction
+    return None
 
 
 ##  LTLine
@@ -259,21 +226,37 @@ class LTRect(LayoutItem):
     return
   
 
-##  LTAnon
+##  LTText
 ##
-class LTAnon(object):
+class LTText(object):
 
   def __init__(self, text):
     self.text = text
     return
 
+  def __repr__(self):
+    return '<text %r>' % self.text
+
+  def get_weight(self):
+    return len(self.text)
+
+  def is_upright(self):
+    return True
+
+
+##  LTAnon
+##
+class LTAnon(LTText):
+
   def get_weight(self):
     return 0
 
 
-##  LTText
+##  LTTextItem
 ##
-class LTText(LayoutItem):
+class LTTextItem(LayoutItem, LTText):
+
+  debug = 1
   
   def __init__(self, matrix, font, fontsize, charspace, scaling, chars):
     assert chars
@@ -307,20 +290,24 @@ class LTText(LayoutItem):
     return
 
   def __repr__(self):
-    return ('<text matrix=%s font=%r fontsize=%.1f bbox=%s adv=%s text=%r>' %
-            ('[%.1f, %.1f, %.1f, %.1f, (%.1f, %.1f)]' % self.matrix,
-             self.font, self.fontsize, self.get_bbox(),
-             '(%.1f, %.1f)' % self.adv,
-             self.text))
+    if self.debug:
+      return ('<text matrix=%s font=%r fontsize=%.1f bbox=%s adv=%s text=%r>' %
+              ('[%.1f, %.1f, %.1f, %.1f, (%.1f, %.1f)]' % self.matrix,
+               self.font, self.fontsize, self.get_bbox(),
+               '(%.1f, %.1f)' % self.adv,
+               self.text))
+    else:
+      return '<text %r>' % self.text
 
   def get_margin(self):
     return abs(self.fontsize)
 
-  def get_weight(self):
-    return len(self.text)
-  
   def is_vertical(self):
     return self.vertical
+
+  def is_upright(self):
+    (a,b,c,d,e,f) = self.matrix
+    return 0 < a*d and b*c <= 0
 
 
 ##  LTFigure
@@ -336,6 +323,54 @@ class LTFigure(LayoutContainer):
     return ('<figure id=%r bbox=%s matrix=%r>' % (self.id, self.get_bbox(), self.matrix))
 
 
+##  LTTextLine
+##
+class LTTextLine(LayoutContainer):
+
+  def __init__(self, id, objs, direction, word_margin):
+    LayoutContainer.__init__(self, id, (0,0,0,0), objs)
+    self.direction = direction
+    self.word_margin = word_margin
+    return
+
+  def __repr__(self):
+    return ('<line %s(%s)>' % (self.get_bbox(), self.direction))
+
+  def get_margin(self):
+    return min(self.width, self.height)
+
+  def get_direction(self):
+    return self.direction
+
+  def get_text(self):
+    return ''.join( obj.text for obj in self.objs if isinstance(obj, LTText) )
+
+  def fixate(self):
+    LayoutContainer.fixate(self)
+    objs = []
+    if self.direction == 'V':
+      y0 = -INF
+      for obj in sorted(self.objs, key=lambda obj: -obj.y1):
+        if isinstance(obj, LTTextItem) and self.word_margin:
+          margin = self.word_margin * obj.get_margin()
+          if obj.y1+margin < y0:
+            objs.append(LTAnon(' '))
+        objs.append(obj)
+        y0 = obj.y0
+    else:
+      x1 = INF
+      for obj in sorted(self.objs, key=lambda obj: obj.x0):
+        if isinstance(obj, LTTextItem) and self.word_margin:
+          margin = self.word_margin * obj.get_margin()
+          if x1 < obj.x0-margin:
+            objs.append(LTAnon(' '))
+        objs.append(obj)
+        x1 = obj.x1
+    objs.append(LTAnon('\n'))
+    self.objs = objs
+    return
+
+
 ##  LTTextBox
 ##
 ##  A set of text objects that are grouped within
@@ -343,65 +378,55 @@ class LTFigure(LayoutContainer):
 ##
 class LTTextBox(LayoutContainer):
 
-  def __init__(self, id, objs):
+  def __init__(self, id, objs, direction):
     LayoutContainer.__init__(self, id, (0,0,0,0), objs)
-    self.direction = None
+    self.direction = direction
     return
 
   def __repr__(self):
-    return ('<textbox %s(%s)>' % (self.get_bbox(), self.direction))
+    return ('<textbox %s(%s) %r...>' % (self.get_bbox(), self.direction, self.get_text()[:20]))
 
-  def fixate(self, direction='H'):
-    LayoutContainer.fixate(self, direction=direction)
-    if not direction:
-      if any( obj.is_vertical() for obj in self.objs ):
-        direction = 'V'
-      if 2 <= len(self.objs):
-        objs = sorted(self.objs, key=lambda obj: -obj.x1-obj.y1)
-        if objs[0].get_weight() == 1 and objs[1].get_weight() == 1:
-          h = objs[0].voverlap(objs[1])
-          v = objs[0].hoverlap(objs[1])
-          if h < v:
-            direction = 'V'
-    self.direction = direction
+  def get_text(self):
+    return ''.join( obj.get_text() for obj in self.objs if isinstance(obj, LTTextLine) )
+  
+  def fixate(self):
+    LayoutContainer.fixate(self)
     if self.direction == 'V':
-      self.lines = reorder_hv(self.objs, -1)
+      self.objs = sorted(self.objs, key=lambda obj: -obj.x1)
     else:
-      self.lines = reorder_vh(self.objs, +1)
-    self.objs = []
-    for line in self.lines:
-      self.objs.extend(line)
+      self.objs = sorted(self.objs, key=lambda obj: -obj.y1)
     return
 
   def get_direction(self):
     return self.direction
 
-  def get_lines(self, word_margin):
-    if self.get_direction() == 'V':
-      for line in self.lines:
-        y0 = -INF
-        for obj in line:
-          if not isinstance(obj, LTText): continue
-          if word_margin:
-            margin = word_margin * obj.get_margin()
-            if obj.y1+margin < y0:
-              yield LTAnon(' ')
-          yield obj
-          y0 = obj.y0
-        yield LTAnon('\n')
+
+def tsort(objs, f):
+  gi = dict( (obj,[]) for obj in objs )
+  go = dict( (obj,[]) for obj in objs )
+  for obj1 in objs:
+    for obj2 in objs:
+      if f(obj1, obj2): # obj1 -> obj2
+        go[obj1].append(obj2)
+        gi[obj2].append(obj1)
+  r = objs[:]
+  s = []
+  while r:
+    for obj in r:
+      if not go[obj] or gi[obj]: continue
+      for c in go[obj]:
+        gi[c].remove(obj)
+      del gi[obj]
+      del go[obj]
+      r.remove(obj)
+      s.append(obj)
+      break
     else:
-      for line in self.lines:
-        x1 = INF
-        for obj in line:
-          if not isinstance(obj, LTText): continue
-          if word_margin:
-            margin = word_margin * obj.get_margin()
-            if x1 < obj.x0-margin:
-              yield LTAnon(' ')
-          yield obj
-          x1 = obj.x1
-        yield LTAnon('\n')
-    return
+      obj = r.pop()
+      del gi[obj]
+      del go[obj]
+      s.append(obj)
+  return s
 
 
 ##  LTPage
@@ -416,19 +441,39 @@ class LTPage(LayoutContainer):
   def __repr__(self):
     return ('<page id=%r bbox=%s rotate=%r>' % (self.id, self.get_bbox(), self.rotate))
 
-  def fixate(self, dirtection='H'):
-    return
-
-  def group_text(self, char_margin, line_margin):
-    textobjs = [ obj for obj in self.objs if isinstance(obj, LTText) ]
-    objs = [ obj for obj in self.objs if not isinstance(obj, LTText) ]
-    if self.get_direction() == 'V':
-      objs += group_objs(textobjs, line_margin, char_margin, LTTextBox)
-      lines = reorder_hv(objs, -1)
+  def analyze_layout(self, laparams):
+    textobjs = []
+    otherobjs = []
+    for obj in self.objs:
+      if isinstance(obj, LTText) and obj.is_upright():
+        textobjs.append(obj)
+      else:
+        otherobjs.append(obj)
+    if laparams.direction == 'V':
+      lines = ClusterSet.build(textobjs, 0, laparams.char_margin,
+                               (lambda id,objs: LTTextLine(id, objs, 'V', laparams.word_margin)))
+      boxes = ClusterSet.build(lines, laparams.line_margin, 0,
+                               (lambda id,objs: LTTextBox(id, objs, 'V')))
+      def vorder(obj1, obj2):
+        if obj1.voverlap(obj2):
+          return obj2.x1 < obj1.x1
+        elif obj1.hoverlap(obj2):
+          return obj2.y1 < obj1.y1
+        else:
+          return obj2.x1 < obj1.x1 and obj2.y1 < obj1.y1
+      boxes = tsort(boxes, vorder)
     else:
-      objs += group_objs(textobjs, char_margin, line_margin, LTTextBox)
-      lines = reorder_vh(objs, +1)
-    self.objs = []
-    for line in lines:
-      self.objs.extend(line)
+      lines = ClusterSet.build(textobjs, laparams.char_margin, 0,
+                               (lambda id,objs: LTTextLine(id, objs, 'H', laparams.word_margin)))
+      boxes = ClusterSet.build(lines, 0, laparams.line_margin,
+                               (lambda id,objs: LTTextBox(id, objs, 'H')))
+      def horder(obj1, obj2):
+        if obj1.hoverlap(obj2):
+          return obj2.y1 < obj1.y1
+        elif obj1.voverlap(obj2):
+          return obj1.x1 < obj2.x0
+        else:
+          return obj2.y1 < obj1.y1 and obj1.x1 < obj2.x0
+      boxes = tsort(boxes, horder)
+    self.objs = otherobjs + boxes
     return
