@@ -224,7 +224,7 @@ class SGMLConverter(PDFConverter):
         self.write(item.text)
         self.outfp.write('</text>\n')
       elif isinstance(item, LTText):
-        self.outfp.write('<text>%s</text>\n', item.text)
+        self.outfp.write('<text>%s</text>\n' % item.text)
       else:
         assert 0, item
       return

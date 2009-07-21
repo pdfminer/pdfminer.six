@@ -10,10 +10,12 @@ class LAParams(object):
   
   def __init__(self,
                direction=None,
+               line_overlap=0.5,
                char_margin=1.0,
                line_margin=0.5,
                word_margin=0.1):
     self.direction = direction
+    self.line_overlap = line_overlap
     self.char_margin = char_margin
     self.line_margin = line_margin
     self.word_margin = word_margin
@@ -92,7 +94,7 @@ class ClusterSet(object):
     return list(r)
 
   @classmethod
-  def build(klass, objs, hratio, vratio, objtype):
+  def build(klass, objs, hratio, vratio, objtype, func=None):
     plane = Plane(objs)
     cset = ClusterSet(objtype)
     for obj in objs:
@@ -101,6 +103,8 @@ class ClusterSet(object):
       vmargin = vratio * margin
       neighbors = plane.find((obj.x0-hmargin, obj.y0-vmargin, obj.x1+hmargin, obj.y1+vmargin))
       assert obj in neighbors, obj
+      if func:
+        neighbors = [ x for x in neighbors if x is obj or func(obj, x) ]
       cset.add(neighbors)
     return cset.finish()
 
@@ -450,10 +454,8 @@ class LTPage(LayoutContainer):
       else:
         otherobjs.append(obj)
     if laparams.direction == 'V':
-      lines = ClusterSet.build(textobjs, 0, laparams.char_margin,
-                               (lambda id,objs: LTTextLine(id, objs, 'V', laparams.word_margin)))
-      boxes = ClusterSet.build(lines, laparams.line_margin, 0,
-                               (lambda id,objs: LTTextBox(id, objs, 'V')))
+      def vline(obj1, obj2):
+        return obj1.width * laparams.line_overlap < obj1.hoverlap(obj2)
       def vorder(obj1, obj2):
         if obj1.voverlap(obj2):
           return obj2.x1 < obj1.x1
@@ -461,12 +463,15 @@ class LTPage(LayoutContainer):
           return obj2.y1 < obj1.y1
         else:
           return obj2.x1 < obj1.x1 and obj2.y1 < obj1.y1
+      lines = ClusterSet.build(textobjs, 0, laparams.char_margin,
+                               (lambda id,objs: LTTextLine(id, objs, 'V', laparams.word_margin)),
+                               vline)
+      boxes = ClusterSet.build(lines, laparams.line_margin, 0,
+                               (lambda id,objs: LTTextBox(id, objs, 'V')))
       boxes = tsort(boxes, vorder)
     else:
-      lines = ClusterSet.build(textobjs, laparams.char_margin, 0,
-                               (lambda id,objs: LTTextLine(id, objs, 'H', laparams.word_margin)))
-      boxes = ClusterSet.build(lines, 0, laparams.line_margin,
-                               (lambda id,objs: LTTextBox(id, objs, 'H')))
+      def hline(obj1, obj2):
+        return obj1.height * laparams.line_overlap < obj1.voverlap(obj2)
       def horder(obj1, obj2):
         if obj1.hoverlap(obj2):
           return obj2.y1 < obj1.y1
@@ -474,6 +479,11 @@ class LTPage(LayoutContainer):
           return obj1.x1 < obj2.x0
         else:
           return obj2.y1 < obj1.y1 and obj1.x1 < obj2.x0
+      lines = ClusterSet.build(textobjs, laparams.char_margin, 0,
+                               (lambda id,objs: LTTextLine(id, objs, 'H', laparams.word_margin)),
+                               hline)
+      boxes = ClusterSet.build(lines, 0, laparams.line_margin,
+                               (lambda id,objs: LTTextBox(id, objs, 'H')))
       boxes = tsort(boxes, horder)
     self.objs = otherobjs + boxes
     return

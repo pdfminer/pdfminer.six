@@ -25,17 +25,25 @@ TEXTS= \
 	naacl06-shinyama.txt \
 	nlp2004slides.txt
 
+SGMLS= \
+	simple1.sgml \
+	simple2.sgml \
+	dmca.sgml \
+	f1040nr.sgml \
+	i1040nr.sgml \
+	jo.sgml \
+	kampo.sgml \
+	naacl06-shinyama.sgml \
+	nlp2004slides.sgml
+
 all:
 
 clean:
 	-rm $(HTMLS)
 	-rm $(TEXTS)
+	-rm $(SGMLS)
 
-test: htmls texts
-
-htmls: $(HTMLS)
-
-texts: $(TEXTS)
+test: $(HTMLS) $(TEXTS) $(SGMLS)
 
 .SUFFIXES: .pdf .html .sgml .txt
 .pdf.html:
