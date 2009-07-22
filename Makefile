@@ -39,4 +39,4 @@ dist/$(DISTFILE): clean
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
 publish: dist/$(DISTFILE)
 	$(CP) dist/$(DISTFILE) $(WEBDIR)
-	$(CP) README.html $(WEBDIR)/index.html
+	$(CP) docs/*.html $(WEBDIR)/index.html
