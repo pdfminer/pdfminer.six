@@ -49,6 +49,8 @@ class PDFTextState(object):
     self.render = 0
     self.rise = 0
     self.reset()
+    # self.matrix is set
+    # self.linematrix is set
     return
 
   def __repr__(self):
@@ -630,23 +632,7 @@ class PDFPageInterpreter(object):
   # show-pos
   def do_TJ(self, seq):
     #print >>stderr, 'TJ(%r): %r' % (seq,self.textstate)
-    textstate = self.textstate
-    textmatrix = translate_matrix(textstate.matrix, textstate.linematrix)
-    self.device.render_string(textstate, textmatrix, seq)
-    font = textstate.font
-    s = ''.join( x for x in seq if isinstance(x, str) )
-    w = ((font.string_width(s) - sum( x for x in seq if not isinstance(x, str) )*.001) * textstate.fontsize +
-         len(s) * textstate.charspace)
-    (lx,ly) = textstate.linematrix
-    if font.is_vertical():
-      # advance vertically
-      ly += w * (textstate.scaling * .01)
-    else:
-      # advance horizontally
-      if not font.is_multibyte():
-        w += s.count(' ')*textstate.wordspace
-      lx += w * (textstate.scaling * .01)
-    textstate.linematrix = (lx,ly)
+    self.device.render_string(self.textstate, seq)
     return
   # show
   def do_Tj(self, s):

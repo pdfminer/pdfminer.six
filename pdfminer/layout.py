@@ -270,7 +270,7 @@ class LTTextItem(LayoutItem, LTText):
     self.vertical = self.font.is_vertical()
     self.text = ''.join( char for (char,_) in chars )
     adv = sum( font.char_width(cid) for (_,cid) in chars )
-    adv = (adv * fontsize + len(chars)*charspace) * scaling * .01
+    adv = (adv * fontsize + len(chars)*charspace) * scaling
     size = (font.get_ascent() - font.get_descent()) * fontsize
     if not self.vertical:
       # horizontal text
@@ -410,6 +410,7 @@ def tsort(objs, f):
   go = dict( (obj,[]) for obj in objs )
   for obj1 in objs:
     for obj2 in objs:
+      if obj1 is obj2: continue
       if f(obj1, obj2): # obj1 -> obj2
         go[obj1].append(obj2)
         gi[obj2].append(obj1)
@@ -478,7 +479,7 @@ class LTPage(LayoutContainer):
         elif obj1.voverlap(obj2):
           return obj1.x1 < obj2.x0
         else:
-          return obj2.y1 < obj1.y1 and obj1.x1 < obj2.x0
+          return obj1.x0 < obj2.x0 and obj2.y1 < obj1.y1
       lines = ClusterSet.build(textobjs, laparams.char_margin, 0,
                                (lambda id,objs: LTTextLine(id, objs, 'H', laparams.word_margin)),
                                hline)

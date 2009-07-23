@@ -1,131 +1,11 @@
 #!/usr/bin/env python
 import sys
-from pdfminer.pdfdevice import PDFDevice
+from pdfminer.pdfdevice import PDFDevice, PDFTextDevice
 from pdfminer.pdffont import PDFUnicodeNotDefined
 from pdfminer.layout import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextItem, LTTextBox, LTTextLine
-from pdfminer.utils import mult_matrix, translate_matrix, apply_matrix_pt, enc
+from pdfminer.utils import apply_matrix_pt, enc
 
 
-##  PDFPageAggregator
-##
-class PDFPageAggregator(PDFDevice):
-
-  def __init__(self, rsrc, pageno=1, laparams=None):
-    PDFDevice.__init__(self, rsrc)
-    self.laparams = laparams
-    self.undefined_char = '?'
-    self.pageno = pageno
-    self.stack = []
-    return
-
-  def begin_page(self, page):
-    self.cur_item = LTPage(self.pageno, page.mediabox, page.rotate)
-    return
-  
-  def end_page(self, _):
-    assert not self.stack
-    assert isinstance(self.cur_item, LTPage)
-    self.cur_item.fixate()
-    if self.laparams:
-      self.cur_item.analyze_layout(self.laparams)
-    self.pageno += 1
-    return self.cur_item
-
-  def begin_figure(self, name, bbox, matrix):
-    self.stack.append(self.cur_item)
-    self.cur_item = LTFigure(name, bbox, matrix)
-    return
-  
-  def end_figure(self, _):
-    fig = self.cur_item
-    self.cur_item.fixate()
-    self.cur_item = self.stack.pop()
-    self.cur_item.add(fig)
-    return
-
-  def handle_undefined_char(self, cidcoding, cid):
-    if self.debug:
-      print >>sys.stderr, 'undefined: %r, %r' % (cidcoding, cid)
-    return self.undefined_char
-
-  def paint_path(self, gstate, stroke, fill, evenodd, path):
-    shape = ''.join(x[0] for x in path)
-    if shape == 'ml': # horizontal/vertical line
-      (_,x0,y0) = path[0]
-      (_,x1,y1) = path[1]
-      (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
-      (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
-      if y0 == y1:
-        # horizontal ruler
-        self.cur_item.add(LTLine(gstate.linewidth, 'H', (x0,y0,x1,y1)))
-      elif x0 == x1:
-        # vertical ruler
-        self.cur_item.add(LTLine(gstate.linewidth, 'V', (x0,y0,x1,y1)))
-    elif shape == 'mlllh':
-      # rectangle
-      (_,x0,y0) = path[0]
-      (_,x1,y1) = path[1]
-      (_,x2,y2) = path[2]
-      (_,x3,y3) = path[3]
-      (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
-      (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
-      (x2,y2) = apply_matrix_pt(self.ctm, (x2,y2))
-      (x3,y3) = apply_matrix_pt(self.ctm, (x3,y2))
-      if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
-          (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
-        self.cur_item.add(LTRect(gstate.linewidth, (x0,y0,x2,y2)))
-    return
-  
-  def render_chars(self, textmatrix, textstate, chars):
-    if not chars: return (0, 0)
-    item = LTTextItem(textmatrix, textstate.font, textstate.fontsize,
-                      textstate.charspace, textstate.scaling, chars)
-    self.cur_item.add(item)
-    return item.adv
-
-  def render_string(self, textstate, textmatrix, seq):
-    font = textstate.font
-    textmatrix = mult_matrix(textmatrix, self.ctm)
-    scaling = textstate.scaling * .01
-    dxscale = scaling / (font.hscale*1000) * .01
-    wordspace = textstate.wordspace * scaling
-    chars = []
-    for x in seq:
-      if isinstance(x, int) or isinstance(x, float):
-        (dx,dy) = self.render_chars(textmatrix, textstate, chars)
-        textmatrix = translate_matrix(textmatrix, (dx-x*dxscale, dy))
-        chars = []
-      else:
-        for cid in font.decode(x):
-          try:
-            char = font.to_unicode(cid)
-          except PDFUnicodeNotDefined, e:
-            (cidcoding, cid) = e.args
-            char = self.handle_undefined_char(cidcoding, cid)
-          chars.append((char, cid))
-          if cid == 32 and textstate.wordspace and not font.is_multibyte():
-            (dx,dy) = self.render_chars(textmatrix, textstate, chars)
-            textmatrix = translate_matrix(textmatrix, (dx+wordspace, dy))
-            chars = []
-    self.render_chars(textmatrix, textstate, chars)
-    return
-
-
-##  PDFConverter
-##
-class PDFConverter(PDFPageAggregator):
-  
-  def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None):
-    PDFPageAggregator.__init__(self, rsrc, pageno=pageno, laparams=laparams)
-    self.outfp = outfp
-    self.codec = codec
-    return
-
-  def write(self, text):
-    self.outfp.write(enc(text, self.codec))
-    return
-  
-  
 ##  TagExtractor
 ##
 class TagExtractor(PDFDevice):
@@ -138,12 +18,12 @@ class TagExtractor(PDFDevice):
     self.tag = None
     return
   
-  def render_string(self, textstate, textmatrix, seq):
+  def render_string(self, textstate, seq):
     font = textstate.font
     text = ''
-    for x in seq:
-      if not isinstance(x, str): continue
-      chars = font.decode(x)
+    for obj in seq:
+      if not isinstance(obj, str): continue
+      chars = font.decode(obj)
       for cid in chars:
         try:
           char = font.to_unicode(cid)
@@ -186,6 +66,92 @@ class TagExtractor(PDFDevice):
     return
 
 
+##  PDFPageAggregator
+##
+class PDFPageAggregator(PDFTextDevice):
+
+  def __init__(self, rsrc, pageno=1, laparams=None):
+    PDFTextDevice.__init__(self, rsrc)
+    self.laparams = laparams
+    self.pageno = pageno
+    self.stack = []
+    return
+
+  def begin_page(self, page):
+    self.cur_item = LTPage(self.pageno, page.mediabox, page.rotate)
+    return
+  
+  def end_page(self, _):
+    assert not self.stack
+    assert isinstance(self.cur_item, LTPage)
+    self.cur_item.fixate()
+    if self.laparams:
+      self.cur_item.analyze_layout(self.laparams)
+    self.pageno += 1
+    return self.cur_item
+
+  def begin_figure(self, name, bbox, matrix):
+    self.stack.append(self.cur_item)
+    self.cur_item = LTFigure(name, bbox, matrix)
+    return
+  
+  def end_figure(self, _):
+    fig = self.cur_item
+    self.cur_item.fixate()
+    self.cur_item = self.stack.pop()
+    self.cur_item.add(fig)
+    return
+
+  def paint_path(self, gstate, stroke, fill, evenodd, path):
+    shape = ''.join(x[0] for x in path)
+    if shape == 'ml': # horizontal/vertical line
+      (_,x0,y0) = path[0]
+      (_,x1,y1) = path[1]
+      (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
+      (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
+      if y0 == y1:
+        # horizontal ruler
+        self.cur_item.add(LTLine(gstate.linewidth, 'H', (x0,y0,x1,y1)))
+      elif x0 == x1:
+        # vertical ruler
+        self.cur_item.add(LTLine(gstate.linewidth, 'V', (x0,y0,x1,y1)))
+    elif shape == 'mlllh':
+      # rectangle
+      (_,x0,y0) = path[0]
+      (_,x1,y1) = path[1]
+      (_,x2,y2) = path[2]
+      (_,x3,y3) = path[3]
+      (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
+      (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
+      (x2,y2) = apply_matrix_pt(self.ctm, (x2,y2))
+      (x3,y3) = apply_matrix_pt(self.ctm, (x3,y2))
+      if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
+          (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
+        self.cur_item.add(LTRect(gstate.linewidth, (x0,y0,x2,y2)))
+    return
+  
+  def render_chars(self, matrix, font, fontsize, charspace, scaling, chars):
+    if not chars: return (0, 0)
+    item = LTTextItem(matrix, font, fontsize, charspace, scaling, chars)
+    self.cur_item.add(item)
+    return item.adv
+
+
+##  PDFConverter
+##
+class PDFConverter(PDFPageAggregator):
+  
+  def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None):
+    PDFPageAggregator.__init__(self, rsrc, pageno=pageno, laparams=laparams)
+    self.outfp = outfp
+    self.codec = codec
+    return
+
+  def write(self, text):
+    self.outfp.write(enc(text, self.codec))
+    return
+  
+  
 ##  SGMLConverter
 ##
 class SGMLConverter(PDFConverter):
