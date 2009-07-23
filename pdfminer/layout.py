@@ -459,11 +459,11 @@ class LTPage(LayoutContainer):
         return obj1.width * laparams.line_overlap < obj1.hoverlap(obj2)
       def vorder(obj1, obj2):
         if obj1.voverlap(obj2):
-          return obj2.x1 < obj1.x1
+          return obj2.x1 < obj1.x0
         elif obj1.hoverlap(obj2):
-          return obj2.y1 < obj1.y1
+          return obj2.y1 < obj1.y0
         else:
-          return obj2.x1 < obj1.x1 and obj2.y1 < obj1.y1
+          return obj2.x1 < obj1.x0 and obj2.y1 < obj1.y0
       lines = ClusterSet.build(textobjs, 0, laparams.char_margin,
                                (lambda id,objs: LTTextLine(id, objs, 'V', laparams.word_margin)),
                                vline)
@@ -475,11 +475,11 @@ class LTPage(LayoutContainer):
         return obj1.height * laparams.line_overlap < obj1.voverlap(obj2)
       def horder(obj1, obj2):
         if obj1.hoverlap(obj2):
-          return obj2.y1 < obj1.y1
+          return obj2.y1 < obj1.y0
         elif obj1.voverlap(obj2):
           return obj1.x1 < obj2.x0
         else:
-          return obj1.x0 < obj2.x0 and obj2.y1 < obj1.y1
+          return obj1.x1 < obj2.x0 and obj2.y1 < obj1.y0
       lines = ClusterSet.build(textobjs, laparams.char_margin, 0,
                                (lambda id,objs: LTTextLine(id, objs, 'H', laparams.word_margin)),
                                hline)
