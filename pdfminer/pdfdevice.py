@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from pdfminer.utils import mult_matrix, translate_matrix
+from pdfminer.utils import mult_matrix, translate_matrix, apply_matrix_norm
+from pdfminer.pdffont import PDFUnicodeNotDefined
 
 
 ##  PDFDevice
@@ -64,17 +65,20 @@ class PDFTextDevice(PDFDevice):
     matrix = mult_matrix(textstate.matrix, self.ctm)
     font = textstate.font
     fontsize = textstate.fontsize
-    charspace = textstate.charspace
     scaling = textstate.scaling * .01
+    charspace = textstate.charspace * scaling
     wordspace = textstate.wordspace * scaling
-    dxscale = scaling / (font.hscale*1000) * .01
+    dxscale = .001 * fontsize * scaling
     chars = []
     (x,y) = textstate.linematrix
     for obj in seq:
       if isinstance(obj, int) or isinstance(obj, float):
         (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
                                     fontsize, charspace, scaling, chars)
-        x += dx-obj*dxscale
+        x += dx
+        y += dy
+        (dx,dy) = apply_matrix_norm(matrix, (-obj*dxscale,0))
+        x += dx
         y += dy
         chars = []
       else:
@@ -88,7 +92,10 @@ class PDFTextDevice(PDFDevice):
           if cid == 32 and textstate.wordspace and not font.is_multibyte():
             (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
                                         fontsize, charspace, scaling, chars)
-            x += dx + wordspace
+            x += dx
+            y += dy
+            (dx,dy) = apply_matrix_norm(matrix, (wordspace,0))
+            x += dx
             y += dy
             chars = []
     if chars:
