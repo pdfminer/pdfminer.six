@@ -164,7 +164,7 @@ class PDFStream(PDFObject):
     buf = data
     # some FlateDecode streams have garbage (newlines, etc) appended to the
     # end.  remove chars from the end to try and decompress the buffer
-    while len(buf) > 10:
+    while 8 <= len(buf):
       try:
         # will get errors if the document is encrypted.
         dco = zlib.decompressobj()
