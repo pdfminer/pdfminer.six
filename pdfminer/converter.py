@@ -33,7 +33,7 @@ class TagExtractor(PDFDevice):
     self.outfp.write(enc(text, self.codec))
     return
 
-  def begin_page(self, page):
+  def begin_page(self, page, ctm):
     (x0, y0, x1, y1) = page.mediabox
     bbox = '%.3f,%.3f,%.3f,%.3f' % (x0, y0, x1, y1)
     self.outfp.write('<page id="%s" bbox="%s" rotate="%d">' %
@@ -77,8 +77,12 @@ class PDFPageAggregator(PDFTextDevice):
     self.stack = []
     return
 
-  def begin_page(self, page):
-    self.cur_item = LTPage(self.pageno, page.mediabox, page.rotate)
+  def begin_page(self, page, ctm):
+    (x0,y0,x1,y1) = page.mediabox
+    (x0,y0) = apply_matrix_pt(ctm, (x0,y0))
+    (x1,y1) = apply_matrix_pt(ctm, (x1,y1))
+    mediabox = (0, 0, abs(x0-x1), abs(y0-y1))
+    self.cur_item = LTPage(self.pageno, mediabox)
     return
   
   def end_page(self, _):
@@ -225,10 +229,11 @@ class HTMLConverter(PDFConverter):
   def end_page(self, page):
     def render(item):
       if isinstance(item, LTPage):
+        self.yoffset += item.y1
         self.write_rect('gray', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
         if self.showpageno:
           self.outfp.write('<div style="position:absolute; top:%dpx;">' %
-                           ((self.yoffset-page.y1)*self.scale))
+                           ((self.yoffset-item.y1)*self.scale))
           self.outfp.write('<a name="%s">Page %s</a></div>\n' % (page.id, page.id))
         for child in item:
           render(child)
@@ -256,7 +261,6 @@ class HTMLConverter(PDFConverter):
           render(child)
       return
     page = PDFConverter.end_page(self, page)
-    self.yoffset += page.y1
     render(page)
     self.yoffset += self.pagepad
     return

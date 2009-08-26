@@ -32,7 +32,7 @@ class PDFDevice(object):
   def do_tag(self, tag, props=None):
     return
 
-  def begin_page(self, page):
+  def begin_page(self, page, ctm):
     return
   def end_page(self, page):
     return

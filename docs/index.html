@@ -18,7 +18,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Mon Aug 24 15:56:08 JST 2009
+Last Modified: Thu Aug 27 00:20:29 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -101,6 +101,7 @@ World
 </ol>
 
 <p>
+<a name="cmap"></a>
 <h3>For non-ASCII languages</h3>
 In order to handle non-ASCII languages (e.g. Japanese),
 you need to install an additional data called <code>CMap</code>,
@@ -115,17 +116,16 @@ http://www.unixuser.org/~euske/pub/CMap.tar.bz2
 </a>
 <li> Expand the archive and put the <code>CMap</code> directory under the directory 
 where <code>pdfminer</code> is installed.
-(Normally this should be something like <code>/usr/lib/python2.5/site-packages</code>.)
+(Normally this should be something like <code>/usr/lib/python2.5/site-packages/pdfminer</code>.)
 For example:
 <blockquote><pre>
-$ <strong>cd /usr/lib/python2.5/site-packages</strong>
+$ <strong>cd /usr/lib/python2.5/site-packages/pdfminer</strong>
 $ <strong>tar jxf CMap.tar.bz2</strong>
 </pre></blockquote>
-<li> Do the following. (this is optional, but highly recommended)<br>
+<li> Do the following. (this is optional and may take several minutes, but highly recommended!)<br>
 <blockquote><pre>
 $ <strong>python -m pdfminer.cmap</strong>
 </pre></blockquote>
-This may take several minutes.
 </ol>
 
 <a name="usage"></a>
@@ -319,6 +319,8 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2009/08/27: Fixed page rotation handling.
+<li> 2009/08/26: Fixed zlib decoding bug. Thanks to Shon Urbas.
 <li> 2009/08/24: Fixed a bug in character placing. Thanks to Pawan Jain.
 <li> 2009/07/21: Improvement in layout analysis.
 <li> 2009/07/11: Improvement in layout analysis. Thanks to Lubos Pintes.
