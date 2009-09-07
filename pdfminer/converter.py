@@ -3,7 +3,7 @@ import sys
 from pdfminer.pdfdevice import PDFDevice, PDFTextDevice
 from pdfminer.pdffont import PDFUnicodeNotDefined
 from pdfminer.layout import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextItem, LTTextBox, LTTextLine
-from pdfminer.utils import apply_matrix_pt, enc
+from pdfminer.utils import apply_matrix_pt, mult_matrix, enc
 
 
 ##  TagExtractor
@@ -96,7 +96,7 @@ class PDFPageAggregator(PDFTextDevice):
 
   def begin_figure(self, name, bbox, matrix):
     self.stack.append(self.cur_item)
-    self.cur_item = LTFigure(name, bbox, matrix)
+    self.cur_item = LTFigure(name, bbox, mult_matrix(matrix, self.ctm))
     return
   
   def end_figure(self, _):
@@ -173,7 +173,7 @@ class SGMLConverter(PDFConverter):
       elif isinstance(item, LTRect):
         self.outfp.write('<rect linewidth="%d" bbox="%s" />' % (item.linewidth, item.get_bbox()))
       elif isinstance(item, LTFigure):
-        self.outfp.write('<figure id="%s">\n' % (item.id))
+        self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
         for child in item:
           render(child)
         self.outfp.write('</figure>\n')
@@ -257,6 +257,10 @@ class HTMLConverter(PDFConverter):
           render(child)
       elif isinstance(item, LTTextBox):
         self.write_rect('blue', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
+        for child in item:
+          render(child)
+      elif isinstance(item, LTFigure):
+        self.write_rect('green', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
         for child in item:
           render(child)
       return

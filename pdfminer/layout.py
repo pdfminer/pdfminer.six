@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from pdfminer.utils import apply_matrix_norm, bsearch
+from pdfminer.utils import apply_matrix_norm, apply_matrix_pt, bsearch
 INF = sys.maxint
 
 
@@ -271,7 +271,8 @@ class LTTextItem(LayoutItem, LTText):
     self.text = ''.join( char for (char,_) in chars )
     adv = sum( font.char_width(cid) for (_,cid) in chars )
     adv = (adv * fontsize + len(chars)*charspace) * scaling
-    size = (font.get_ascent() - font.get_descent()) * fontsize
+    #size = (font.get_ascent() - font.get_descent()) * fontsize
+    size = font.get_size() * fontsize
     if not self.vertical:
       # horizontal text
       self.vertical = False
@@ -319,8 +320,18 @@ class LTTextItem(LayoutItem, LTText):
 class LTFigure(LayoutContainer):
   
   def __init__(self, id, bbox, matrix):
-    LayoutContainer.__init__(self, id, bbox)
+    (x,y,w,h) = bbox
+    x0 = y0 = INF
+    x1 = y1 = -INF
+    for (p,q) in ((x,y),(x+w,y),(x,y+h),(x+w,y+h)):
+      (p,q) = apply_matrix_pt(matrix, (p,q))
+      x0 = min(x0, p)
+      x1 = max(x1, p)
+      y0 = min(y0, q)
+      y1 = max(y1, q)
+    bbox = (x0,y0,x1,y1)
     self.matrix = matrix
+    LayoutContainer.__init__(self, id, bbox)
     return
 
   def __repr__(self):

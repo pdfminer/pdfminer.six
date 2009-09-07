@@ -330,6 +330,9 @@ class PDFFont(object):
     self.default_width = default_width or descriptor.get('MissingWidth', 0)
     self.leading = num_value(descriptor.get('Leading', 0))
     self.bbox = list_value(descriptor.get('FontBBox', (0,0,0,0)))
+    self.size = self.bbox[3]-self.bbox[1]
+    if self.size == 0:
+      self.size = self.ascent - self.descent
     self.hscale = self.vscale = .001
     return
 
@@ -349,7 +352,9 @@ class PDFFont(object):
     return self.ascent * self.vscale
   def get_descent(self):
     return self.descent * self.vscale
-
+  def get_size(self):
+    return (self.bbox[3] - self.bbox[1]) * self.vscale
+    
   def char_width(self, cid):
     return self.widths.get(cid, self.default_width) * self.hscale
 
