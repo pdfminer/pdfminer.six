@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from pdfminer.utils import mult_matrix, translate_matrix, apply_matrix_norm
 from pdfminer.pdffont import PDFUnicodeNotDefined
 
