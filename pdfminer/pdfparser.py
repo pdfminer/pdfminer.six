@@ -463,7 +463,7 @@ class PDFDocument(object):
       if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
         if 1 <= self.debug:
           print >>stderr, 'Pages: Kids=%r' % tree['Kids']
-        for c in tree['Kids']:
+        for c in list_value(tree['Kids']):
           for x in search(c, tree):
             yield x
       elif tree.get('Type') is LITERAL_PAGE:
