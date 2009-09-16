@@ -353,7 +353,7 @@ class PDFFont(object):
   def get_descent(self):
     return self.descent * self.vscale
   def get_size(self):
-    return (self.bbox[3] - self.bbox[1]) * self.vscale
+    return self.size * self.vscale
     
   def char_width(self, cid):
     return self.widths.get(cid, self.default_width) * self.hscale
