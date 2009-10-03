@@ -13,7 +13,7 @@ def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
           a0*e1+c0*f1+e0, b0*e1+d0*f1+f0)
 
 def translate_matrix((a,b,c,d,e,f), (x,y)):
-  return (a,b,c,d,e+x,f+y)
+  return (a,b,c,d,x*a+y*c+e,x*b+y*d+f)
   
 def apply_matrix_pt((a,b,c,d,e,f), (x,y)):
   '''Applies a matrix to a point.'''

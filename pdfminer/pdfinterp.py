@@ -12,7 +12,7 @@ from pdfminer.psparser import PSException, PSTypeError, PSEOF, \
 from pdfminer.pdftypes import PDFException, PDFStream, PDFObjRef, \
      resolve1, int_value, float_value, num_value, \
      str_value, list_value, dict_value, stream_value
-from pdfminer.utils import choplist, mult_matrix, translate_matrix, MATRIX_IDENTITY
+from pdfminer.utils import choplist, mult_matrix, MATRIX_IDENTITY
 from pdfminer.pdffont import PDFFontError, PDFType1Font, PDFTrueTypeFont, PDFType3Font, PDFCIDFont
 from pdfminer.pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
 from pdfminer.pdfcolor import PDFColorSpace, PREDEFINED_COLORSPACE, \

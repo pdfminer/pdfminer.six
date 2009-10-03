@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from pdfminer.utils import mult_matrix, translate_matrix, apply_matrix_norm
+from pdfminer.utils import mult_matrix, translate_matrix
 from pdfminer.pdffont import PDFUnicodeNotDefined
 
 
@@ -78,9 +78,11 @@ class PDFTextDevice(PDFDevice):
                                     fontsize, charspace, scaling, chars)
         x += dx
         y += dy
-        (dx,dy) = apply_matrix_norm(matrix, (-obj*dxscale,0))
-        x += dx
-        y += dy
+        d = -obj*dxscale
+        if font.is_vertical():
+          y += d
+        else:
+          x += d
         chars = []
       else:
         for cid in font.decode(obj):
@@ -95,9 +97,10 @@ class PDFTextDevice(PDFDevice):
                                         fontsize, charspace, scaling, chars)
             x += dx
             y += dy
-            (dx,dy) = apply_matrix_norm(matrix, (wordspace,0))
-            x += dx
-            y += dy
+            if font.is_vertical():
+              y += wordspace
+            else:
+              x += wordspace
             chars = []
     if chars:
       (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,

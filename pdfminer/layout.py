@@ -266,29 +266,28 @@ class LTTextItem(LayoutItem, LTText):
     assert chars
     self.matrix = matrix
     self.font = font
-    (_,_,_,_,tx,ty) = self.matrix
-    self.vertical = self.font.is_vertical()
+    self.vertical = font.is_vertical()
     self.text = ''.join( char for (char,_) in chars )
     adv = sum( font.char_width(cid) for (_,cid) in chars )
     adv = (adv * fontsize + len(chars)*charspace) * scaling
     #size = (font.get_ascent() - font.get_descent()) * fontsize
     size = font.get_size() * fontsize
+    (_,_,_,_,tx,ty) = self.matrix
     if not self.vertical:
       # horizontal text
-      self.vertical = False
+      self.adv = (adv, 0)
       (dx,dy) = apply_matrix_norm(self.matrix, (adv,size))
       (_,descent) = apply_matrix_norm(self.matrix, (0,font.get_descent() * fontsize))
       ty += descent
-      self.adv = (dx, 0)
       bbox = (tx, ty, tx+dx, ty+dy)
     else:
       # vertical text
+      self.adv = (0, adv)
       (_,cid) = chars[0]
       (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-font.char_disp(cid))*fontsize*.001))
       (dx,dy) = apply_matrix_norm(self.matrix, (size,adv))
       tx -= dx/2
       ty += disp
-      self.adv = (0, dy)
       bbox = (tx, ty+dy, tx+dx, ty)
     self.fontsize = max(apply_matrix_norm(self.matrix, (size,size)))
     LayoutItem.__init__(self, bbox)
