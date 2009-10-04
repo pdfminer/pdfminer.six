@@ -3,4 +3,3 @@ TODOs:
   - Better API Documentation.
   - Robust error handling.
   - Any special handling for linearized PDFs?
-  - Support writing/creating PDFs.
