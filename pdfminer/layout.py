@@ -269,7 +269,7 @@ class LTTextItem(LayoutItem, LTText):
     self.vertical = font.is_vertical()
     self.text = ''.join( char for (char,_) in chars )
     adv = sum( font.char_width(cid) for (_,cid) in chars )
-    adv = (adv * fontsize + len(chars)*charspace) * scaling
+    adv = (adv * fontsize + (len(chars)-1)*charspace) * scaling
     #size = (font.get_ascent() - font.get_descent()) * fontsize
     size = font.get_size() * fontsize
     (_,_,_,_,tx,ty) = self.matrix

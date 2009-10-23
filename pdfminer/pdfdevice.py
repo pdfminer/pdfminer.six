@@ -71,6 +71,7 @@ class PDFTextDevice(PDFDevice):
     wordspace = textstate.wordspace * scaling
     dxscale = .001 * fontsize * scaling
     chars = []
+    needspace = False
     (x,y) = textstate.linematrix
     for obj in seq:
       if isinstance(obj, int) or isinstance(obj, float):
@@ -84,6 +85,7 @@ class PDFTextDevice(PDFDevice):
         else:
           x += d
         chars = []
+        needspace = False
       else:
         for cid in font.decode(obj):
           try:
@@ -93,8 +95,14 @@ class PDFTextDevice(PDFDevice):
             char = self.handle_undefined_char(cidcoding, cid)
           chars.append((char, cid))
           if cid == 32 and textstate.wordspace and not font.is_multibyte():
+            if needspace:
+              if font.is_vertical():
+                y += charspace
+              else:
+                x += charspace
             (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
                                         fontsize, charspace, scaling, chars)
+            needspace = True
             x += dx
             y += dy
             if font.is_vertical():
@@ -103,6 +111,11 @@ class PDFTextDevice(PDFDevice):
               x += wordspace
             chars = []
     if chars:
+      if needspace:
+        if font.is_vertical():
+          y += charspace
+        else:
+          x += charspace
       (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
                                   fontsize, charspace, scaling, chars)
       x += dx

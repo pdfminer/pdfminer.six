@@ -18,7 +18,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Oct  4 12:47:18 JST 2009
+Last Modified: Thu Oct 15 19:01:07 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -141,6 +141,7 @@ PDFMiner comes with two handy tools:
 <p>
 <code>pdf2txt.py</code> extracts text contents from a PDF file.
 It extracts all the texts that are to be rendered programmatically,
+ie. text represented as ASCII or Unicode strings.
 It cannot recognize texts drawn as images that would require optical character recognition.
 It also extracts the corresponding locations, font names, font sizes, writing
 direction (horizontal or vertical) for each text portion.
@@ -183,9 +184,9 @@ By default, it extracts texts from all the pages.
 <dt> <code>-t <em>type</em></code> 
 <dd> Specifies the output format. The following formats are currently supported.
 <ul>
-<li> <code>html</code> : HTML format. (Default)
-<li> <code>text</code> : TEXT format.
-<li> <code>sgml</code> : SGML format.
+<li> <code>text</code> : TEXT format. (Default)
+<li> <code>html</code> : HTML format. Not recommended for extraction purpose because the markup is very messy.
+<li> <code>sgml</code> : SGML format. Provides the most information available.
 <li> <code>tag</code> : "Tagged PDF" format. A tagged PDF has its own contents annotated with
 HTML-like tags. pdf2txt tries to extract its content streams rather than inferring its text locations.
 Tags used here are defined in the PDF specification (See &sect;10.7 "<em>Tagged PDF</em>").
