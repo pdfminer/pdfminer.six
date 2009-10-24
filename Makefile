@@ -33,10 +33,10 @@ commit: clean
 check:
 	cd $(PACKAGE) && make check
 
-dist/$(DISTFILE): clean
+sdist: clean
 	$(PYTHON) setup.py sdist
 
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
-publish: dist/$(DISTFILE)
+publish: sdist
 	$(CP) dist/$(DISTFILE) $(WEBDIR)
 	$(CP) docs/*.html $(WEBDIR)/index.html
