@@ -18,9 +18,22 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sat Oct 24 11:49:05 JST 2009
+Last Modified: Sat Oct 24 12:42:25 JST 2009
 <!-- hhmts end -->
 </div>
+
+<ul>
+<li> <a href="#intro">What's It?</a>
+<li> <a href="#source">Download</a>
+<li> <a href="#install">Install</a> 
+&nbsp; <small>(<a href="#cmap">for non-ASCII languages</a>)</small>
+<li> <a href="#usage">How to Use</a>
+&nbsp; <small>(<a href="#pdf2txt">pdf2txt.py</a>, <a href="#dumppdf">dumppdf.py</a>)</small>
+<li> <a href="#todos">TODOs</a>
+<li> <a href="#changes">Changes</a>
+<li> <a href="#related">Related Projects</a>
+<li> <a href="#license">Terms and Conditions</a>
+</ul>
 
 <a name="intro"></a>
 <hr noshade>
@@ -76,7 +89,7 @@ http://pdf2html.tabesugi.net:8080/
 
 <a name="install"></a>
 <hr noshade>
-<h2>How to Install</h2>
+<h2>Install</h2>
 
 <ol>
 <li> Install <a href="http://www.python.org/download/">Python</a> 2.4 or newer.
@@ -89,13 +102,22 @@ http://pdf2html.tabesugi.net:8080/
 <li> Do the following test:<br>
 <blockquote><pre>
 $ <strong>pdf2txt.py samples/simple1.pdf</strong>
-
+Hello
 
 Hello
 
 World
 
- Hello  World
+World
+
+Hello
+
+World
+
+H e l l o
+
+W o r l d
+
 </pre></blockquote>
 <li> Done!
 </ol>
@@ -316,6 +338,16 @@ no stream header is displayed for the ease of saving it to a file.
 <dd> Increases the debug level.
 </dl>
 
+<a name="todos"></a>
+<hr noshade>
+<h2>TODOs</h2>
+<ul>
+<li> PEP-8 conformance.
+<li> Better text extraction / layout analysis.
+<li> Better API Documentation.
+<li> Robust error handling.
+</ul>
+
 <a name="changes"></a>
 <hr noshade>
 <h2>Changes</h2>
@@ -360,6 +392,8 @@ no stream header is displayed for the ease of saving it to a file.
 <a name="license"></a>
 <hr noshade>
 <h2>Terms and Conditions</h2>
+<p>
+(This is so-called MIT/X License)
 <p>
 <small>
 Copyright (c) 2004-2009  Yusuke Shinyama &lt;yusuke at cs dot nyu dot edu&gt;
