@@ -10,14 +10,14 @@ LITERAL_DEVICE_RGB = PSLiteralTable.intern('DeviceRGB')
 LITERAL_DEVICE_CMYK = PSLiteralTable.intern('DeviceCMYK')
 
 class PDFColorSpace(object):
-  
-  def __init__(self, name, ncomponents):
-    self.name = name
-    self.ncomponents = ncomponents
-    return
-  
-  def __repr__(self):
-    return '<PDFColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
+
+    def __init__(self, name, ncomponents):
+        self.name = name
+        self.ncomponents = ncomponents
+        return
+
+    def __repr__(self):
+        return '<PDFColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
 
 
 PREDEFINED_COLORSPACE = dict(

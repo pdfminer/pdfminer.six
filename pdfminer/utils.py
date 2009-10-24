@@ -7,21 +7,21 @@ from struct import unpack
 MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
 
 def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
-  '''Multiplies two matrices.'''
-  return (a0*a1+c0*b1,    b0*a1+d0*b1,
-          a0*c1+c0*d1,    b0*c1+d0*d1,
-          a0*e1+c0*f1+e0, b0*e1+d0*f1+f0)
+    '''Multiplies two matrices.'''
+    return (a0*a1+c0*b1,    b0*a1+d0*b1,
+            a0*c1+c0*d1,    b0*c1+d0*d1,
+            a0*e1+c0*f1+e0, b0*e1+d0*f1+f0)
 
 def translate_matrix((a,b,c,d,e,f), (x,y)):
-  return (a,b,c,d,x*a+y*c+e,x*b+y*d+f)
-  
+    return (a,b,c,d,x*a+y*c+e,x*b+y*d+f)
+
 def apply_matrix_pt((a,b,c,d,e,f), (x,y)):
-  '''Applies a matrix to a point.'''
-  return (a*x+c*y+e, b*x+d*y+f)
+    '''Applies a matrix to a point.'''
+    return (a*x+c*y+e, b*x+d*y+f)
 
 def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
-  '''Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))'''
-  return (a*p+c*q, b*p+d*q)
+    '''Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))'''
+    return (a*p+c*q, b*p+d*q)
 
 
 ##  Utility functions
@@ -29,62 +29,62 @@ def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
 
 # pick
 def pick(seq, func, maxobj=None):
-  '''Picks the object that has the highest value of func(obj).'''
-  maxscore = None
-  for obj in seq:
-    score = func(obj)
-    if maxscore == None or maxscore < score:
-      (maxscore,maxobj) = (score,obj)
-  return maxobj
+    '''Picks the object that has the highest value of func(obj).'''
+    maxscore = None
+    for obj in seq:
+        score = func(obj)
+        if maxscore == None or maxscore < score:
+            (maxscore,maxobj) = (score,obj)
+    return maxobj
 
 # bsearch
 def bsearch(objs, v0):
-  '''Tries to find the closest value to v0.'''
-  i0 = 0
-  i1 = len(objs)
-  while i0 < i1:
-    i = (i0+i1)/2
-    (v, obj) = objs[i]
-    if v0 == v:
-      (i0,i1) = (i,i+1)
-      while 0 < i0 and objs[i0-1][0] == v0:
-        i0 -= 1
-      while i1 < len(objs)-1 and objs[i1][0] == v0:
-        i1 += 1
-      break
-    elif v0 < v:
-      i1 = i
-    else:
-      i0 = i+1
-  return (i0,i1)
+    '''Tries to find the closest value to v0.'''
+    i0 = 0
+    i1 = len(objs)
+    while i0 < i1:
+        i = (i0+i1)/2
+        (v, obj) = objs[i]
+        if v0 == v:
+            (i0,i1) = (i,i+1)
+            while 0 < i0 and objs[i0-1][0] == v0:
+                i0 -= 1
+            while i1 < len(objs)-1 and objs[i1][0] == v0:
+                i1 += 1
+            break
+        elif v0 < v:
+            i1 = i
+        else:
+            i0 = i+1
+    return (i0,i1)
 
 # choplist
 def choplist(n, seq):
-  '''Groups every n elements of the list.'''
-  r = []
-  for x in seq:
-    r.append(x)
-    if len(r) == n:
-      yield tuple(r)
-      r = []
-  return
+    '''Groups every n elements of the list.'''
+    r = []
+    for x in seq:
+        r.append(x)
+        if len(r) == n:
+            yield tuple(r)
+            r = []
+    return
 
 # nunpack
 def nunpack(s, default=0):
-  '''Unpacks up to 4 bytes big endian.'''
-  l = len(s)
-  if not l:
-    return default
-  elif l == 1:
-    return ord(s)
-  elif l == 2:
-    return unpack('>H', s)[0]
-  elif l == 3:
-    return unpack('>L', '\x00'+s)[0]
-  elif l == 4:
-    return unpack('>L', s)[0]
-  else:
-    return TypeError('invalid length: %d' % l)
+    '''Unpacks up to 4 bytes big endian.'''
+    l = len(s)
+    if not l:
+        return default
+    elif l == 1:
+        return ord(s)
+    elif l == 2:
+        return unpack('>H', s)[0]
+    elif l == 3:
+        return unpack('>L', '\x00'+s)[0]
+    elif l == 4:
+        return unpack('>L', s)[0]
+    else:
+        return TypeError('invalid length: %d' % l)
 
 # decode_text
 PDFDocEncoding = ''.join( unichr(x) for x in (
@@ -122,14 +122,14 @@ PDFDocEncoding = ''.join( unichr(x) for x in (
   0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff,
 ))
 def decode_text(s):
-  '''Decodes a PDFDocEncoding string to Unicode.'''
-  if s.startswith('\xfe\xff'):
-    return unicode(s[2:], 'utf-16be', 'ignore')
-  else:
-    return ''.join( PDFDocEncoding[ord(c)] for c in s )
+    '''Decodes a PDFDocEncoding string to Unicode.'''
+    if s.startswith('\xfe\xff'):
+        return unicode(s[2:], 'utf-16be', 'ignore')
+    else:
+        return ''.join( PDFDocEncoding[ord(c)] for c in s )
 
 # enc
 def enc(x, codec='ascii'):
-  '''Encodes a string for SGML/XML/HTML'''
-  x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
-  return x.encode(codec, 'xmlcharrefreplace')
+    '''Encodes a string for SGML/XML/HTML'''
+    x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
+    return x.encode(codec, 'xmlcharrefreplace')

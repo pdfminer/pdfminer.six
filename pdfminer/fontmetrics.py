@@ -8,9 +8,9 @@
 
 ###  BEGIN Verbatim copy of the license part
 
-# 
+#
 # Adobe Core 35 AFM Files with 229 Glyph Entries - ReadMe
-# 
+#
 # This file and the 35 PostScript(R) AFM files it accompanies may be
 # used, copied, and distributed for any purpose and without charge,
 # with or without modification, provided that all copyright notices
