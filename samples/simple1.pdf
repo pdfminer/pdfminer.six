@@ -36,12 +36,14 @@ endobj
 stream
 BT
 /F1 24 Tf
-100 600 Td
-0 Tw
-[ ( Hello ) 1000 ( World ) ] TJ
-0 100 Td
-100 Tw
-( Hello World ) Tj
+100 700 Td
+0 Tw 0 Tc [ (Hello ) -4166 (World) ] TJ
+0 -100 Td
+100 Tw 0 Tc (Hello World) Tj
+0 -100 Td
+100 Tw 10 Tc (Hello World) Tj
+0 -100 Td
+0 Tw 0 Tc [ (H) -416 (e) -416 (l) -416 (l) -416 (o) -416 ( ) -416 -4166 (W) -416 (o) -416 (r) -416 (l) -416 (d) ] TJ
 ET
 endstream
 endobj
