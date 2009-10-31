@@ -88,6 +88,7 @@ def main(argv):
         process_pdf(rsrc, device, fp, pagenos, maxpages=maxpages, password=password)
         fp.close()
     device.close()
+    outfp.close()
     return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))
