@@ -1,6 +1,6 @@
 TODO
 Makefile
-README.html
+README.txt
 setup.py
 pdfminer/Makefile
 pdfminer/__init__.py

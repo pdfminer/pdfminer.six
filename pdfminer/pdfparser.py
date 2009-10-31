@@ -343,7 +343,7 @@ class PDFDocument(object):
         key = hash.digest()[:length/8]
         if R == 2:
             # Algorithm 3.4
-            u1 = Arcfour(key).process(password)
+            u1 = Arcfour(key).process(self.PASSWORD_PADDING)
         elif R == 3:
             # Algorithm 3.5
             hash = md5.md5(self.PASSWORD_PADDING) # 2

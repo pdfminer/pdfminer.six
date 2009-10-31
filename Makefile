@@ -36,6 +36,9 @@ check:
 sdist: clean
 	$(PYTHON) setup.py sdist
 
+register: clean
+	$(PYTHON) setup.py sdist upload register
+
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
 publish: sdist
 	$(CP) dist/$(DISTFILE) $(WEBDIR)
