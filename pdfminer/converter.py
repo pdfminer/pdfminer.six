@@ -156,10 +156,16 @@ class PDFConverter(PDFPageAggregator):
         return
 
 
-##  SGMLConverter
+##  XMLConverter
 ##
-class SGMLConverter(PDFConverter):
+class XMLConverter(PDFConverter):
 
+    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None):
+        PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno, laparams=laparams)
+        self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % codec)
+        self.outfp.write('<pages>\n')
+        return
+    
     def end_page(self, page):
         def render(item):
             if isinstance(item, LTPage):
@@ -200,6 +206,10 @@ class SGMLConverter(PDFConverter):
             return
         page = PDFConverter.end_page(self, page)
         render(page)
+        return
+
+    def close(self):
+        self.outfp.write('</pages>\n')
         return
 
 

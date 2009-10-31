@@ -25,30 +25,33 @@ TEXTS= \
 	naacl06-shinyama.txt \
 	nlp2004slides.txt
 
-SGMLS= \
-	simple1.sgml \
-	simple2.sgml \
-	dmca.sgml \
-	f1040nr.sgml \
-	i1040nr.sgml \
-	jo.sgml \
-	kampo.sgml \
-	naacl06-shinyama.sgml \
-	nlp2004slides.sgml
+XMLS= \
+	simple1.xml \
+	simple2.xml \
+	dmca.xml \
+	f1040nr.xml \
+	i1040nr.xml \
+	jo.xml \
+	kampo.xml \
+	naacl06-shinyama.xml \
+	nlp2004slides.xml
 
 all:
 
 clean:
 	-rm $(HTMLS)
 	-rm $(TEXTS)
-	-rm $(SGMLS)
+	-rm $(XMLS)
 
-test: $(HTMLS) $(TEXTS) $(SGMLS)
+test: htmls texts xmls
+htmls: $(HTMLS)
+tests: $(TEXTS)
+xmls: $(XMLS)
 
-.SUFFIXES: .pdf .html .sgml .txt
+.SUFFIXES: .pdf .html .xml .txt
 .pdf.html:
 	$(PDF2TXT) -t html $< > $@
-.pdf.sgml:
-	$(PDF2TXT) -t sgml $< > $@
+.pdf.xml:
+	$(PDF2TXT) -t xml $< > $@
 .pdf.txt:
 	$(PDF2TXT) -t text $< > $@

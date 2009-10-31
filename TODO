@@ -1,5 +1,4 @@
 TODOs:
-  - sgml->xml
   - PEP-8 conformance.
   - Better text extraction / layout analysis.
   - Better API Documentation.
