@@ -1,20 +1,12 @@
 #!/usr/bin/env python
 import sys
-from pdfdevice import PDFDevice
-from pdfdevice import PDFTextDevice
+from pdfdevice import PDFDevice, PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
 from layout import LayoutContainer
-from layout import LTPage
-from layout import LTText
-from layout import LTLine
-from layout import LTRect
-from layout import LTFigure
-from layout import LTTextItem
-from layout import LTTextBox
-from layout import LTTextLine
-from utils import apply_matrix_pt
-from utils import mult_matrix
+from layout import LTPage, LTText, LTLine, LTRect
+from layout import LTFigure, LTTextItem, LTTextBox, LTTextLine
 from utils import enc
+from utils import apply_matrix_pt, mult_matrix
 
 
 ##  TagExtractor

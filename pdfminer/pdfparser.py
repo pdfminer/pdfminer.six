@@ -4,32 +4,19 @@ import re
 import md5
 import struct
 from sys import stderr
-from utils import choplist
-from utils import nunpack
-from utils import decode_text
-from arcfour import Arcfour
 from psparser import PSStackParser
-from psparser import PSSyntaxError
-from psparser import PSEOF
-from psparser import PSLiteralTable
-from psparser import PSKeywordTable
-from psparser import literal_name
-from psparser import keyword_name
+from psparser import PSSyntaxError, PSEOF
+from psparser import PSLiteralTable, PSKeywordTable
+from psparser import literal_name, keyword_name
 from psparser import STRICT
-from pdftypes import PDFException
-from pdftypes import PDFTypeError
-from pdftypes import PDFNotImplementedError
-from pdftypes import PDFStream
-from pdftypes import PDFObjRef
-from pdftypes import resolve1
-from pdftypes import decipher_all
-from pdftypes import int_value
-from pdftypes import float_value
-from pdftypes import num_value
-from pdftypes import str_value
-from pdftypes import list_value
-from pdftypes import dict_value
-from pdftypes import stream_value
+from pdftypes import PDFException, PDFTypeError, PDFNotImplementedError
+from pdftypes import PDFStream, PDFObjRef
+from pdftypes import resolve1, decipher_all
+from pdftypes import int_value, float_value, num_value
+from pdftypes import str_value, list_value, dict_value, stream_value
+from arcfour import Arcfour
+from utils import choplist, nunpack
+from utils import decode_text
 
 
 ##  Exceptions

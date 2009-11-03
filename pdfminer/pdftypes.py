@@ -3,13 +3,9 @@ import sys
 import zlib
 from lzw import LZWDecoder
 from psparser import PSException
-from psparser import PSObject
-from psparser import PSLiteral
-from psparser import PSKeyword
-from psparser import PSLiteralTable
-from psparser import PSKeywordTable
-from psparser import literal_name
-from psparser import keyword_name
+from psparser import PSObject, PSLiteral, PSKeyword
+from psparser import PSLiteralTable, PSKeywordTable
+from psparser import literal_name, keyword_name
 from psparser import STRICT
 
 LITERAL_CRYPT = PSLiteralTable.intern('Crypt')

@@ -1,33 +1,19 @@
 #!/usr/bin/env python
 import sys
-from cmap import CMap
-from cmap import CMapDB
-from cmap import CMapParser
-from cmap import FontMetricsDB
-from cmap import EncodingDB
-from struct import pack
-from struct import unpack
-from psparser import PSLiteralTable
-from psparser import PSKeywordTable
-from psparser import PSLiteral
-from psparser import literal_name
-from psparser import keyword_name
-from psparser import STRICT
-from pdftypes import PDFException
-from pdftypes import resolve1
-from pdftypes import int_value
-from pdftypes import float_value
-from pdftypes import num_value
-from pdftypes import str_value
-from pdftypes import list_value
-from pdftypes import dict_value
-from pdftypes import stream_value
-from utils import apply_matrix_norm
-from utils import nunpack
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
+from cmap import CMap, CMapDB, CMapParser
+from cmap import FontMetricsDB, EncodingDB
+from struct import pack, unpack
+from psparser import STRICT
+from psparser import PSLiteralTable, PSKeywordTable
+from psparser import PSLiteral, literal_name, keyword_name
+from pdftypes import PDFException, resolve1
+from pdftypes import int_value, float_value, num_value
+from pdftypes import str_value, list_value, dict_value, stream_value
+from utils import apply_matrix_norm, nunpack
 
 
 ##  CFFFont

@@ -7,8 +7,7 @@
 ##  http://www.efgh.com/software/rijndael.htm
 ##
 import sys
-from struct import pack
-from struct import unpack
+from struct import pack, unpack
 
 def KEYLENGTH(keybits): return (keybits)/8
 def RKLENGTH(keybits): return (keybits)/8+28

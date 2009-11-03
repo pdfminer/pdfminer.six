@@ -8,8 +8,7 @@
 
 import sys
 import os
-from struct import pack
-from struct import unpack
+from struct import pack, unpack
 from array import array
 
 

@@ -58,8 +58,8 @@ def main(argv):
     PDFPageInterpreter.debug = debug
     PDFDevice.debug = debug
     #
-    CMapDB.initialize(cmapdir)
-    rsrc = PDFResourceManager()
+    cmapdb = CMapDB(cmapdir)
+    rsrc = PDFResourceManager(cmapdb)
     if not outtype:
         outtype = 'text'
         if outfile:

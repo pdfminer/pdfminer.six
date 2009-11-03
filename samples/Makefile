@@ -45,7 +45,7 @@ clean:
 
 test: htmls texts xmls
 htmls: $(HTMLS)
-tests: $(TEXTS)
+texts: $(TEXTS)
 xmls: $(XMLS)
 
 .SUFFIXES: .pdf .html .xml .txt

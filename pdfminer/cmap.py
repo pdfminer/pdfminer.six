@@ -4,20 +4,14 @@ import re
 import os
 import os.path
 from sys import stderr
-from struct import pack
-from struct import unpack
+from struct import pack, unpack
+from psparser import PSStackParser
+from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF
+from psparser import PSLiteral, PSKeyword
+from psparser import literal_name, keyword_name
 from fontmetrics import FONT_METRICS
 from latin_enc import ENCODING
 from glyphlist import charname2unicode
-from psparser import PSException
-from psparser import PSSyntaxError
-from psparser import PSTypeError
-from psparser import PSEOF
-from psparser import PSLiteral
-from psparser import PSKeyword
-from psparser import literal_name
-from psparser import keyword_name
-from psparser import PSStackParser
 from utils import choplist
 from utils import nunpack
 try:
@@ -201,36 +195,30 @@ class CMapDB(object):
 
     class CMapNotFound(CMapError): pass
 
-    CMAP_ALIAS = {
-      }
-
+    CMAP_ALIAS = { }
     debug = 0
-    dirname = None
-    cdbdirname = None
-    cmapdb = {}
 
-    @classmethod
-    def initialize(klass, dirname=None, cdbdirname=None):
+    def __init__(self, dirname=None, cdbdirname=None):
         if not dirname:
             dirname = find_cmap_path()
-        klass.dirname = dirname
-        klass.cdbdirname = cdbdirname or dirname
+        self.dirname = dirname
+        self.cdbdirname = cdbdirname or dirname
+        self.cmapdb = {}
         return
 
-    @classmethod
-    def get_cmap(klass, cmapname, strict=True):
-        cmapname = klass.CMAP_ALIAS.get(cmapname, cmapname)
-        if cmapname in klass.cmapdb:
-            cmap = klass.cmapdb[cmapname]
+    def get_cmap(self, cmapname, strict=True):
+        cmapname = self.CMAP_ALIAS.get(cmapname, cmapname)
+        if cmapname in self.cmapdb:
+            cmap = self.cmapdb[cmapname]
         else:
-            fname = os.path.join(klass.dirname, cmapname)
-            cdbname = os.path.join(klass.cdbdirname, cmapname+'.cmap.cdb')
+            fname = os.path.join(self.dirname, cmapname)
+            cdbname = os.path.join(self.cdbdirname, cmapname+'.cmap.cdb')
             if os.path.exists(cdbname):
-                if 1 <= klass.debug:
+                if 1 <= self.debug:
                     print >>stderr, 'Opening: CDBCMap %r...' % cdbname
                 cmap = CDBCMap(cdbname)
             elif os.path.exists(fname):
-                if 1 <= klass.debug:
+                if 1 <= self.debug:
                     print >>stderr, 'Reading: CMap %r...' % fname
                 cmap = CMap()
                 fp = file(fname, 'rb')
@@ -240,7 +228,7 @@ class CMapDB(object):
                 cmap = CMap() # just create empty cmap
             else:
                 raise CMapDB.CMapNotFound(cmapname)
-            klass.cmapdb[cmapname] = cmap
+            self.cmapdb[cmapname] = cmap
         return cmap
 
 

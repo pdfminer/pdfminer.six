@@ -7,43 +7,26 @@ try:
 except ImportError:
     from StringIO import StringIO
 from cmap import CMapDB
-from psparser import PSException
-from psparser import PSTypeError
-from psparser import PSEOF
-from psparser import PSLiteralTable
-from psparser import PSKeywordTable
-from psparser import literal_name
-from psparser import keyword_name
+from psparser import PSException, PSTypeError, PSEOF
+from psparser import PSLiteralTable, PSKeywordTable
+from psparser import PSKeyword, literal_name, keyword_name
 from psparser import PSStackParser
-from psparser import PSKeyword
 from psparser import STRICT
-from pdftypes import PDFException
-from pdftypes import PDFStream
-from pdftypes import PDFObjRef
+from pdftypes import PDFException, PDFStream, PDFObjRef
 from pdftypes import resolve1
-from pdftypes import int_value
-from pdftypes import float_value
-from pdftypes import num_value
-from pdftypes import str_value
-from pdftypes import list_value
-from pdftypes import dict_value
-from pdftypes import stream_value
+from pdftypes import int_value, float_value, num_value
+from pdftypes import str_value, list_value, dict_value, stream_value
 from pdffont import PDFFontError
-from pdffont import PDFType1Font
-from pdffont import PDFTrueTypeFont
-from pdffont import PDFType3Font
+from pdffont import PDFType1Font, PDFTrueTypeFont, PDFType3Font
 from pdffont import PDFCIDFont
-from pdfparser import PDFDocument
-from pdfparser import PDFParser
+from pdfparser import PDFDocument, PDFParser
 from pdfparser import PDFPasswordIncorrect
 from pdfcolor import PDFColorSpace
 from pdfcolor import PREDEFINED_COLORSPACE
-from pdfcolor import LITERAL_DEVICE_GRAY
-from pdfcolor import LITERAL_DEVICE_RGB
+from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
 from pdfcolor import LITERAL_DEVICE_CMYK
 from utils import choplist
-from utils import mult_matrix
-from utils import MATRIX_IDENTITY
+from utils import mult_matrix, MATRIX_IDENTITY
 
 
 ##  Exceptions
@@ -124,8 +107,9 @@ class PDFResourceManager(object):
     '''
     debug = 0
 
-    def __init__(self):
+    def __init__(self, cmapdb):
         self.fonts = {}
+        self.cmapdb = cmapdb
         return
 
     def get_procset(self, procs):
@@ -140,7 +124,7 @@ class PDFResourceManager(object):
         return
 
     def get_cmap(self, cmapname, strict=False):
-        return CMapDB.get_cmap(cmapname, strict=strict)
+        return self.cmapdb.get_cmap(cmapname, strict=strict)
 
     def get_font(self, objid, spec):
         if objid and objid in self.fonts:
