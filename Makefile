@@ -9,9 +9,6 @@ PYTHON=python
 RM=rm -f
 CP=cp -f
 
-VERSION=`$(PYTHON) $(PACKAGE)/__init__.py`
-DISTFILE=$(PACKAGE)-$(VERSION).tar.gz
-
 all:
 
 install:
@@ -39,6 +36,8 @@ sdist: clean
 register: clean
 	$(PYTHON) setup.py sdist upload register
 
+VERSION=`$(PYTHON) $(PACKAGE)/__init__.py`
+DISTFILE=$(PACKAGE)-$(VERSION).tar.gz
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
 publish: sdist
 	$(CP) dist/$(DISTFILE) $(WEBDIR)

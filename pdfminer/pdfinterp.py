@@ -1,23 +1,49 @@
 #!/usr/bin/env python
-import sys, re
-stderr = sys.stderr
+import re
+from sys import stderr
 from struct import pack, unpack
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-from pdfminer.psparser import PSException, PSTypeError, PSEOF, \
-     PSLiteralTable, PSKeywordTable, literal_name, keyword_name, \
-     PSStackParser, PSKeyword, STRICT
-from pdfminer.pdftypes import PDFException, PDFStream, PDFObjRef, \
-     resolve1, int_value, float_value, num_value, \
-     str_value, list_value, dict_value, stream_value
-from pdfminer.utils import choplist, mult_matrix, MATRIX_IDENTITY
-from pdfminer.pdffont import PDFFontError, PDFType1Font, PDFTrueTypeFont, PDFType3Font, PDFCIDFont
-from pdfminer.pdfparser import PDFDocument, PDFParser, PDFPasswordIncorrect
-from pdfminer.pdfcolor import PDFColorSpace, PREDEFINED_COLORSPACE, \
-     LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
-from pdfminer.cmap import CMapDB
+from cmap import CMapDB
+from psparser import PSException
+from psparser import PSTypeError
+from psparser import PSEOF
+from psparser import PSLiteralTable
+from psparser import PSKeywordTable
+from psparser import literal_name
+from psparser import keyword_name
+from psparser import PSStackParser
+from psparser import PSKeyword
+from psparser import STRICT
+from pdftypes import PDFException
+from pdftypes import PDFStream
+from pdftypes import PDFObjRef
+from pdftypes import resolve1
+from pdftypes import int_value
+from pdftypes import float_value
+from pdftypes import num_value
+from pdftypes import str_value
+from pdftypes import list_value
+from pdftypes import dict_value
+from pdftypes import stream_value
+from pdffont import PDFFontError
+from pdffont import PDFType1Font
+from pdffont import PDFTrueTypeFont
+from pdffont import PDFType3Font
+from pdffont import PDFCIDFont
+from pdfparser import PDFDocument
+from pdfparser import PDFParser
+from pdfparser import PDFPasswordIncorrect
+from pdfcolor import PDFColorSpace
+from pdfcolor import PREDEFINED_COLORSPACE
+from pdfcolor import LITERAL_DEVICE_GRAY
+from pdfcolor import LITERAL_DEVICE_RGB
+from pdfcolor import LITERAL_DEVICE_CMYK
+from utils import choplist
+from utils import mult_matrix
+from utils import MATRIX_IDENTITY
 
 
 ##  Exceptions

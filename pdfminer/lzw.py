@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-stderr = sys.stderr
+from sys import stderr
 
 
 ##  LZWDecoder

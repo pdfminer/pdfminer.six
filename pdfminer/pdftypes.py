@@ -1,9 +1,16 @@
 #!/usr/bin/env python
-import sys, zlib
-from pdfminer.lzw import LZWDecoder
-from pdfminer.psparser import PSException, PSObject, \
-     PSLiteral, PSKeyword, PSLiteralTable, PSKeywordTable, \
-     literal_name, keyword_name, STRICT
+import sys
+import zlib
+from lzw import LZWDecoder
+from psparser import PSException
+from psparser import PSObject
+from psparser import PSLiteral
+from psparser import PSKeyword
+from psparser import PSLiteralTable
+from psparser import PSKeywordTable
+from psparser import literal_name
+from psparser import keyword_name
+from psparser import STRICT
 
 LITERAL_CRYPT = PSLiteralTable.intern('Crypt')
 LITERALS_FLATE_DECODE = (PSLiteralTable.intern('FlateDecode'), PSLiteralTable.intern('Fl'))

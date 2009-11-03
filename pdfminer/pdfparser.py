@@ -1,19 +1,35 @@
 #!/usr/bin/env python
-
-# pdfparser.py, Yusuke Shinyama
-#  ver 0.1, Dec 24 2004-
-#  ver 0.2, Dec 24 2007
-
-import sys, re
-import md5, struct
-stderr = sys.stderr
-from pdfminer.utils import choplist, nunpack, decode_text
-from pdfminer.arcfour import Arcfour
-from pdfminer.psparser import PSStackParser, PSSyntaxError, PSEOF, \
-     PSLiteralTable, PSKeywordTable, literal_name, keyword_name, STRICT
-from pdfminer.pdftypes import PDFException, PDFTypeError, PDFNotImplementedError, \
-     PDFStream, PDFObjRef, resolve1, decipher_all, \
-     int_value, float_value, num_value, str_value, list_value, dict_value, stream_value
+import sys
+import re
+import md5
+import struct
+from sys import stderr
+from utils import choplist
+from utils import nunpack
+from utils import decode_text
+from arcfour import Arcfour
+from psparser import PSStackParser
+from psparser import PSSyntaxError
+from psparser import PSEOF
+from psparser import PSLiteralTable
+from psparser import PSKeywordTable
+from psparser import literal_name
+from psparser import keyword_name
+from psparser import STRICT
+from pdftypes import PDFException
+from pdftypes import PDFTypeError
+from pdftypes import PDFNotImplementedError
+from pdftypes import PDFStream
+from pdftypes import PDFObjRef
+from pdftypes import resolve1
+from pdftypes import decipher_all
+from pdftypes import int_value
+from pdftypes import float_value
+from pdftypes import num_value
+from pdftypes import str_value
+from pdftypes import list_value
+from pdftypes import dict_value
+from pdftypes import stream_value
 
 
 ##  Exceptions

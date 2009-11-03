@@ -1,9 +1,20 @@
 #!/usr/bin/env python
 import sys
-from pdfminer.pdfdevice import PDFDevice, PDFTextDevice
-from pdfminer.pdffont import PDFUnicodeNotDefined
-from pdfminer.layout import LayoutContainer, LTPage, LTText, LTLine, LTRect, LTFigure, LTTextItem, LTTextBox, LTTextLine
-from pdfminer.utils import apply_matrix_pt, mult_matrix, enc
+from pdfdevice import PDFDevice
+from pdfdevice import PDFTextDevice
+from pdffont import PDFUnicodeNotDefined
+from layout import LayoutContainer
+from layout import LTPage
+from layout import LTText
+from layout import LTLine
+from layout import LTRect
+from layout import LTFigure
+from layout import LTTextItem
+from layout import LTTextBox
+from layout import LTTextLine
+from utils import apply_matrix_pt
+from utils import mult_matrix
+from utils import enc
 
 
 ##  TagExtractor

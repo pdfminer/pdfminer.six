@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import sys
-from pdfminer.utils import apply_matrix_norm, apply_matrix_pt, bsearch
-INF = sys.maxint
+from sys import maxint as INF
+from utils import apply_matrix_norm
+from utils import apply_matrix_pt
+from utils import bsearch
 
 
 ##  LAParams

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-
 import sys
-from pdfminer.utils import mult_matrix, translate_matrix
-from pdfminer.pdffont import PDFUnicodeNotDefined
+from utils import mult_matrix
+from utils import translate_matrix
+from pdffont import PDFUnicodeNotDefined
 
 
 ##  PDFDevice

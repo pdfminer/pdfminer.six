@@ -6,8 +6,10 @@
 #   * public domain *
 #
 
-import sys, os
-from struct import pack, unpack
+import sys
+import os
+from struct import pack
+from struct import unpack
 from array import array
 
 

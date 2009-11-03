@@ -1,14 +1,25 @@
 #!/usr/bin/env python
-import sys, re, os, os.path
-stderr = sys.stderr
-from struct import pack, unpack
-from pdfminer.utils import choplist, nunpack
-from pdfminer.fontmetrics import FONT_METRICS
-from pdfminer.latin_enc import ENCODING
-from pdfminer.glyphlist import charname2unicode
-from pdfminer.psparser import PSException, PSSyntaxError, PSTypeError, PSEOF, \
-     PSLiteral, PSKeyword, literal_name, keyword_name, \
-     PSStackParser
+import sys
+import re
+import os
+import os.path
+from sys import stderr
+from struct import pack
+from struct import unpack
+from fontmetrics import FONT_METRICS
+from latin_enc import ENCODING
+from glyphlist import charname2unicode
+from psparser import PSException
+from psparser import PSSyntaxError
+from psparser import PSTypeError
+from psparser import PSEOF
+from psparser import PSLiteral
+from psparser import PSKeyword
+from psparser import literal_name
+from psparser import keyword_name
+from psparser import PSStackParser
+from utils import choplist
+from utils import nunpack
 try:
     import cdb
 except ImportError:
