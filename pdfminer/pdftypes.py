@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import sys
 import zlib
-from lzw import LZWDecoder
+from lzw import lzwdecode
+from ascii85 import ascii85decode, asciihexdecode
 from psparser import PSException
 from psparser import PSObject, PSLiteral, PSKeyword
 from psparser import PSLiteralTable, PSKeywordTable
@@ -163,7 +164,6 @@ class PDFStream(PDFObject):
         return '<PDFStream(%r): raw=%d, %r>' % (self.objid, len(self.rawdata), self.dic)
 
     def decomp(self,data):
-        import zlib
         buf = data
         # some FlateDecode streams have garbage (newlines, etc) appended to the
         # end.  remove chars from the end to try and decompress the buffer
@@ -194,17 +194,11 @@ class PDFStream(PDFObject):
                 # will get errors if the document is encrypted.
                 data = self.decomp(data)
             elif f in LITERALS_LZW_DECODE:
-                try:
-                    from cStringIO import StringIO
-                except ImportError:
-                    from StringIO import StringIO
-                data = ''.join(LZWDecoder(StringIO(data)).run())
+                data = lzwdecode(data)
             elif f in LITERALS_ASCII85_DECODE:
-                import ascii85
-                data = ascii85.ascii85decode(data)
+                data = ascii85decode(data)
             elif f in LITERALS_ASCIIHEX_DECODE:
-                import ascii85
-                data = ascii85.asciihexdecode(data)
+                data = asciihexdecode(data)
             elif f == LITERAL_CRYPT:
                 raise PDFNotImplementedError('/Crypt filter is unsupported')
             else:

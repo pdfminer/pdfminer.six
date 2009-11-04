@@ -4,6 +4,10 @@ import re
 import md5
 import struct
 from sys import stderr
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 from psparser import PSStackParser
 from psparser import PSSyntaxError, PSEOF
 from psparser import PSLiteralTable, PSKeywordTable
@@ -695,10 +699,6 @@ class PDFParser(PSStackParser):
 class PDFObjStrmParser(PDFParser):
 
     def __init__(self, doc, data):
-        try:
-            from cStringIO import StringIO
-        except ImportError:
-            from StringIO import StringIO
         PDFParser.__init__(self, doc, StringIO(data))
         return
 

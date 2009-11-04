@@ -1,12 +1,33 @@
 #!/usr/bin/env python
-#
-#  ASCII85/ASCIIHex decoder (Adobe version) implementation
-#  * public domain *
-#
+
+""" Python implementation of ASCII85/ASCIIHex decoder (Adobe version).
+
+This code is in the public domain.
+
+"""
+
+import re
+import struct
 
 # ascii85decode(data)
 def ascii85decode(data):
-    import struct
+    """
+    In ASCII85 encoding, every four bytes are encoded with five ASCII
+    letters, using 85 different types of characters (as 256**4 < 85**5).
+    When the length of the original bytes is not a multiple of 4, a special
+    rule is used for round up.
+    
+    The Adobe's ASCII85 implementation is slightly different from
+    its original in handling the last characters.
+    
+    The sample string is taken from:
+      http://en.wikipedia.org/w/index.php?title=Ascii85
+    
+    >>> ascii85decode('9jqo^BlbD-BleB1DJ+*+F(f,q')
+    'Man is distinguished'
+    >>> ascii85decode('E,9)oF*2M7/c~>')
+    'pleasure.'
+    """
     n = b = 0
     out = ''
     for c in data:
@@ -28,6 +49,8 @@ def ascii85decode(data):
     return out
 
 # asciihexdecode(data)
+hex_re = re.compile(r'([a-f\d]{2})', re.IGNORECASE)
+trail_re = re.compile(r'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
 def asciihexdecode(data):
     """
     ASCIIHexDecode filter: PDFReference v1.4 section 3.3.1
@@ -37,16 +60,14 @@ def asciihexdecode(data):
     EOD. Any other characters will cause an error. If the filter encounters
     the EOD marker after reading an odd number of hexadecimal digits, it
     will behave as if a 0 followed the last digit.
-    >>> asciihexdecode("61 62 2e6364   65")
+    
+    >>> asciihexdecode('61 62 2e6364   65')
     'ab.cde'
-    >>> asciihexdecode("61 62 2e6364   657>")
+    >>> asciihexdecode('61 62 2e6364   657>')
     'ab.cdep'
-    >>> asciihexdecode("7>")
+    >>> asciihexdecode('7>')
     'p'
     """
-    import re
-    hex_re = re.compile(r'([a-f\d]{2})', re.IGNORECASE)
-    trail_re = re.compile(r'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
     decode = (lambda hx: chr(int(hx, 16)))
     out = map(decode, hex_re.findall(data))
     m = trail_re.search(data)
@@ -55,23 +76,6 @@ def asciihexdecode(data):
     return ''.join(out)
 
 
-# test
-# sample taken from: http://en.wikipedia.org/w/index.php?title=Ascii85
 if __name__ == '__main__':
-    orig = r'''
-    9jqo^BlbD-BleB1DJ+*+F(f,q/0JhKF<GL>Cj@.4Gp$d7F!,L7@<6@)/0JDEF<G%<+EV:2F!,
-    O<DJ+*.@<*K0@<6L(Df-\0Ec5e;DffZ(EZee.Bl.9pF"AGXBPCsi+DGm>@3BB/F*&OCAfu2/AKY
-    i(DIb:@FD,*)+C]U=@3BN#EcYf8ATD3s@q?d$AftVqCh[NqF<G:8+EV:.+Cf>-FD5W8ARlolDIa
-    l(DId<j@<?3r@:F%a+D58'ATD4$Bl@l3De:,-DJs`8ARoFb/0JMK@qB4^F!,R<AKZ&-DfTqBG%G
-    >uD.RTpAKYo'+CT/5+Cei#DII?(E,9)oF*2M7/c~>
-    '''
-    data = \
-         'Man is distinguished, not only by his reason, but by this singular passion from '\
-         'other animals, which is a lust of the mind, that by a perseverance of delight in the '\
-         'continued and indefatigable generation of knowledge, exceeds the short vehemence of '\
-         'any carnal pleasure.'
-    assert ascii85decode(orig) == data
-    print 'ascii85decode test succeeded'
-
     import doctest
     doctest.testmod()

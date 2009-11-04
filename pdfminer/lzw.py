@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import sys
 from sys import stderr
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 
 ##  LZWDecoder
@@ -84,16 +88,15 @@ class LZWDecoder(object):
                                  (self.nbits, code, x, self.table[258:]))
         return
 
+# lzwdecode
+def lzwdecode(data):
+    """
+    >>> lzwdecode('\x80\x0b\x60\x50\x22\x0c\x0c\x85\x01')
+    '\x2d\x2d\x2d\x2d\x2d\x41\x2d\x2d\x2d\x42'
+    """
+    fp = StringIO(data)
+    return ''.join(LZWDecoder(fp).run())
 
-def main(argv):
-    import StringIO
-    data = '\x80\x0b\x60\x50\x22\x0c\x0c\x85\x01'
-    fp = StringIO.StringIO(data)
-    expected = '\x2d\x2d\x2d\x2d\x2d\x41\x2d\x2d\x2d\x42'
-    LZWDecoder.debug = 1
-    output = ''.join(LZWDecoder(fp).run())
-    print (data, expected, output)
-    print output == expected
-    return 0
-
-if __name__ == '__main__': sys.exit(main(sys.argv))
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
