@@ -1,10 +1,15 @@
-# -*- python -*-
-#
-#  fontmetrics.py - font metrics for the Adobe core 14 fonts.
-#
-#  The following data were extracted from the AFM files:
-#    http://www.ctan.org/tex-archive/fonts/adobe/afm/
-#
+#!/usr/bin/env python
+
+""" Font metrics for the Adobe core 14 fonts.
+
+Font metrics are used to compute the boundary of each character
+written with a proportional font.
+
+The following data were extracted from the AFM files:
+
+  http://www.ctan.org/tex-archive/fonts/adobe/afm/
+  
+"""
 
 ###  BEGIN Verbatim copy of the license part
 

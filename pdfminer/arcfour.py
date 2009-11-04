@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-#
-#  Arcfour implementation in Python
-#  * public domain *
-#
 
+""" Python implementation of Arcfour encryption algorithm.
+
+This code is in the public domain.
+
+"""
 
 ##  Arcfour
 ##

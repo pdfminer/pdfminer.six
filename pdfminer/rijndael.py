@@ -1,11 +1,15 @@
 #!/usr/bin/env python
-##
-##  rijndael.py
-##  * public domain *
-##
-##  Based on a public domain C implementation by Philip J. Erdelsky
-##  http://www.efgh.com/software/rijndael.htm
-##
+
+""" Python implementation of Rijndael encryption algorithm.
+
+This code is in the public domain.
+
+This code is based on a public domain C implementation
+by Philip J. Erdelsky:
+  http://www.efgh.com/software/rijndael.htm
+
+"""
+
 import sys
 from struct import pack, unpack
 

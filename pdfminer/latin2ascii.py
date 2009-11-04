@@ -1,4 +1,14 @@
-# latin2ascii.py
+#!/usr/bin/env python
+
+""" Mappings from Latin-1 characters to ASCII.
+
+This is an in-house mapping table for some Latin-1 characters
+(acutes, umlauts, etc.) to ASCII strings.
+
+This file is *not* used currently.
+
+"""
+
 LATIN2ASCII = {
   # iso-8859-1
   0x00c0: 'A`',

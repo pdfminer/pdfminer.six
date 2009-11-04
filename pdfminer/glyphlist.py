@@ -1,10 +1,15 @@
-# -*- python -*-
-#
-#  glyphlist.py - mappings from Adobe glyph name to unicode.
-#
-#  The following data was taken from
-#    http://www.adobe.com/devnet/opentype/archives/glyphlist.txt
-#
+#!/usr/bin/env python
+
+""" Mappings from Adobe glyph names to Unicode characters.
+
+In some CMap tables, Adobe glyph names are used for specifying
+Unicode characters instead of using decimal/hex character code.
+
+The following data was taken from
+
+  http://www.adobe.com/devnet/opentype/archives/glyphlist.txt
+
+"""
 
 ###  BEGIN Verbatim copy of the license part
 

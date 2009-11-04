@@ -1,10 +1,16 @@
 #!/usr/bin/env python
-#
-# pycdb.py - Python implementation of cdb and tcdb
-#
-#   by Yusuke Shinyama
-#   * public domain *
-#
+
+""" pycdb - Python implementation of cdb and tcdb
+
+This code is in the public domain.
+
+cdb is a static data structure that was developed by
+D. J. Bernstein. It is suitable for storing a large number
+of items in a disk with efficient seeking.
+
+tcdb is an extention of cdb that support hierarchical lookup.
+
+"""
 
 import sys
 import os

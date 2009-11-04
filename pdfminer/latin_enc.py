@@ -1,6 +1,12 @@
-# latin_enc.py
-# Extracted from PDF Reference Manual 1.6, pp.925
-# "D.1 Latin Character Set and Encodings"
+#!/usr/bin/env python
+
+""" Standard encoding tables used in PDF.
+
+This table is extracted from PDF Reference Manual 1.6, pp.925
+  "D.1 Latin Character Set and Encodings"
+
+"""
+
 ENCODING = [
   # (name, std, mac, win, pdf)
   ('A', 65, 65, 65, 65),
