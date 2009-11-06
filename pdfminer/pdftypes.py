@@ -177,7 +177,7 @@ class PDFStream(PDFObject):
         raise Exception, "zlib.error while decompressing data"
 
     def decode(self):
-        assert self.data == None and self.rawdata != None
+        assert self.data is None and self.rawdata != None
         data = self.rawdata
         if self.decipher:
             # Handle encryption
@@ -231,7 +231,7 @@ class PDFStream(PDFObject):
         return
 
     def get_data(self):
-        if self.data == None:
+        if self.data is None:
             self.decode()
         return self.data
 

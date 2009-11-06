@@ -90,7 +90,7 @@ class CDBReader(object):
         (pos_bucket, ncells) = self._hash0[h1]
         if ncells == 0: raise KeyError(k)
         hs = self._hash1[h1]
-        if hs == None:
+        if hs is None:
             self._fp.seek(pos_bucket)
             hs = decode(self._fp.read(ncells * 8))
             self._hash1[h1] = hs

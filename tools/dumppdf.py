@@ -83,7 +83,7 @@ def dumpallobjs(out, doc, codec=None):
         for objid in xref.objids():
             try:
                 obj = doc.getobj(objid)
-                if obj == None: continue
+                if obj is None: continue
                 out.write('<object id="%d">\n' % objid)
                 dumpxml(out, obj, codec=codec)
                 out.write('\n</object>\n\n')

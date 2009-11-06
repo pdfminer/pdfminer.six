@@ -33,7 +33,7 @@ def pick(seq, func, maxobj=None):
     maxscore = None
     for obj in seq:
         score = func(obj)
-        if maxscore == None or maxscore < score:
+        if maxscore is None or maxscore < score:
             (maxscore,maxobj) = (score,obj)
     return maxobj
 

@@ -513,12 +513,12 @@ class PDFCIDFont(PDFFont):
             dic = {}
             char1 = char2 = None
             for v in seq:
-                if char1 == None:
+                if char1 is None:
                     char1 = v
-                elif char2 == None and isinstance(v, int):
+                elif char2 is None and isinstance(v, int):
                     char2 = v
                 else:
-                    if char2 == None:
+                    if char2 is None:
                         for (i,w) in enumerate(v):
                             dic[char1+i] = w
                     else:
