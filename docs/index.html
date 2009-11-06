@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Wed Nov  4 18:47:49 JST 2009
+Last Modified: Thu Nov  5 22:23:07 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -179,13 +179,13 @@ For non-ASCII languages, you can specify the output encoding
 <p>
 Examples:
 <blockquote><pre>
-$ <strong>pdf2txt.py samples/naacl06-shinyama.pdf -o output.html</strong>
+$ <strong>pdf2txt.py -o output.html samples/naacl06-shinyama.pdf</strong>
 (extract text as an HTML file whose filename is output.html)
 
-$ <strong>pdf2txt.py -c euc-jp samples/jo.pdf -D V -o output.html</strong>
+$ <strong>pdf2txt.py -c euc-jp -D V -o output.html samples/jo.pdf</strong>
 (extract a Japanese HTML file in vertical writing, CMap is required)
 
-$ <strong>pdf2txt.py -P mypassword secret.pdf -o output.txt</strong>
+$ <strong>pdf2txt.py -P mypassword -o output.txt secret.pdf</strong>
 (extract a text from an encrypted PDF file)
 </pre></blockquote>
 

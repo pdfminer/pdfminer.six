@@ -119,6 +119,9 @@ class LayoutItem(object):
         self.set_bbox(bbox)
         return
 
+    def __repr__(self):
+        return ('<item bbox=%s>' % (self.get_bbox()))
+
     def set_bbox(self, (x0,y0,x1,y1)):
         if x1 < x0: (x0,x1) = (x1,x0)
         if y1 < y0: (y0,y1) = (y1,y0)
@@ -130,8 +133,8 @@ class LayoutItem(object):
         self.height = y1-y0
         return
 
-    def __repr__(self):
-        return ('<item bbox=%s>' % (self.get_bbox()))
+    def get_bbox(self):
+        return '%.3f,%.3f,%.3f,%.3f' % (self.x0, self.y0, self.x1, self.y1)
 
     def hoverlap(self, obj):
         assert isinstance(obj, LayoutItem)
@@ -146,9 +149,6 @@ class LayoutItem(object):
             return 0
         else:
             return min(abs(self.y0-obj.y1), abs(self.y1-obj.y0))
-
-    def get_bbox(self):
-        return '%.3f,%.3f,%.3f,%.3f' % (self.x0, self.y0, self.x1, self.y1)
 
     def get_margin(self):
         return 0
