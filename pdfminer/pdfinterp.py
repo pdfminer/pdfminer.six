@@ -8,7 +8,7 @@ except ImportError:
     from StringIO import StringIO
 from cmap import CMapDB
 from psparser import PSException, PSTypeError, PSEOF
-from psparser import PSKeyword, literal_name
+from psparser import PSKeyword, literal_name, keyword_name
 from psparser import PSStackParser
 from psparser import LIT, KWD, STRICT
 from pdftypes import PDFException, PDFStream, PDFObjRef
@@ -734,23 +734,24 @@ class PDFPageInterpreter(object):
             except PSEOF:
                 break
             if isinstance(obj, PSKeyword):
-                name = 'do_%s' % obj.name.replace('*','_a').replace('"','_w').replace("'",'_q')
-                if hasattr(self, name):
-                    func = getattr(self, name)
+                name = keyword_name(obj)
+                method = 'do_%s' % name.replace('*','_a').replace('"','_w').replace("'",'_q')
+                if hasattr(self, method):
+                    func = getattr(self, method)
                     nargs = func.func_code.co_argcount-1
                     if nargs:
                         args = self.pop(nargs)
                         if 1 <= self.debug:
-                            print >>stderr, 'exec: %s %r' % (obj.name, args)
+                            print >>stderr, 'exec: %s %r' % (name, args)
                         if len(args) == nargs:
                             func(*args)
                     else:
                         if 1 <= self.debug:
-                            print >>stderr, 'exec: %s' % (obj.name)
+                            print >>stderr, 'exec: %s' % (name)
                         func()
                 else:
                     if STRICT:
-                        raise PDFInterpreterError('Unknown operator: %r' % obj.name)
+                        raise PDFInterpreterError('Unknown operator: %r' % name)
             else:
                 self.push(obj)
         return
