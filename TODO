@@ -4,4 +4,4 @@ TODOs:
   - Better API Documentation.
   - Robust error handling.
   - Any special handling for linearized PDFs?
-  - Handle security handler. (I need more samples!)
+  - Handle crypt filter. (I need more samples!)

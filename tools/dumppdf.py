@@ -7,8 +7,9 @@
 #    -i objid : object id
 #
 import sys, re
+from pdfminer.psparser import PSKeyword, PSLiteral
 from pdfminer.pdfparser import PDFDocument, PDFParser
-from pdfminer.pdftypes import PDFStream, PDFObjRef, PSKeyword, PSLiteral, resolve1
+from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1
 
 
 ESC_PAT = re.compile(r'[\000-\037&<>()\042\047\134\177-\377]')

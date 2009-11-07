@@ -77,6 +77,9 @@ class ClusterSet(object):
         self.i = 0
         return
 
+    def __repr__(self):
+        return '<cset: %d>' % self.i
+
     # add(objs): groups text objects if necessary.
     def add(self, objs):
         group = self.klass(self.i, objs)
@@ -350,7 +353,7 @@ class LTTextLine(LayoutContainer):
         return
 
     def __repr__(self):
-        return ('<line %s(%s)>' % (self.get_bbox(), self.direction))
+        return ('<textline %s(%s)>' % (self.get_bbox(), self.direction))
 
     def get_margin(self):
         return min(self.width, self.height)
