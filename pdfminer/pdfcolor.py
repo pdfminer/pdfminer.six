@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-from psparser import PSLiteralTable
+from psparser import LIT
 
 
 ##  PDFColorSpace
 ##
-LITERAL_DEVICE_GRAY = PSLiteralTable.intern('DeviceGray')
-LITERAL_DEVICE_RGB = PSLiteralTable.intern('DeviceRGB')
-LITERAL_DEVICE_CMYK = PSLiteralTable.intern('DeviceCMYK')
+LITERAL_DEVICE_GRAY = LIT('DeviceGray')
+LITERAL_DEVICE_RGB = LIT('DeviceRGB')
+LITERAL_DEVICE_CMYK = LIT('DeviceCMYK')
 
 class PDFColorSpace(object):
 

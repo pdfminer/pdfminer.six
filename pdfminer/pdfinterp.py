@@ -8,10 +8,9 @@ except ImportError:
     from StringIO import StringIO
 from cmap import CMapDB
 from psparser import PSException, PSTypeError, PSEOF
-from psparser import PSLiteralTable, PSKeywordTable
-from psparser import PSKeyword, literal_name, keyword_name
+from psparser import PSKeyword, literal_name
 from psparser import PSStackParser
-from psparser import STRICT
+from psparser import LIT, KWD, STRICT
 from pdftypes import PDFException, PDFStream, PDFObjRef
 from pdftypes import resolve1
 from pdftypes import int_value, float_value, num_value
@@ -37,11 +36,11 @@ class PDFInterpreterError(PDFException): pass
 
 ##  Constants
 ##
-LITERAL_PDF = PSLiteralTable.intern('PDF')
-LITERAL_TEXT = PSLiteralTable.intern('Text')
-LITERAL_FONT = PSLiteralTable.intern('Font')
-LITERAL_FORM = PSLiteralTable.intern('Form')
-LITERAL_IMAGE = PSLiteralTable.intern('Image')
+LITERAL_PDF = LIT('PDF')
+LITERAL_TEXT = LIT('Text')
+LITERAL_FONT = LIT('Font')
+LITERAL_FORM = LIT('Form')
+LITERAL_IMAGE = LIT('Image')
 
 
 ##  PDFTextState
@@ -240,9 +239,9 @@ class PDFContentParser(PSStackParser):
         self.add_results(*self.popall())
         return
 
-    KEYWORD_BI = PSKeywordTable.intern('BI')
-    KEYWORD_ID = PSKeywordTable.intern('ID')
-    KEYWORD_EI = PSKeywordTable.intern('EI')
+    KEYWORD_BI = KWD('BI')
+    KEYWORD_ID = KWD('ID')
+    KEYWORD_EI = KWD('EI')
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_BI:
             # inline image within a content stream

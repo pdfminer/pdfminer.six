@@ -10,9 +10,8 @@ except ImportError:
     from StringIO import StringIO
 from psparser import PSStackParser
 from psparser import PSSyntaxError, PSEOF
-from psparser import PSLiteralTable, PSKeywordTable
-from psparser import literal_name, keyword_name
-from psparser import STRICT
+from psparser import literal_name
+from psparser import LIT, KWD, STRICT
 from pdftypes import PDFException, PDFTypeError, PDFNotImplementedError
 from pdftypes import PDFStream, PDFObjRef
 from pdftypes import resolve1, decipher_all
@@ -31,11 +30,11 @@ class PDFEncryptionError(PDFException): pass
 class PDFPasswordIncorrect(PDFEncryptionError): pass
 
 # some predefined literals and keywords.
-LITERAL_OBJSTM = PSLiteralTable.intern('ObjStm')
-LITERAL_XREF = PSLiteralTable.intern('XRef')
-LITERAL_PAGE = PSLiteralTable.intern('Page')
-LITERAL_PAGES = PSLiteralTable.intern('Pages')
-LITERAL_CATALOG = PSLiteralTable.intern('Catalog')
+LITERAL_OBJSTM = LIT('ObjStm')
+LITERAL_XREF = LIT('XRef')
+LITERAL_PAGE = LIT('Page')
+LITERAL_PAGES = LIT('Pages')
+LITERAL_CATALOG = LIT('Catalog')
 
 
 ##  XRefs
@@ -123,7 +122,7 @@ class PDFXRef(PDFBaseXRef):
         self.load_trailer(parser)
         return
 
-    KEYWORD_TRAILER = PSKeywordTable.intern('trailer')
+    KEYWORD_TRAILER = KWD('trailer')
     def load_trailer(self, parser):
         try:
             (_,kwd) = parser.nexttoken()
@@ -377,7 +376,7 @@ class PDFDocument(object):
         key = hash.digest()[:min(len(key),16)]
         return Arcfour(key).process(data)
 
-    KEYWORD_OBJ = PSKeywordTable.intern('obj')
+    KEYWORD_OBJ = KWD('obj')
     def getobj(self, objid):
         if not self.ready:
             raise PDFException('PDFDocument not initialized')
@@ -539,11 +538,11 @@ class PDFParser(PSStackParser):
     def __repr__(self):
         return '<PDFParser>'
 
-    KEYWORD_R = PSKeywordTable.intern('R')
-    KEYWORD_ENDOBJ = PSKeywordTable.intern('endobj')
-    KEYWORD_STREAM = PSKeywordTable.intern('stream')
-    KEYWORD_XREF = PSKeywordTable.intern('xref')
-    KEYWORD_STARTXREF = PSKeywordTable.intern('startxref')
+    KEYWORD_R = KWD('R')
+    KEYWORD_ENDOBJ = KWD('endobj')
+    KEYWORD_STREAM = KWD('stream')
+    KEYWORD_XREF = KWD('xref')
+    KEYWORD_STARTXREF = KWD('startxref')
     def do_keyword(self, pos, token):
         if token in (self.KEYWORD_XREF, self.KEYWORD_STARTXREF):
             self.add_results(*self.pop(1))

@@ -3,17 +3,14 @@ import sys
 import zlib
 from lzw import lzwdecode
 from ascii85 import ascii85decode, asciihexdecode
-from psparser import PSException
-from psparser import PSObject, PSLiteral, PSKeyword
-from psparser import PSLiteralTable, PSKeywordTable
-from psparser import literal_name, keyword_name
-from psparser import STRICT
+from psparser import PSException, PSObject
+from psparser import LIT, KWD, STRICT
 
-LITERAL_CRYPT = PSLiteralTable.intern('Crypt')
-LITERALS_FLATE_DECODE = (PSLiteralTable.intern('FlateDecode'), PSLiteralTable.intern('Fl'))
-LITERALS_LZW_DECODE = (PSLiteralTable.intern('LZWDecode'), PSLiteralTable.intern('LZW'))
-LITERALS_ASCII85_DECODE = (PSLiteralTable.intern('ASCII85Decode'), PSLiteralTable.intern('A85'))
-LITERALS_ASCIIHEX_DECODE = (PSLiteralTable.intern('ASCIIHexDecode'), PSLiteralTable.intern('AHx'))
+LITERAL_CRYPT = LIT('Crypt')
+LITERALS_FLATE_DECODE = (LIT('FlateDecode'), LIT('Fl'))
+LITERALS_LZW_DECODE = (LIT('LZWDecode'), LIT('LZW'))
+LITERALS_ASCII85_DECODE = (LIT('ASCII85Decode'), LIT('A85'))
+LITERALS_ASCIIHEX_DECODE = (LIT('ASCIIHexDecode'), LIT('AHx'))
 
 
 ##  PDF Objects

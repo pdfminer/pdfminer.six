@@ -7,9 +7,8 @@ except ImportError:
 from cmap import CMap, CMapDB, CMapParser
 from cmap import FontMetricsDB, EncodingDB
 from struct import pack, unpack
-from psparser import STRICT
-from psparser import PSLiteralTable, PSKeywordTable
-from psparser import PSLiteral, literal_name, keyword_name
+from psparser import LIT, STRICT
+from psparser import PSLiteral, literal_name
 from pdftypes import PDFException, resolve1
 from pdftypes import int_value, float_value, num_value
 from pdftypes import str_value, list_value, dict_value, stream_value
@@ -314,8 +313,8 @@ class TrueTypeFont(object):
 class PDFFontError(PDFException): pass
 class PDFUnicodeNotDefined(PDFFontError): pass
 
-LITERAL_STANDARD_ENCODING = PSLiteralTable.intern('StandardEncoding')
-LITERAL_TYPE1C = PSLiteralTable.intern('Type1C')
+LITERAL_STANDARD_ENCODING = LIT('StandardEncoding')
+LITERAL_TYPE1C = LIT('Type1C')
 
 
 # PDFFont
