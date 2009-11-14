@@ -13,6 +13,7 @@ def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
             a0*e1+c0*f1+e0, b0*e1+d0*f1+f0)
 
 def translate_matrix((a,b,c,d,e,f), (x,y)):
+    '''Translates a matrix by (x,y).'''
     return (a,b,c,d,x*a+y*c+e,x*b+y*d+f)
 
 def apply_matrix_pt((a,b,c,d,e,f), (x,y)):
@@ -29,7 +30,7 @@ def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
 
 # pick
 def pick(seq, func, maxobj=None):
-    '''Picks the object that has the highest value of func(obj).'''
+    '''Picks the object obj where func(obj) has the highest value.'''
     maxscore = None
     for obj in seq:
         score = func(obj)
@@ -40,8 +41,9 @@ def pick(seq, func, maxobj=None):
 # bsearch
 def bsearch(objs, v0):
     '''Tries to find the closest value to v0.'''
+    nb_objs = len(objs)
     i0 = 0
-    i1 = len(objs)
+    i1 = nb_objs
     while i0 < i1:
         i = (i0+i1)/2
         (v, obj) = objs[i]
@@ -49,7 +51,7 @@ def bsearch(objs, v0):
             (i0,i1) = (i,i+1)
             while 0 < i0 and objs[i0-1][0] == v0:
                 i0 -= 1
-            while i1 < len(objs)-1 and objs[i1][0] == v0:
+            while i1 < nb_objs-1 and objs[i1][0] == v0:
                 i1 += 1
             break
         elif v0 < v:
@@ -71,7 +73,7 @@ def choplist(n, seq):
 
 # nunpack
 def nunpack(s, default=0):
-    '''Unpacks up to 4 bytes big endian.'''
+    '''Unpacks 1 to 4 byte integers (big endian).'''
     l = len(s)
     if not l:
         return default

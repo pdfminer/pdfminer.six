@@ -21,22 +21,27 @@ class PSValueError(PSException): pass
 
 ##  PSObject
 ##
-##  Base class for all PS or PDF-related data types.
-##
-class PSObject(object): pass
+class PSObject(object):
+
+    """Base class for all PS or PDF-related data types."""
+
+    pass
 
 
 ##  PSLiteral
 ##
-##  Postscript literals are used as identifiers, such as
-##  variable names, property names and dictionary keys.
-##  Literals are case sensitive and denoted by a preceding
-##  slash sign (e.g. "/Name")
-##
-##  Note: Never create an instance of PSLiteral by hand.
-##  Always use PSLiteralTable.intern().
-##
 class PSLiteral(PSObject):
+
+    """A class that represents a PostScript literal.
+    
+    Postscript literals are used as identifiers, such as
+    variable names, property names and dictionary keys.
+    Literals are case sensitive and denoted by a preceding
+    slash sign (e.g. "/Name")
+
+    Note: Do not create an instance of PSLiteral directly.
+    Always use PSLiteralTable.intern().
+    """
 
     def __init__(self, name):
         self.name = name
@@ -48,10 +53,17 @@ class PSLiteral(PSObject):
 
 ##  PSKeyword
 ##
-##  Note: Never create an instance of PSLiteral by hand.
-##  Always use PSKeywordTable.intern().
-##
 class PSKeyword(PSObject):
+
+    """A class that represents a PostScript keyword.
+    
+    PostScript keywords are a dozen of predefined words.
+    Commands and directives in PostScript are expressed by keywords.
+    They are also used to denote the content boundaries.
+    
+    Note: Do not create an instance of PSKeyword directly.
+    Always use PSKeywordTable.intern().
+    """
 
     def __init__(self, name):
         self.name = name
@@ -63,14 +75,13 @@ class PSKeyword(PSObject):
 
 ##  PSSymbolTable
 ##
-##  A dictionary-like object that is used for
-##  storing PSLiteral/PSKeyword objects so that
-##  an object that has the same name can never be defined
-##  twice and it is always assured that the same name is
-##  referred to as the same PSLiteral/PSKeyword object.
-##
 class PSSymbolTable(object):
 
+    """A utility class for storing PSLiteral/PSKeyword objects.
+
+    Interned objects can be checked its identity with "is" operator.
+    """
+    
     def __init__(self, klass):
         self.dic = {}
         self.klass = klass

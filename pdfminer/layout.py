@@ -57,14 +57,14 @@ class Plane(object):
 
     # find(): finds objects that are in a certain area.
     def find(self, (x0,y0,x1,y1)):
-        (i0,_) = bsearch(self.xobjs, x0)
-        (_,i1) = bsearch(self.xobjs, x1)
-        xobjs = set( obj for (_,obj) in self.xobjs[i0:i1] )
-        (i0,_) = bsearch(self.yobjs, y0)
-        (_,i1) = bsearch(self.yobjs, y1)
-        yobjs = set( obj for (_,obj) in self.yobjs[i0:i1] )
-        objs = xobjs.intersection(yobjs)
-        return objs
+        i0 = bsearch(self.xobjs, x0)[0]
+        i1 = bsearch(self.xobjs, x1)[1]
+        xobjs = set( [pair[1] for pair in self.xobjs[i0:i1]] )
+        i0 = bsearch(self.yobjs, y0)[0]
+        i1 = bsearch(self.yobjs, y1)[1]
+        yobjs = [pair[1] for pair in self.yobjs[i0:i1]]
+        xobjs.intersection_update(yobjs)
+        return xobjs
 
 
 ##  ClusterSet
@@ -139,12 +139,26 @@ class LayoutItem(object):
     def get_bbox(self):
         return '%.3f,%.3f,%.3f,%.3f' % (self.x0, self.y0, self.x1, self.y1)
 
+    def is_hoverlap(self, obj):
+        assert isinstance(obj, LayoutItem)
+        if self.x1 <= obj.x0 or obj.x1 <= self.x0:
+            return False
+        else:
+            return True
+
     def hoverlap(self, obj):
         assert isinstance(obj, LayoutItem)
         if self.x1 <= obj.x0 or obj.x1 <= self.x0:
             return 0
         else:
             return min(abs(self.x0-obj.x1), abs(self.x1-obj.x0))
+
+    def is_voverlap(self, obj):
+        assert isinstance(obj, LayoutItem)
+        if self.y1 <= obj.y0 or obj.y1 <= self.y0:
+            return False
+        else:
+            return True
 
     def voverlap(self, obj):
         assert isinstance(obj, LayoutItem)
@@ -473,9 +487,9 @@ class LTPage(LayoutContainer):
             def vline(obj1, obj2):
                 return obj1.width * laparams.line_overlap < obj1.hoverlap(obj2)
             def vorder(obj1, obj2):
-                if obj1.voverlap(obj2):
+                if obj1.is_voverlap(obj2):
                     return obj2.x1 < obj1.x0
-                elif obj1.hoverlap(obj2):
+                elif obj1.is_hoverlap(obj2):
                     return obj2.y1 < obj1.y0
                 else:
                     return obj2.x1 < obj1.x0 and obj2.y1 < obj1.y0
@@ -489,9 +503,9 @@ class LTPage(LayoutContainer):
             def hline(obj1, obj2):
                 return obj1.height * laparams.line_overlap < obj1.voverlap(obj2)
             def horder(obj1, obj2):
-                if obj1.hoverlap(obj2):
+                if obj1.is_hoverlap(obj2):
                     return obj2.y1 < obj1.y0
-                elif obj1.voverlap(obj2):
+                elif obj1.is_voverlap(obj2):
                     return obj1.x1 < obj2.x0
                 else:
                     return obj1.x1 < obj2.x0 and obj2.y1 < obj1.y0
