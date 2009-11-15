@@ -15,7 +15,6 @@ import sys
 import re
 import os
 import os.path
-from sys import stderr
 from struct import pack, unpack
 from psparser import PSStackParser
 from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF
@@ -24,8 +23,7 @@ from psparser import literal_name, keyword_name
 from fontmetrics import FONT_METRICS
 from latin_enc import ENCODING
 from glyphlist import charname2unicode
-from utils import choplist
-from utils import nunpack
+from utils import choplist, nunpack
 try:
     import cdb
 except ImportError:
@@ -38,16 +36,19 @@ class CMapError(Exception): pass
 ##  find_cmap_path
 ##
 def find_cmap_path():
-    try:
-        return os.environ['CMAP_PATH']
-    except KeyError:
-        pass
-    basedir = os.path.dirname(__file__)
-    return os.path.join(basedir, 'CMap')
+    """Returns the location of CMap directory."""
+    for path in (os.environ['CMAP_PATH'],
+                 os.path.join(os.path.dirname(__file__), 'CMap')):
+        if os.path.isdir(path):
+            return path
+    raise IOError
 
 
+##  name2unicode
+##
 STRIP_NAME = re.compile(r'[0-9]+')
 def name2unicode(name):
+    """Converts Adobe glyph names to Unicode numbers."""
     if name in charname2unicode:
         return charname2unicode[name]
     m = STRIP_NAME.search(name)
@@ -97,7 +98,7 @@ class CMap(object):
 
     def decode(self, bytes):
         if self.debug:
-            print >>stderr, 'decode: %r, %r' % (self, bytes)
+            print >>sys.stderr, 'decode: %r, %r' % (self, bytes)
         x = ''
         for c in bytes:
             if x:
@@ -179,7 +180,7 @@ class CDBCMap(CMap):
 
     def decode(self, bytes):
         if self.debug:
-            print >>stderr, 'decode: %r, %r' % (self, bytes)
+            print >>sys.stderr, 'decode: %r, %r' % (self, bytes)
         x = ''
         for c in bytes:
             if x:
@@ -227,11 +228,11 @@ class CMapDB(object):
             cdbname = os.path.join(self.cdbdirname, cmapname+'.cmap.cdb')
             if os.path.exists(cdbname):
                 if 1 <= self.debug:
-                    print >>stderr, 'Opening: CDBCMap %r...' % cdbname
+                    print >>sys.stderr, 'Opening: CDBCMap %r...' % cdbname
                 cmap = CDBCMap(cdbname)
             elif os.path.exists(fname):
                 if 1 <= self.debug:
-                    print >>stderr, 'Reading: CMap %r...' % fname
+                    print >>sys.stderr, 'Reading: CMap %r...' % fname
                 cmap = CMap()
                 fp = file(fname, 'rb')
                 CMapParser(cmap, fp).run()
@@ -423,10 +424,11 @@ class EncodingDB(object):
 
 ##  CMap -> CMapCDB conversion
 ##
-def dumpcdb(cmap, cdbfile, verbose=1):
+def dump_cdb(cmap, cdbfile, verbose=1):
+    """Writes a CMap object into a cdb file."""
     m = cdb.cdbmake(cdbfile, cdbfile+'.tmp')
     if verbose:
-        print >>stderr, 'Writing: %r...' % cdbfile
+        print >>sys.stderr, 'Writing: %r...' % cdbfile
     for (k,v) in cmap.getall_attrs():
         m.add('/'+k, repr(v))
     for (code,cid) in cmap.getall_code2cid():
@@ -437,44 +439,55 @@ def dumpcdb(cmap, cdbfile, verbose=1):
     return
 
 def convert_cmap(cmapdir, outputdir, force=False):
+    """Convert all CMap source files in a directory into cdb files."""
     CMapDB.initialize(cmapdir)
     for fname in os.listdir(cmapdir):
         if '.' in fname: continue
         cmapname = os.path.basename(fname)
         cdbname = os.path.join(outputdir, cmapname+'.cmap.cdb')
         if not force and os.path.exists(cdbname):
-            print >>stderr, 'Skipping: %r' % cmapname
+            print >>sys.stderr, 'Skipping: %r' % cmapname
             continue
-        print >>stderr, 'Reading: %r...' % cmapname
+        print >>sys.stderr, 'Reading: %r...' % cmapname
         cmap = CMapDB.get_cmap(cmapname)
-        dumpcdb(cmap, cdbname)
+        dump_cdb(cmap, cdbname)
     return
 
 def main(argv):
+    """Converts CMap files into cdb files.
+
+    usage: python -m pdfminer.cmap [-f] [cmap_dir [output_dir]]
+    """
+    
     import getopt
     def usage():
-        print 'usage: %s [-D outputdir] [-f] cmap_dir' % argv[0]
+        print 'usage: %s [-f] [cmap_dir [output_dir]]' % argv[0]
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'C:D:f')
+        (opts, args) = getopt.getopt(argv[1:], 'f')
     except getopt.GetoptError:
         return usage()
     if args:
         cmapdir = args.pop(0)
     else:
-        cmapdir = find_cmap_path()
-    outputdir = cmapdir
+        try:
+            cmapdir = find_cmap_path()
+        except IOError:
+            print >>sys.stderr, 'cannot find CMap directory'
+            return 1
+    if args:
+        outputdir = args.pop(0)
+    else:
+        outputdir = cmapdir
     force = False
     for (k, v) in opts:
         if k == '-f': force = True
-        elif k == '-C': cmapdir = v
-        elif k == '-D': outputdir = v
     if not os.path.isdir(cmapdir):
-        print >>stderr, 'directory does not exist: %r' % cmapdir
-        return 111
+        print >>sys.stderr, 'directory does not exist: %r' % cmapdir
+        return 1
     if not os.path.isdir(outputdir):
-        print >>stderr, 'directory does not exist: %r' % outputdir
-        return 111
+        print >>sys.stderr, 'directory does not exist: %r' % outputdir
+        return 1
     return convert_cmap(cmapdir, outputdir, force=force)
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

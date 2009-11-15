@@ -30,15 +30,9 @@ commit: clean
 check:
 	cd $(PACKAGE) && make check
 
-sdist: clean
-	$(PYTHON) setup.py sdist
-
 register: clean
 	$(PYTHON) setup.py sdist upload register
 
-VERSION=`$(PYTHON) $(PACKAGE)/__init__.py`
-DISTFILE=$(PACKAGE)-$(VERSION).tar.gz
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
-publish: sdist
-	$(CP) dist/$(DISTFILE) $(WEBDIR)
-	$(CP) docs/*.html $(WEBDIR)/index.html
+publish:
+	$(CP) docs/*.html $(WEBDIR)
