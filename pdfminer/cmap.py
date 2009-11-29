@@ -37,7 +37,7 @@ class CMapError(Exception): pass
 ##
 def find_cmap_path():
     """Returns the location of CMap directory."""
-    for path in (os.environ['CMAP_PATH'],
+    for path in (os.environ.get('CMAP_PATH', '.'),
                  os.path.join(os.path.dirname(__file__), 'CMap')):
         if os.path.isdir(path):
             return path
