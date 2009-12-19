@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Nov 29 16:20:36 JST 2009
+Last Modified: Sun Dec 20 00:09:12 JST 2009
 <!-- hhmts end -->
 </div>
 
@@ -128,28 +128,20 @@ W o r l d
 <h3>For non-ASCII languages</h3>
 In order to handle non-ASCII languages (e.g. Japanese),
 you need to install an additional data called <code>CMap</code>,
-which is distributed from Adobe.
+which is originally distributed by Adobe. CMap is now included
+in the pdfminer package, but not installed by default.
 <p>
-Here is how:
+Here is the additional step you need:
+<blockquote><pre>
+# <strong>make cmap</strong>
+python tools/conv_cmap.py pdfminer/cmap Adobe-CNS1 cmaprsrc/cid2code_Adobe_CNS1.txt cp950 big5
+reading 'cmaprsrc/cid2code_Adobe_CNS1.txt'...
+writing 'CNS1_H.py'...
+...
+<em>(this may take several minutes)</em>
 
-<ol>
-<li> Get CMap files from
-<a href="http://www.unixuser.org/~euske/pub/CMap.tar.bz2">
-http://www.unixuser.org/~euske/pub/CMap.tar.bz2
-</a>
-<li> Expand the archive and put the <code>CMap</code> directory under the directory 
-where <code>pdfminer</code> is installed.
-(Normally this should be something like <code>/usr/lib/python2.5/site-packages/pdfminer</code>.)
-For example:
-<blockquote><pre>
-$ <strong>cd /usr/lib/python2.5/site-packages/pdfminer</strong>
-$ <strong>tar jxf CMap.tar.bz2</strong>
+# <strong>python setup.py install</strong>
 </pre></blockquote>
-<li> Do the following. (this is optional and may take several minutes, but highly recommended!)<br>
-<blockquote><pre>
-$ <strong>python -m pdfminer.cmap</strong>
-</pre></blockquote>
-</ol>
 
 <a name="usage"></a>
 <hr noshade>
@@ -272,11 +264,6 @@ By default, it extracts all the pages in a document.
 <dt> <code>-P <em>password</em></code> 
 <dd> Provides the user password to access PDF contents.
 <p>
-<dt> <code>-C <em>CMap directory</em></code> 
-<dd> Specifies the path of CMap directory. CMap is needed when extracting 
-non-ASCII texts (especially in Asian languages). The CMap location can be
-also specified with <code>CMAP_PATH</code> environment variable.
-<p>
 <dt> <code>-d</code> 
 <dd> Increases the debug level.
 </dl>
@@ -357,6 +344,7 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2009/12/19: CMap resources are now the part of the package. Thanks to Adobe for opensourcing them.
 <li> 2009/11/29: Password encryption bug fixed. Thanks to Yannick Gingras.
 <li> 2009/10/31: SGML output format is changed and renamed as XML.
 <li> 2009/10/24: Charspace bug fixed. Adjusted for 4-space indentation.

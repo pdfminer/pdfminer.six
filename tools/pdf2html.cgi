@@ -22,7 +22,6 @@ import os, os.path, re, cgi, time, random, codecs, logging, traceback
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import HTMLConverter, TextConverter
 from pdfminer.layout import LAParams
-from pdfminer.cmap import CMapDB
 
 
 # quote HTML metacharacters
@@ -58,7 +57,6 @@ def convert(outfp, infp, path, codec='utf-8', maxpages=10,
     infp.close()
     # perform conversion and
     # send the results over the network.
-    CMapDB.initialize()
     rsrc = PDFResourceManager()
     laparams = LAParams()
     if html:
