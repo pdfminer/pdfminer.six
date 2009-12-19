@@ -6,7 +6,7 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-from cmap import CMapDB
+from cmapdb import CMapDB
 from psparser import PSException, PSTypeError, PSEOF
 from psparser import PSKeyword, literal_name, keyword_name
 from psparser import PSStackParser

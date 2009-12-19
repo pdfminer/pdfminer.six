@@ -4,7 +4,7 @@ from pdfminer.pdfparser import PDFDocument, PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
 from pdfminer.pdfdevice import PDFDevice
 from pdfminer.converter import XMLConverter, HTMLConverter, TextConverter, TagExtractor
-from pdfminer.cmap import CMapDB, find_cmap_path
+from pdfminer.cmapdb import CMapDB, find_cmap_path
 from pdfminer.layout import LAParams
 
 # main

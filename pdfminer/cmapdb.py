@@ -235,7 +235,7 @@ class CMapDB(object):
                     print >>sys.stderr, 'Reading: CMap %r...' % fname
                 cmap = CMap()
                 fp = file(fname, 'rb')
-                CMapParser(cmap, fp).run()
+                CMapParser(self, cmap, fp).run()
                 fp.close()
             elif not strict:
                 cmap = CMap() # just create empty cmap
@@ -249,8 +249,9 @@ class CMapDB(object):
 ##
 class CMapParser(PSStackParser):
 
-    def __init__(self, cmap, fp):
+    def __init__(self, cmapdb, cmap, fp):
         PSStackParser.__init__(self, fp)
+        self.cmapdb = cmapdb
         self.cmap = cmap
         self.in_cmap = False
         return
@@ -282,11 +283,12 @@ class CMapParser(PSStackParser):
             return
 
         if name == 'usecmap':
-            try:
-                ((_,cmapname),) = self.pop(1)
-                self.cmap.copycmap(CMapDB.get_cmap(literal_name(cmapname)))
-            except PSSyntaxError:
-                pass
+            if self.cmapdb:
+                try:
+                    ((_,cmapname),) = self.pop(1)
+                    self.cmap.copycmap(self.cmapdb.get_cmap(literal_name(cmapname)))
+                except PSSyntaxError:
+                    pass
             return
 
         if name == 'begincodespacerange':
@@ -440,7 +442,7 @@ def dump_cdb(cmap, cdbfile, verbose=1):
 
 def convert_cmap(cmapdir, outputdir, force=False):
     """Convert all CMap source files in a directory into cdb files."""
-    CMapDB.initialize(cmapdir)
+    cmapdb = CMapDB(cmapdir)
     for fname in os.listdir(cmapdir):
         if '.' in fname: continue
         cmapname = os.path.basename(fname)
@@ -449,7 +451,7 @@ def convert_cmap(cmapdir, outputdir, force=False):
             print >>sys.stderr, 'Skipping: %r' % cmapname
             continue
         print >>sys.stderr, 'Reading: %r...' % cmapname
-        cmap = CMapDB.get_cmap(cmapname)
+        cmap = cmapdb.get_cmap(cmapname)
         dump_cdb(cmap, cdbname)
     return
 

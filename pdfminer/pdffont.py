@@ -4,8 +4,8 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-from cmap import CMap, CMapDB, CMapParser
-from cmap import FontMetricsDB, EncodingDB
+from cmapdb import CMap, CMapDB, CMapParser
+from cmapdb import FontMetricsDB, EncodingDB
 from struct import pack, unpack
 from psparser import LIT, STRICT
 from psparser import PSLiteral, literal_name
@@ -387,7 +387,7 @@ class PDFSimpleFont(PDFFont):
         if 'ToUnicode' in spec:
             strm = stream_value(spec['ToUnicode'])
             self.ucs2_cmap = CMap()
-            CMapParser(self.ucs2_cmap, StringIO(strm.get_data())).run()
+            CMapParser(None, self.ucs2_cmap, StringIO(strm.get_data())).run()
         PDFFont.__init__(self, descriptor, widths)
         return
 
@@ -494,7 +494,7 @@ class PDFCIDFont(PDFFont):
         if 'ToUnicode' in spec:
             strm = stream_value(spec['ToUnicode'])
             self.ucs2_cmap = CMap()
-            CMapParser(self.ucs2_cmap, StringIO(strm.get_data())).run()
+            CMapParser(None, self.ucs2_cmap, StringIO(strm.get_data())).run()
         elif self.cidcoding == 'Adobe-Identity':
             if ttf:
                 try:

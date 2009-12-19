@@ -695,7 +695,7 @@ class PDFParser(PSStackParser):
 
 ##  PDFObjStrmParser
 ##
-class PDFObjStrmParser(PDFParser):
+class PDFObjStrmParser(PSStackParser):
 
     def __init__(self, doc, data):
         PDFParser.__init__(self, doc, StringIO(data))
