@@ -44,3 +44,7 @@ samples/kampo.pdf
 samples/naacl06-shinyama.pdf
 samples/nlp2004slides.pdf
 cmaprsrc/README.txt
+cmaprsrc/cid2code_Adobe_CNS1.txt
+cmaprsrc/cid2code_Adobe_GB1.txt
+cmaprsrc/cid2code_Adobe_Japan1.txt
+cmaprsrc/cid2code_Adobe_Korea1.txt
