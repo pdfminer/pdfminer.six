@@ -22,7 +22,6 @@ pdfminer/pdfinterp.py
 pdfminer/pdfparser.py
 pdfminer/pdftypes.py
 pdfminer/psparser.py
-pdfminer/pycdb.py
 pdfminer/rijndael.py
 pdfminer/utils.py
 pdfminer/cmap/Makefile
@@ -32,6 +31,7 @@ tools/dumppdf.py
 tools/pdf2txt.py
 tools/pdf2html.cgi
 tools/conv_afm.py
+tools/conv_cmap.py
 tools/prof.py
 samples/Makefile
 samples/jo.pdf

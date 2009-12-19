@@ -21,16 +21,18 @@ clean:
 	-cd tools && $(MAKE) clean
 	-cd samples && $(MAKE) clean
 
+distclean: clean cmap_clean
+
 test:
 	cd samples && $(MAKE) test
-
-commit: clean
-	$(SVN) commit
-
 check:
 	cd $(PACKAGE) && make check
 
-register: clean
+commit: distclean
+	$(SVN) commit
+pack: distclean
+	$(PYTHON) setup.py sdist
+register: distclean
 	$(PYTHON) setup.py sdist upload register
 
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
@@ -45,6 +47,5 @@ cmap: cmaprsrc
 	$(CONV_CMAP) $(CMAPDIR) Adobe-GB1 $(CMAPRSRC)/cid2code_Adobe_GB1.txt cp936 gb2312
 	$(CONV_CMAP) $(CMAPDIR) Adobe-Japan1 $(CMAPRSRC)/cid2code_Adobe_Japan1.txt cp932 euc-jp
 	$(CONV_CMAP) $(CMAPDIR) Adobe-Korea1 $(CMAPRSRC)/cid2code_Adobe_Korea1.txt cp949 euc-kr
-
 cmap_clean:
 	cd $(CMAPDIR) && make cmap_clean
