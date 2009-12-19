@@ -6,6 +6,7 @@ all:
 
 clean:
 	-rm *.pyc *.pyo
+	cd cmap && make clean
 
 check:
 	$(PYCHECKER) *.py

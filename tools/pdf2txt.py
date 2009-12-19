@@ -4,7 +4,7 @@ from pdfminer.pdfparser import PDFDocument, PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
 from pdfminer.pdfdevice import PDFDevice
 from pdfminer.converter import XMLConverter, HTMLConverter, TextConverter, TagExtractor
-from pdfminer.cmapdb import CMapDB, find_cmap_path
+from pdfminer.cmapdb import CMapDB
 from pdfminer.layout import LAParams
 
 # main
@@ -22,8 +22,6 @@ def main(argv):
     if not args: return usage()
     # debug option
     debug = 0
-    # path option
-    cmapdir = find_cmap_path()
     # input option
     password = ''
     pagenos = set()
@@ -38,7 +36,6 @@ def main(argv):
     laparams = LAParams()
     for (k, v) in opts:
         if k == '-d': debug += 1
-        elif k == '-C': cmapdir = v
         elif k == '-P': password = v
         elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
         elif k == '-m': maxpages = int(v)
@@ -59,8 +56,7 @@ def main(argv):
     PDFPageInterpreter.debug = debug
     PDFDevice.debug = debug
     #
-    cmapdb = CMapDB(cmapdir)
-    rsrc = PDFResourceManager(cmapdb)
+    rsrc = PDFResourceManager()
     if not outtype:
         outtype = 'text'
         if outfile:

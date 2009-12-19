@@ -6,7 +6,8 @@ pdfminer/Makefile
 pdfminer/__init__.py
 pdfminer/arcfour.py
 pdfminer/ascii85.py
-pdfminer/cmap.py
+pdfminer/cmapdb.py
+pdfminer/encodingdb.py
 pdfminer/converter.py
 pdfminer/fontmetrics.py
 pdfminer/glyphlist.py
@@ -24,6 +25,8 @@ pdfminer/psparser.py
 pdfminer/pycdb.py
 pdfminer/rijndael.py
 pdfminer/utils.py
+pdfminer/cmap/Makefile
+pdfminer/cmap/__init__.py
 tools/Makefile
 tools/dumppdf.py
 tools/pdf2txt.py
@@ -40,3 +43,4 @@ samples/i1040nr.pdf
 samples/kampo.pdf
 samples/naacl06-shinyama.pdf
 samples/nlp2004slides.pdf
+cmaprsrc/README.txt

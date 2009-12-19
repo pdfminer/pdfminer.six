@@ -89,7 +89,7 @@ class PDFTextDevice(PDFDevice):
             else:
                 for cid in font.decode(obj):
                     try:
-                        char = font.to_unicode(cid)
+                        char = font.to_unichr(cid)
                     except PDFUnicodeNotDefined, e:
                         (cidcoding, cid) = e.args
                         char = self.handle_undefined_char(cidcoding, cid)

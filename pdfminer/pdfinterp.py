@@ -6,7 +6,7 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-from cmapdb import CMapDB
+from cmapdb import CMapDB, CMap
 from psparser import PSException, PSTypeError, PSEOF
 from psparser import PSKeyword, literal_name, keyword_name
 from psparser import PSStackParser
@@ -106,9 +106,8 @@ class PDFResourceManager(object):
     '''
     debug = 0
 
-    def __init__(self, cmapdb):
+    def __init__(self):
         self.fonts = {}
-        self.cmapdb = cmapdb
         return
 
     def get_procset(self, procs):
@@ -123,7 +122,11 @@ class PDFResourceManager(object):
         return
 
     def get_cmap(self, cmapname, strict=False):
-        return self.cmapdb.get_cmap(cmapname, strict=strict)
+        try:
+            return CMapDB.get_cmap(cmapname)
+        except CMapDB.CMapNotFound:
+            if strict: raise
+            return CMapDB.CMap()
 
     def get_font(self, objid, spec):
         if objid and objid in self.fonts:

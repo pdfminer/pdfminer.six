@@ -19,7 +19,8 @@ PDF parser that can be used for other purposes instead of text analysis.''',
     author_email='yusuke at cs dot nyu dot edu',
     url='http://www.unixuser.org/~euske/python/pdfminer/index.html',
     packages=[
-    'pdfminer'
+    'pdfminer',
+    'pdfminer.cmap'
     ],
     scripts=[
     'tools/pdf2txt.py',

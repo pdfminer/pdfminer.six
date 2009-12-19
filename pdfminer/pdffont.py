@@ -4,15 +4,25 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-from cmapdb import CMap, CMapDB, CMapParser
-from cmapdb import FontMetricsDB, EncodingDB
+from cmapdb import CMapDB, CMapParser, FileUnicodeMap, CMap
+from encodingdb import EncodingDB
 from struct import pack, unpack
 from psparser import LIT, STRICT
 from psparser import PSLiteral, literal_name
 from pdftypes import PDFException, resolve1
 from pdftypes import int_value, float_value, num_value
 from pdftypes import str_value, list_value, dict_value, stream_value
+from fontmetrics import FONT_METRICS
 from utils import apply_matrix_norm, nunpack
+
+
+##  FontMetricsDB
+##
+class FontMetricsDB(object):
+
+    @classmethod
+    def get_metrics(klass, fontname):
+        return FONT_METRICS[fontname]
 
 
 ##  CFFFont
@@ -249,7 +259,7 @@ class TrueTypeFont(object):
             self.tables[name] = (offset, length)
         return
 
-    def create_cmap(self):
+    def create_unicode_map(self):
         if 'cmap' not in self.tables:
             raise TrueTypeFont.CMapNotFound
         (base_offset, length) = self.tables['cmap']
@@ -302,9 +312,11 @@ class TrueTypeFont(object):
                     else:
                         for c in xrange(sc, ec+1):
                             char2gid[c] = (c + idd) & 0xffff
-        gid2char = dict( (gid, pack('>H', char))
-                         for (char,gid) in char2gid.iteritems() )
-        return CMap().update(char2gid, gid2char)
+        # create unicode map
+        unicode_map = FileUnicodeMap()
+        for (char,gid) in char2gid.iteritems():
+            unicode_map.add_cid2code(gid, char)
+        return unicode_map
 
 
 ##  Fonts
@@ -383,20 +395,19 @@ class PDFSimpleFont(PDFFont):
             self.encoding = EncodingDB.get_encoding(name, diff)
         else:
             self.encoding = EncodingDB.get_encoding(literal_name(encoding))
-        self.ucs2_cmap = None
+        self.unicode_map = None
         if 'ToUnicode' in spec:
             strm = stream_value(spec['ToUnicode'])
-            self.ucs2_cmap = CMap()
-            CMapParser(None, self.ucs2_cmap, StringIO(strm.get_data())).run()
+            self.unicode_map = FileUnicodeMap()
+            CMapParser(self.unicode_map, StringIO(strm.get_data())).run()
         PDFFont.__init__(self, descriptor, widths)
         return
 
-    def to_unicode(self, cid):
-        if self.ucs2_cmap:
-            code = self.ucs2_cmap.tocode(cid)
-            if code:
-                chars = unpack('>%dH' % (len(code)/2), code)
-                return ''.join( unichr(c) for c in chars )
+    def to_unichr(self, cid):
+        if self.unicode_map:
+            code = self.unicode_map.get_unicode(cid)
+            if code is not None:
+                return unichr(code)
         try:
             return self.encoding[cid]
         except KeyError:
@@ -476,9 +487,11 @@ class PDFCIDFont(PDFFont):
                 raise PDFFontError('Encoding is unspecified')
             name = 'unknown'
         try:
-            self.cmap = rsrc.get_cmap(name, strict=STRICT)
+            self.cmap = CMapDB.get_cmap(name)
         except CMapDB.CMapNotFound, e:
-            raise PDFFontError(e)
+            if STRICT:
+                raise PDFFontError(e)
+            self.cmap = CMap()
         try:
             descriptor = dict_value(spec['FontDescriptor'])
         except KeyError:
@@ -490,21 +503,20 @@ class PDFCIDFont(PDFFont):
             self.fontfile = stream_value(descriptor.get('FontFile2'))
             ttf = TrueTypeFont(self.basefont,
                                StringIO(self.fontfile.get_data()))
-        self.ucs2_cmap = None
+        self.unicode_map = None
         if 'ToUnicode' in spec:
             strm = stream_value(spec['ToUnicode'])
-            self.ucs2_cmap = CMap()
-            CMapParser(None, self.ucs2_cmap, StringIO(strm.get_data())).run()
+            self.unicode_map = FileUnicodeMap()
+            CMapParser(self.unicode_map, StringIO(strm.get_data())).run()
         elif self.cidcoding == 'Adobe-Identity':
             if ttf:
                 try:
-                    self.ucs2_cmap = ttf.create_cmap()
+                    self.unicode_map = ttf.create_unicode_map()
                 except TrueTypeFont.CMapNotFound:
                     pass
         else:
             try:
-                self.ucs2_cmap = rsrc.get_cmap('%s-UCS2' % self.cidcoding,
-                                               strict=STRICT)
+                self.unicode_map = CMapDB.get_unicode_map(self.cidcoding, self.cmap.is_vertical())
             except CMapDB.CMapNotFound, e:
                 raise PDFFontError(e)
 
@@ -558,14 +570,13 @@ class PDFCIDFont(PDFFont):
     def char_disp(self, cid):
         return self.disps.get(cid, self.default_disp)
 
-    def to_unicode(self, cid):
-        if not self.ucs2_cmap:
+    def to_unichr(self, cid):
+        if not self.unicode_map:
             raise PDFUnicodeNotDefined(self.cidcoding, cid)
-        code = self.ucs2_cmap.tocode(cid)
-        if not code:
-            raise PDFUnicodeNotDefined(self.cidcoding, cid)
-        chars = unpack('>%dH' % (len(code)/2), code)
-        return ''.join( unichr(c) for c in chars )
+        code = self.unicode_map.get_unicode(cid)
+        if code is not None:
+            return unichr(code)
+        raise PDFUnicodeNotDefined(self.cidcoding, cid)
 
 
 # main

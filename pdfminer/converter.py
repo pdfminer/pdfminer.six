@@ -29,7 +29,7 @@ class TagExtractor(PDFDevice):
             chars = font.decode(obj)
             for cid in chars:
                 try:
-                    char = font.to_unicode(cid)
+                    char = font.to_unichr(cid)
                     text += char
                 except PDFUnicodeNotDefined:
                     pass
