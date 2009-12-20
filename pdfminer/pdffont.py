@@ -518,7 +518,7 @@ class PDFCIDFont(PDFFont):
             try:
                 self.unicode_map = CMapDB.get_unicode_map(self.cidcoding, self.cmap.is_vertical())
             except CMapDB.CMapNotFound, e:
-                raise PDFFontError(e)
+                pass
 
         def get_width(seq):
             dic = {}

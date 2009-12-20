@@ -6,6 +6,20 @@ from utils import apply_matrix_pt
 from utils import bsearch
 
 
+
+##  get_bounds
+##
+def get_bounds(pts):
+    """Compute a maximal rectangle that covers all the points."""
+    (x0, y0, x1, y1) = (INF, INF, -INF, -INF)
+    for (x,y) in pts:
+        x0 = min(x0, x)
+        y0 = min(y0, y)
+        x1 = max(x1, x)
+        y1 = max(y1, y)
+    return (x0,y0,x1,y1)
+
+
 ##  LAParams
 ##
 class LAParams(object):
@@ -228,24 +242,44 @@ class LayoutContainer(LayoutItem):
         return None
 
 
+##  LTPolygon
+##
+class LTPolygon(LayoutItem):
+
+    def __init__(self, linewidth, pts):
+        LayoutItem.__init__(self, get_bounds(pts))
+        self.pts = pts
+        self.linewidth = linewidth
+        return
+
+    def get_pts(self):
+        return ','.join( '%.3f,%.3f' % p for p in self.pts )
+
+
 ##  LTLine
 ##
-class LTLine(LayoutItem):
+class LTLine(LTPolygon):
 
-    def __init__(self, linewidth, direction, bbox):
-        LayoutItem.__init__(self, bbox)
-        self.linewidth = linewidth
-        self.direction = direction
+    def __init__(self, linewidth, p0, p1):
+        (x0,y0) = p0
+        (x1,y1) = p0
+        self.direction = None
+        if y0 == y1:
+            # horizontal ruler
+            self.direction = 'H'
+        elif x0 == x1:
+            # vertical ruler
+            self.direction = 'V'
+        LTPolygon.__init__(self, linewidth, [p0, p1])
         return
 
 
 ##  LTRect
 ##
-class LTRect(LayoutItem):
+class LTRect(LTPolygon):
 
-    def __init__(self, linewidth, bbox):
-        LayoutItem.__init__(self, bbox)
-        self.linewidth = linewidth
+    def __init__(self, linewidth, (x0,y0,x1,y1)):
+        LTPolygon.__init__(self, linewidth, [(x0,y0), (x1,y0), (x1,y1), (x0,y1)])
         return
 
 
@@ -339,15 +373,8 @@ class LTFigure(LayoutContainer):
 
     def __init__(self, id, bbox, matrix):
         (x,y,w,h) = bbox
-        x0 = y0 = INF
-        x1 = y1 = -INF
-        for (p,q) in ((x,y),(x+w,y),(x,y+h),(x+w,y+h)):
-            (p,q) = apply_matrix_pt(matrix, (p,q))
-            x0 = min(x0, p)
-            x1 = max(x1, p)
-            y0 = min(y0, q)
-            y1 = max(y1, q)
-        bbox = (x0,y0,x1,y1)
+        bbox = get_bounds( apply_matrix_pt(matrix, (p,q))
+                           for (p,q) in ((x,y), (x+w,y), (x,y+h), (x+w,y+h)) )
         self.matrix = matrix
         LayoutContainer.__init__(self, id, bbox)
         return

@@ -3,7 +3,7 @@ import sys
 from pdfdevice import PDFDevice, PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
 from layout import LayoutContainer
-from layout import LTPage, LTText, LTLine, LTRect
+from layout import LTPage, LTText, LTLine, LTRect, LTPolygon
 from layout import LTFigure, LTTextItem, LTTextBox, LTTextLine
 from utils import enc
 from utils import apply_matrix_pt, mult_matrix
@@ -116,12 +116,7 @@ class PDFPageAggregator(PDFTextDevice):
             (_,x1,y1) = path[1]
             (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
             (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
-            if y0 == y1:
-                # horizontal ruler
-                self.cur_item.add(LTLine(gstate.linewidth, 'H', (x0,y0,x1,y1)))
-            elif x0 == x1:
-                # vertical ruler
-                self.cur_item.add(LTLine(gstate.linewidth, 'V', (x0,y0,x1,y1)))
+            self.cur_item.add(LTLine(gstate.linewidth, (x0,y0), (x1,y1)))
         elif shape == 'mlllh':
             # rectangle
             (_,x0,y0) = path[0]
@@ -135,6 +130,13 @@ class PDFPageAggregator(PDFTextDevice):
             if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
                 (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
                 self.cur_item.add(LTRect(gstate.linewidth, (x0,y0,x2,y2)))
+        else:
+            # other polygon
+            pts = []
+            for p in path:
+                for i in xrange(1, len(p), 2):
+                    pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
+            self.cur_item.add(LTPolygon(gstate.linewidth, pts))
         return
 
     def render_chars(self, matrix, font, fontsize, charspace, scaling, chars):
@@ -177,10 +179,12 @@ class XMLConverter(PDFConverter):
                 for child in item:
                     render(child)
                 self.outfp.write('</page>\n')
-            elif isinstance(item, LTLine):
+            elif isinstance(item, LTLine) and item.direction:
                 self.outfp.write('<line linewidth="%d" direction="%s" bbox="%s" />' % (item.linewidth, item.direction, item.get_bbox()))
             elif isinstance(item, LTRect):
                 self.outfp.write('<rect linewidth="%d" bbox="%s" />' % (item.linewidth, item.get_bbox()))
+            elif isinstance(item, LTPolygon):
+                self.outfp.write('<polygon linewidth="%d" bbox="%s" pts="%s"/>' % (item.linewidth, item.get_bbox(), item.get_pts()))
             elif isinstance(item, LTFigure):
                 self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
                 for child in item:
@@ -263,7 +267,7 @@ class HTMLConverter(PDFConverter):
                 self.outfp.write('</span>\n')
                 if self.debug:
                     self.write_rect('red', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
-            elif isinstance(item, LTLine) or isinstance(item, LTRect):
+            elif isinstance(item, LTPolygon):
                 self.write_rect('black', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
             elif isinstance(item, LTTextLine):
                 for child in item:
