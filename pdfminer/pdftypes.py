@@ -3,6 +3,7 @@ import sys
 import zlib
 from lzw import lzwdecode
 from ascii85 import ascii85decode, asciihexdecode
+from runlength import rldecode
 from psparser import PSException, PSObject
 from psparser import LIT, KWD, STRICT
 
@@ -11,6 +12,7 @@ LITERALS_FLATE_DECODE = (LIT('FlateDecode'), LIT('Fl'))
 LITERALS_LZW_DECODE = (LIT('LZWDecode'), LIT('LZW'))
 LITERALS_ASCII85_DECODE = (LIT('ASCII85Decode'), LIT('A85'))
 LITERALS_ASCIIHEX_DECODE = (LIT('ASCIIHexDecode'), LIT('AHx'))
+LITERALS_RUNLENGTH_DECODE = (LIT('RunLengthDecode'), LIT('RL'))
 
 
 ##  PDF Objects
@@ -196,7 +198,10 @@ class PDFStream(PDFObject):
                 data = ascii85decode(data)
             elif f in LITERALS_ASCIIHEX_DECODE:
                 data = asciihexdecode(data)
+            elif f in LITERALS_RUNLENGTH_DECODE:
+                data = rldecode(data)
             elif f == LITERAL_CRYPT:
+                # not yet..
                 raise PDFNotImplementedError('/Crypt filter is unsupported')
             else:
                 raise PDFNotImplementedError('Unsupported filter: %r' % f)
