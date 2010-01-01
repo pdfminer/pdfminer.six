@@ -12,7 +12,7 @@ def process_cid2code(fp, check_codecs=[]):
         else:
             return (name+'-H', name+'-V')
 
-    def get_unicode(codes):
+    def get_unichr(codes):
         # determine the "most popular" candidate.
         d = {}
         for code in codes:
@@ -26,7 +26,7 @@ def process_cid2code(fp, check_codecs=[]):
                 except UnicodeError:
                     pass
         chars = sorted(d.keys(), key=lambda char:d[char], reverse=True)
-        return ord(chars[0])
+        return chars[0]
 
     def put(dmap, code, cid, force=False):
         for b in code[:-1]:
@@ -45,8 +45,8 @@ def process_cid2code(fp, check_codecs=[]):
     names = []
     code2cid = {} # {'cmapname': ...}
     is_vertical = {}
-    cid2unicode_h = {} # {cid: unicode}
-    cid2unicode_v = {} # {cid: unicode}
+    cid2unichr_h = {} # {cid: unichr}
+    cid2unichr_v = {} # {cid: unichr}
     
     for line in fp:
         line = line.strip()
@@ -95,21 +95,21 @@ def process_cid2code(fp, check_codecs=[]):
                     put(hmap, code, cid, True)
                 if name.endswith('-UTF8'):
                     if hcodes:
-                        cid2unicode_h[cid] = get_unicode(hcodes)
+                        cid2unichr_h[cid] = get_unichr(hcodes)
                     if vcodes:
-                        cid2unicode_v[cid] = get_unicode(vcodes)
+                        cid2unichr_v[cid] = get_unichr(vcodes)
             else:
                 for code in hcodes:
                     put(hmap, code, cid)
                     put(vmap, code, cid)
                 if name.endswith('-UTF8') and hcodes:
-                    code = get_unicode(hcodes)
-                    if cid not in cid2unicode_h:
-                        cid2unicode_h[cid] = code
-                    if cid not in cid2unicode_v:
-                        cid2unicode_v[cid] = code
+                    code = get_unichr(hcodes)
+                    if cid not in cid2unichr_h:
+                        cid2unichr_h[cid] = code
+                    if cid not in cid2unichr_v:
+                        cid2unichr_v[cid] = code
 
-    return (code2cid, is_vertical, cid2unicode_h, cid2unicode_v)
+    return (code2cid, is_vertical, cid2unichr_h, cid2unichr_v)
 
 # main
 def main(argv):
@@ -128,7 +128,7 @@ def main(argv):
 
     print >>sys.stderr, 'reading %r...' % src
     fp = file(src)
-    (code2cid, is_vertical, cid2unicode_h, cid2unicode_v) = process_cid2code(fp, check_codecs)
+    (code2cid, is_vertical, cid2unichr_h, cid2unichr_v) = process_cid2code(fp, check_codecs)
     fp.close()
 
     for (name, cmap) in code2cid.iteritems():
@@ -146,8 +146,8 @@ def main(argv):
     fp = file(os.path.join(outdir, fname), 'w')
     print >>fp, '#!/usr/bin/env python'
     print >>fp, '#', fname
-    print >>fp, 'CID2UNICODE_H = %r' % cid2unicode_h
-    print >>fp, 'CID2UNICODE_V = %r' % cid2unicode_v
+    print >>fp, 'CID2UNICHR_H = %r' % cid2unichr_h
+    print >>fp, 'CID2UNICHR_V = %r' % cid2unichr_v
     fp.close()
 
     return 0

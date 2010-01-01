@@ -135,3 +135,27 @@ def enc(x, codec='ascii'):
     '''Encodes a string for SGML/XML/HTML'''
     x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
     return x.encode(codec, 'xmlcharrefreplace')
+
+
+##  ObjIdRange
+##
+class ObjIdRange(object):
+
+    "A utility class to represent a range of object IDs."
+    
+    def __init__(self, start, nobjs):
+        self.start = start
+        self.nobjs = nobjs
+        return
+
+    def __repr__(self):
+        return '<ObjIdRange: %d-%d>' % (self.get_start_id(), self.get_end_id())
+
+    def get_start_id(self):
+        return self.start
+
+    def get_end_id(self):
+        return self.start + self.nobjs - 1
+
+    def get_nobjs(self):
+        return self.nobjs

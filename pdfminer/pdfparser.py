@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import sys
 import re
-import md5
 import struct
 from sys import stderr
+try:
+    import hashlib as md5
+except ImportError:
+    import md5
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -19,7 +22,7 @@ from pdftypes import int_value, float_value, num_value
 from pdftypes import str_value, list_value, dict_value, stream_value
 from arcfour import Arcfour
 from utils import choplist, nunpack
-from utils import decode_text
+from utils import decode_text, ObjIdRange
 
 
 ##  Exceptions
@@ -39,57 +42,29 @@ LITERAL_CATALOG = LIT('Catalog')
 
 ##  XRefs
 ##
-class XRefObjRange(object):
-    def __init__(self, start, nobjs):
-        self.start = start
-        self.nobjs = nobjs
-        return
-
-    def __repr__(self):
-        return '<XRefObjRange: %d-%d>' % (self.get_start_id(), self.get_end_id())
-
-    def get_start_id(self):
-        return self.start
-
-    def get_end_id(self):
-        return self.start + self.nobjs - 1
-
-    def get_nobjs(self):
-        return self.nobjs
-
 class PDFBaseXRef(object):
-    def __init__(self):
-        self.objid_ranges = None
-        return
 
-    def objids(self):
-        if self.objid_ranges:
-            for objid_range in self.objid_ranges:
-                for objid in xrange(objid_range.get_start_id(), objid_range.get_end_id() + 1):
-                    yield objid
-        return
+    def get_trailer(self):
+        raise NotImplementedError
+
+    def get_pos(self, objid):
+        raise KeyError(objid)
 
 
 ##  PDFXRef
 ##
 class PDFXRef(PDFBaseXRef):
+    
     def __init__(self):
-        PDFBaseXRef.__init__(self)
-        self.offsets = None
+        self.offsets = {}
         self.trailer = {}
         return
 
-    def __repr__(self):
-        return '<PDFXRef: objs=%d>' % len(self.offsets)
-
     def load(self, parser, debug=0):
-        self.offsets = {}
-        self.objid_ranges = []
         while 1:
             try:
                 (pos, line) = parser.nextline()
-                if not line.strip():
-                    continue
+                if not line.strip(): continue
             except PSEOF:
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
             if not line:
@@ -104,8 +79,6 @@ class PDFXRef(PDFBaseXRef):
                 (start, nobjs) = map(long, f)
             except ValueError:
                 raise PDFNoValidXRef('Invalid line: %r: line=%r' % (parser, line))
-            self.newoffsets = {}
-            self.objid_ranges.append(XRefObjRange(start, nobjs))
             for objid in xrange(start, start+nobjs):
                 try:
                     (_, line) = parser.nextline()
@@ -133,10 +106,33 @@ class PDFXRef(PDFBaseXRef):
             if not x:
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted')
             (_,dic) = x[0]
-        self.trailer.update( dict_value(dic))
+        self.trailer.update(dict_value(dic))
         return
 
-    def getpos(self, objid):
+    PDFOBJ_CUE = re.compile(r'^(\d+)\s+(\d+)\s+obj\b')
+    def load_fallback(self, parser, debug=0):
+        parser.seek(0)
+        while 1:
+            try:
+                (pos, line) = parser.nextline()
+            except PSEOF:
+                break
+            if line.startswith('trailer'):
+                parser.seek(pos)
+                self.load_trailer(parser)
+                if 1 <= debug:
+                    print >>stderr, 'trailer: %r' % self.get_trailer()
+                break
+            m = self.PDFOBJ_CUE.match(line)
+            if not m: continue
+            (objid, genno) = m.groups()
+            self.offsets[int(objid)] = (0, pos)
+        return
+
+    def get_trailer(self):
+        return self.trailer
+
+    def get_pos(self, objid):
         try:
             (genno, pos) = self.offsets[objid]
         except KeyError:
@@ -149,10 +145,10 @@ class PDFXRef(PDFBaseXRef):
 class PDFXRefStream(PDFBaseXRef):
 
     def __init__(self):
-        PDFBaseXRef.__init__(self)
         self.data = None
         self.entlen = None
         self.fl1 = self.fl2 = self.fl3 = None
+        self.objid_ranges = []
         return
 
     def __repr__(self):
@@ -169,17 +165,22 @@ class PDFXRefStream(PDFBaseXRef):
         index_array = stream.dic.get('Index', (0,size))
         if len(index_array) % 2 != 0:
             raise PDFSyntaxError('Invalid index number')
-        self.objid_ranges = [ XRefObjRange(start,nobjs) for (start,nobjs) in choplist(2, index_array) ]
+        self.objid_ranges.extend( ObjIdRange(start, nobjs) 
+                                  for (start,nobjs) in choplist(2, index_array) )
         (self.fl1, self.fl2, self.fl3) = stream.dic['W']
         self.data = stream.get_data()
         self.entlen = self.fl1+self.fl2+self.fl3
         self.trailer = stream.dic
         if debug:
             print >>stderr, ('xref stream: objid=%s, fields=%d,%d,%d' %
-                             (', '.join(map(repr, self.objid_ranges), self.fl1, self.fl2, self.fl3)))
+                             (', '.join(map(repr, self.objid_ranges),
+                                        self.fl1, self.fl2, self.fl3)))
         return
 
-    def getpos(self, objid):
+    def get_trailer(self):
+        return self.trailer
+
+    def get_pos(self, objid):
         offset = 0
         found = False
         for objid_range in self.objid_ranges:
@@ -207,14 +208,35 @@ class PDFXRefStream(PDFBaseXRef):
 
 ##  PDFPage
 ##
-##  A PDFPage object is nothing more than a bunch of keys and values
-##  that describe the properties of the page and point to its contents,
-##  and has nothing to do with a real graphical entity. For a real graphical
-##  object, look at layout.LTPage.
-##
 class PDFPage(object):
 
+    """An object that holds the information about a page.
+
+    A PDFPage object is merely a convenience class that has a set
+    of keys and values, which describe the properties of a page
+    and point to its contents.
+
+    Attributes:
+      doc: a PDFDocument object.
+      pageid: any Python object that can uniquely identify the page.
+      attrs: a dictionary of page attributes.
+      contents: a list of PDFStream objects that represents the page content.
+      lastmod: the last modified time of the page.
+      resources: a list of resources used by the page.
+      mediabox: the physical size of the page.
+      cropbox: the crop rectangle of the page.
+      rotate: the page rotation (in degree).
+      annots: the page annotations.
+      beads: a chain that represents natural reading order.
+    """
+
     def __init__(self, doc, pageid, attrs):
+        """Initialize a page object.
+        
+        doc: a PDFDocument object.
+        pageid: any Python object that can uniquely identify the page.
+        attrs: a dictionary of page attributes.
+        """
         self.doc = doc
         self.pageid = pageid
         self.attrs = dict_value(attrs)
@@ -243,12 +265,22 @@ class PDFPage(object):
 
 ##  PDFDocument
 ##
-##  A PDFDocument object represents a PDF document.
-##  Since a PDF file is usually pretty big, normally it is not loaded
-##  at once. Rather it is parsed dynamically as processing goes.
-##  A PDF parser is associated with the document.
-##
 class PDFDocument(object):
+
+    """PDFDocument object represents a PDF document.
+
+    Since a PDF file can be very big, normally it is not loaded at
+    once. Each PDF document has a PDF parser object associated,
+    and the data stream is parsed dynamically as processing goes.
+
+    Typical usage:
+      doc = PDFDocument()
+      parser = PDFParser(fp)
+      parser.set_document(doc)
+      doc.set_parser(parser)
+      doc.initialize(password)
+    
+    """
 
     debug = 0
 
@@ -261,24 +293,23 @@ class PDFDocument(object):
         self.parser = None
         self.encryption = None
         self.decipher = None
-        self.ready = False
+        self._initialized = False
         return
 
-    # set_parser(parser)
-    #   Associates the document with an (already initialized) parser object.
     def set_parser(self, parser):
+        "Set the document to use a given PDFParser object."
         if self.parser: return
         self.parser = parser
         # The document is set to be temporarily ready during collecting
         # all the basic information about the document, e.g.
         # the header, the encryption information, and the access rights
         # for the document.
-        self.ready = True
+        self._initialized = True
         # Retrieve the information of each header that was appended
         # (maybe multiple times) at the end of the document.
         self.xrefs = parser.read_xref()
         for xref in self.xrefs:
-            trailer = xref.trailer
+            trailer = xref.get_trailer()
             if not trailer: continue
             # If there's an encryption info, remember it.
             if 'Encrypt' in trailer:
@@ -293,7 +324,7 @@ class PDFDocument(object):
         # The document is set to be non-ready again, until all the
         # proper initialization (asking the password key and
         # verifying the access permission, so on) is finished.
-        self.ready = False
+        self._initialized = False
         return
 
     # set_root(root)
@@ -315,7 +346,7 @@ class PDFDocument(object):
     def initialize(self, password=''):
         if not self.encryption:
             self.is_printable = self.is_modifiable = self.is_extractable = True
-            self.ready = True
+            self._initialized = True
             return
         (docid, param) = self.encryption
         if literal_name(param['Filter']) != 'Standard':
@@ -367,7 +398,7 @@ class PDFDocument(object):
             raise PDFPasswordIncorrect
         self.decrypt_key = key
         self.decipher = self.decrypt_rc4  # XXX may be AES
-        self.ready = True
+        self._initialized = True
         return
 
     def decrypt_rc4(self, objid, genno, data):
@@ -378,7 +409,7 @@ class PDFDocument(object):
 
     KEYWORD_OBJ = KWD('obj')
     def getobj(self, objid):
-        if not self.ready:
+        if not self._initialized:
             raise PDFException('PDFDocument not initialized')
         #assert self.xrefs
         if 2 <= self.debug:
@@ -389,7 +420,7 @@ class PDFDocument(object):
         else:
             for xref in self.xrefs:
                 try:
-                    (strmid, index) = xref.getpos(objid)
+                    (strmid, index) = xref.get_pos(objid)
                     break
                 except KeyError:
                     pass
@@ -411,7 +442,7 @@ class PDFDocument(object):
                 if strmid in self.parsed_objs:
                     objs = self.parsed_objs[strmid]
                 else:
-                    parser = PDFObjStrmParser(self, stream.get_data())
+                    parser = PDFObjStrmParser(stream.get_data())
                     objs = []
                     try:
                         while 1:
@@ -458,7 +489,7 @@ class PDFDocument(object):
 
     INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
     def get_pages(self):
-        if not self.ready:
+        if not self._initialized:
             raise PDFException('PDFDocument is not initialized')
         #assert self.xrefs
         def search(obj, parent):
@@ -529,14 +560,15 @@ class PDFDocument(object):
 ##
 class PDFParser(PSStackParser):
 
-    def __init__(self, doc, fp):
+    def __init__(self, fp):
         PSStackParser.__init__(self, fp)
-        self.doc = doc
-        self.doc.set_parser(self)
+        self.doc = None
         return
 
-    def __repr__(self):
-        return '<PDFParser>'
+    def set_document(self, doc):
+        "Associates the parser with a PDFDocument object."
+        self.doc = doc
+        return
 
     KEYWORD_R = KWD('R')
     KEYWORD_ENDOBJ = KWD('endobj')
@@ -647,7 +679,7 @@ class PDFParser(PSStackParser):
             xref = PDFXRef()
             xref.load(self, debug=self.debug)
         xrefs.append(xref)
-        trailer = xref.trailer
+        trailer = xref.get_trailer()
         if 1 <= self.debug:
             print >>stderr, 'trailer: %r' % trailer
         if 'XRefStm' in trailer:
@@ -669,26 +701,8 @@ class PDFParser(PSStackParser):
             # fallback
             if 1 <= self.debug:
                 print >>stderr, 'no xref, fallback'
-            self.seek(0)
-            pat = re.compile(r'^(\d+)\s+(\d+)\s+obj\b')
-            offsets = {}
             xref = PDFXRef()
-            while 1:
-                try:
-                    (pos, line) = self.nextline()
-                except PSEOF:
-                    break
-                if line.startswith('trailer'):
-                    xref.offsets = offsets
-                    self.seek(pos)
-                    xref.load_trailer(self)
-                    if 1 <= self.debug:
-                        print >>stderr, 'trailer: %r' % xref.trailer
-                    continue
-                m = pat.match(line)
-                if not m: continue
-                (objid, genno) = m.groups()
-                offsets[int(objid)] = (0, pos)
+            xref.load_fallback(self)
             xrefs.append(xref)
         return xrefs
 
@@ -697,8 +711,8 @@ class PDFParser(PSStackParser):
 ##
 class PDFObjStrmParser(PSStackParser):
 
-    def __init__(self, doc, data):
-        PDFParser.__init__(self, doc, StringIO(data))
+    def __init__(self, data):
+        PSStackParser.__init__(self, StringIO(data))
         return
 
     def flush(self):

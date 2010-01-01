@@ -405,9 +405,10 @@ class PDFSimpleFont(PDFFont):
 
     def to_unichr(self, cid):
         if self.unicode_map:
-            code = self.unicode_map.get_unicode(cid)
-            if code is not None:
-                return unichr(code)
+            try:
+                return self.unicode_map.get_unichr(cid)
+            except KeyError:
+                pass
         try:
             return self.encoding[cid]
         except KeyError:
@@ -571,12 +572,11 @@ class PDFCIDFont(PDFFont):
         return self.disps.get(cid, self.default_disp)
 
     def to_unichr(self, cid):
-        if not self.unicode_map:
+        try:
+            if not self.unicode_map: raise KeyError(cid)
+            return self.unicode_map.get_unichr(cid)
+        except KeyError:
             raise PDFUnicodeNotDefined(self.cidcoding, cid)
-        code = self.unicode_map.get_unicode(cid)
-        if code is not None:
-            return unichr(code)
-        raise PDFUnicodeNotDefined(self.cidcoding, cid)
 
 
 # main

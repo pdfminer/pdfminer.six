@@ -90,14 +90,14 @@ class UnicodeMap(object):
 
     debug = 0
 
-    def __init__(self, cid2unicode=None):
-        self.cid2unicode = cid2unicode or {}
+    def __init__(self, cid2unichr=None):
+        self.cid2unichr = cid2unichr or {}
         return
 
-    def get_unicode(self, cid):
+    def get_unichr(self, cid):
         if self.debug:
-            print >>sys.stderr, 'get_unicode: %r, %r' % (self, cid)
-        return self.cid2unicode.get(cid)
+            print >>sys.stderr, 'get_unichr: %r, %r' % (self, cid)
+        return self.cid2unichr[cid]
 
 
 ##  FileCMap
@@ -151,16 +151,16 @@ class FileUnicodeMap(UnicodeMap):
         self.attrs[k] = v
         return
 
-    def add_cid2unicode(self, cid, code):
+    def add_cid2unichr(self, cid, code):
         assert isinstance(cid, int)
         if isinstance(code, PSLiteral):
             # Interpret as an Adobe glyph name.
-            self.cid2unicode[cid] = name2unicode(code.name)
+            self.cid2unichr[cid] = unichr(name2unicode(code.name))
         elif isinstance(code, str):
             # Interpret as UTF-16BE.
-            self.cid2unicode[cid] = unpack('>H', code)[0]
+            self.cid2unichr[cid] = unicode(code, 'UTF-16BE', 'ignore')
         elif isinstance(code, int):
-            self.cid2unicode[cid] = code
+            self.cid2unichr[cid] = unichr(code)
         else:
             raise TypeError(code)
         return
@@ -189,10 +189,10 @@ class PyUnicodeMap(UnicodeMap):
     
     def __init__(self, name, module, vertical):
         if vertical:
-            cid2unicode = module.CID2UNICODE_V
+            cid2unichr = module.CID2UNICHR_V
         else:
-            cid2unicode = module.CID2UNICODE_H
-        UnicodeMap.__init__(self, cid2unicode)
+            cid2unichr = module.CID2UNICHR_H
+        UnicodeMap.__init__(self, cid2unichr)
         self.name = name
         return
 
@@ -333,7 +333,7 @@ class CMapParser(PSStackParser):
                 #assert s1 <= e1
                 if isinstance(code, list):
                     for i in xrange(e1-s1+1):
-                        self.cmap.add_cid2unicode(s1+i, code[i])
+                        self.cmap.add_cid2unichr(s1+i, code[i])
                 else:
                     var = code[-4:]
                     base = nunpack(var)
@@ -341,7 +341,7 @@ class CMapParser(PSStackParser):
                     vlen = len(var)
                     for i in xrange(e1-s1+1):
                         x = prefix+pack('>L',base+i)[-vlen:]
-                        self.cmap.add_cid2unicode(s1+i, x)
+                        self.cmap.add_cid2unichr(s1+i, x)
             return
 
         if name == 'beginbfchar':
@@ -351,7 +351,7 @@ class CMapParser(PSStackParser):
             objs = [ obj for (_,obj) in self.popall() ]
             for (cid,code) in choplist(2, objs):
                 if isinstance(cid, str) and isinstance(code, str):
-                    self.cmap.add_cid2unicode(nunpack(cid), code)
+                    self.cmap.add_cid2unichr(nunpack(cid), code)
             return
 
         if name == 'beginnotdefrange':

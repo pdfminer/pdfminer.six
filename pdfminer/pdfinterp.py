@@ -766,7 +766,9 @@ class PDFTextExtractionNotAllowed(PDFInterpreterError): pass
 
 def process_pdf(rsrc, device, fp, pagenos=None, maxpages=0, password=''):
     doc = PDFDocument()
-    parser = PDFParser(doc, fp)
+    parser = PDFParser(fp)
+    parser.set_document(doc)
+    doc.set_parser(parser)
     doc.initialize(password)
     if not doc.is_extractable:
         raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fp)

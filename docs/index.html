@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Dec 20 01:25:02 JST 2009
+Last Modified: Fri Jan  1 12:04:47 JST 2010
 <!-- hhmts end -->
 </div>
 
@@ -27,7 +27,7 @@ Last Modified: Sun Dec 20 01:25:02 JST 2009
 <li> <a href="#intro">What's It?</a>
 <li> <a href="#source">Download</a>
 <li> <a href="#install">Install</a> 
-&nbsp; <small>(<a href="#cmap">for non-ASCII languages</a>)</small>
+&nbsp; <small>(<a href="#cmap">for East Asian languages</a>)</small>
 <li> <a href="#usage">How to Use</a>
 &nbsp; <small>(<a href="#pdf2txt">pdf2txt.py</a>, <a href="#dumppdf">dumppdf.py</a>)</small>
 <li> <a href="#todos">TODOs</a>
@@ -54,7 +54,7 @@ PDF parser that can be used for other purposes instead of text analysis.
 <ul>
 <li> Written entirely in Python. (for version 2.4 or newer)
 <li> PDF-1.7 specification support. (well, almost)
-<li> Non-ASCII languages and vertical writing scripts support.
+<li> East Asian languages and vertical writing scripts support.
 <li> Various font types (Type1, TrueType, Type3, and CID) support.
 <li> Basic encryption (RC4) support.
 <li> PDF to HTML conversion (with a sample converter web app).
@@ -125,8 +125,8 @@ W o r l d
 
 <p>
 <a name="cmap"></a>
-<h3>For non-ASCII languages</h3>
-In order to handle non-ASCII languages (e.g. Japanese),
+<h3>For East Asian languages</h3>
+In order to handle East Asian languages (Chinese or Japanese, etc.),
 you need to install an additional data called <code>CMap</code>,
 which is originally distributed by Adobe. CMap is now included
 in the pdfminer package, but not installed by default.
@@ -163,9 +163,6 @@ direction (horizontal or vertical) for each text portion.
 You need to provide a password for protected PDF documents when its access is restricted.
 You cannot extract any text from a PDF document which does not have extraction permission.
 <p>
-For non-ASCII languages, you can specify the output encoding 
-(such as UTF-8).
-<p>
 <strong>Note:</strong> Not all characters in a PDF can be safely converted to Unicode.
 
 <p>
@@ -194,7 +191,7 @@ Page numbers are starting from one.
 By default, it extracts texts from all the pages.
 <p>
 <dt> <code>-c <em>codec</em></code> 
-<dd> Specifies the output codec for non-ASCII texts.
+<dd> Specifies the output codec.
 <p>
 <dt> <code>-t <em>type</em></code> 
 <dd> Specifies the output format. The following formats are currently supported.
@@ -344,6 +341,9 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2010/01/01: CMap bug fix. Thanks to Winfried Plappert.
+<li> 2009/12/24: RunLengthDecode filter added. Thanks to Troy Bollinger.
+<li> 2009/12/20: Experimental polygon shape extraction added. Thanks to Yusuf Dewaswala for reporting.
 <li> 2009/12/19: CMap resources are now the part of the package. Thanks to Adobe for open-sourcing them.
 <li> 2009/11/29: Password encryption bug fixed. Thanks to Yannick Gingras.
 <li> 2009/10/31: SGML output format is changed and renamed as XML.
