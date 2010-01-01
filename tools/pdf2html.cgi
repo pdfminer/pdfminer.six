@@ -9,10 +9,10 @@
 #   The user should be imposed quota.
 #
 # Setup:
-#   $ mkdir CGIDIR
-#   $ mkdir CGIDIR/var
-#   $ cp -a pdfminer/pdflib CGIDIR
-#   $ PYTHONPATH=CGIDIR pdfminer/tools/pdf2html.cgi
+#   $ mkdir $CGIDIR
+#   $ mkdir $CGIDIR/var
+#   $ python setup.py install_lib --install-dir=$CGIDIR
+#   $ cp pdfminer/tools/pdf2html.cgi $CGIDIR
 #
 
 import sys
@@ -41,8 +41,9 @@ def url(base, **kw):
 ##  convert
 ##
 class FileSizeExceeded(ValueError): pass
-def convert(outfp, infp, path, codec='utf-8', maxpages=10,
-            maxfilesize=5000000, pagenos=None, html=True):
+def convert(outfp, infp, path, codec='utf-8',
+            maxpages=0, maxfilesize=0, pagenos=None,
+            html=True):
     # save the input file.
     src = file(path, 'wb')
     nbytes = 0
@@ -74,23 +75,21 @@ def convert(outfp, infp, path, codec='utf-8', maxpages=10,
 class PDF2HTMLApp(object):
 
     APPURL = '/convert'
-    TMPDIR = './var/'
-    LOGPATH = './var/log'
     MAXFILESIZE = 5000000
     MAXPAGES = 10
 
-    def __init__(self, outfp, logpath=LOGPATH, loglevel=logging.DEBUG, codec='utf-8'):
+    def __init__(self, outfp=sys.stdout, codec='utf-8'):
         self.outfp = outfp
         self.codec = codec
-        logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
-                            level=loglevel, filename=logpath, filemode='a')
         self.remote_addr = os.environ.get('REMOTE_ADDR')
         self.path_info = os.environ.get('PATH_INFO')
         self.method = os.environ.get('REQUEST_METHOD', 'GET')
         self.server = os.environ.get('SERVER_SOFTWARE', '')
+        self.logpath = os.environ.get('LOG_PATH', './var/log')
+        self.tmpdir = os.environ.get('TEMP', './var/')
+        self.debug = os.environ.get('DEBUG')
         self.content_type = 'text/html; charset=%s' % codec
         self.cur_time = time.time()
-        self.form = cgi.FieldStorage()
         return
 
     def put(self, *args):
@@ -131,7 +130,8 @@ class PDF2HTMLApp(object):
           '<h1>pdf2html demo</h1><hr>\n',
           '<form method="POST" action="%s" enctype="multipart/form-data">\n' % q(self.APPURL),
           '<p>Upload PDF File: <input name="f" type="file" value="">\n',
-          '&nbsp; Page numbers (comma-separated): <input name="p" type="text" size="10" value="">\n',
+          '&nbsp; Page numbers (comma-separated):\n',
+          '<input name="p" type="text" size="10" value="">\n',
           '<p>(Text extraction is limited to maximum %d pages.\n' % self.MAXPAGES,
           'Maximum file size for input is %d bytes.)\n' % self.MAXFILESIZE,
           '<p><input type="submit" name="c" value="Convert to HTML">\n',
@@ -144,6 +144,12 @@ class PDF2HTMLApp(object):
         return
 
     def run(self, argv):
+        logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+        if self.debug:
+            logging.basicConfig(level=logging.DEBUG)
+        else:
+            logging.basicConfig(level=logging.ERROR,
+                                filename=self.logpath, filemode='a')
         if self.path_info == '/':
             self.http_200()
             self.coverpage()
@@ -151,31 +157,33 @@ class PDF2HTMLApp(object):
         if self.path_info != self.APPURL:
             self.http_404()
             return
-        if not os.path.isdir(self.TMPDIR):
+        if not os.path.isdir(self.tmpdir):
             self.bummer('error')
             return
-        if 'f' not in self.form:
+        form = cgi.FieldStorage()
+        if 'f' not in form:
             self.http_301('/')
             return
-        if 'c' not in self.form:
+        if 'c' not in form:
             self.http_301('/')
             return
-        item = self.form['f']
+        item = form['f']
         if not (item.file and item.filename):
             self.http_301('/')
             return
-        cmd = self.form.getvalue('c')
+        cmd = form.getvalue('c')
         html = (cmd == 'Convert to HTML')
         pagenos = []
-        if 'p' in self.form:
-            for m in re.finditer(r'\d+', self.form.getvalue('p')):
+        if 'p' in form:
+            for m in re.finditer(r'\d+', form.getvalue('p')):
                 try:
                     pagenos.append(int(m.group(0)))
                 except ValueError:
                     pass
-        logging.info('process: host=%s, name=%r, pagenos=%r' % (self.remote_addr, item.filename, pagenos))
+        logging.info('process: host=%s, name=%r, pagenos=%r' %
+                     (self.remote_addr, item.filename, pagenos))
         h = abs(hash((random.random(), self.remote_addr, item.filename)))
-        tmppath = os.path.join(self.TMPDIR, '%08x%08x.pdf' % (self.cur_time, h))
+        tmppath = os.path.join(self.tmpdir, '%08x%08x.pdf' % (self.cur_time, h))
         try:
             try:
                 if not html:
@@ -195,4 +203,4 @@ class PDF2HTMLApp(object):
 
 
 # main
-if __name__ == '__main__': sys.exit(PDF2HTMLApp(sys.stdout).run(sys.argv))
+if __name__ == '__main__': sys.exit(PDF2HTMLApp().run(sys.argv))
