@@ -111,7 +111,8 @@ class PDFPageAggregator(PDFTextDevice):
 
     def paint_path(self, gstate, stroke, fill, evenodd, path):
         shape = ''.join(x[0] for x in path)
-        if shape == 'ml': # horizontal/vertical line
+        if shape == 'ml':
+            # horizontal/vertical line
             (_,x0,y0) = path[0]
             (_,x1,y1) = path[1]
             (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
