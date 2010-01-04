@@ -1033,6 +1033,13 @@ def rijndaelDecrypt(rk, nrounds, ciphertext):
 # decrypt(key, fin, fout, keybits=256)
 class RijndaelDecryptor(object):
 
+    """
+    >>> key = '00010203050607080a0b0c0d0f101112'.decode('hex')
+    >>> ciphertext = 'd8f532538289ef7d06b506a4fd5be9c9'.decode('hex')
+    >>> RijndaelDecryptor(key, 128).decrypt(ciphertext).encode('hex')
+    '506812a45f08c889b97f5980038b8359'
+    """
+
     def __init__(self, key, keybits=256):
         assert len(key) == KEYLENGTH(keybits)
         (self.rk, self.nrounds) = rijndaelSetupDecrypt(key, keybits)
@@ -1047,6 +1054,13 @@ class RijndaelDecryptor(object):
 # encrypt(key, fin, fout, keybits=256)
 class RijndaelEncryptor(object):
 
+    """
+    >>> key = '00010203050607080a0b0c0d0f101112'.decode('hex')
+    >>> plaintext = '506812a45f08c889b97f5980038b8359'.decode('hex')
+    >>> RijndaelEncryptor(key, 128).encrypt(plaintext).encode('hex')
+    'd8f532538289ef7d06b506a4fd5be9c9'
+    """
+    
     def __init__(self, key, keybits=256):
         assert len(key) == KEYLENGTH(keybits)
         (self.rk, self.nrounds) = rijndaelSetupEncrypt(key, keybits)
@@ -1058,17 +1072,7 @@ class RijndaelEncryptor(object):
         assert len(plaintext) == 16
         return rijndaelEncrypt(self.rk, self.nrounds, plaintext)
 
-def main(argv):
-    # test
-    key = '00010203050607080A0B0C0D0F101112'.decode('hex')
-    plaintext = '506812A45F08C889B97F5980038B8359'.decode('hex')
-    ciphertext = 'D8F532538289EF7D06B506A4FD5BE9C9'.decode('hex')
-    e = RijndaelEncryptor(key, 128)
-    text = e.encrypt(plaintext)
-    assert text == ciphertext
-    d = RijndaelDecryptor(key, 128)
-    text = d.decrypt(ciphertext)
-    assert text == plaintext
-    return 0
 
-if __name__ == '__main__': sys.exit(main(sys.argv))
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

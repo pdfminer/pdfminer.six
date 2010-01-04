@@ -10,6 +10,15 @@ This code is in the public domain.
 ##
 class Arcfour(object):
 
+    """
+    >>> Arcfour('Key').process('Plaintext').encode('hex')
+    'bbf316e8d940af0ad3'
+    >>> Arcfour('Wiki').process('pedia').encode('hex')
+    '1021bf0420'
+    >>> Arcfour('Secret').process('Attack at dawn').encode('hex')
+    '45a01f645fc35b383552544b9bf5'
+    """
+
     def __init__(self, key):
         s = range(256)
         j = 0
@@ -36,10 +45,5 @@ class Arcfour(object):
 
 # test
 if __name__ == '__main__':
-    def doit(key, data):
-        cipher = Arcfour(key)
-        return ''.join( '%02X' % ord(c) for c in cipher.process(data) )
-    assert doit("Key", "Plaintext") == 'BBF316E8D940AF0AD3'
-    assert doit("Wiki", "pedia") == '1021BF0420'
-    assert doit("Secret", "Attack at dawn") == '45A01F645FC35B383552544B9BF5'
-    print 'test succeeded'
+    import doctest
+    doctest.testmod()
