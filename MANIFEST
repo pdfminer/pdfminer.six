@@ -23,6 +23,7 @@ pdfminer/pdfparser.py
 pdfminer/pdftypes.py
 pdfminer/psparser.py
 pdfminer/rijndael.py
+pdfminer/runlength.py
 pdfminer/utils.py
 pdfminer/cmap/Makefile
 pdfminer/cmap/__init__.py
