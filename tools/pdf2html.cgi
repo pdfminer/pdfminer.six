@@ -1,14 +1,14 @@
-#!/usr/bin/python
+#!/usr/bin/python -O
 #
-# pdf2html.cgi - Gateway for converting PDF into HTML.
+# pdf2html.cgi - Gateway script for converting PDF into HTML.
 #
 # Security consideration for public access:
 #
-#   Limit the process size and/or running time.
+#   Limit the process size and/or maximum cpu time.
 #   The process should be chrooted.
 #   The user should be imposed quota.
 #
-# Setup:
+# How to Setup:
 #   $ mkdir $CGIDIR
 #   $ mkdir $CGIDIR/var
 #   $ python setup.py install_lib --install-dir=$CGIDIR
@@ -16,9 +16,10 @@
 #
 
 import sys
-# comment out at runtime.
-import cgitb; cgitb.enable()
+# comment out at this at runtime.
+#import cgitb; cgitb.enable()
 import os, os.path, re, cgi, time, random, codecs, logging, traceback
+import pdfminer
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import HTMLConverter, TextConverter
 from pdfminer.layout import LAParams
@@ -138,26 +139,29 @@ class PDF2HTMLApp(object):
           '<input type="submit" name="c" value="Convert to TEXT">\n',
           '<input type="reset" value="Reset">\n',
           '</form><hr>\n',
-          '<p>Powered by <a href="http://www.unixuser.org/~euske/python/pdfminer/">PDFMiner</a>\n',
+          '<p>Powered by <a href="http://www.unixuser.org/~euske/python/pdfminer/">PDFMiner</a>-%s\n' % pdfminer.__version__,
           '</body></html>\n',
           )
         return
 
     def run(self, argv):
-        logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
         if self.debug:
-            logging.basicConfig(level=logging.DEBUG)
+            logging.basicConfig(level=logging.DEBUG,
+                                format='%(asctime)s %(levelname)s %(message)s')
         else:
             logging.basicConfig(level=logging.ERROR,
+                                format='%(asctime)s %(levelname)s %(message)s',
                                 filename=self.logpath, filemode='a')
         if self.path_info == '/':
             self.http_200()
             self.coverpage()
             return
         if self.path_info != self.APPURL:
+            logging.error('invalid path: %r' % self.path_info)
             self.http_404()
             return
         if not os.path.isdir(self.tmpdir):
+            logging.error('no tmpdir')
             self.bummer('error')
             return
         form = cgi.FieldStorage()
@@ -180,7 +184,7 @@ class PDF2HTMLApp(object):
                     pagenos.append(int(m.group(0)))
                 except ValueError:
                     pass
-        logging.info('process: host=%s, name=%r, pagenos=%r' %
+        logging.info('received: host=%s, name=%r, pagenos=%r' %
                      (self.remote_addr, item.filename, pagenos))
         h = abs(hash((random.random(), self.remote_addr, item.filename)))
         tmppath = os.path.join(self.tmpdir, '%08x%08x.pdf' % (self.cur_time, h))
@@ -193,7 +197,7 @@ class PDF2HTMLApp(object):
                         maxpages=self.MAXPAGES, maxfilesize=self.MAXFILESIZE, html=html)
             except Exception, e:
                 self.put('<p>Sorry, an error has occured: %s' % q(repr(e)))
-                logging.error('error: %r: path=%r: %s' % (e, tmppath, traceback.format_exc()))
+                logging.error('convert: %r: path=%r: %s' % (e, tmppath, traceback.format_exc()))
         finally:
             try:
                 os.remove(tmppath)
