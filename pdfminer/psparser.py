@@ -83,16 +83,16 @@ class PSSymbolTable(object):
     """
     
     def __init__(self, klass):
-        self.dic = {}
+        self.dict = {}
         self.klass = klass
         return
 
     def intern(self, name):
-        if name in self.dic:
-            lit = self.dic[name]
+        if name in self.dict:
+            lit = self.dict[name]
         else:
             lit = self.klass(name)
-            self.dic[name] = lit
+            self.dict[name] = lit
         return lit
 
 PSLiteralTable = PSSymbolTable(PSLiteral)
@@ -153,7 +153,7 @@ class PSBaseParser(object):
         return
 
     def __repr__(self):
-        return '<PSBaseParser: %r, bufpos=%d>' % (self.fp, self.bufpos)
+        return '<%s: %r, bufpos=%d>' % (self.__class__.__name__, self.fp, self.bufpos)
 
     def flush(self):
         return

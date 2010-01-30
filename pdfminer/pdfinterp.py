@@ -293,7 +293,7 @@ class PDFPageInterpreter(object):
             else:
                 name = literal_name(spec)
             if name == 'ICCBased' and isinstance(spec, list) and 2 <= len(spec):
-                return PDFColorSpace(name, stream_value(spec[1]).dic['N'])
+                return PDFColorSpace(name, stream_value(spec[1])['N'])
             elif name == 'DeviceN' and isinstance(spec, list) and 2 <= len(spec):
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
@@ -681,18 +681,17 @@ class PDFPageInterpreter(object):
             return
         if 1 <= self.debug:
             print >>stderr, 'Processing xobj: %r' % xobj
-        subtype = xobj.dic.get('Subtype')
-        if subtype is LITERAL_FORM and 'BBox' in xobj.dic:
+        subtype = xobj.get('Subtype')
+        if subtype is LITERAL_FORM and 'BBox' in xobj:
             interpreter = self.dup()
-            bbox = list_value(xobj.dic['BBox'])
-            matrix = list_value(xobj.dic.get('Matrix', MATRIX_IDENTITY))
+            bbox = list_value(xobj['BBox'])
+            matrix = list_value(xobj.get('Matrix', MATRIX_IDENTITY))
             self.device.begin_figure(xobjid, bbox, matrix)
-            interpreter.render_contents(dict_value(xobj.dic.get('Resources')), [xobj], ctm=mult_matrix(matrix, self.ctm))
+            interpreter.render_contents(dict_value(xobj.get('Resources')), [xobj], ctm=mult_matrix(matrix, self.ctm))
             self.device.end_figure(xobjid)
-        elif subtype is LITERAL_IMAGE and 'Width' in xobj.dic and 'Height' in xobj.dic:
+        elif subtype is LITERAL_IMAGE and 'Width' in xobj and 'Height' in xobj:
             self.device.begin_figure(xobjid, (0,0,1,1), MATRIX_IDENTITY)
-            (w,h) = (xobj.dic['Width'], xobj.dic['Height'])
-            self.device.render_image(xobj, (w,h))
+            self.device.render_image(xobjid, xobj)
             self.device.end_figure(xobjid)
         else:
             # unsupported xobject type.

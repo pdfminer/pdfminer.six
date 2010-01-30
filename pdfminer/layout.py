@@ -283,6 +283,26 @@ class LTRect(LTPolygon):
         return
 
 
+##  LTImage
+##
+class LTImage(object):
+
+    def __init__(self, name, type, srcsize, dstbbox, data):
+        self.name = name
+        self.type = type
+        self.srcsize = srcsize
+        self.dstbbox = dstbbox
+        self.data = data
+        return
+
+    def __repr__(self):
+        (w,h) = self.srcsize
+        return '<image %s %s %dx%d>' % (self.id, self.type, w, h)
+
+    def get_weight(self):
+        return 0
+
+
 ##  LTText
 ##
 class LTText(object):

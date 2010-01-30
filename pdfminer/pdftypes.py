@@ -8,11 +8,15 @@ from psparser import PSException, PSObject
 from psparser import LIT, KWD, STRICT
 
 LITERAL_CRYPT = LIT('Crypt')
+
+# Abbreviation of Filter names in PDF 4.8.6. "Inline Images"
 LITERALS_FLATE_DECODE = (LIT('FlateDecode'), LIT('Fl'))
 LITERALS_LZW_DECODE = (LIT('LZWDecode'), LIT('LZW'))
 LITERALS_ASCII85_DECODE = (LIT('ASCII85Decode'), LIT('A85'))
 LITERALS_ASCIIHEX_DECODE = (LIT('ASCIIHexDecode'), LIT('AHx'))
 LITERALS_RUNLENGTH_DECODE = (LIT('RunLengthDecode'), LIT('RL'))
+LITERALS_CCITTFAX_DECODE = (LIT('CCITTFaxDecode'), LIT('CCF'))
+LITERALS_DCT_DECODE = (LIT('DCTDecode'), LIT('DCT'))
 
 
 ##  PDF Objects
@@ -145,8 +149,9 @@ def stream_value(x):
 ##
 class PDFStream(PDFObject):
 
-    def __init__(self, dic, rawdata, decipher=None):
-        self.dic = dic
+    def __init__(self, attrs, rawdata, decipher=None):
+        assert isinstance(attrs, dict)
+        self.attrs = attrs
         self.rawdata = rawdata
         self.decipher = decipher
         self.data = None
@@ -160,7 +165,14 @@ class PDFStream(PDFObject):
         return
 
     def __repr__(self):
-        return '<PDFStream(%r): raw=%d, %r>' % (self.objid, len(self.rawdata), self.dic)
+        return '<PDFStream(%r): raw=%d, %r>' % (self.objid, len(self.rawdata), self.attrs)
+
+    def __contains__(self, name):
+        return name in self.attrs
+    def __getitem__(self, name):
+        return self.attrs[name]
+    def get(self, name, default=None):
+        return self.attrs.get(name, default)
 
     def decomp(self,data):
         buf = data
@@ -181,11 +193,11 @@ class PDFStream(PDFObject):
         if self.decipher:
             # Handle encryption
             data = self.decipher(self.objid, self.genno, data)
-        if 'Filter' not in self.dic:
-            self.data = data
-            self.rawdata = None
+        try:
+            filters = self['Filter']
+        except KeyError:
+            self.rawdata = self.data = data
             return
-        filters = self.dic['Filter']
         if not isinstance(filters, list):
             filters = [ filters ]
         for f in filters:
@@ -206,10 +218,10 @@ class PDFStream(PDFObject):
             else:
                 raise PDFNotImplementedError('Unsupported filter: %r' % f)
             # apply predictors
-            if 'DP' in self.dic:
-                params = self.dic['DP']
-            else:
-                params = self.dic.get('DecodeParms', {})
+            try:
+                params = self['DP']
+            except KeyError:
+                params = self.get('DecodeParms', {})
             if 'Predictor' in params:
                 pred = int_value(params['Predictor'])
                 if pred:

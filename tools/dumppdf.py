@@ -9,7 +9,7 @@
 import sys, re
 from pdfminer.psparser import PSKeyword, PSLiteral
 from pdfminer.pdfparser import PDFDocument, PDFParser
-from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1
+from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
 
 
 ESC_PAT = re.compile(r'[\000-\037&<>()\042\047\134\177-\377]')
@@ -42,13 +42,18 @@ def dumpxml(out, obj, codec=None):
         return
 
     if isinstance(obj, PDFStream):
-        out.write('<stream>\n<props>\n')
-        dumpxml(out, obj.dic)
-        out.write('\n</props>\n')
-        if codec == 'text':
-            data = obj.get_data()
-            out.write('<data size="%d">%s</data>\n' % (len(data), esc(data)))
-        out.write('</stream>')
+        if codec == 'raw':
+            out.write(obj.get_rawdata())
+        elif codec == 'binary':
+            out.write(obj.get_data())
+        else:
+            out.write('<stream>\n<props>\n')
+            dumpxml(out, obj.attrs)
+            out.write('\n</props>\n')
+            if codec == 'text':
+                data = obj.get_data()
+                out.write('<data size="%d">%s</data>\n' % (len(data), esc(data)))
+            out.write('</stream>')
         return
 
     if isinstance(obj, PDFObjRef):
@@ -128,16 +133,16 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
     if objids:
         for objid in objids:
             obj = doc.getobj(objid)
-            if isinstance(obj, PDFStream) and codec == 'raw':
-                outfp.write(obj.get_rawdata())
-            elif isinstance(obj, PDFStream) and codec == 'binary':
-                outfp.write(obj.get_data())
-            else:
-                dumpxml(outfp, obj, codec=codec)
+            dumpxml(outfp, obj, codec=codec)
     if pagenos:
         for (pageno,page) in enumerate(doc.get_pages()):
             if pageno in pagenos:
-                dumpxml(outfp, page.attrs)
+                if codec:
+                    for obj in page.contents:
+                        obj = stream_value(obj)
+                        dumpxml(outfp, obj, codec=codec)
+                else:
+                    dumpxml(outfp, page.attrs)
     if dumpall:
         dumpallobjs(outfp, doc, codec=codec)
     if (not objids) and (not pagenos) and (not dumpall):

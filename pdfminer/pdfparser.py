@@ -159,22 +159,22 @@ class PDFXRefStream(PDFBaseXRef):
         (_,genno) = parser.nexttoken() # ignored
         (_,kwd) = parser.nexttoken()
         (_,stream) = parser.nextobject()
-        if not isinstance(stream, PDFStream) or stream.dic['Type'] is not LITERAL_XREF:
+        if not isinstance(stream, PDFStream) or stream['Type'] is not LITERAL_XREF:
             raise PDFNoValidXRef('Invalid PDF stream spec.')
-        size = stream.dic['Size']
-        index_array = stream.dic.get('Index', (0,size))
+        size = stream['Size']
+        index_array = stream.get('Index', (0,size))
         if len(index_array) % 2 != 0:
             raise PDFSyntaxError('Invalid index number')
         self.objid_ranges.extend( ObjIdRange(start, nobjs) 
                                   for (start,nobjs) in choplist(2, index_array) )
-        (self.fl1, self.fl2, self.fl3) = stream.dic['W']
+        (self.fl1, self.fl2, self.fl3) = stream['W']
         self.data = stream.get_data()
         self.entlen = self.fl1+self.fl2+self.fl3
-        self.trailer = stream.dic
+        self.trailer = stream.attrs
         if debug:
             print >>stderr, ('xref stream: objid=%s, fields=%d,%d,%d' %
-                             (', '.join(map(repr, self.objid_ranges),
-                                        self.fl1, self.fl2, self.fl3)))
+                             (', '.join(map(repr, self.objid_ranges)),
+                              self.fl1, self.fl2, self.fl3))
         return
 
     def get_trailer(self):
@@ -430,11 +430,11 @@ class PDFDocument(object):
                 return None
             if strmid:
                 stream = stream_value(self.getobj(strmid))
-                if stream.dic.get('Type') is not LITERAL_OBJSTM:
+                if stream.get('Type') is not LITERAL_OBJSTM:
                     if STRICT:
                         raise PDFSyntaxError('Not a stream object: %r' % stream)
                 try:
-                    n = stream.dic['N']
+                    n = stream['N']
                 except KeyError:
                     if STRICT:
                         raise PDFSyntaxError('N is not defined: %r' % stream)
@@ -442,7 +442,7 @@ class PDFDocument(object):
                 if strmid in self.parsed_objs:
                     objs = self.parsed_objs[strmid]
                 else:
-                    parser = PDFObjStrmParser(stream.get_data())
+                    parser = PDFObjStrmParser(stream.get_data(), self)
                     objs = []
                     try:
                         while 1:
@@ -493,7 +493,12 @@ class PDFDocument(object):
             raise PDFException('PDFDocument is not initialized')
         #assert self.xrefs
         def search(obj, parent):
-            tree = dict_value(obj).copy()
+            if isinstance(obj, int):
+                objid = obj
+                tree = dict_value(self.getobj(objid)).copy()
+            else:
+                objid = obj.objid
+                tree = dict_value(obj).copy()
             for (k,v) in parent.iteritems():
                 if k in self.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
@@ -506,7 +511,7 @@ class PDFDocument(object):
             elif tree.get('Type') is LITERAL_PAGE:
                 if 1 <= self.debug:
                     print >>stderr, 'Page: %r' % tree
-                yield (obj.objid, tree)
+                yield (objid, tree)
         if 'Pages' not in self.catalog: return
         for (pageid,tree) in search(self.catalog['Pages'], self.catalog):
             yield PDFPage(self, pageid, tree)
@@ -709,12 +714,29 @@ class PDFParser(PSStackParser):
 
 ##  PDFObjStrmParser
 ##
-class PDFObjStrmParser(PSStackParser):
+class PDFObjStrmParser(PDFParser):
 
-    def __init__(self, data):
+    def __init__(self, data, doc):
         PSStackParser.__init__(self, StringIO(data))
+        self.doc = doc
         return
 
     def flush(self):
         self.add_results(*self.popall())
+        return
+
+    KEYWORD_R = KWD('R')
+    def do_keyword(self, pos, token):
+        if token is self.KEYWORD_R:
+            # reference to indirect object
+            try:
+                ((_,objid), (_,genno)) = self.pop(2)
+                (objid, genno) = (int(objid), int(genno))
+                obj = PDFObjRef(self.doc, objid, genno)
+                self.push((pos, obj))
+            except PSSyntaxError:
+                pass
+            return
+        # others
+        self.push((pos, token))
         return
