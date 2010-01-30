@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Mon Jan  4 23:23:00 JST 2010
+Last Modified: Sat Jan 30 16:32:50 JST 2010
 <!-- hhmts end -->
 </div>
 
@@ -204,6 +204,10 @@ HTML-like tags. pdf2txt tries to extract its content streams rather than inferri
 Tags used here are defined in the PDF specification (See &sect;10.7 "<em>Tagged PDF</em>").
 </ul>
 <p>
+<dt> <code>-I <em>image_directory</em></code> 
+<dd> Specifies the output directory for image extraction.
+Currently only JPEG images are supported.
+<p>
 <dt> <code>-D <em>direction</em></code> 
 <dt> <code>-M <em>char_margin</em></code> 
 <dt> <code>-L <em>line_margin</em></code> 
@@ -334,6 +338,8 @@ no stream header is displayed for the ease of saving it to a file.
 <a href="http://www.python.org/dev/peps/pep-0257/">PEP-257</a> conformance.
 <li> Better text extraction / layout analysis.
 <li> Better API Documentation.
+<li> Crypt stream filter support. (More sample documents are needed!)
+<li> CCITTFax stream filter support.
 <li> Robust error handling.
 </ul>
 
@@ -341,6 +347,7 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2010/01/30: JPEG image extraction supported.
 <li> 2010/01/04: Python 2.6 warning removal. More doctest conversion.
 <li> 2010/01/01: CMap bug fix. Thanks to Winfried Plappert.
 <li> 2009/12/24: RunLengthDecode filter added. Thanks to Troy Bollinger.
