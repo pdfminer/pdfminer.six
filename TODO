@@ -1,7 +1,0 @@
-TODOs:
-  - PEP-8 conformance.
-  - Better text extraction / layout analysis.
-  - Better API Documentation.
-  - Robust error handling.
-  - Crypt stream filter support. (More sample documents are needed!)
-  - CCITTFax stream filter support.

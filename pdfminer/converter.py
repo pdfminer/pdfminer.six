@@ -10,64 +10,6 @@ from utils import apply_matrix_pt, mult_matrix
 from utils import enc, strbbox
 
 
-##  TagExtractor
-##
-class TagExtractor(PDFDevice):
-
-    def __init__(self, rsrc, outfp, codec='utf-8'):
-        PDFDevice.__init__(self, rsrc)
-        self.outfp = outfp
-        self.codec = codec
-        self.pageno = 0
-        self.tag = None
-        return
-
-    def render_string(self, textstate, seq):
-        font = textstate.font
-        text = ''
-        for obj in seq:
-            if not isinstance(obj, str): continue
-            chars = font.decode(obj)
-            for cid in chars:
-                try:
-                    char = font.to_unichr(cid)
-                    text += char
-                except PDFUnicodeNotDefined:
-                    pass
-        self.outfp.write(enc(text, self.codec))
-        return
-
-    def begin_page(self, page, ctm):
-        self.outfp.write('<page id="%s" bbox="%s" rotate="%d">' %
-                         (self.pageno, strbbox(page.mediabox), page.rotate))
-        return
-
-    def end_page(self, page):
-        self.outfp.write('</page>\n')
-        self.pageno += 1
-        return
-
-    def begin_tag(self, tag, props=None):
-        s = ''
-        if props:
-            s = ''.join( ' %s="%s"' % (enc(k), enc(str(v))) for (k,v)
-                         in sorted(props.iteritems()) )
-        self.outfp.write('<%s%s>' % (enc(tag.name), s))
-        self.tag = tag
-        return
-
-    def end_tag(self):
-        assert self.tag
-        self.outfp.write('</%s>' % enc(self.tag.name))
-        self.tag = None
-        return
-
-    def do_tag(self, tag, props=None):
-        self.begin_tag(tag, props)
-        self.tag = None
-        return
-
-
 ##  PDFPageAggregator
 ##
 class PDFPageAggregator(PDFTextDevice):
@@ -171,82 +113,34 @@ class PDFConverter(PDFPageAggregator):
         return
 
 
-##  XMLConverter
+##  TextConverter
 ##
-class XMLConverter(PDFConverter):
+class TextConverter(PDFConverter):
 
-    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None, outdir=None):
+    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None,
+                 showpageno=False):
         PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno, laparams=laparams)
-        self.outdir = outdir
-        self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % codec)
-        self.outfp.write('<pages>\n')
+        self.showpageno = showpageno
         return
 
-    def write_image(self, image):
-        if image.type in LITERALS_DCT_DECODE:
-            ext = '.jpg'
-        else:
-            return None
-        name = image.name+ext
-        path = os.path.join(self.outdir, name)
-        fp = file(path, 'wb')
-        fp.write(image.data)
-        fp.close()
-        return name
-    
+    def write(self, text):
+        self.outfp.write(text.encode(self.codec, 'ignore'))
+        return
+
     def end_page(self, page):
         def render(item):
-            if isinstance(item, LTPage):
-                self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
-                                 (item.id, strbbox(item.bbox), item.rotate))
-                for child in item:
-                    render(child)
-                self.outfp.write('</page>\n')
-            elif isinstance(item, LTLine) and item.direction:
-                self.outfp.write('<line linewidth="%d" direction="%s" bbox="%s" />\n' % (item.linewidth, item.direction, strbbox(item.bbox)))
-            elif isinstance(item, LTRect):
-                self.outfp.write('<rect linewidth="%d" bbox="%s" />\n' % (item.linewidth, strbbox(item.bbox)))
-            elif isinstance(item, LTPolygon):
-                self.outfp.write('<polygon linewidth="%d" bbox="%s" pts="%s"/>\n' % (item.linewidth, strbbox(item.bbox), item.get_pts()))
-            elif isinstance(item, LTFigure):
-                self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, strbbox(item.bbox)))
-                for child in item:
-                    render(child)
-                self.outfp.write('</figure>\n')
-            elif isinstance(item, LTTextLine):
-                self.outfp.write('<textline bbox="%s">\n' % strbbox(item.bbox))
-                for child in item:
-                    render(child)
-                self.outfp.write('</textline>\n')
-            elif isinstance(item, LTTextBox):
-                self.outfp.write('<textbox id="%s" bbox="%s">\n' % (item.id, strbbox(item.bbox)))
-                for child in item:
-                    render(child)
-                self.outfp.write('</textbox>\n')
-            elif isinstance(item, LTTextItem):
-                self.outfp.write('<text font="%s" vertical="%s" bbox="%s" fontsize="%.3f">' %
-                                 (enc(item.font.fontname), item.is_vertical(),
-                                  strbbox(item.bbox), item.fontsize))
+            if isinstance(item, LTText):
                 self.write(item.text)
-                self.outfp.write('</text>\n')
-            elif isinstance(item, LTText):
-                self.outfp.write('<text>%s</text>\n' % item.text)
-            elif isinstance(item, LTImage):
-                x = ''
-                if self.outdir:
-                    name = self.write_image(item)
-                    if name:
-                        x = 'name="%s" ' % enc(name)
-                self.outfp.write('<image %stype="%s" width="%d" height="%d" />\n' % (x, item.type, item.width, item.height))
-            else:
-                assert 0, item
-            return
+            elif isinstance(item, LayoutContainer):
+                for child in item:
+                    render(child)
+            if isinstance(item, LTTextBox):
+                self.write('\n')
         page = PDFConverter.end_page(self, page)
+        if self.showpageno:
+            self.write('Page %d\n' % page.id)
         render(page)
-        return
-
-    def close(self):
-        self.outfp.write('</pages>\n')
+        self.write('\f')
         return
 
 
@@ -344,32 +238,138 @@ class HTMLConverter(PDFConverter):
         return
 
 
-##  TextConverter
+##  XMLConverter
 ##
-class TextConverter(PDFConverter):
+class XMLConverter(PDFConverter):
 
-    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None,
-                 showpageno=False):
+    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None, outdir=None):
         PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno, laparams=laparams)
-        self.showpageno = showpageno
+        self.outdir = outdir
+        self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % codec)
+        self.outfp.write('<pages>\n')
         return
 
-    def write(self, text):
-        self.outfp.write(text.encode(self.codec, 'ignore'))
+    def write_image(self, image):
+        if image.type in LITERALS_DCT_DECODE:
+            ext = '.jpg'
+        else:
+            return None
+        name = image.name+ext
+        path = os.path.join(self.outdir, name)
+        fp = file(path, 'wb')
+        fp.write(image.data)
+        fp.close()
+        return name
+    
+    def end_page(self, page):
+        def render(item):
+            if isinstance(item, LTPage):
+                self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
+                                 (item.id, strbbox(item.bbox), item.rotate))
+                for child in item:
+                    render(child)
+                self.outfp.write('</page>\n')
+            elif isinstance(item, LTLine) and item.direction:
+                self.outfp.write('<line linewidth="%d" direction="%s" bbox="%s" />\n' % (item.linewidth, item.direction, strbbox(item.bbox)))
+            elif isinstance(item, LTRect):
+                self.outfp.write('<rect linewidth="%d" bbox="%s" />\n' % (item.linewidth, strbbox(item.bbox)))
+            elif isinstance(item, LTPolygon):
+                self.outfp.write('<polygon linewidth="%d" bbox="%s" pts="%s"/>\n' % (item.linewidth, strbbox(item.bbox), item.get_pts()))
+            elif isinstance(item, LTFigure):
+                self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, strbbox(item.bbox)))
+                for child in item:
+                    render(child)
+                self.outfp.write('</figure>\n')
+            elif isinstance(item, LTTextLine):
+                self.outfp.write('<textline bbox="%s">\n' % strbbox(item.bbox))
+                for child in item:
+                    render(child)
+                self.outfp.write('</textline>\n')
+            elif isinstance(item, LTTextBox):
+                self.outfp.write('<textbox id="%s" bbox="%s">\n' % (item.id, strbbox(item.bbox)))
+                for child in item:
+                    render(child)
+                self.outfp.write('</textbox>\n')
+            elif isinstance(item, LTTextItem):
+                self.outfp.write('<text font="%s" vertical="%s" bbox="%s" fontsize="%.3f">' %
+                                 (enc(item.font.fontname), item.is_vertical(),
+                                  strbbox(item.bbox), item.fontsize))
+                self.write(item.text)
+                self.outfp.write('</text>\n')
+            elif isinstance(item, LTText):
+                self.outfp.write('<text>%s</text>\n' % item.text)
+            elif isinstance(item, LTImage):
+                x = ''
+                if self.outdir:
+                    name = self.write_image(item)
+                    if name:
+                        x = 'name="%s" ' % enc(name)
+                self.outfp.write('<image %stype="%s" width="%d" height="%d" />\n' % (x, item.type, item.width, item.height))
+            else:
+                assert 0, item
+            return
+        page = PDFConverter.end_page(self, page)
+        render(page)
+        return
+
+    def close(self):
+        self.outfp.write('</pages>\n')
+        return
+
+
+##  TagExtractor
+##
+class TagExtractor(PDFDevice):
+
+    def __init__(self, rsrc, outfp, codec='utf-8'):
+        PDFDevice.__init__(self, rsrc)
+        self.outfp = outfp
+        self.codec = codec
+        self.pageno = 0
+        self.tag = None
+        return
+
+    def render_string(self, textstate, seq):
+        font = textstate.font
+        text = ''
+        for obj in seq:
+            if not isinstance(obj, str): continue
+            chars = font.decode(obj)
+            for cid in chars:
+                try:
+                    char = font.to_unichr(cid)
+                    text += char
+                except PDFUnicodeNotDefined:
+                    pass
+        self.outfp.write(enc(text, self.codec))
+        return
+
+    def begin_page(self, page, ctm):
+        self.outfp.write('<page id="%s" bbox="%s" rotate="%d">' %
+                         (self.pageno, strbbox(page.mediabox), page.rotate))
         return
 
     def end_page(self, page):
-        def render(item):
-            if isinstance(item, LTText):
-                self.write(item.text)
-            elif isinstance(item, LayoutContainer):
-                for child in item:
-                    render(child)
-            if isinstance(item, LTTextBox):
-                self.write('\n')
-        page = PDFConverter.end_page(self, page)
-        if self.showpageno:
-            self.write('Page %d\n' % page.id)
-        render(page)
-        self.write('\f')
+        self.outfp.write('</page>\n')
+        self.pageno += 1
+        return
+
+    def begin_tag(self, tag, props=None):
+        s = ''
+        if props:
+            s = ''.join( ' %s="%s"' % (enc(k), enc(str(v))) for (k,v)
+                         in sorted(props.iteritems()) )
+        self.outfp.write('<%s%s>' % (enc(tag.name), s))
+        self.tag = tag
+        return
+
+    def end_tag(self):
+        assert self.tag
+        self.outfp.write('</%s>' % enc(self.tag.name))
+        self.tag = None
+        return
+
+    def do_tag(self, tag, props=None):
+        self.begin_tag(tag, props)
+        self.tag = None
         return
