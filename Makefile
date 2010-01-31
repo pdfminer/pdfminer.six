@@ -33,11 +33,6 @@ WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
 publish:
 	$(CP) docs/*.html $(WEBDIR)
 
-test:
-	cd samples && $(MAKE) test
-test_clean:
-	-cd samples && $(MAKE) clean
-
 CONV_CMAP=$(PYTHON) tools/conv_cmap.py
 CMAPSRC=cmaprsrc
 CMAPDST=pdfminer/cmap
@@ -53,3 +48,8 @@ $(CMAPDST)/TO_UNICODE_Adobe_Japan1.py:
 	$(CONV_CMAP) $(CMAPDST) Adobe-Japan1 $(CMAPSRC)/cid2code_Adobe_Japan1.txt cp932 euc-jp
 $(CMAPDST)/TO_UNICODE_Adobe_Korea1.py:
 	$(CONV_CMAP) $(CMAPDST) Adobe-Korea1 $(CMAPSRC)/cid2code_Adobe_Korea1.txt cp949 euc-kr
+
+test: cmap
+	cd samples && $(MAKE) all
+test_clean:
+	-cd samples && $(MAKE) clean

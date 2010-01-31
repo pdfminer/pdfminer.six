@@ -6,8 +6,8 @@ from pdftypes import LITERALS_DCT_DECODE
 from layout import LayoutContainer
 from layout import LTPage, LTText, LTLine, LTRect, LTPolygon
 from layout import LTFigure, LTImage, LTTextItem, LTTextBox, LTTextLine
-from utils import enc
 from utils import apply_matrix_pt, mult_matrix
+from utils import enc, strbbox
 
 
 ##  TagExtractor
@@ -38,10 +38,8 @@ class TagExtractor(PDFDevice):
         return
 
     def begin_page(self, page, ctm):
-        (x0, y0, x1, y1) = page.mediabox
-        bbox = '%.3f,%.3f,%.3f,%.3f' % (x0, y0, x1, y1)
         self.outfp.write('<page id="%s" bbox="%s" rotate="%d">' %
-                         (self.pageno, bbox, page.rotate))
+                         (self.pageno, strbbox(page.mediabox), page.rotate))
         return
 
     def end_page(self, page):
@@ -177,9 +175,9 @@ class PDFConverter(PDFPageAggregator):
 ##
 class XMLConverter(PDFConverter):
 
-    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None, imgdir=None):
+    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None, outdir=None):
         PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno, laparams=laparams)
-        self.imgdir = imgdir
+        self.outdir = outdir
         self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % codec)
         self.outfp.write('<pages>\n')
         return
@@ -190,7 +188,7 @@ class XMLConverter(PDFConverter):
         else:
             return None
         name = image.name+ext
-        path = os.path.join(self.imgdir, name)
+        path = os.path.join(self.outdir, name)
         fp = file(path, 'wb')
         fp.write(image.data)
         fp.close()
@@ -200,42 +198,42 @@ class XMLConverter(PDFConverter):
         def render(item):
             if isinstance(item, LTPage):
                 self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
-                                 (item.id, item.get_bbox(), item.rotate))
+                                 (item.id, strbbox(item.bbox), item.rotate))
                 for child in item:
                     render(child)
                 self.outfp.write('</page>\n')
             elif isinstance(item, LTLine) and item.direction:
-                self.outfp.write('<line linewidth="%d" direction="%s" bbox="%s" />\n' % (item.linewidth, item.direction, item.get_bbox()))
+                self.outfp.write('<line linewidth="%d" direction="%s" bbox="%s" />\n' % (item.linewidth, item.direction, strbbox(item.bbox)))
             elif isinstance(item, LTRect):
-                self.outfp.write('<rect linewidth="%d" bbox="%s" />\n' % (item.linewidth, item.get_bbox()))
+                self.outfp.write('<rect linewidth="%d" bbox="%s" />\n' % (item.linewidth, strbbox(item.bbox)))
             elif isinstance(item, LTPolygon):
-                self.outfp.write('<polygon linewidth="%d" bbox="%s" pts="%s"/>\n' % (item.linewidth, item.get_bbox(), item.get_pts()))
+                self.outfp.write('<polygon linewidth="%d" bbox="%s" pts="%s"/>\n' % (item.linewidth, strbbox(item.bbox), item.get_pts()))
             elif isinstance(item, LTFigure):
-                self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
+                self.outfp.write('<figure id="%s" bbox="%s">\n' % (item.id, strbbox(item.bbox)))
                 for child in item:
                     render(child)
                 self.outfp.write('</figure>\n')
             elif isinstance(item, LTTextLine):
-                self.outfp.write('<textline bbox="%s">\n' % (item.get_bbox()))
+                self.outfp.write('<textline bbox="%s">\n' % strbbox(item.bbox))
                 for child in item:
                     render(child)
                 self.outfp.write('</textline>\n')
             elif isinstance(item, LTTextBox):
-                self.outfp.write('<textbox id="%s" bbox="%s">\n' % (item.id, item.get_bbox()))
+                self.outfp.write('<textbox id="%s" bbox="%s">\n' % (item.id, strbbox(item.bbox)))
                 for child in item:
                     render(child)
                 self.outfp.write('</textbox>\n')
             elif isinstance(item, LTTextItem):
                 self.outfp.write('<text font="%s" vertical="%s" bbox="%s" fontsize="%.3f">' %
                                  (enc(item.font.fontname), item.is_vertical(),
-                                  item.get_bbox(), item.fontsize))
+                                  strbbox(item.bbox), item.fontsize))
                 self.write(item.text)
                 self.outfp.write('</text>\n')
             elif isinstance(item, LTText):
                 self.outfp.write('<text>%s</text>\n' % item.text)
             elif isinstance(item, LTImage):
                 x = ''
-                if self.imgdir:
+                if self.outdir:
                     name = self.write_image(item)
                     if name:
                         x = 'name="%s" ' % enc(name)
@@ -257,11 +255,11 @@ class XMLConverter(PDFConverter):
 class HTMLConverter(PDFConverter):
 
     def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None,
-                 scale=1, showpageno=True, pagepad=50, imgdir=None):
+                 scale=1, showpageno=True, pagepad=50, outdir=None):
         PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.showpageno = showpageno
         self.pagepad = pagepad
-        self.imgdir = imgdir
+        self.outdir = outdir
         self.scale = scale
         self.outfp.write('<html><head>\n')
         self.outfp.write('<meta http-equiv="Content-Type" content="text/html; charset=%s">\n' %
@@ -282,16 +280,15 @@ class HTMLConverter(PDFConverter):
         else:
             return
         name = image.name+ext
-        path = os.path.join(self.imgdir, name)
+        path = os.path.join(self.outdir, name)
         fp = file(path, 'wb')
         fp.write(image.data)
         fp.close()
-        (x0,y0,x1,y1) = image.dstbbox
         self.outfp.write('<img src="%s" style="position:absolute; left:%dpx; top:%dpx;" '
                          'width="%d" height="%d" />\n' %
                          (enc(name),
-                          x0*self.scale, (self.yoffset-y1)*self.scale,
-                          (x1-x0)*self.scale, (y1-y0)*self.scale))
+                          image.x0*self.scale, (self.yoffset-image.y1)*self.scale,
+                          image.width*self.scale, image.height*self.scale))
         return
     
     def end_page(self, page):
@@ -332,7 +329,7 @@ class HTMLConverter(PDFConverter):
                 for child in item:
                     render(child)
             elif isinstance(item, LTImage):
-                if self.imgdir:
+                if self.outdir:
                     self.write_image(item)
             return
         page = PDFConverter.end_page(self, page)

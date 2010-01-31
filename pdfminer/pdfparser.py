@@ -247,7 +247,7 @@ class PDFPage(object):
             self.cropbox = resolve1(self.attrs['CropBox'])
         else:
             self.cropbox = self.mediabox
-        self.rotate = self.attrs.get('Rotate', 0)
+        self.rotate = (self.attrs.get('Rotate', 0)+360) % 360
         self.annots = self.attrs.get('Annots')
         self.beads = self.attrs.get('B')
         if 'Contents' in self.attrs:

@@ -136,6 +136,9 @@ def enc(x, codec='ascii'):
     x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
     return x.encode(codec, 'xmlcharrefreplace')
 
+def strbbox((x0,y0,x1,y1)):
+    return '%.3f,%.3f,%.3f,%.3f' % (x0, y0, x1, y1)
+
 
 ##  ObjIdRange
 ##

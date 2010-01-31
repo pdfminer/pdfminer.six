@@ -13,10 +13,10 @@ def main(argv):
     def usage():
         print ('usage: %s [-d] [-p pagenos] [-P password] [-c codec] '
                '[-n] [-D direction] [-M char_margin] [-L line_margin] [-W word_margin] '
-               '[-t text|html|xml|tag] [-I imgdir] [-o output] file ...' % argv[0])
+               '[-t text|html|xml|tag] [-O output_dir] [-o output] file ...' % argv[0])
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:nD:M:L:W:t:I:o:C:D:m:')
+        (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:nD:M:L:W:t:O:o:C:D:m:')
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
@@ -29,7 +29,7 @@ def main(argv):
     # output option
     outfile = None
     outtype = None
-    imgdir = None
+    outdir = None
     codec = 'utf-8'
     pageno = 1
     scale = 1
@@ -43,7 +43,7 @@ def main(argv):
         elif k == '-t': outtype = v
         elif k == '-c': codec = v
         elif k == '-o': outfile = v
-        elif k == '-I': imgdir = v
+        elif k == '-O': outdir = v
         elif k == '-s': scale = float(v)
         elif k == '-n': laparams = None
         elif k == '-D': laparams.direction = v
@@ -75,9 +75,9 @@ def main(argv):
     if outtype == 'text':
         device = TextConverter(rsrc, outfp, codec=codec, laparams=laparams)
     elif outtype == 'xml':
-        device = XMLConverter(rsrc, outfp, codec=codec, laparams=laparams, imgdir=imgdir)
+        device = XMLConverter(rsrc, outfp, codec=codec, laparams=laparams, outdir=outdir)
     elif outtype == 'html':
-        device = HTMLConverter(rsrc, outfp, codec=codec, scale=scale, laparams=laparams, imgdir=imgdir)
+        device = HTMLConverter(rsrc, outfp, codec=codec, scale=scale, laparams=laparams, outdir=outdir)
     elif outtype == 'tag':
         device = TagExtractor(rsrc, outfp, codec=codec)
     else:

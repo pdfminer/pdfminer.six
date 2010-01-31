@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 import sys
 from sys import maxint as INF
-from utils import apply_matrix_norm
-from utils import apply_matrix_pt
-from utils import bsearch
+from utils import apply_matrix_norm, apply_matrix_pt
+from utils import bsearch, strbbox
 
 
 
@@ -137,7 +136,7 @@ class LayoutItem(object):
         return
 
     def __repr__(self):
-        return ('<item bbox=%s>' % (self.get_bbox()))
+        return ('<item bbox=%s>' % strbbox(self.bbox))
 
     def set_bbox(self, (x0,y0,x1,y1)):
         if x1 < x0: (x0,x1) = (x1,x0)
@@ -148,10 +147,8 @@ class LayoutItem(object):
         self.y1 = y1
         self.width = x1-x0
         self.height = y1-y0
+        self.bbox = (x0, y0, x1, y1)
         return
-
-    def get_bbox(self):
-        return '%.3f,%.3f,%.3f,%.3f' % (self.x0, self.y0, self.x1, self.y1)
 
     def is_hoverlap(self, obj):
         assert isinstance(obj, LayoutItem)
@@ -206,7 +203,7 @@ class LayoutContainer(LayoutItem):
         return
 
     def __repr__(self):
-        return ('<group %s>' % (self.get_bbox()))
+        return ('<group %s>' % strbbox(self.bbox))
 
     def __iter__(self):
         return iter(self.objs)
@@ -285,13 +282,13 @@ class LTRect(LTPolygon):
 
 ##  LTImage
 ##
-class LTImage(object):
+class LTImage(LayoutItem):
 
-    def __init__(self, name, type, srcsize, dstbbox, data):
+    def __init__(self, name, type, srcsize, bbox, data):
+        LayoutItem.__init__(self, bbox)
         self.name = name
         self.type = type
         self.srcsize = srcsize
-        self.dstbbox = dstbbox
         self.data = data
         return
 
@@ -370,7 +367,7 @@ class LTTextItem(LayoutItem, LTText):
         if self.debug:
             return ('<text matrix=%s font=%r fontsize=%.1f bbox=%s adv=%s text=%r>' %
                     ('[%.1f, %.1f, %.1f, %.1f, (%.1f, %.1f)]' % self.matrix,
-                     self.font, self.fontsize, self.get_bbox(),
+                     self.font, self.fontsize, strbbox(self.bbox),
                      '(%.1f, %.1f)' % self.adv,
                      self.text))
         else:
@@ -400,7 +397,7 @@ class LTFigure(LayoutContainer):
         return
 
     def __repr__(self):
-        return ('<figure id=%r bbox=%s matrix=%r>' % (self.id, self.get_bbox(), self.matrix))
+        return ('<figure id=%r bbox=%s matrix=%r>' % (self.id, strbbox(self.bbox), self.matrix))
 
 
 ##  LTTextLine
@@ -414,7 +411,7 @@ class LTTextLine(LayoutContainer):
         return
 
     def __repr__(self):
-        return ('<textline %s(%s)>' % (self.get_bbox(), self.direction))
+        return ('<textline %s(%s)>' % (strbbox(self.bbox), self.direction))
 
     def get_margin(self):
         return min(self.width, self.height)
@@ -464,7 +461,7 @@ class LTTextBox(LayoutContainer):
         return
 
     def __repr__(self):
-        return ('<textbox %s(%s) %r...>' % (self.get_bbox(), self.direction, self.get_text()[:20]))
+        return ('<textbox %s(%s) %r...>' % (strbbox(self.bbox), self.direction, self.get_text()[:20]))
 
     def get_text(self):
         return ''.join( obj.get_text() for obj in self.objs if isinstance(obj, LTTextLine) )
@@ -520,7 +517,7 @@ class LTPage(LayoutContainer):
         return
 
     def __repr__(self):
-        return ('<page id=%r bbox=%s rotate=%r>' % (self.id, self.get_bbox(), self.rotate))
+        return ('<page id=%r bbox=%s rotate=%r>' % (self.id, strbbox(self.bbox), self.rotate))
 
     def analyze_layout(self, laparams):
         textobjs = []

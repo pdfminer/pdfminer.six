@@ -707,7 +707,7 @@ class PDFPageInterpreter(object):
         elif page.rotate == 180:
             ctm = (-1,0,0,-1, x1,y1)
         elif page.rotate == 270:
-            ctm = (0,1,-1,0, x0,-y1)
+            ctm = (0,1,-1,0, y1,-x0)
         else:
             ctm = (1,0,0,1, -x0,-y0)
         self.device.begin_page(page, ctm)

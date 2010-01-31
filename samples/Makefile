@@ -1,7 +1,7 @@
 # GNUMakefile for test
 
 PYTHON=python
-PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py
+PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -p1
 
 HTMLS= \
 	simple1.html \
@@ -36,14 +36,13 @@ XMLS= \
 	naacl06-shinyama.xml \
 	nlp2004slides.xml
 
-all:
+all: htmls texts xmls
 
 clean:
 	-rm $(HTMLS)
 	-rm $(TEXTS)
 	-rm $(XMLS)
 
-test: htmls texts xmls
 htmls: $(HTMLS)
 texts: $(TEXTS)
 xmls: $(XMLS)
