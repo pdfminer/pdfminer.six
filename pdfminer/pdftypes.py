@@ -173,6 +173,11 @@ class PDFStream(PDFObject):
         return self.attrs[name]
     def get(self, name, default=None):
         return self.attrs.get(name, default)
+    def get_any(self, names, default=None):
+        for name in names:
+            if name in self.attrs:
+                return self.attrs[name]
+        return default
 
     def decomp(self,data):
         buf = data
@@ -193,9 +198,8 @@ class PDFStream(PDFObject):
         if self.decipher:
             # Handle encryption
             data = self.decipher(self.objid, self.genno, data)
-        try:
-            filters = self['Filter']
-        except KeyError:
+        filters = self.get_any(('F', 'Filter'))
+        if not filters:
             self.rawdata = self.data = data
             return
         if not isinstance(filters, list):
@@ -218,18 +222,13 @@ class PDFStream(PDFObject):
             else:
                 raise PDFNotImplementedError('Unsupported filter: %r' % f)
             # apply predictors
-            try:
-                params = self['DP']
-            except KeyError:
-                params = self.get('DecodeParms', {})
-            if 'Predictor' in params:
+            params = self.get_any(('DP', 'DecodeParms', 'FDecodeParms'), {})
+            if 'Predictor' in params and 'Columns' in params:
                 pred = int_value(params['Predictor'])
+                columns = int_value(params['Columns'])
                 if pred:
                     if pred != 12:
                         raise PDFNotImplementedError('Unsupported predictor: %r' % pred)
-                    if 'Columns' not in params:
-                        raise PDFValueError('Columns undefined for predictor=12')
-                    columns = int_value(params['Columns'])
                     buf = ''
                     ent0 = '\x00' * columns
                     for i in xrange(0, len(data), columns+1):
