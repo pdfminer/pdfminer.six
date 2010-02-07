@@ -2,6 +2,7 @@ TODO
 Makefile
 README.txt
 setup.py
+docs/index.html
 pdfminer/Makefile
 pdfminer/__init__.py
 pdfminer/arcfour.py

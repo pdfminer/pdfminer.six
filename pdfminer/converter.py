@@ -52,7 +52,7 @@ class PDFPageAggregator(PDFTextDevice):
 
     def render_image(self, name, stream):
         assert isinstance(self.cur_item, LTFigure)
-        item = LTImage(name, stream['Filter'],
+        item = LTImage(name, stream.get('Filter'),
                        (stream['Width'], stream['Height']),
                        (self.cur_item.x0, self.cur_item.y0,
                         self.cur_item.x1, self.cur_item.y1),

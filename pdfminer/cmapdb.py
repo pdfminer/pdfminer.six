@@ -81,7 +81,12 @@ class IdentityCMap(object):
         return self.vertical
 
     def decode(self, code):
-        return unpack('>%dH' % (len(code)/2), code)
+        n = len(code)/2
+        if n:
+            return unpack('>%dH' % n, code)
+        else:
+            return ()
+        
             
 
 ##  UnicodeMap
@@ -363,3 +368,15 @@ class CMapParser(PSStackParser):
 
         self.push((pos, token))
         return
+
+# test
+def main(argv):
+    args = argv[1:]
+    for fname in args:
+        fp = file(fname, 'rb')
+        cmap = FileUnicodeMap()
+        CMapParser(cmap, fp).run()
+        fp.close()
+    return
+
+if __name__ == '__main__': sys.exit(main(sys.argv))

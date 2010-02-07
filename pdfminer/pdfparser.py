@@ -47,6 +47,9 @@ class PDFBaseXRef(object):
     def get_trailer(self):
         raise NotImplementedError
 
+    def get_objids(self):
+        return []
+
     def get_pos(self, objid):
         raise KeyError(objid)
 
@@ -132,6 +135,9 @@ class PDFXRef(PDFBaseXRef):
     def get_trailer(self):
         return self.trailer
 
+    def get_objids(self):
+        return self.offsets.iterkeys()
+
     def get_pos(self, objid):
         try:
             (genno, pos) = self.offsets[objid]
@@ -179,6 +185,12 @@ class PDFXRefStream(PDFBaseXRef):
 
     def get_trailer(self):
         return self.trailer
+
+    def get_objids(self):
+        for objid_range in self.objid_ranges:
+            for x in xrange(objid_range.get_start_id(), objid <= objid_range.get_end_id()+1):
+                yield x
+        return
 
     def get_pos(self, objid):
         offset = 0
