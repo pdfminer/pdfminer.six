@@ -1,5 +1,7 @@
 # GNUMakefile for test
 
+RM=rm -f
+CMP=cmp
 PYTHON=python
 PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -p1
 
@@ -39,18 +41,21 @@ XMLS= \
 all: htmls texts xmls
 
 clean:
-	-rm $(HTMLS)
-	-rm $(TEXTS)
-	-rm $(XMLS)
+	-$(RM) $(HTMLS)
+	-$(RM) $(TEXTS)
+	-$(RM) $(XMLS)
 
 htmls: $(HTMLS)
 texts: $(TEXTS)
 xmls: $(XMLS)
 
 .SUFFIXES: .pdf .html .xml .txt
+
 .pdf.html:
 	$(PDF2TXT) -t html $< > $@
+
 .pdf.xml:
 	$(PDF2TXT) -t xml $< > $@
+
 .pdf.txt:
 	$(PDF2TXT) -t text $< > $@

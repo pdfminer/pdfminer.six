@@ -1,6 +1,8 @@
 # Makefile for tools
 
+RM=rm -f
+
 all:
 
 clean:
-	-rm *.pyc *.pyo
+	-$(RM) *.pyc *.pyo

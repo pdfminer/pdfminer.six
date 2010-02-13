@@ -1,7 +1,9 @@
 # Makefile for pdfminer
 
+RM=rm -f
+
 all:
 
 clean:
-	-rm *.pyc *.pyo
+	-$(RM) *.pyc *.pyo
 	cd cmap && make clean

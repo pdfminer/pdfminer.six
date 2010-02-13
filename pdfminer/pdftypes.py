@@ -169,10 +169,13 @@ class PDFStream(PDFObject):
 
     def __contains__(self, name):
         return name in self.attrs
+    
     def __getitem__(self, name):
         return self.attrs[name]
+    
     def get(self, name, default=None):
         return self.attrs.get(name, default)
+    
     def get_any(self, names, default=None):
         for name in names:
             if name in self.attrs:
@@ -216,6 +219,9 @@ class PDFStream(PDFObject):
                 data = asciihexdecode(data)
             elif f in LITERALS_RUNLENGTH_DECODE:
                 data = rldecode(data)
+            elif f in LITERALS_CCITTFAX_DECODE:
+                #data = ccittfaxdecode(data)
+                raise PDFNotImplementedError('Unsupported filter: %r' % f)
             elif f == LITERAL_CRYPT:
                 # not yet..
                 raise PDFNotImplementedError('/Crypt filter is unsupported')
