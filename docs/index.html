@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Feb  7 12:13:27 JST 2010
+Last Modified: Mon Feb 15 14:41:49 UTC 2010
 <!-- hhmts end -->
 </div>
 
@@ -27,7 +27,7 @@ Last Modified: Sun Feb  7 12:13:27 JST 2010
 <li> <a href="#intro">What's It?</a>
 <li> <a href="#source">Download</a>
 <li> <a href="#install">Install</a> 
-&nbsp; <small>(<a href="#cmap">for East Asian languages</a>)</small>
+&nbsp; <small>(<a href="#cmap">for CJK languages</a>)</small>
 <li> <a href="#usage">How to Use</a>
 &nbsp; <small>(<a href="#pdf2txt">pdf2txt.py</a>, <a href="#dumppdf">dumppdf.py</a>)</small>
 <li> <a href="#todos">TODOs</a>
@@ -54,7 +54,7 @@ PDF parser that can be used for other purposes instead of text analysis.
 <ul>
 <li> Written entirely in Python. (for version 2.4 or newer)
 <li> PDF-1.7 specification support. (well, almost)
-<li> East Asian languages and vertical writing scripts support.
+<li> CJK languages and vertical writing scripts support.
 <li> Various font types (Type1, TrueType, Type3, and CID) support.
 <li> Basic encryption (RC4) support.
 <li> PDF to HTML conversion (with a sample converter web app).
@@ -94,6 +94,7 @@ http://pdf2html.tabesugi.net:8080/
 
 <ol>
 <li> Install <a href="http://www.python.org/download/">Python</a> 2.4 or newer.
+(<font color=red><strong>Python 3 is not supported.</strong></font>)
 <li> Download the <a href="#source">PDFMiner source</a>.
 <li> Unpack it.
 <li> Run <code>setup.py</code> to install:<br>
@@ -125,8 +126,8 @@ W o r l d
 
 <p>
 <a name="cmap"></a>
-<h3>For East Asian languages</h3>
-In order to handle East Asian languages (Chinese or Japanese, etc.),
+<h3>For CJK languages</h3>
+In order to handle CJK languages,
 an additional data called <code>CMap</code> is required.
 CMap files are not installed by default.
 <p>
@@ -347,6 +348,8 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2010/02/15: Bugfixes. Thanks to Sean.
+<li> 2010/02/13: Bugfix and enhancement. Thanks to Andr&eacute; Auzi.
 <li> 2010/02/07: Several bugfixes. Thanks to Hiroshi Manabe.
 <li> 2010/01/31: JPEG image extraction supported. Page rotation bug fixed. 
 <li> 2010/01/04: Python 2.6 warning removal. More doctest conversion.

@@ -165,7 +165,12 @@ class PDFStream(PDFObject):
         return
 
     def __repr__(self):
-        return '<PDFStream(%r): raw=%d, %r>' % (self.objid, len(self.rawdata), self.attrs)
+        if self.data is None:
+            assert self.rawdata is not None
+            return '<PDFStream(%r): raw=%d, %r>' % (self.objid, len(self.rawdata), self.attrs)
+        else:
+            assert self.data is not None
+            return '<PDFStream(%r): len=%d, %r>' % (self.objid, len(self.data), self.attrs)
 
     def __contains__(self, name):
         return name in self.attrs
@@ -203,7 +208,8 @@ class PDFStream(PDFObject):
             data = self.decipher(self.objid, self.genno, data)
         filters = self.get_any(('F', 'Filter'))
         if not filters:
-            self.rawdata = self.data = data
+            self.data = data
+            self.rawdata = None
             return
         if not isinstance(filters, list):
             filters = [ filters ]

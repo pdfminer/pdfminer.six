@@ -294,7 +294,7 @@ class LTImage(LayoutItem):
 
     def __repr__(self):
         (w,h) = self.srcsize
-        return '<image %s %s %dx%d>' % (self.id, self.type, w, h)
+        return '<image %s %s %dx%d>' % (self.name, self.type, w, h)
 
     def get_weight(self):
         return 0

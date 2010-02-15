@@ -188,7 +188,7 @@ class PDFXRefStream(PDFBaseXRef):
 
     def get_objids(self):
         for objid_range in self.objid_ranges:
-            for x in xrange(objid_range.get_start_id(), objid <= objid_range.get_end_id()+1):
+            for x in xrange(objid_range.get_start_id(), objid_range.get_end_id()+1):
                 yield x
         return
 

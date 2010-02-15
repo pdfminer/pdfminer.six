@@ -116,6 +116,13 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
             if isinstance(dest, dict):
                 dest = dest['D']
             pageno = pages[dest[0].objid]
+        elif a:
+            action = a.resolve()
+            if isinstance(action, dict):
+                subtype = action.get('S')
+                if subtype and repr(subtype) == '/GoTo' and action.get('D'):
+                    dest = action['D']
+                    pageno = pages[dest[0].objid]
         outfp.write(repr((level,title,dest,pageno))+'\n')
     parser.close()
     fp.close()
