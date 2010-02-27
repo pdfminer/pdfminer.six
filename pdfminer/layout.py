@@ -2,7 +2,8 @@
 import sys
 from sys import maxint as INF
 from utils import apply_matrix_norm, apply_matrix_pt
-from utils import bsearch, strbbox
+from utils import bsearch, bbox2str, matrix2str
+from pdffont import PDFUnicodeNotDefined
 
 
 
@@ -136,7 +137,7 @@ class LayoutItem(object):
         return
 
     def __repr__(self):
-        return ('<item bbox=%s>' % strbbox(self.bbox))
+        return ('<item bbox=%s>' % bbox2str(self.bbox))
 
     def set_bbox(self, (x0,y0,x1,y1)):
         if x1 < x0: (x0,x1) = (x1,x0)
@@ -203,7 +204,7 @@ class LayoutContainer(LayoutItem):
         return
 
     def __repr__(self):
-        return ('<group %s>' % strbbox(self.bbox))
+        return ('<group %s>' % bbox2str(self.bbox))
 
     def __iter__(self):
         return iter(self.objs)
@@ -326,55 +327,59 @@ class LTAnon(LTText):
         return 0
 
 
-##  LTTextItem
+##  LTChar
 ##
-class LTTextItem(LayoutItem, LTText):
+class LTChar(LayoutItem, LTText):
 
     debug = 1
 
-    def __init__(self, matrix, font, fontsize, charspace, scaling, chars):
-        assert chars
+    def __init__(self, matrix, font, fontsize, scaling, cid):
         self.matrix = matrix
         self.font = font
+        self.fontsize = fontsize
         self.vertical = font.is_vertical()
-        self.text = ''.join( char for (char,_) in chars )
-        adv = sum( font.char_width(cid) for (_,cid) in chars )
-        adv = (adv * fontsize + (len(chars)-1)*charspace) * scaling
-        #size = (font.get_ascent() - font.get_descent()) * fontsize
-        size = font.get_size() * fontsize
-        (_,_,_,_,tx,ty) = self.matrix
-        if not self.vertical:
-            # horizontal text
-            self.adv = (adv, 0)
-            (dx,dy) = apply_matrix_norm(self.matrix, (adv,size))
-            (_,descent) = apply_matrix_norm(self.matrix, (0,font.get_descent() * fontsize))
+        self.adv = font.char_width(cid) * fontsize * scaling
+        try:
+            text = font.to_unichr(cid)
+        except PDFUnicodeNotDefined:
+            text = '?'
+        LTText.__init__(self, text)
+        # compute the boundary rectangle.
+        if self.vertical:
+            # vertical
+            size = font.get_size() * fontsize
+            displacement = (1000 - font.char_disp(cid)) * fontsize * .001
+            (_,displacement) = apply_matrix_norm(self.matrix, (0, displacement))
+            (dx,dy) = apply_matrix_norm(self.matrix, (size, self.adv))
+            (_,_,_,_,tx,ty) = self.matrix
+            tx -= dx/2
+            ty += displacement
+            bbox = (tx, ty+dy, tx+dx, ty)
+        else:
+            # horizontal
+            size = font.get_size() * fontsize
+            descent = font.get_descent() * fontsize
+            (_,descent) = apply_matrix_norm(self.matrix, (0, descent))
+            (dx,dy) = apply_matrix_norm(self.matrix, (self.adv, size))
+            (_,_,_,_,tx,ty) = self.matrix
             ty += descent
             bbox = (tx, ty, tx+dx, ty+dy)
-        else:
-            # vertical text
-            self.adv = (0, adv)
-            (_,cid) = chars[0]
-            (_,disp) = apply_matrix_norm(self.matrix, (0, (1000-font.char_disp(cid))*fontsize*.001))
-            (dx,dy) = apply_matrix_norm(self.matrix, (size,adv))
-            tx -= dx/2
-            ty += disp
-            bbox = (tx, ty+dy, tx+dx, ty)
-        self.fontsize = max(apply_matrix_norm(self.matrix, (size,size)))
         LayoutItem.__init__(self, bbox)
         return
 
     def __repr__(self):
         if self.debug:
-            return ('<text matrix=%s font=%r fontsize=%.1f bbox=%s adv=%s text=%r>' %
-                    ('[%.1f, %.1f, %.1f, %.1f, (%.1f, %.1f)]' % self.matrix,
-                     self.font, self.fontsize, strbbox(self.bbox),
-                     '(%.1f, %.1f)' % self.adv,
-                     self.text))
+            return ('<char matrix=%s font=%r fontsize=%.1f bbox=%s adv=%s text=%r>' %
+                    (matrix2str(self.matrix), self.font, self.fontsize,
+                     bbox2str(self.bbox), self.adv, self.text))
         else:
-            return '<text %r>' % self.text
+            return '<char %r>' % self.text
 
     def get_margin(self):
-        return abs(self.fontsize)
+        return min(self.width, self.height)
+
+    def get_size(self):
+        return max(self.width, self.height)
 
     def is_vertical(self):
         return self.vertical
@@ -383,7 +388,7 @@ class LTTextItem(LayoutItem, LTText):
         (a,b,c,d,e,f) = self.matrix
         return 0 < a*d and b*c <= 0
 
-
+    
 ##  LTFigure
 ##
 class LTFigure(LayoutContainer):
@@ -397,7 +402,8 @@ class LTFigure(LayoutContainer):
         return
 
     def __repr__(self):
-        return ('<figure id=%r bbox=%s matrix=%r>' % (self.id, strbbox(self.bbox), self.matrix))
+        return ('<figure id=%r bbox=%s matrix=%s>' %
+                (self.id, bbox2str(self.bbox), matrix2str(self.matrix)))
 
 
 ##  LTTextLine
@@ -411,7 +417,7 @@ class LTTextLine(LayoutContainer):
         return
 
     def __repr__(self):
-        return ('<textline %s(%s)>' % (strbbox(self.bbox), self.direction))
+        return ('<textline %s(%s)>' % (bbox2str(self.bbox), self.direction))
 
     def get_margin(self):
         return min(self.width, self.height)
@@ -428,7 +434,7 @@ class LTTextLine(LayoutContainer):
         if self.direction == 'V':
             y0 = -INF
             for obj in sorted(self.objs, key=lambda obj: -obj.y1):
-                if isinstance(obj, LTTextItem) and self.word_margin:
+                if isinstance(obj, LTChar) and self.word_margin:
                     margin = self.word_margin * obj.get_margin()
                     if obj.y1+margin < y0:
                         objs.append(LTAnon(' '))
@@ -437,7 +443,7 @@ class LTTextLine(LayoutContainer):
         else:
             x1 = INF
             for obj in sorted(self.objs, key=lambda obj: obj.x0):
-                if isinstance(obj, LTTextItem) and self.word_margin:
+                if isinstance(obj, LTChar) and self.word_margin:
                     margin = self.word_margin * obj.get_margin()
                     if x1 < obj.x0-margin:
                         objs.append(LTAnon(' '))
@@ -461,7 +467,7 @@ class LTTextBox(LayoutContainer):
         return
 
     def __repr__(self):
-        return ('<textbox %s(%s) %r...>' % (strbbox(self.bbox), self.direction, self.get_text()[:20]))
+        return ('<textbox %s(%s) %r...>' % (bbox2str(self.bbox), self.direction, self.get_text()[:20]))
 
     def get_text(self):
         return ''.join( obj.get_text() for obj in self.objs if isinstance(obj, LTTextLine) )
@@ -517,7 +523,7 @@ class LTPage(LayoutContainer):
         return
 
     def __repr__(self):
-        return ('<page id=%r bbox=%s rotate=%r>' % (self.id, strbbox(self.bbox), self.rotate))
+        return ('<page id=%r bbox=%s rotate=%r>' % (self.id, bbox2str(self.bbox), self.rotate))
 
     def analyze_layout(self, laparams):
         textobjs = []

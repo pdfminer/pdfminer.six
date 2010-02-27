@@ -59,9 +59,6 @@ class PDFTextDevice(PDFDevice):
             print >>sys.stderr, 'undefined: %r, %r' % (cidcoding, cid)
         return '?'
 
-    def render_chars(self, matrix, font, fontsize, charspace, scaling, chars):
-        return (0, 0)
-
     def render_string(self, textstate, seq):
         matrix = mult_matrix(textstate.matrix, self.ctm)
         font = textstate.font
@@ -82,76 +79,39 @@ class PDFTextDevice(PDFDevice):
     
     def render_string_horizontal(self, seq, matrix, (x,y), 
                                  font, fontsize, scaling, charspace, wordspace, dxscale):
-        chars = []
-        needspace = False
+        needcharspace = False
         for obj in seq:
             if isinstance(obj, int) or isinstance(obj, float):
-                (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
-                                            fontsize, charspace, scaling, chars)
-                x += dx - obj*dxscale
-                y += dy
-                chars = []
-                needspace = False
+                x -= obj*dxscale
+                needcharspace = False
             else:
                 for cid in font.decode(obj):
-                    try:
-                        char = font.to_unichr(cid)
-                    except PDFUnicodeNotDefined, e:
-                        (cidcoding, cid) = e.args
-                        char = self.handle_undefined_char(cidcoding, cid)
-                    chars.append((char, cid))
+                    if needcharspace:
+                        x += charspace
+                    x += self.render_char(translate_matrix(matrix, (x,y)),
+                                          font, fontsize, scaling, cid)
+                    needcharspace = True
                     if cid == 32 and wordspace:
-                        if needspace:
-                            x += charspace
-                        (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
-                                                    fontsize, charspace, scaling, chars)
-                        needspace = True
-                        x += dx + wordspace
-                        y += dy
-                        chars = []
-        if chars:
-            if needspace:
-                x += charspace
-            (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
-                                        fontsize, charspace, scaling, chars)
-            x += dx
-            y += dy
+                        x += wordspace
         return (x, y)
 
     def render_string_vertical(self, seq, matrix, (x,y), 
                                font, fontsize, scaling, charspace, wordspace, dxscale):
-        chars = []
-        needspace = False
+        needcharspace = False
         for obj in seq:
             if isinstance(obj, int) or isinstance(obj, float):
-                (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
-                                            fontsize, charspace, scaling, chars)
-                x += dx
-                y += dy - obj*dxscale
-                chars = []
-                needspace = False
+                y -= obj*dxscale
+                needcharspace = False
             else:
                 for cid in font.decode(obj):
-                    try:
-                        char = font.to_unichr(cid)
-                    except PDFUnicodeNotDefined, e:
-                        (cidcoding, cid) = e.args
-                        char = self.handle_undefined_char(cidcoding, cid)
-                    chars.append((char, cid))
+                    if needcharspace:
+                        y += charspace
+                    y += self.render_char(translate_matrix(matrix, (x,y)), 
+                                          font, fontsize, scaling, cid)
+                    needcharspace = True
                     if cid == 32 and wordspace:
-                        if needspace:
-                            y += charspace
-                        (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
-                                                    fontsize, charspace, scaling, chars)
-                        needspace = True
-                        x += dx
-                        y += dy + wordspace
-                        chars = []
-        if chars:
-            if needspace:
-                y += charspace
-            (dx,dy) = self.render_chars(translate_matrix(matrix, (x,y)), font,
-                                        fontsize, charspace, scaling, chars)
-            x += dx
-            y += dy
+                        y += wordspace
         return (x, y)
+
+    def render_char(self, matrix, font, fontsize, scaling, cid):
+        return 0

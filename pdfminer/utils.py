@@ -136,8 +136,11 @@ def enc(x, codec='ascii'):
     x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
     return x.encode(codec, 'xmlcharrefreplace')
 
-def strbbox((x0,y0,x1,y1)):
+def bbox2str((x0,y0,x1,y1)):
     return '%.3f,%.3f,%.3f,%.3f' % (x0, y0, x1, y1)
+
+def matrix2str((a,b,c,d,e,f)):
+    return '[%.2f,%.2f,%.2f,%.2f, (%.2f,%.2f)]' % (a,b,c,d,e,f)
 
 
 ##  ObjIdRange
