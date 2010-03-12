@@ -69,6 +69,20 @@ class PDFTextState(object):
                  self.scaling, self.leading, self.render, self.rise,
                  self.matrix, self.linematrix))
 
+    def copy(self):
+        obj = PDFTextState()
+        obj.font = self.font
+        obj.fontsize = self.fontsize
+        obj.charspace = self.charspace
+        obj.wordspace = self.wordspace
+        obj.scaling = self.scaling
+        obj.leading = self.leading
+        obj.render = self.render
+        obj.rise = self.rise
+        obj.matrix = self.matrix
+        obj.linematrix = self.linematrix
+        return obj
+
     def reset(self):
         self.matrix = MATRIX_IDENTITY
         self.linematrix = (0, 0)
@@ -88,6 +102,17 @@ class PDFGraphicState(object):
         self.intent = None
         self.flatness = None
         return
+
+    def copy(self):
+        obj = PDFGraphicState()
+        obj.linewidth = self.linewidth
+        obj.linecap = self.linecap
+        obj.linejoin = self.linejoin
+        obj.miterlimit = self.miterlimit
+        obj.dash = self.dash
+        obj.intent = self.intent
+        obj.flatness = self.flatness
+        return obj
 
     def __repr__(self):
         return ('<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, '
@@ -126,7 +151,7 @@ class PDFResourceManager(object):
             return CMapDB.get_cmap(cmapname)
         except CMapDB.CMapNotFound:
             if strict: raise
-            return CMapDB.CMap()
+            return CMap()
 
     def get_font(self, objid, spec):
         if objid and objid in self.fonts:
@@ -347,7 +372,7 @@ class PDFPageInterpreter(object):
         return x
 
     def get_current_state(self):
-        return (self.ctm, self.textstate, self.graphicstate)
+        return (self.ctm, self.textstate.copy(), self.graphicstate.copy())
 
     def set_current_state(self, state):
         (self.ctm, self.textstate, self.graphicstate) = state
