@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Fri Mar 12 13:45:59 UTC 2010
+Last Modified: Sat Mar 20 05:43:04 UTC 2010
 <!-- hhmts end -->
 </div>
 
@@ -131,7 +131,7 @@ In order to handle CJK languages,
 an additional data called <code>CMap</code> is required.
 CMap files are not installed by default.
 <p>
-Here is the additional step you need:
+Here is the additional step you need to take:
 <blockquote><pre>
 # <strong>make cmap</strong>
 python tools/conv_cmap.py pdfminer/cmap Adobe-CNS1 cmaprsrc/cid2code_Adobe_CNS1.txt cp950 big5
@@ -348,6 +348,7 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2010/03/xx: Improved layout analysis.
 <li> 2010/03/12: A couple of bugfixes. Thanks to Sean Manefield.
 <li> 2010/02/27: Changed the way of internal layout handling. (LTTextItem -&gt; LTChar)
 <li> 2010/02/15: Several bugfixes. Thanks to Sean.

@@ -290,8 +290,7 @@ class XMLConverter(PDFConverter):
                     render(child)
                 self.outfp.write('</textline>\n')
             elif isinstance(item, LTTextBox):
-                self.outfp.write('<textbox id="%s" bbox="%s">\n' %
-                                 (item.id, bbox2str(item.bbox)))
+                self.outfp.write('<textbox bbox="%s">\n' % bbox2str(item.bbox))
                 for child in item:
                     render(child)
                 self.outfp.write('</textbox>\n')
