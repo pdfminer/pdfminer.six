@@ -5,7 +5,7 @@ from pdffont import PDFUnicodeNotDefined
 from pdftypes import LITERALS_DCT_DECODE
 from layout import LayoutContainer
 from layout import LTPage, LTText, LTLine, LTRect, LTPolygon
-from layout import LTFigure, LTImage, LTChar, LTTextBox, LTTextLine
+from layout import LTFigure, LTImage, LTChar, LTTextBox, LTTextFlow, LTTextLine
 from utils import apply_matrix_pt, mult_matrix
 from utils import enc, bbox2str
 
@@ -218,6 +218,11 @@ class HTMLConverter(PDFConverter):
                 self.write_rect('blue', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
                 for child in item:
                     render(child)
+            elif isinstance(item, LTTextFlow):
+                for child in item:
+                    render(child)
+                if self.debug:
+                    self.write_rect('red', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
             elif isinstance(item, LTFigure):
                 self.write_rect('green', 1, item.x0, self.yoffset-item.y1, item.width, item.height)
                 for child in item:
@@ -294,6 +299,11 @@ class XMLConverter(PDFConverter):
                 for child in item:
                     render(child)
                 self.outfp.write('</textbox>\n')
+            elif isinstance(item, LTTextFlow):
+                self.outfp.write('<textflow bbox="%s">\n' % bbox2str(item.bbox))
+                for child in item:
+                    render(child)
+                self.outfp.write('</textflow>\n')
             elif isinstance(item, LTChar):
                 self.outfp.write('<text font="%s" vertical="%s" bbox="%s" size="%.3f">' %
                                  (enc(item.font.fontname), item.is_vertical(),
