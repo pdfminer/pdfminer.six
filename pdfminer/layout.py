@@ -286,18 +286,18 @@ class LTChar(LayoutItem, LTText):
 ##
 class LTFigure(LayoutContainer):
 
-    def __init__(self, id, bbox, matrix):
+    def __init__(self, name, bbox, matrix):
         (x,y,w,h) = bbox
         bbox = get_bounds( apply_matrix_pt(matrix, (p,q))
                            for (p,q) in ((x,y), (x+w,y), (x,y+h), (x+w,y+h)) )
-        self.id = id
+        self.name = name
         self.matrix = matrix
         LayoutContainer.__init__(self, bbox)
         return
 
     def __repr__(self):
-        return ('<figure id=%r bbox=%s matrix=%s>' %
-                (self.id, bbox2str(self.bbox), matrix2str(self.matrix)))
+        return ('<figure %r bbox=%s matrix=%s>' %
+                (self.name, bbox2str(self.bbox), matrix2str(self.matrix)))
 
 
 ##  LTTextLine
@@ -369,10 +369,11 @@ class LTTextBox(LayoutContainer):
 
     def __init__(self, objs):
         LayoutContainer.__init__(self, (0,0,0,0), objs)
+        self.index = None
         return
 
     def __repr__(self):
-        return ('<textbox(%d) %s %r...>' % (len(self.objs), bbox2str(self.bbox), self.get_text()[:20]))
+        return ('<textbox(%s) %s %r...>' % (self.index, bbox2str(self.bbox), self.get_text()[:20]))
 
     def get_text(self):
         return ''.join( obj.get_text() for obj in self.objs if isinstance(obj, LTTextLine) )
@@ -392,9 +393,9 @@ class LTTextBoxVertical(LTTextBox):
         return
 
 
-##  LTTextFlow
+##  LTTextGroup
 ##
-class LTTextFlow(LayoutContainer):
+class LTTextGroup(LayoutContainer):
 
     def __init__(self, objs):
         assert objs
@@ -402,18 +403,18 @@ class LTTextFlow(LayoutContainer):
         LayoutContainer.fixate(self)
         return
 
-class LTTextFlowHorizontal(LTTextFlow):
+class LTTextGroupHorizontal(LTTextGroup):
     
     def __init__(self, objs):
-        LTTextFlow.__init__(self, objs)
+        LTTextGroup.__init__(self, objs)
         # reorder the objects from top-left to bottom-right.
         self.objs = sorted(self.objs, key=lambda obj: obj.x0-obj.y1)
         return
 
-class LTTextFlowVertical(LTTextFlow):
+class LTTextGroupVertical(LTTextGroup):
     
     def __init__(self, objs):
-        LTTextFlow.__init__(self, objs)
+        LTTextGroup.__init__(self, objs)
         # reorder the objects from top-right to bottom-left.
         self.objs = sorted(self.objs, key=lambda obj: -obj.x1-obj.y1)
         return
@@ -458,44 +459,32 @@ class Plane(object):
         return list(xobjs)
 
 
-##  ClusterBuilder
+##  group_lines
 ##
-class ClusterBuilder(object):
-
-    def __init__(self, groupfunc):
-        self.clusters = {}
-        self.groupfunc = groupfunc
-        return
-
-    # group(objs): groups given objects into one cluster.
-    def group(self, objs):
-        r = objs[:]
-        for obj1 in objs:
-            if obj1 in self.clusters:
-                r.extend(self.clusters.pop(obj1))
-        cluster = self.groupfunc(list(uniq(r)))
-        for obj in r:
-            self.clusters[obj] = cluster
-        return
-
-    # finish(): returns all the clusters.
-    def finish(self):
-        clusters = set(self.clusters.itervalues())
-        for cluster in clusters:
-            cluster.fixate()
-        return list(clusters)
-
-def build_boxes(groupfunc, objs, *args):
+def group_lines(groupfunc, objs, *args):
     plane = Plane(objs)
-    builder = ClusterBuilder(groupfunc)
+    groups = {}
     for obj in objs:
         neighbors = obj.find_neighbors(plane, *args)
         assert obj in neighbors, obj
-        builder.group(neighbors)
-    return builder.finish()
+        members = neighbors[:]
+        for obj1 in neighbors:
+            if obj1 in groups:
+                members.extend(groups.pop(obj1))
+        group = groupfunc(list(uniq(members)))
+        for obj in members:
+            groups[obj] = group
+    groups = set(groups.values())
+    for group in groups:
+        group.fixate()
+    return list(groups)
 
-def group_hier(groupfunc, objs, distfunc):
+
+##  group_boxes
+##
+def group_boxes(groupfunc, objs, distfunc):
     assert objs
+    objs = objs[:]
     while 2 <= len(objs):
         mindist = INF
         minpair = None
@@ -519,16 +508,43 @@ def group_hier(groupfunc, objs, distfunc):
 ##
 class LTPage(LayoutContainer):
 
-    def __init__(self, id, bbox, rotate=0):
+    def __init__(self, pageid, bbox, rotate=0):
         LayoutContainer.__init__(self, bbox)
-        self.id = id
+        self.pageid = pageid
         self.rotate = rotate
+        self.layout = None
         return
 
     def __repr__(self):
-        return ('<page id=%r bbox=%s rotate=%r>' % (self.id, bbox2str(self.bbox), self.rotate))
+        return ('<page(%r) bbox=%s rotate=%r>' % (self.pageid, bbox2str(self.bbox), self.rotate))
 
-    def analyze_layout(self, laparams):
+    def fixate(self, laparams):
+        """Perform the layout analysis."""
+        LayoutContainer.fixate(self)
+        (textobjs, otherobjs) = self.get_textobjs()
+        if not laparams or not textobjs: return
+        if laparams.direction == 'V':
+            textboxes = self.build_textbox_vertical(textobjs, laparams)
+            top = self.group_textbox_vertical(textboxes, laparams)
+        else:
+            textboxes = self.build_textbox_horizontal(textobjs, laparams)
+            top = self.group_textbox_horizontal(textboxes, laparams)
+        def assign_index(obj, i):
+            if isinstance(obj, LTTextBox):
+                obj.index = i
+                i += 1
+            elif isinstance(obj, LTTextGroup):
+                for x in obj:
+                    i = assign_index(x, i)
+            return i
+        assign_index(top, 0)
+        textboxes.sort(key=lambda box:box.index)
+        self.objs = textboxes + otherobjs
+        self.layout = top
+        return
+
+    def get_textobjs(self):
+        """Split all the objects in the page into text-related objects and others."""
         textobjs = []
         otherobjs = []
         for obj in self.objs:
@@ -536,16 +552,11 @@ class LTPage(LayoutContainer):
                 textobjs.append(obj)
             else:
                 otherobjs.append(obj)
-        if laparams.direction == 'V':
-            textobjs = self.analyze_layout_vertical(textobjs, laparams)
-        else:
-            textobjs = self.analyze_layout_horizontal(textobjs, laparams)
-        self.objs = [textobjs] + otherobjs
-        return
+        return (textobjs, otherobjs)
 
-    def analyze_layout_horizontal(self, objs, laparams):
-        
-        def halign(obj1, obj2):
+    def build_textbox_horizontal(self, objs, laparams):
+        """Identify horizontal text regions in the page."""
+        def aligned(obj1, obj2):
             # +------+ - - -
             # | obj1 | - - +------+   -
             # |      |     | obj2 |   | (line_overlap)
@@ -556,12 +567,11 @@ class LTPage(LayoutContainer):
             #      (char_margin)
             return ((min(obj1.height, obj2.height) * laparams.line_overlap < obj1.voverlap(obj2)) and
                     (obj1.hdistance(obj2) < min(obj1.width, obj2.width) * laparams.char_margin))
-        
         lines = []
         line = []
         prev = None
         for cur in objs:
-            if prev is not None and not halign(prev, cur):
+            if prev is not None and not aligned(prev, cur):
                 if line:
                     lines.append(LTTextLineHorizontal(line, laparams.word_margin))
                     line = []
@@ -569,18 +579,11 @@ class LTPage(LayoutContainer):
             prev = cur
         if line:
             lines.append(LTTextLineHorizontal(line, laparams.word_margin))
-        boxes = build_boxes(LTTextBoxHorizontal, lines, laparams.line_margin)
+        return group_lines(LTTextBoxHorizontal, lines, laparams.line_margin)
 
-        def dist(obj1, obj2):
-            return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) *
-                    (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
-                    obj1.width*obj1.height - obj2.width*obj2.height)
-        
-        return group_hier(LTTextFlowHorizontal, boxes, dist)
-
-    def analyze_layout_vertical(self, objs, laparams):
-
-        def valign(obj1, obj2):
+    def build_textbox_vertical(self, objs, laparams):
+        """Identify vertical text regions in the page."""
+        def aligned(obj1, obj2):
             # +------+
             # | obj1 |
             # |      |
@@ -595,12 +598,11 @@ class LTPage(LayoutContainer):
             # (line_overlap)
             return ((min(obj1.width, obj2.width) * laparams.line_overlap < obj1.hoverlap(obj2)) and
                     (obj1.vdistance(obj2) < min(obj1.height, obj2.height) * laparams.char_margin))
-        
         lines = []
         line = []
         prev = None
         for cur in objs:
-            if prev is not None and not valign(prev, cur):
+            if prev is not None and not aligned(prev, cur):
                 if line:
                     lines.append(LTTextLineVertical(line, laparams.word_margin))
                     line = []
@@ -608,11 +610,18 @@ class LTPage(LayoutContainer):
             prev = cur
         if line:
             lines.append(LTTextLineVertical(line, laparams.word_margin))
-        boxes = build_boxes(LTTextBoxVertical, lines, laparams.line_margin)
+        return group_lines(LTTextBoxVertical, lines, laparams.line_margin)
 
+    def group_textbox_horizontal(self, boxes, laparams):
         def dist(obj1, obj2):
             return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) *
                     (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
                     obj1.width*obj1.height - obj2.width*obj2.height)
+        return group_boxes(LTTextGroupHorizontal, boxes, dist)
 
-        return group_hier(LTTextFlowVertical, boxes, dist)
+    def group_textbox_vertical(self, boxes, laparams):
+        def dist(obj1, obj2):
+            return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) *
+                    (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
+                    obj1.width*obj1.height - obj2.width*obj2.height)
+        return group_boxes(LTTextGroupVertical, boxes, dist)

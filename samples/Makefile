@@ -38,7 +38,7 @@ XMLS= \
 	naacl06-shinyama.xml \
 	nlp2004slides.xml
 
-all: htmls texts xmls
+test: htmls texts xmls
 
 clean:
 	-$(RM) $(HTMLS)
@@ -53,9 +53,12 @@ xmls: $(XMLS)
 
 .pdf.html:
 	$(PDF2TXT) -t html $< > $@
+#	$(CMP) $@ $@.ref
 
 .pdf.xml:
 	$(PDF2TXT) -t xml $< > $@
+#	$(CMP) $@ $@.ref
 
 .pdf.txt:
 	$(PDF2TXT) -t text $< > $@
+#	$(CMP) $@ $@.ref
