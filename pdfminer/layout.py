@@ -27,6 +27,16 @@ def uniq(objs):
         yield obj
     return
 
+def csort(objs, key):
+    idxs = dict( (obj,i) for (i,obj) in enumerate(objs) )
+    return sorted(objs, key=lambda obj:(key(obj), idxs[obj]))
+
+def is_uniq(objs):
+    for (i,obj1) in enumerate(objs):
+        for obj2 in objs[i+1:]:
+            if obj1 == obj2: return False
+    return True
+
 
 ##  LAParams
 ##
@@ -324,7 +334,7 @@ class LTTextLineHorizontal(LTTextLine):
         LayoutContainer.fixate(self)
         objs = []
         x1 = INF
-        for obj in sorted(self.objs, key=lambda obj: obj.x0):
+        for obj in csort(self.objs, key=lambda obj: obj.x0):
             if isinstance(obj, LTChar) and word_margin:
                 margin = word_margin * obj.width
                 if x1 < obj.x0-margin:
@@ -345,7 +355,7 @@ class LTTextLineVertical(LTTextLine):
         LayoutContainer.fixate(self)
         objs = []
         y0 = -INF
-        for obj in sorted(self.objs, key=lambda obj: -obj.y1):
+        for obj in csort(self.objs, key=lambda obj: -obj.y1):
             if isinstance(obj, LTChar) and word_margin:
                 margin = word_margin * obj.height
                 if obj.y1+margin < y0:
@@ -382,14 +392,14 @@ class LTTextBoxHorizontal(LTTextBox):
     
     def fixate(self):
         LTTextBox.fixate(self)
-        self.objs = sorted(self.objs, key=lambda obj: -obj.y1)
+        self.objs = csort(self.objs, key=lambda obj: -obj.y1)
         return
 
 class LTTextBoxVertical(LTTextBox):
 
     def fixate(self):
         LTTextBox.fixate(self)
-        self.objs = sorted(self.objs, key=lambda obj: -obj.x1)
+        self.objs = csort(self.objs, key=lambda obj: -obj.x1)
         return
 
 
@@ -408,7 +418,7 @@ class LTTextGroupHorizontal(LTTextGroup):
     def __init__(self, objs):
         LTTextGroup.__init__(self, objs)
         # reorder the objects from top-left to bottom-right.
-        self.objs = sorted(self.objs, key=lambda obj: obj.x0-obj.y1)
+        self.objs = csort(self.objs, key=lambda obj: obj.x0-obj.y1)
         return
 
 class LTTextGroupVertical(LTTextGroup):
@@ -416,7 +426,7 @@ class LTTextGroupVertical(LTTextGroup):
     def __init__(self, objs):
         LTTextGroup.__init__(self, objs)
         # reorder the objects from top-right to bottom-left.
-        self.objs = sorted(self.objs, key=lambda obj: -obj.x1-obj.y1)
+        self.objs = csort(self.objs, key=lambda obj: -obj.x1-obj.y1)
         return
 
 
@@ -432,6 +442,7 @@ class Plane(object):
     def __init__(self, objs):
         self.xobjs = []
         self.yobjs = []
+        self.idxs = dict( (obj,i) for (i,obj) in enumerate(objs) )
         for obj in objs:
             self.place(obj)
         self.xobjs.sort()
@@ -456,7 +467,7 @@ class Plane(object):
         i1 = bsearch(self.yobjs, y1)[1]
         yobjs = set( obj for (_,obj) in self.yobjs[i0:i1] )
         xobjs.intersection_update(yobjs)
-        return list(xobjs)
+        return sorted(xobjs, key=lambda obj: self.idxs[obj])
 
 
 ##  group_lines
@@ -474,21 +485,25 @@ def group_lines(groupfunc, objs, *args):
         group = groupfunc(list(uniq(members)))
         for obj in members:
             groups[obj] = group
-    groups = set(groups.values())
-    for group in groups:
+    done = set()
+    r = []
+    for obj in objs:
+        group = groups[obj]
+        if group in done: continue
+        done.add(group)
         group.fixate()
-    return list(groups)
+        r.append(group)
+    return r
 
 
 ##  group_boxes
 ##
 def group_boxes(groupfunc, objs, distfunc):
     assert objs
-    objs = objs[:]
     while 2 <= len(objs):
         mindist = INF
         minpair = None
-        objs.sort(key=lambda obj: (obj.width*obj.height, obj.y0))
+        objs = csort(objs, key=lambda obj: obj.width*obj.height)
         for i in xrange(len(objs)):
             for j in xrange(i+1, len(objs)):
                 d = distfunc(objs[i], objs[j])

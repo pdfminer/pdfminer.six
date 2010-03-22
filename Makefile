@@ -50,6 +50,6 @@ $(CMAPDST)/TO_UNICODE_Adobe_Korea1.py:
 	$(CONV_CMAP) $(CMAPDST) Adobe-Korea1 $(CMAPSRC)/cid2code_Adobe_Korea1.txt cp949 euc-kr
 
 test: cmap
-	cd samples && $(MAKE) test
+	cd samples && $(MAKE) test CMP=cmp
 test_clean:
 	-cd samples && $(MAKE) clean

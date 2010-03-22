@@ -1,7 +1,8 @@
 # GNUMakefile for test
 
 RM=rm -f
-CMP=cmp
+#CMP=cmp
+CMP=:
 PYTHON=python
 PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -p1
 

@@ -55,8 +55,8 @@ place. Knowing what kind of information is easily
 obtained in advance would help reduce this risk.
 An IE task can be deﬁned as ﬁnding a relation
 among several entities involved in a certain type of
-For example, in the MUC-6 management
 event.
+For example, in the MUC-6 management
 succession scenario, one seeks a relation between
 COMPANY, PERSON and POST involved with hir-
 ing/ﬁring events. For each row of an extracted ta-
