@@ -11,12 +11,12 @@ from pdfminer.layout import LAParams
 def main(argv):
     import getopt
     def usage():
-        print ('usage: %s [-d] [-p pagenos] [-P password] [-c codec] '
+        print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output] '
                '[-n] [-D direction] [-M char_margin] [-L line_margin] [-W word_margin] '
-               '[-t text|html|xml|tag] [-O output_dir] [-o output] file ...' % argv[0])
+               '[-O output_dir] [-t text|html|xml|tag] [-c codec] [-s scale] file ...' % argv[0])
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dp:P:c:nD:M:L:W:t:O:o:C:D:m:')
+        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:nD:M:L:W:O:t:c:s:')
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
@@ -37,19 +37,19 @@ def main(argv):
     laparams = LAParams()
     for (k, v) in opts:
         if k == '-d': debug += 1
-        elif k == '-P': password = v
         elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
         elif k == '-m': maxpages = int(v)
-        elif k == '-t': outtype = v
-        elif k == '-c': codec = v
+        elif k == '-P': password = v
         elif k == '-o': outfile = v
-        elif k == '-O': outdir = v
-        elif k == '-s': scale = float(v)
         elif k == '-n': laparams = None
         elif k == '-D': laparams.direction = v
         elif k == '-M': laparams.char_margin = float(v)
         elif k == '-L': laparams.line_margin = float(v)
         elif k == '-W': laparams.word_margin = float(v)
+        elif k == '-O': outdir = v
+        elif k == '-t': outtype = v
+        elif k == '-c': codec = v
+        elif k == '-s': scale = float(v)
     #
     CMapDB.debug = debug
     PDFResourceManager.debug = debug
