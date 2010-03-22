@@ -242,16 +242,17 @@ class PSBaseParser(object):
         pos = self.fp.tell()
         buf = ''
         while 0 < pos:
+            prevpos = pos
             pos = max(0, pos-self.BUFSIZ)
             self.fp.seek(pos)
-            s = self.fp.read(self.BUFSIZ)
+            s = self.fp.read(prevpos-pos)
             if not s: break
             while 1:
                 n = max(s.rfind('\r'), s.rfind('\n'))
                 if n == -1:
                     buf = s + buf
                     break
-                yield buf+s[n:]
+                yield s[n:]+buf
                 s = s[:n]
                 buf = ''
         return
