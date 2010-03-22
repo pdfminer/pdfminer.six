@@ -488,18 +488,18 @@ def group_boxes(groupfunc, objs, distfunc):
     while 2 <= len(objs):
         mindist = INF
         minpair = None
-        objs.sort(key=lambda obj: obj.width*obj.height)
-        for (i,obj0) in enumerate(objs):
-            for obj1 in objs[i+1:]:
-                d = distfunc(obj0, obj1)
+        objs.sort(key=lambda obj: (obj.width*obj.height, obj.y0))
+        for i in xrange(len(objs)):
+            for j in xrange(i+1, len(objs)):
+                d = distfunc(objs[i], objs[j])
                 if d < mindist:
                     mindist = d
-                    minpair = (obj0, obj1)
+                    minpair = (objs[i], objs[j])
         assert minpair
-        (obj0, obj1) = minpair
-        objs.remove(obj0)
+        (obj1, obj2) = minpair
         objs.remove(obj1)
-        objs.append(groupfunc([obj0, obj1]))
+        objs.remove(obj2)
+        objs.append(groupfunc([obj1, obj2]))
     assert len(objs) == 1
     return objs.pop()
 

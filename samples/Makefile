@@ -53,12 +53,12 @@ xmls: $(XMLS)
 
 .pdf.html:
 	$(PDF2TXT) -t html $< > $@
-#	$(CMP) $@ $@.ref
+	$(CMP) $@ $@.ref
 
 .pdf.xml:
 	$(PDF2TXT) -t xml $< > $@
-#	$(CMP) $@ $@.ref
+	$(CMP) $@ $@.ref
 
 .pdf.txt:
 	$(PDF2TXT) -t text $< > $@
-#	$(CMP) $@ $@.ref
+	$(CMP) $@ $@.ref

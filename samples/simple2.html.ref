@@ -1,0 +1,11 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body>
+<span style="position:absolute; border: gray 1px solid; left:0px; top:50px; width:612px; height:792px;"></span>
+<div style="position:absolute; top:50px;"><a name="1">Page 1</a></div>
+<span style="position:absolute; border: black 1px solid; left:150px; top:492px; width:0px; height:100px;"></span>
+<span style="position:absolute; border: black 1px solid; left:150px; top:592px; width:250px; height:0px;"></span>
+<span style="position:absolute; border: black 1px solid; left:200px; top:467px; width:50px; height:75px;"></span>
+<span style="position:absolute; border: black 1px solid; left:300px; top:442px; width:100px; height:100px;"></span>
+<div style="position:absolute; top:0px;">Page: <a href="#1">1</a></div>
+</body></html>
