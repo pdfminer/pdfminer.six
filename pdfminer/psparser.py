@@ -537,7 +537,8 @@ class PSStackParser(PSBaseParser):
                     (pos, objs) = self.end_type('d')
                     if len(objs) % 2 != 0:
                         raise PSSyntaxError('Invalid dictionary construct: %r' % objs)
-                    d = dict( (literal_name(k), v) for (k,v) in choplist(2, objs))
+                    # construct a Python dictionary.
+                    d = dict( (literal_name(k), v) for (k,v) in choplist(2, objs) if v is not None )
                     self.push((pos, d))
                 except PSTypeError:
                     if STRICT: raise

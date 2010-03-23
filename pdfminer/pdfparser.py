@@ -361,7 +361,7 @@ class PDFDocument(object):
             self._initialized = True
             return
         (docid, param) = self.encryption
-        if literal_name(param['Filter']) != 'Standard':
+        if literal_name(param.get('Filter')) != 'Standard':
             raise PDFEncryptionError('Unknown filter: param=%r' % param)
         V = int_value(param.get('V', 0))
         if not (V == 1 or V == 2):
@@ -439,6 +439,7 @@ class PDFDocument(object):
             else:
                 if STRICT:
                     raise PDFSyntaxError('Cannot locate objid=%r' % objid)
+                # return null for a nonexistent reference.
                 return None
             if strmid:
                 stream = stream_value(self.getobj(strmid))
@@ -588,6 +589,7 @@ class PDFParser(PSStackParser):
         return
 
     KEYWORD_R = KWD('R')
+    KEYWORD_NULL = KWD('null')
     KEYWORD_ENDOBJ = KWD('endobj')
     KEYWORD_STREAM = KWD('stream')
     KEYWORD_XREF = KWD('xref')
@@ -596,8 +598,14 @@ class PDFParser(PSStackParser):
         if token in (self.KEYWORD_XREF, self.KEYWORD_STARTXREF):
             self.add_results(*self.pop(1))
             return
+        
         if token is self.KEYWORD_ENDOBJ:
             self.add_results(*self.pop(4))
+            return
+
+        if token is self.KEYWORD_NULL:
+            # null object
+            self.push((pos, None))
             return
 
         if token is self.KEYWORD_R:
