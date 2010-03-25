@@ -455,7 +455,8 @@ class PDFDocument(object):
                 if strmid in self.parsed_objs:
                     objs = self.parsed_objs[strmid]
                 else:
-                    parser = PDFObjStrmParser(stream.get_data(), self)
+                    parser = PDFStreamParser(stream.get_data())
+                    parser.set_document(self)
                     objs = []
                     try:
                         while 1:
@@ -732,20 +733,18 @@ class PDFParser(PSStackParser):
         return xrefs
 
 
-##  PDFObjStrmParser
+##  PDFStreamParser
 ##
-class PDFObjStrmParser(PDFParser):
+class PDFStreamParser(PDFParser):
 
-    def __init__(self, data, doc):
-        PSStackParser.__init__(self, StringIO(data))
-        self.doc = doc
+    def __init__(self, data):
+        PDFParser.__init__(self, StringIO(data))
         return
 
     def flush(self):
         self.add_results(*self.popall())
         return
 
-    KEYWORD_R = KWD('R')
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_R:
             # reference to indirect object

@@ -43,12 +43,12 @@ def is_uniq(objs):
 class LAParams(object):
 
     def __init__(self,
-                 direction=None,
+                 writing_mode='lr-tb',
                  line_overlap=0.5,
                  char_margin=3.0,
                  line_margin=0.5,
                  word_margin=0.1):
-        self.direction = direction
+        self.writing_mode = writing_mode
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin
@@ -56,8 +56,8 @@ class LAParams(object):
         return
 
     def __repr__(self):
-        return ('<LAParams: direction=%r, char_margin=%.1f, line_margin=%.1f, word_margin=%.1f>' %
-                (self.direction, self.char_margin, self.line_margin, self.word_margin))
+        return ('<LAParams: writing_mode=%r, char_margin=%.1f, line_margin=%.1f, word_margin=%.1f>' %
+                (self.writing_mode, self.char_margin, self.line_margin, self.word_margin))
 
 
 ##  LayoutItem
@@ -149,7 +149,7 @@ class LayoutContainer(LayoutItem):
         self.objs.extend(container.objs)
         return
 
-    # fixate(): determines its boundery and writing direction.
+    # fixate(): determines its boundery.
     def fixate(self):
         if not self.width and self.objs:
             (bx0, by0, bx1, by1) = (INF, INF, -INF, -INF)
@@ -413,7 +413,7 @@ class LTTextGroup(LayoutContainer):
         LayoutContainer.fixate(self)
         return
 
-class LTTextGroupHorizontal(LTTextGroup):
+class LTTextGroupLRTB(LTTextGroup):
     
     def __init__(self, objs):
         LTTextGroup.__init__(self, objs)
@@ -421,7 +421,7 @@ class LTTextGroupHorizontal(LTTextGroup):
         self.objs = csort(self.objs, key=lambda obj: obj.x0-obj.y1)
         return
 
-class LTTextGroupVertical(LTTextGroup):
+class LTTextGroupTBRL(LTTextGroup):
     
     def __init__(self, objs):
         LTTextGroup.__init__(self, objs)
@@ -470,9 +470,47 @@ class Plane(object):
         return sorted(xobjs, key=lambda obj: self.idxs[obj])
 
 
+##  guess_wmode
+##
+def guess_wmode(objs):
+    """Guess the writing mode by looking at the order of text objects."""
+    xy = tb = lr = 0
+    obj0 = None
+    for obj1 in objs:
+        if obj0 is not None:
+            dx = obj1.x0+obj1.x1-(obj0.x0+obj0.x1)
+            dy = obj1.y0+obj1.y1-(obj0.y0+obj0.y1)
+            if abs(dy) < abs(dx):
+                xy += 1
+            else:
+                xy -= 1
+            if 0 < dx:
+                lr += 1
+            else:
+                lr -= 1
+            if dy < 0:
+                tb += 1
+            else:
+                tb -= 1
+        obj0 = obj1
+    if 0 < lr:
+        lr = 'lr'
+    else:
+        lr = 'rl'
+    if 0 < tb:
+        tb = 'tb'
+    else:
+        tb = 'bt'
+    if 0 < xy:
+        return lr+'-'+tb
+    else:
+        return tb+'-'+lr
+
+
 ##  group_lines
 ##
 def group_lines(groupfunc, objs, *args):
+    """Group LTTextLine objects to form a LTTextBox."""
     plane = Plane(objs)
     groups = {}
     for obj in objs:
@@ -538,12 +576,15 @@ class LTPage(LayoutContainer):
         LayoutContainer.fixate(self)
         (textobjs, otherobjs) = self.get_textobjs()
         if not laparams or not textobjs: return
-        if laparams.direction == 'V':
+        if laparams.writing_mode not in ('lr-tb', 'tb-rl'):
+            laparams.writing_mode = guess_wmode(textobjs)
+        if (laparams.writing_mode.startswith('tb-') or
+            laparams.writing_mode.startswith('bt-')):
             textboxes = self.build_textbox_vertical(textobjs, laparams)
-            top = self.group_textbox_vertical(textboxes, laparams)
+            top = self.group_textbox_tb_rl(textboxes, laparams)
         else:
             textboxes = self.build_textbox_horizontal(textobjs, laparams)
-            top = self.group_textbox_horizontal(textboxes, laparams)
+            top = self.group_textbox_lr_tb(textboxes, laparams)
         def assign_index(obj, i):
             if isinstance(obj, LTTextBox):
                 obj.index = i
@@ -627,16 +668,16 @@ class LTPage(LayoutContainer):
             lines.append(LTTextLineVertical(line, laparams.word_margin))
         return group_lines(LTTextBoxVertical, lines, laparams.line_margin)
 
-    def group_textbox_horizontal(self, boxes, laparams):
+    def group_textbox_lr_tb(self, boxes, laparams):
         def dist(obj1, obj2):
             return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) *
                     (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
                     obj1.width*obj1.height - obj2.width*obj2.height)
-        return group_boxes(LTTextGroupHorizontal, boxes, dist)
+        return group_boxes(LTTextGroupLRTB, boxes, dist)
 
-    def group_textbox_vertical(self, boxes, laparams):
+    def group_textbox_tb_rl(self, boxes, laparams):
         def dist(obj1, obj2):
             return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) *
                     (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
                     obj1.width*obj1.height - obj2.width*obj2.height)
-        return group_boxes(LTTextGroupVertical, boxes, dist)
+        return group_boxes(LTTextGroupTBRL, boxes, dist)

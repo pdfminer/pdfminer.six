@@ -12,7 +12,7 @@ def main(argv):
     import getopt
     def usage():
         print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output] '
-               '[-n] [-D direction] [-M char_margin] [-L line_margin] [-W word_margin] '
+               '[-n] [-D writing_mode] [-M char_margin] [-L line_margin] [-W word_margin] '
                '[-O output_dir] [-t text|html|xml|tag] [-c codec] [-s scale] file ...' % argv[0])
         return 100
     try:
@@ -42,7 +42,7 @@ def main(argv):
         elif k == '-P': password = v
         elif k == '-o': outfile = v
         elif k == '-n': laparams = None
-        elif k == '-D': laparams.direction = v
+        elif k == '-D': laparams.writing_mode = v
         elif k == '-M': laparams.char_margin = float(v)
         elif k == '-L': laparams.line_margin = float(v)
         elif k == '-W': laparams.word_margin = float(v)
