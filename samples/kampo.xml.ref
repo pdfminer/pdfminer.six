@@ -1045,7 +1045,14 @@
 </text>
 </textline>
 </textbox>
-<textbox id="18" bbox="285.250,417.960,314.186,581.908">
+<textbox id="18" bbox="272.314,601.960,282.186,609.960">
+<textline bbox="272.314,601.960,282.186,609.960">
+<text font="Ryumin-Light" vertical="True" bbox="272.314,601.960,282.186,609.960" size="9.872">」</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="19" bbox="285.250,417.960,314.186,581.908">
 <textline bbox="304.314,417.960,314.186,581.908">
 <text font="Ryumin-Light" vertical="False" bbox="305.250,572.036,313.250,581.908" size="9.872">一</text>
 <text> </text>
@@ -1119,7 +1126,7 @@
 </text>
 </textline>
 </textbox>
-<textbox id="19" bbox="256.250,420.036,277.186,581.908">
+<textbox id="20" bbox="256.250,420.036,277.186,581.908">
 <textline bbox="267.314,420.036,277.186,581.908">
 <text font="Ryumin-Light" vertical="False" bbox="268.250,572.036,276.250,581.908" size="9.872">一</text>
 <text> </text>
@@ -1165,13 +1172,6 @@
 <text font="Ryumin-Light" vertical="False" bbox="256.250,436.036,264.250,445.908" size="9.872">自</text>
 <text font="Ryumin-Light" vertical="False" bbox="256.250,428.036,264.250,437.908" size="9.872">転</text>
 <text font="Ryumin-Light" vertical="False" bbox="256.250,420.036,264.250,429.908" size="9.872">車</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="20" bbox="272.314,601.960,282.186,609.960">
-<textline bbox="272.314,601.960,282.186,609.960">
-<text font="Ryumin-Light" vertical="True" bbox="272.314,601.960,282.186,609.960" size="9.872">」</text>
 <text>
 </text>
 </textline>
@@ -3245,11 +3245,11 @@
 </textgroup>
 </textgroup>
 <textgroup bbox="256.250,417.960,314.186,609.960">
+<textbox id="18" bbox="272.314,601.960,282.186,609.960" />
 <textgroup bbox="256.250,417.960,314.186,581.908">
-<textbox id="18" bbox="285.250,417.960,314.186,581.908" />
-<textbox id="19" bbox="256.250,420.036,277.186,581.908" />
+<textbox id="19" bbox="285.250,417.960,314.186,581.908" />
+<textbox id="20" bbox="256.250,420.036,277.186,581.908" />
 </textgroup>
-<textbox id="20" bbox="272.314,601.960,282.186,609.960" />
 </textgroup>
 </textgroup>
 <textbox id="21" bbox="191.314,420.036,201.186,581.908" />

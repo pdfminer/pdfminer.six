@@ -9,6 +9,8 @@ New York University
 New York, NY, 10003
 {yusuke,sekine}@cs.nyu.edu
 
+Abstract
+
 We are trying to extend the boundary of
 Information Extraction (IE) systems. Ex-
 isting IE systems require a lot of time and
@@ -22,8 +24,6 @@ covers all possible relations from texts and
 presents them as tables. We present a pre-
 liminary system that obtains reasonably
 good results.
-
-Abstract
 
 1 Background
 

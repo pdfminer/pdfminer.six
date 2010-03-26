@@ -179,6 +179,15 @@
 <span style="position:absolute; left:370px; top:232px; font-size:11px;">e</span>
 <span style="position:absolute; left:376px; top:232px; font-size:11px;">d</span>
 <span style="position:absolute; left:383px; top:232px; font-size:11px;">u</span>
+<span style="position:absolute; border: blue 1px solid; left:163px; top:281px; width:44px; height:15px;"></span>
+<span style="position:absolute; left:163px; top:281px; font-size:15px;">A</span>
+<span style="position:absolute; left:171px; top:281px; font-size:15px;">b</span>
+<span style="position:absolute; left:178px; top:281px; font-size:15px;">s</span>
+<span style="position:absolute; left:183px; top:281px; font-size:15px;">t</span>
+<span style="position:absolute; left:187px; top:281px; font-size:15px;">r</span>
+<span style="position:absolute; left:192px; top:281px; font-size:15px;">a</span>
+<span style="position:absolute; left:198px; top:281px; font-size:15px;">c</span>
+<span style="position:absolute; left:203px; top:281px; font-size:15px;">t</span>
 <span style="position:absolute; border: blue 1px solid; left:93px; top:310px; width:183px; height:175px;"></span>
 <span style="position:absolute; left:93px; top:310px; font-size:13px;">W</span>
 <span style="position:absolute; left:103px; top:310px; font-size:13px;">e</span>
@@ -616,15 +625,6 @@
 <span style="position:absolute; left:139px; top:473px; font-size:13px;">t</span>
 <span style="position:absolute; left:142px; top:473px; font-size:13px;">s</span>
 <span style="position:absolute; left:146px; top:473px; font-size:13px;">.</span>
-<span style="position:absolute; border: blue 1px solid; left:163px; top:281px; width:44px; height:15px;"></span>
-<span style="position:absolute; left:163px; top:281px; font-size:15px;">A</span>
-<span style="position:absolute; left:171px; top:281px; font-size:15px;">b</span>
-<span style="position:absolute; left:178px; top:281px; font-size:15px;">s</span>
-<span style="position:absolute; left:183px; top:281px; font-size:15px;">t</span>
-<span style="position:absolute; left:187px; top:281px; font-size:15px;">r</span>
-<span style="position:absolute; left:192px; top:281px; font-size:15px;">a</span>
-<span style="position:absolute; left:198px; top:281px; font-size:15px;">c</span>
-<span style="position:absolute; left:203px; top:281px; font-size:15px;">t</span>
 <span style="position:absolute; border: blue 1px solid; left:71px; top:505px; width:80px; height:15px;"></span>
 <span style="position:absolute; left:71px; top:505px; font-size:15px;">1</span>
 <span style="position:absolute; left:89px; top:505px; font-size:15px;">B</span>
@@ -2893,13 +2893,5 @@
 <span style="position:absolute; left:386px; top:759px; font-size:13px;">l</span>
 <span style="position:absolute; left:389px; top:759px; font-size:13px;">e</span>
 <span style="position:absolute; left:394px; top:759px; font-size:13px;">.</span>
-<span style="position:absolute; border: red 1px solid; left:71px; top:125px; width:468px; height:647px;"></span>
-<span style="position:absolute; border: red 1px solid; left:79px; top:125px; width:452px; height:118px;"></span>
-<span style="position:absolute; border: red 1px solid; left:148px; top:164px; width:315px; height:79px;"></span>
-<span style="position:absolute; border: red 1px solid; left:148px; top:164px; width:315px; height:15px;"></span>
-<span style="position:absolute; border: red 1px solid; left:71px; top:281px; width:468px; height:490px;"></span>
-<span style="position:absolute; border: red 1px solid; left:71px; top:281px; width:226px; height:490px;"></span>
-<span style="position:absolute; border: red 1px solid; left:93px; top:281px; width:183px; height:204px;"></span>
-<span style="position:absolute; border: red 1px solid; left:71px; top:505px; width:226px; height:266px;"></span>
 <div style="position:absolute; top:0px;">Page: <a href="#1">1</a></div>
 </body></html>

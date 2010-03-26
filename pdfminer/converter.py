@@ -233,7 +233,7 @@ class HTMLConverter(PDFConverter):
             return
         page = PDFConverter.end_page(self, page)
         render(page)
-        if page.layout:
+        if self.debug and page.layout:
             def show_layout(item):
                 if isinstance(item, LTTextGroup):
                     self.write_rect('red', 1, item.x0, item.y1, item.width, item.height)

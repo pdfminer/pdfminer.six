@@ -4,7 +4,7 @@ RM=rm -f
 #CMP=cmp
 CMP=:
 PYTHON=python
-PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -Dauto -p1
+PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -Dx -p1
 
 HTMLS= \
 	simple1.html \

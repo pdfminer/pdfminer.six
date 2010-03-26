@@ -237,7 +237,7 @@ class LTAnon(LTText):
 ##
 class LTChar(LayoutItem, LTText):
 
-    debug = 1
+    debug = 0
 
     def __init__(self, matrix, font, fontsize, scaling, cid):
         self.matrix = matrix
@@ -418,7 +418,7 @@ class LTTextGroupLRTB(LTTextGroup):
     def __init__(self, objs):
         LTTextGroup.__init__(self, objs)
         # reorder the objects from top-left to bottom-right.
-        self.objs = csort(self.objs, key=lambda obj: obj.x0-obj.y1)
+        self.objs = csort(self.objs, key=lambda obj: obj.x0+obj.x1-(obj.y0+obj.y1))
         return
 
 class LTTextGroupTBRL(LTTextGroup):
@@ -426,7 +426,7 @@ class LTTextGroupTBRL(LTTextGroup):
     def __init__(self, objs):
         LTTextGroup.__init__(self, objs)
         # reorder the objects from top-right to bottom-left.
-        self.objs = csort(self.objs, key=lambda obj: -obj.x1-obj.y1)
+        self.objs = csort(self.objs, key=lambda obj: -(obj.x0+obj.x1)-(obj.y0+obj.y1))
         return
 
 
@@ -509,17 +509,19 @@ def guess_wmode(objs):
 
 ##  group_lines
 ##
-def group_lines(groupfunc, objs, *args):
+def group_lines(groupfunc, objs, findfunc, debug=0):
     """Group LTTextLine objects to form a LTTextBox."""
     plane = Plane(objs)
     groups = {}
     for obj in objs:
-        neighbors = obj.find_neighbors(plane, *args)
+        neighbors = findfunc(obj, plane)
         assert obj in neighbors, obj
         members = neighbors[:]
         for obj1 in neighbors:
             if obj1 in groups:
                 members.extend(groups.pop(obj1))
+        if debug:
+            print >>sys.stderr, 'group:', members
         group = groupfunc(list(uniq(members)))
         for obj in members:
             groups[obj] = group
@@ -536,7 +538,7 @@ def group_lines(groupfunc, objs, *args):
 
 ##  group_boxes
 ##
-def group_boxes(groupfunc, objs, distfunc):
+def group_boxes(groupfunc, objs, distfunc, debug=0):
     assert objs
     while 2 <= len(objs):
         mindist = INF
@@ -552,6 +554,8 @@ def group_boxes(groupfunc, objs, distfunc):
         (obj1, obj2) = minpair
         objs.remove(obj1)
         objs.remove(obj2)
+        if debug:
+            print >>sys.stderr, 'group:', obj1, obj2
         objs.append(groupfunc([obj1, obj2]))
     assert len(objs) == 1
     return objs.pop()
@@ -635,8 +639,9 @@ class LTPage(LayoutContainer):
             prev = cur
         if line:
             lines.append(LTTextLineHorizontal(line, laparams.word_margin))
-        return group_lines(LTTextBoxHorizontal, lines, laparams.line_margin)
-
+        return group_lines(LTTextBoxHorizontal, lines, 
+                           lambda obj, plane: obj.find_neighbors(plane, laparams.line_margin))
+    
     def build_textbox_vertical(self, objs, laparams):
         """Identify vertical text regions in the page."""
         def aligned(obj1, obj2):
@@ -666,18 +671,19 @@ class LTPage(LayoutContainer):
             prev = cur
         if line:
             lines.append(LTTextLineVertical(line, laparams.word_margin))
-        return group_lines(LTTextBoxVertical, lines, laparams.line_margin)
+        return group_lines(LTTextBoxVertical, lines,
+                           lambda obj, plane: obj.find_neighbors(plane, laparams.line_margin))
 
     def group_textbox_lr_tb(self, boxes, laparams):
         def dist(obj1, obj2):
-            return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) *
+            return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) * 
                     (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
-                    obj1.width*obj1.height - obj2.width*obj2.height)
+                    (obj1.width*obj1.height + obj2.width*obj2.height))
         return group_boxes(LTTextGroupLRTB, boxes, dist)
 
     def group_textbox_tb_rl(self, boxes, laparams):
         def dist(obj1, obj2):
             return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) *
                     (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
-                    obj1.width*obj1.height - obj2.width*obj2.height)
+                    (obj1.width*obj1.height + obj2.width*obj2.height))
         return group_boxes(LTTextGroupTBRL, boxes, dist)

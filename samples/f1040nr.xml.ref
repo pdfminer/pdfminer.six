@@ -1161,7 +1161,55 @@
 </text>
 </textline>
 </textbox>
-<textbox id="9" bbox="56.488,460.792,424.248,598.377">
+<textbox id="9" bbox="72.488,447.892,116.379,463.355">
+<textline bbox="72.488,454.892,116.379,463.355">
+<text font="HelveticaNeue-Bold" vertical="False" bbox="72.488,455.004,74.560,463.355" size="8.351">(</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="74.560,455.004,78.452,463.355" size="8.351">1</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="78.452,455.004,80.524,463.355" size="8.351">)</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="80.518,454.892,82.464,463.054" size="8.162"> </text>
+<text> </text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="82.954,454.892,86.972,463.054" size="8.162">F</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="86.972,454.892,88.526,463.054" size="8.162">i</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="88.526,454.892,90.857,463.054" size="8.162">r</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="90.857,454.892,94.357,463.054" size="8.162">s</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="94.357,454.892,96.562,463.054" size="8.162">t</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="96.562,454.892,98.508,463.054" size="8.162"> </text>
+<text> </text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="98.998,454.892,102.890,463.054" size="8.162">n</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="102.890,454.892,106.649,463.054" size="8.162">a</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="106.649,454.892,112.620,463.054" size="8.162">m</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="112.620,454.892,116.379,463.054" size="8.162">e</text>
+<text>
+</text>
+</textline>
+<textline bbox="80.518,447.892,82.464,456.054">
+<text font="HelveticaNeue-Roman" vertical="False" bbox="80.518,447.892,82.464,456.054" size="8.162"> </text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="10" bbox="169.448,447.892,202.621,463.054">
+<textline bbox="169.448,454.892,202.621,463.054">
+<text font="HelveticaNeue-Roman" vertical="False" bbox="169.448,454.892,173.340,463.054" size="8.162">L</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="173.340,454.892,177.099,463.054" size="8.162">a</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="177.099,454.892,180.599,463.054" size="8.162">s</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="180.599,454.892,182.804,463.054" size="8.162">t</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="182.804,454.892,184.750,463.054" size="8.162"> </text>
+<text> </text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="185.240,454.892,189.132,463.054" size="8.162">n</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="189.132,454.892,192.891,463.054" size="8.162">a</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="192.891,454.892,198.862,463.054" size="8.162">m</text>
+<text font="HelveticaNeue-Roman" vertical="False" bbox="198.862,454.892,202.621,463.054" size="8.162">e</text>
+<text>
+</text>
+</textline>
+<textline bbox="169.448,447.892,171.394,456.054">
+<text font="HelveticaNeue-Roman" vertical="False" bbox="169.448,447.892,171.394,456.054" size="8.162"> </text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="11" bbox="56.488,460.792,424.248,598.377">
 <textline bbox="111.248,587.496,355.153,598.377">
 <text font="HelveticaNeue-Bold" vertical="False" bbox="111.248,587.640,116.585,598.377" size="10.737">F</text>
 <text font="HelveticaNeue-Bold" vertical="False" bbox="116.585,587.640,118.907,598.377" size="10.737">i</text>
@@ -1943,7 +1991,7 @@
 </text>
 </textline>
 </textbox>
-<textbox id="10" bbox="331.508,510.196,335.504,551.268">
+<textbox id="12" bbox="331.508,510.196,335.504,551.268">
 <textline bbox="331.508,525.948,335.504,551.268">
 <text font="Universal-GreekwithMathPi" vertical="False" bbox="331.508,525.948,335.504,551.268" size="25.320">%</text>
 <text>
@@ -1955,64 +2003,16 @@
 </text>
 </textline>
 </textbox>
-<textbox id="11" bbox="350.398,549.316,352.900,559.810">
+<textbox id="13" bbox="350.398,549.316,352.900,559.810">
 <textline bbox="350.398,549.316,352.900,559.810">
 <text font="HelveticaNeue-Roman" vertical="False" bbox="350.398,549.316,352.900,559.810" size="10.494"> </text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="12" bbox="413.528,513.859,415.057,520.272">
+<textbox id="14" bbox="413.528,513.859,415.057,520.272">
 <textline bbox="413.528,513.859,415.057,520.272">
 <text font="HelveticaNeue-Roman" vertical="False" bbox="413.528,513.859,415.057,520.272" size="6.413"> </text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="13" bbox="72.488,447.892,116.379,463.355">
-<textline bbox="72.488,454.892,116.379,463.355">
-<text font="HelveticaNeue-Bold" vertical="False" bbox="72.488,455.004,74.560,463.355" size="8.351">(</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="74.560,455.004,78.452,463.355" size="8.351">1</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="78.452,455.004,80.524,463.355" size="8.351">)</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="80.518,454.892,82.464,463.054" size="8.162"> </text>
-<text> </text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="82.954,454.892,86.972,463.054" size="8.162">F</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="86.972,454.892,88.526,463.054" size="8.162">i</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="88.526,454.892,90.857,463.054" size="8.162">r</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="90.857,454.892,94.357,463.054" size="8.162">s</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="94.357,454.892,96.562,463.054" size="8.162">t</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="96.562,454.892,98.508,463.054" size="8.162"> </text>
-<text> </text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="98.998,454.892,102.890,463.054" size="8.162">n</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="102.890,454.892,106.649,463.054" size="8.162">a</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="106.649,454.892,112.620,463.054" size="8.162">m</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="112.620,454.892,116.379,463.054" size="8.162">e</text>
-<text>
-</text>
-</textline>
-<textline bbox="80.518,447.892,82.464,456.054">
-<text font="HelveticaNeue-Roman" vertical="False" bbox="80.518,447.892,82.464,456.054" size="8.162"> </text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="14" bbox="169.448,447.892,202.621,463.054">
-<textline bbox="169.448,454.892,202.621,463.054">
-<text font="HelveticaNeue-Roman" vertical="False" bbox="169.448,454.892,173.340,463.054" size="8.162">L</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="173.340,454.892,177.099,463.054" size="8.162">a</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="177.099,454.892,180.599,463.054" size="8.162">s</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="180.599,454.892,182.804,463.054" size="8.162">t</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="182.804,454.892,184.750,463.054" size="8.162"> </text>
-<text> </text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="185.240,454.892,189.132,463.054" size="8.162">n</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="189.132,454.892,192.891,463.054" size="8.162">a</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="192.891,454.892,198.862,463.054" size="8.162">m</text>
-<text font="HelveticaNeue-Roman" vertical="False" bbox="198.862,454.892,202.621,463.054" size="8.162">e</text>
-<text>
-</text>
-</textline>
-<textline bbox="169.448,447.892,171.394,456.054">
-<text font="HelveticaNeue-Roman" vertical="False" bbox="169.448,447.892,171.394,456.054" size="8.162"> </text>
 <text>
 </text>
 </textline>
@@ -2762,7 +2762,79 @@
 </text>
 </textline>
 </textbox>
-<textbox id="26" bbox="34.318,12.554,451.829,403.890">
+<textbox id="26" bbox="63.688,392.640,69.187,404.277">
+<textline bbox="63.688,392.640,69.187,404.277">
+<text font="HelveticaNeue-Bold" vertical="False" bbox="63.688,393.540,69.187,404.277" size="10.737">d</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="63.688,392.640,66.190,403.377" size="10.737"> </text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="27" bbox="256.488,260.196,258.990,270.690">
+<textline bbox="256.488,260.196,258.990,270.690">
+<text font="HelveticaNeue-Roman" vertical="False" bbox="256.488,260.196,258.990,270.690" size="10.494"> </text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="28" bbox="281.508,344.536,284.010,355.030">
+<textline bbox="281.508,344.536,284.010,355.030">
+<text font="HelveticaNeue-Roman" vertical="False" bbox="281.508,344.536,284.010,355.030" size="10.494"> </text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="29" bbox="358.438,356.790,368.941,368.427">
+<textline bbox="358.438,356.790,368.941,368.427">
+<text font="HelveticaNeue-Bold" vertical="False" bbox="358.438,357.690,363.442,368.427" size="10.737">9</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="358.438,356.790,360.940,367.527" size="10.737"> </text>
+<text> </text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="363.442,357.690,368.941,368.427" size="10.737">b</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="30" bbox="65.488,330.680,81.587,390.517">
+<textline bbox="70.788,378.880,75.792,390.517">
+<text font="HelveticaNeue-Bold" vertical="False" bbox="70.788,379.780,75.792,390.517" size="10.737">8</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="70.788,378.880,73.290,389.617" size="10.737"> </text>
+<text>
+</text>
+</textline>
+<textline bbox="70.788,366.830,80.958,378.467">
+<text font="HelveticaNeue-Bold" vertical="False" bbox="70.788,367.730,75.792,378.467" size="10.737">9</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="70.788,366.830,73.290,377.567" size="10.737"> </text>
+<text> </text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="75.792,367.730,80.958,378.467" size="10.737">a</text>
+<text>
+</text>
+</textline>
+<textline bbox="76.088,354.780,81.587,366.417">
+<text font="HelveticaNeue-Bold" vertical="False" bbox="76.088,355.680,81.587,366.417" size="10.737">b</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="76.088,354.780,78.590,365.517" size="10.737"> </text>
+<text>
+</text>
+</textline>
+<textline bbox="65.488,343.630,80.662,354.367">
+<text font="HelveticaNeue-Bold" vertical="False" bbox="65.488,343.630,70.492,354.367" size="10.737">1</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="70.492,343.630,75.496,354.367" size="10.737">0</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="75.496,343.630,80.662,354.367" size="10.737">a</text>
+<text>
+</text>
+</textline>
+<textline bbox="65.488,342.730,67.990,353.467">
+<text font="HelveticaNeue-Bold" vertical="False" bbox="65.488,342.730,67.990,353.467" size="10.737"> </text>
+<text>
+</text>
+</textline>
+<textline bbox="76.088,330.680,81.587,342.317">
+<text font="HelveticaNeue-Bold" vertical="False" bbox="76.088,331.580,81.587,342.317" size="10.737">b</text>
+<text font="HelveticaNeue-Bold" vertical="False" bbox="76.088,330.680,78.590,341.417" size="10.737"> </text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="31" bbox="34.318,12.554,451.829,403.890">
 <textline bbox="85.308,393.396,234.789,403.890">
 <text font="HelveticaNeue-Roman" vertical="False" bbox="85.308,393.396,90.474,403.890" size="10.494">T</text>
 <text font="HelveticaNeue-Roman" vertical="False" bbox="90.385,393.396,95.551,403.890" size="10.494">o</text>
@@ -5276,95 +5348,23 @@
 </text>
 </textline>
 </textbox>
-<textbox id="27" bbox="65.488,330.680,81.587,390.517">
-<textline bbox="70.788,378.880,75.792,390.517">
-<text font="HelveticaNeue-Bold" vertical="False" bbox="70.788,379.780,75.792,390.517" size="10.737">8</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="70.788,378.880,73.290,389.617" size="10.737"> </text>
-<text>
-</text>
-</textline>
-<textline bbox="70.788,366.830,80.958,378.467">
-<text font="HelveticaNeue-Bold" vertical="False" bbox="70.788,367.730,75.792,378.467" size="10.737">9</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="70.788,366.830,73.290,377.567" size="10.737"> </text>
-<text> </text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="75.792,367.730,80.958,378.467" size="10.737">a</text>
-<text>
-</text>
-</textline>
-<textline bbox="76.088,354.780,81.587,366.417">
-<text font="HelveticaNeue-Bold" vertical="False" bbox="76.088,355.680,81.587,366.417" size="10.737">b</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="76.088,354.780,78.590,365.517" size="10.737"> </text>
-<text>
-</text>
-</textline>
-<textline bbox="65.488,343.630,80.662,354.367">
-<text font="HelveticaNeue-Bold" vertical="False" bbox="65.488,343.630,70.492,354.367" size="10.737">1</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="70.492,343.630,75.496,354.367" size="10.737">0</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="75.496,343.630,80.662,354.367" size="10.737">a</text>
-<text>
-</text>
-</textline>
-<textline bbox="65.488,342.730,67.990,353.467">
-<text font="HelveticaNeue-Bold" vertical="False" bbox="65.488,342.730,67.990,353.467" size="10.737"> </text>
-<text>
-</text>
-</textline>
-<textline bbox="76.088,330.680,81.587,342.317">
-<text font="HelveticaNeue-Bold" vertical="False" bbox="76.088,331.580,81.587,342.317" size="10.737">b</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="76.088,330.680,78.590,341.417" size="10.737"> </text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="28" bbox="358.438,356.790,368.941,368.427">
-<textline bbox="358.438,356.790,368.941,368.427">
-<text font="HelveticaNeue-Bold" vertical="False" bbox="358.438,357.690,363.442,368.427" size="10.737">9</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="358.438,356.790,360.940,367.527" size="10.737"> </text>
-<text> </text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="363.442,357.690,368.941,368.427" size="10.737">b</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="29" bbox="435.798,224.046,438.300,234.540">
+<textbox id="32" bbox="435.798,224.046,438.300,234.540">
 <textline bbox="435.798,224.046,438.300,234.540">
 <text font="HelveticaNeue-Roman" vertical="False" bbox="435.798,224.046,438.300,234.540" size="10.494"> </text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="30" bbox="308.058,139.676,310.560,150.170">
+<textbox id="33" bbox="308.058,139.676,310.560,150.170">
 <textline bbox="308.058,139.676,310.560,150.170">
 <text font="HelveticaNeue-Roman" vertical="False" bbox="308.058,139.676,310.560,150.170" size="10.494"> </text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="31" bbox="318.048,103.606,320.550,114.100">
+<textbox id="34" bbox="318.048,103.606,320.550,114.100">
 <textline bbox="318.048,103.606,320.550,114.100">
 <text font="HelveticaNeue-Roman" vertical="False" bbox="318.048,103.606,320.550,114.100" size="10.494"> </text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="32" bbox="281.508,344.536,284.010,355.030">
-<textline bbox="281.508,344.536,284.010,355.030">
-<text font="HelveticaNeue-Roman" vertical="False" bbox="281.508,344.536,284.010,355.030" size="10.494"> </text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="33" bbox="256.488,260.196,258.990,270.690">
-<textline bbox="256.488,260.196,258.990,270.690">
-<text font="HelveticaNeue-Roman" vertical="False" bbox="256.488,260.196,258.990,270.690" size="10.494"> </text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="34" bbox="63.688,392.640,69.187,404.277">
-<textline bbox="63.688,392.640,69.187,404.277">
-<text font="HelveticaNeue-Bold" vertical="False" bbox="63.688,393.540,69.187,404.277" size="10.737">d</text>
-<text font="HelveticaNeue-Bold" vertical="False" bbox="63.688,392.640,66.190,403.377" size="10.737"> </text>
 <text>
 </text>
 </textline>
@@ -5923,19 +5923,19 @@
 <textgroup bbox="56.488,447.892,487.204,598.377">
 <textgroup bbox="56.488,447.892,435.377,598.377">
 <textgroup bbox="56.488,447.892,424.248,598.377">
-<textgroup bbox="56.488,460.792,424.248,598.377">
-<textgroup bbox="56.488,460.792,424.248,598.377">
-<textgroup bbox="56.488,460.792,424.248,598.377">
-<textbox id="9" bbox="56.488,460.792,424.248,598.377" />
-<textbox id="10" bbox="331.508,510.196,335.504,551.268" />
-</textgroup>
-<textbox id="11" bbox="350.398,549.316,352.900,559.810" />
-</textgroup>
-<textbox id="12" bbox="413.528,513.859,415.057,520.272" />
-</textgroup>
 <textgroup bbox="72.488,447.892,202.621,463.355">
-<textbox id="13" bbox="72.488,447.892,116.379,463.355" />
-<textbox id="14" bbox="169.448,447.892,202.621,463.054" />
+<textbox id="9" bbox="72.488,447.892,116.379,463.355" />
+<textbox id="10" bbox="169.448,447.892,202.621,463.054" />
+</textgroup>
+<textgroup bbox="56.488,460.792,424.248,598.377">
+<textgroup bbox="56.488,460.792,424.248,598.377">
+<textgroup bbox="56.488,460.792,424.248,598.377">
+<textbox id="11" bbox="56.488,460.792,424.248,598.377" />
+<textbox id="12" bbox="331.508,510.196,335.504,551.268" />
+</textgroup>
+<textbox id="13" bbox="350.398,549.316,352.900,559.810" />
+</textgroup>
+<textbox id="14" bbox="413.528,513.859,415.057,520.272" />
 </textgroup>
 </textgroup>
 <textgroup bbox="324.578,447.892,435.377,477.649">
@@ -5969,29 +5969,29 @@
 </textgroup>
 <textgroup bbox="34.318,12.554,472.605,404.277">
 <textgroup bbox="34.318,12.554,451.829,404.277">
+<textbox id="26" bbox="63.688,392.640,69.187,404.277" />
+<textgroup bbox="34.318,12.554,451.829,403.890">
+<textbox id="27" bbox="256.488,260.196,258.990,270.690" />
+<textgroup bbox="34.318,12.554,451.829,403.890">
+<textbox id="28" bbox="281.508,344.536,284.010,355.030" />
 <textgroup bbox="34.318,12.554,451.829,403.890">
 <textgroup bbox="34.318,12.554,451.829,403.890">
 <textgroup bbox="34.318,12.554,451.829,403.890">
 <textgroup bbox="34.318,12.554,451.829,403.890">
+<textbox id="29" bbox="358.438,356.790,368.941,368.427" />
 <textgroup bbox="34.318,12.554,451.829,403.890">
-<textgroup bbox="34.318,12.554,451.829,403.890">
-<textgroup bbox="34.318,12.554,451.829,403.890">
-<textbox id="26" bbox="34.318,12.554,451.829,403.890" />
-<textbox id="27" bbox="65.488,330.680,81.587,390.517" />
+<textbox id="30" bbox="65.488,330.680,81.587,390.517" />
+<textbox id="31" bbox="34.318,12.554,451.829,403.890" />
 </textgroup>
-<textbox id="28" bbox="358.438,356.790,368.941,368.427" />
 </textgroup>
-<textbox id="29" bbox="435.798,224.046,438.300,234.540" />
+<textbox id="32" bbox="435.798,224.046,438.300,234.540" />
 </textgroup>
-<textbox id="30" bbox="308.058,139.676,310.560,150.170" />
+<textbox id="33" bbox="308.058,139.676,310.560,150.170" />
 </textgroup>
-<textbox id="31" bbox="318.048,103.606,320.550,114.100" />
+<textbox id="34" bbox="318.048,103.606,320.550,114.100" />
 </textgroup>
-<textbox id="32" bbox="281.508,344.536,284.010,355.030" />
 </textgroup>
-<textbox id="33" bbox="256.488,260.196,258.990,270.690" />
 </textgroup>
-<textbox id="34" bbox="63.688,392.640,69.187,404.277" />
 </textgroup>
 <textgroup bbox="457.098,31.500,472.605,356.377">
 <textgroup bbox="457.098,176.050,472.605,356.377">

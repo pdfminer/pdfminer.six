@@ -55,12 +55,5 @@
 <span style="position:absolute; left:377px; top:419px; font-size:27px;">r</span>
 <span style="position:absolute; left:395px; top:419px; font-size:27px;">l</span>
 <span style="position:absolute; left:410px; top:419px; font-size:27px;">d</span>
-<span style="position:absolute; border: red 1px solid; left:100px; top:119px; width:324px; height:327px;"></span>
-<span style="position:absolute; border: red 1px solid; left:100px; top:119px; width:224px; height:127px;"></span>
-<span style="position:absolute; border: red 1px solid; left:100px; top:119px; width:223px; height:27px;"></span>
-<span style="position:absolute; border: red 1px solid; left:100px; top:219px; width:224px; height:27px;"></span>
-<span style="position:absolute; border: red 1px solid; left:100px; top:319px; width:324px; height:127px;"></span>
-<span style="position:absolute; border: red 1px solid; left:100px; top:319px; width:324px; height:27px;"></span>
-<span style="position:absolute; border: red 1px solid; left:100px; top:419px; width:323px; height:27px;"></span>
 <div style="position:absolute; top:0px;">Page: <a href="#1">1</a></div>
 </body></html>

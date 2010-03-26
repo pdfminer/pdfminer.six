@@ -811,6 +811,8 @@
 <span style="position:absolute; left:322px; top:446px; font-size:9px;">い</span>
 <span style="position:absolute; left:322px; top:454px; font-size:9px;">て</span>
 <span style="position:absolute; left:322px; top:462px; font-size:9px;">直</span>
+<span style="position:absolute; border: blue 1px solid; left:272px; top:282px; width:9px; height:8px;"></span>
+<span style="position:absolute; left:272px; top:282px; font-size:9px;">」</span>
 <span style="position:absolute; border: blue 1px solid; left:285px; top:310px; width:28px; height:163px;"></span>
 <span style="position:absolute; left:305px; top:310px; font-size:9px;">一</span>
 <span style="position:absolute; left:305px; top:326px; font-size:9px;">歩</span>
@@ -909,8 +911,6 @@
 <span style="position:absolute; left:256px; top:446px; font-size:9px;">自</span>
 <span style="position:absolute; left:256px; top:454px; font-size:9px;">転</span>
 <span style="position:absolute; left:256px; top:462px; font-size:9px;">車</span>
-<span style="position:absolute; border: blue 1px solid; left:272px; top:282px; width:9px; height:8px;"></span>
-<span style="position:absolute; left:272px; top:282px; font-size:9px;">」</span>
 <span style="position:absolute; border: blue 1px solid; left:191px; top:310px; width:9px; height:161px;"></span>
 <span style="position:absolute; left:192px; top:310px; font-size:9px;">に</span>
 <span style="position:absolute; left:192px; top:318px; font-size:9px;">改</span>
@@ -2666,28 +2666,5 @@
 <span style="position:absolute; border: black 1px solid; left:46px; top:475px; width:503px; height:0px;"></span>
 <span style="position:absolute; border: black 1px solid; left:37px; top:107px; width:520px; height:0px;"></span>
 <span style="position:absolute; border: black 1px solid; left:37px; top:843px; width:520px; height:0px;"></span>
-<span style="position:absolute; border: red 1px solid; left:45px; top:89px; width:504px; height:750px;"></span>
-<span style="position:absolute; border: red 1px solid; left:87px; top:89px; width:450px; height:14px;"></span>
-<span style="position:absolute; border: red 1px solid; left:392px; top:91px; width:145px; height:12px;"></span>
-<span style="position:absolute; border: red 1px solid; left:87px; top:89px; width:240px; height:14px;"></span>
-<span style="position:absolute; border: red 1px solid; left:267px; top:89px; width:60px; height:14px;"></span>
-<span style="position:absolute; border: red 1px solid; left:87px; top:91px; width:155px; height:12px;"></span>
-<span style="position:absolute; border: red 1px solid; left:45px; top:110px; width:504px; height:729px;"></span>
-<span style="position:absolute; border: red 1px solid; left:45px; top:110px; width:503px; height:364px;"></span>
-<span style="position:absolute; border: red 1px solid; left:379px; top:110px; width:169px; height:361px;"></span>
-<span style="position:absolute; border: red 1px solid; left:404px; top:110px; width:144px; height:361px;"></span>
-<span style="position:absolute; border: red 1px solid; left:379px; top:110px; width:17px; height:361px;"></span>
-<span style="position:absolute; border: red 1px solid; left:45px; top:110px; width:327px; height:364px;"></span>
-<span style="position:absolute; border: red 1px solid; left:148px; top:110px; width:223px; height:363px;"></span>
-<span style="position:absolute; border: red 1px solid; left:148px; top:110px; width:163px; height:193px;"></span>
-<span style="position:absolute; border: red 1px solid; left:294px; top:110px; width:17px; height:189px;"></span>
-<span style="position:absolute; border: red 1px solid; left:148px; top:110px; width:83px; height:193px;"></span>
-<span style="position:absolute; border: red 1px solid; left:177px; top:110px; width:54px; height:193px;"></span>
-<span style="position:absolute; border: red 1px solid; left:191px; top:282px; width:180px; height:192px;"></span>
-<span style="position:absolute; border: red 1px solid; left:256px; top:282px; width:115px; height:192px;"></span>
-<span style="position:absolute; border: red 1px solid; left:321px; top:286px; width:50px; height:185px;"></span>
-<span style="position:absolute; border: red 1px solid; left:321px; top:298px; width:34px; height:173px;"></span>
-<span style="position:absolute; border: red 1px solid; left:256px; top:282px; width:57px; height:192px;"></span>
-<span style="position:absolute; border: red 1px solid; left:256px; top:310px; width:57px; height:163px;"></span>
 <div style="position:absolute; top:0px;">Page: <a href="#1">1</a></div>
 </body></html>
