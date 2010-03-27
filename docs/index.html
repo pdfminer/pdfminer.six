@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Tue Mar 23 10:35:15 UTC 2010
+Last Modified: Fri Mar 26 11:14:17 UTC 2010
 <!-- hhmts end -->
 </div>
 
@@ -172,7 +172,7 @@ Examples:
 $ <strong>pdf2txt.py -o output.html samples/naacl06-shinyama.pdf</strong>
 (extract text as an HTML file whose filename is output.html)
 
-$ <strong>pdf2txt.py -c euc-jp -D V -o output.html samples/jo.pdf</strong>
+$ <strong>pdf2txt.py -c euc-jp -D tb-rl -o output.html samples/jo.pdf</strong>
 (extract a Japanese HTML file in vertical writing, CMap is required)
 
 $ <strong>pdf2txt.py -P mypassword -o output.txt secret.pdf</strong>
@@ -209,7 +209,10 @@ Tags used here are defined in the PDF specification (See &sect;10.7 "<em>Tagged 
 <dd> Specifies the output directory for image extraction.
 Currently only JPEG images are supported.
 <p>
-<dt> <code>-D <em>direction</em></code> 
+<dt> <code>-D <em>writing_mode</em></code>
+<dd> Specifies the writing mode of text outputs.
+Currently <code>lr-tb</code>, <code>tb-rl</code> and <code>auto</code> is supported.
+<p>
 <dt> <code>-M <em>char_margin</em></code> 
 <dt> <code>-L <em>line_margin</em></code> 
 <dt> <code>-W <em>word_margin</em></code> 
@@ -360,7 +363,7 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
-<li> 2010/03/xx: Bugfixes. Thanks to Brian Berry and Lubos Pintes.
+<li> 2010/03/26: Bugfixes. Thanks to Brian Berry and Lubos Pintes.
 <li> 2010/03/22: Improved layout analysis. Added regression tests.
 <li> 2010/03/12: A couple of bugfixes. Thanks to Sean Manefield.
 <li> 2010/02/27: Changed the way of internal layout handling. (LTTextItem -&gt; LTChar)

@@ -282,15 +282,14 @@ class PDFDocument(object):
     """PDFDocument object represents a PDF document.
 
     Since a PDF file can be very big, normally it is not loaded at
-    once. Each PDF document has a PDF parser object associated,
-    and the data stream is parsed dynamically as processing goes.
+    once. So PDF document has to cooperate with a PDF parser in order to
+    dynamically import the data as processing goes.
 
     Typical usage:
       doc = PDFDocument()
-      parser = PDFParser(fp)
-      parser.set_document(doc)
       doc.set_parser(parser)
       doc.initialize(password)
+      obj = doc.getobj(objid)
     
     """
 
@@ -300,23 +299,17 @@ class PDFDocument(object):
         self.xrefs = []
         self.objs = {}
         self.parsed_objs = {}
-        self.root = None
+        self.info = []
         self.catalog = None
-        self.parser = None
         self.encryption = None
         self.decipher = None
-        self._initialized = False
+        self._parser = None
         return
 
     def set_parser(self, parser):
         "Set the document to use a given PDFParser object."
-        if self.parser: return
-        self.parser = parser
-        # The document is set to be temporarily ready during collecting
-        # all the basic information about the document, e.g.
-        # the header, the encryption information, and the access rights
-        # for the document.
-        self._initialized = True
+        if self._parser: return
+        self._parser = parser
         # Retrieve the information of each header that was appended
         # (maybe multiple times) at the end of the document.
         self.xrefs = parser.read_xref()
@@ -328,23 +321,14 @@ class PDFDocument(object):
                 #assert not self.encryption
                 self.encryption = (list_value(trailer['ID']),
                                    dict_value(trailer['Encrypt']))
+            if 'Info' in trailer:
+                self.info.append(dict_value(trailer['Info']))
             if 'Root' in trailer:
-                self.set_root(dict_value(trailer['Root']))
+                #  Every PDF file must have exactly one /Root dictionary.
+                self.catalog = dict_value(trailer['Root'])
                 break
         else:
             raise PDFSyntaxError('No /Root object! - Is this really a PDF?')
-        # The document is set to be non-ready again, until all the
-        # proper initialization (asking the password key and
-        # verifying the access permission, so on) is finished.
-        self._initialized = False
-        return
-
-    # set_root(root)
-    #   Set the Root dictionary of the document.
-    #   Each PDF file must have exactly one /Root dictionary.
-    def set_root(self, root):
-        self.root = root
-        self.catalog = dict_value(self.root)
         if self.catalog.get('Type') is not LITERAL_CATALOG:
             if STRICT:
                 raise PDFSyntaxError('Catalog not found!')
@@ -358,7 +342,6 @@ class PDFDocument(object):
     def initialize(self, password=''):
         if not self.encryption:
             self.is_printable = self.is_modifiable = self.is_extractable = True
-            self._initialized = True
             return
         (docid, param) = self.encryption
         if literal_name(param.get('Filter')) != 'Standard':
@@ -410,7 +393,6 @@ class PDFDocument(object):
             raise PDFPasswordIncorrect
         self.decrypt_key = key
         self.decipher = self.decrypt_rc4  # XXX may be AES
-        self._initialized = True
         return
 
     def decrypt_rc4(self, objid, genno, data):
@@ -421,9 +403,8 @@ class PDFDocument(object):
 
     KEYWORD_OBJ = KWD('obj')
     def getobj(self, objid):
-        if not self._initialized:
-            raise PDFException('PDFDocument not initialized')
-        #assert self.xrefs
+        if not self.xrefs:
+            raise PDFException('PDFDocument is not initialized')
         if 2 <= self.debug:
             print >>stderr, 'getobj: objid=%r' % (objid)
         if objid in self.objs:
@@ -474,16 +455,16 @@ class PDFDocument(object):
                 if isinstance(obj, PDFStream):
                     obj.set_objid(objid, 0)
             else:
-                self.parser.seek(index)
-                (_,objid1) = self.parser.nexttoken() # objid
-                (_,genno) = self.parser.nexttoken() # genno
-                (_,kwd) = self.parser.nexttoken()
+                self._parser.seek(index)
+                (_,objid1) = self._parser.nexttoken() # objid
+                (_,genno) = self._parser.nexttoken() # genno
+                (_,kwd) = self._parser.nexttoken()
 # #### hack around malformed pdf files
 #        assert objid1 == objid, (objid, objid1)
                 if objid1 != objid:
                     x = []
                     while kwd is not self.KEYWORD_OBJ:
-                        (_,kwd) = self.parser.nexttoken()
+                        (_,kwd) = self._parser.nexttoken()
                         x.append(kwd)
                     if x:
                         objid1 = x[-2]
@@ -491,7 +472,7 @@ class PDFDocument(object):
 # #### end hack around malformed pdf files
                 if kwd is not self.KEYWORD_OBJ:
                     raise PDFSyntaxError('Invalid object spec: offset=%r' % index)
-                (_,obj) = self.parser.nextobject()
+                (_,obj) = self._parser.nextobject()
                 if isinstance(obj, PDFStream):
                     obj.set_objid(objid, genno)
             if 2 <= self.debug:
@@ -503,9 +484,8 @@ class PDFDocument(object):
 
     INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
     def get_pages(self):
-        if not self._initialized:
+        if not self.xrefs:
             raise PDFException('PDFDocument is not initialized')
-        #assert self.xrefs
         def search(obj, parent):
             if isinstance(obj, int):
                 objid = obj
@@ -579,13 +559,28 @@ class PDFDocument(object):
 ##
 class PDFParser(PSStackParser):
 
+    """
+    PDFParser fetch PDF objects from a file stream.
+    It can handle indirect references by referring to
+    a PDF document set by set_document method.
+    It also reads XRefs at the end of every PDF file.
+
+    Typical usage:
+      parser = PDFParser(fp)
+      parser.read_xref()
+      parser.set_document(doc)
+      parser.seek(offset)
+      parser.nextobject()
+    
+    """
+
     def __init__(self, fp):
         PSStackParser.__init__(self, fp)
         self.doc = None
         return
 
     def set_document(self, doc):
-        "Associates the parser with a PDFDocument object."
+        """Associates the parser with a PDFDocument object."""
         self.doc = doc
         return
 
@@ -596,20 +591,19 @@ class PDFParser(PSStackParser):
     KEYWORD_XREF = KWD('xref')
     KEYWORD_STARTXREF = KWD('startxref')
     def do_keyword(self, pos, token):
+        """Handles PDF-related keywords."""
+        
         if token in (self.KEYWORD_XREF, self.KEYWORD_STARTXREF):
             self.add_results(*self.pop(1))
-            return
         
-        if token is self.KEYWORD_ENDOBJ:
+        elif token is self.KEYWORD_ENDOBJ:
             self.add_results(*self.pop(4))
-            return
 
-        if token is self.KEYWORD_NULL:
+        elif token is self.KEYWORD_NULL:
             # null object
             self.push((pos, None))
-            return
 
-        if token is self.KEYWORD_R:
+        elif token is self.KEYWORD_R:
             # reference to indirect object
             try:
                 ((_,objid), (_,genno)) = self.pop(2)
@@ -618,9 +612,8 @@ class PDFParser(PSStackParser):
                 self.push((pos, obj))
             except PSSyntaxError:
                 pass
-            return
 
-        if token is self.KEYWORD_STREAM:
+        elif token is self.KEYWORD_STREAM:
             # stream object
             ((_,dic),) = self.pop(1)
             dic = dict_value(dic)
@@ -661,13 +654,15 @@ class PDFParser(PSStackParser):
                       (pos, objlen, dic, data[:10])
             obj = PDFStream(dic, data, self.doc.decipher)
             self.push((pos, obj))
-            return
 
-        # others
-        self.push((pos, token))
+        else:
+            # others
+            self.push((pos, token))
+        
         return
 
     def find_xref(self):
+        """Internal function used to locate the first XRef."""
         # search the last xref table by scanning the file backwards.
         prev = None
         for line in self.revreadlines():
@@ -685,6 +680,7 @@ class PDFParser(PSStackParser):
 
     # read xref table
     def read_xref_from(self, start, xrefs):
+        """Reads XRefs from the given location."""
         self.seek(start)
         self.reset()
         try:
@@ -719,6 +715,7 @@ class PDFParser(PSStackParser):
 
     # read xref tables and trailers
     def read_xref(self):
+        """Reads all the XRefs in the PDF file and returns them."""
         xrefs = []
         try:
             pos = self.find_xref()
@@ -736,6 +733,14 @@ class PDFParser(PSStackParser):
 ##  PDFStreamParser
 ##
 class PDFStreamParser(PDFParser):
+
+    """
+    PDFStreamParser is used to parse PDF content streams
+    that is contained in each page and has instructions
+    for rendering the page. A reference to a PDF document is
+    needed because a PDF content stream can also have
+    indirect references to other objects in the same document.
+    """
 
     def __init__(self, data):
         PDFParser.__init__(self, StringIO(data))
