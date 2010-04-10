@@ -168,7 +168,7 @@ class LTImage(LTItem):
         self.bits = stream.get_any(('BPC', 'BitsPerComponent'), 1)
         self.colorspace = stream.get_any(('CS', 'ColorSpace'))
         if not isinstance(self.colorspace, list):
-            self.colorspace = [colorspace]
+            self.colorspace = [self.colorspace]
         return
 
     def __repr__(self):
@@ -550,41 +550,12 @@ def group_boxes(groupfunc, objs, distfunc, debug=0):
     return objs.pop()
 
 
-##  LTFigure
+##  LTAnalyzer
 ##
-class LTFigure(LTContainer):
+class LTAnalyzer(LTContainer):
 
-    def __init__(self, name, bbox, matrix):
-        (x,y,w,h) = bbox
-        bbox = get_bounds( apply_matrix_pt(matrix, (p,q))
-                           for (p,q) in ((x,y), (x+w,y), (x,y+h), (x+w,y+h)) )
-        self.name = name
-        self.matrix = matrix
-        LTContainer.__init__(self, bbox)
-        return
-
-    def __repr__(self):
-        return ('<figure %r bbox=%s matrix=%s>' %
-                (self.name, bbox2str(self.bbox), matrix2str(self.matrix)))
-
-
-##  LTPage
-##
-class LTPage(LTContainer):
-
-    def __init__(self, pageid, bbox, rotate=0):
-        LTContainer.__init__(self, bbox)
-        self.pageid = pageid
-        self.rotate = rotate
-        self.layout = None
-        return
-
-    def __repr__(self):
-        return ('<page(%r) bbox=%s rotate=%r>' % (self.pageid, bbox2str(self.bbox), self.rotate))
-
-    def fixate(self, laparams):
+    def analyze(self, laparams):
         """Perform the layout analysis."""
-        LTContainer.fixate(self)
         (textobjs, otherobjs) = self.get_textobjs()
         if not laparams or not textobjs: return
         if laparams.writing_mode not in ('lr-tb', 'tb-rl'):
@@ -694,3 +665,41 @@ class LTPage(LTContainer):
                     (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
                     (obj1.width*obj1.height + obj2.width*obj2.height))
         return group_boxes(LTTextGroupTBRL, boxes, dist)
+    
+
+##  LTFigure
+##
+class LTFigure(LTAnalyzer):
+
+    def __init__(self, name, bbox, matrix):
+        (x,y,w,h) = bbox
+        bbox = get_bounds( apply_matrix_pt(matrix, (p,q))
+                           for (p,q) in ((x,y), (x+w,y), (x,y+h), (x+w,y+h)) )
+        LTAnalyzer.__init__(self, bbox)
+        self.name = name
+        self.matrix = matrix
+        return
+
+    def __repr__(self):
+        return ('<figure %r bbox=%s matrix=%s>' %
+                (self.name, bbox2str(self.bbox), matrix2str(self.matrix)))
+
+    def analyze(self, laparams):
+        if laparams.all_texts:
+            LTAnalyzer.analyze(self, laparams)
+        return
+
+
+##  LTPage
+##
+class LTPage(LTAnalyzer):
+
+    def __init__(self, pageid, bbox, rotate=0):
+        LTAnalyzer.__init__(self, bbox)
+        self.pageid = pageid
+        self.rotate = rotate
+        self.layout = None
+        return
+
+    def __repr__(self):
+        return ('<page(%r) bbox=%s rotate=%r>' % (self.pageid, bbox2str(self.bbox), self.rotate))

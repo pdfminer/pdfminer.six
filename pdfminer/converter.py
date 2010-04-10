@@ -32,7 +32,8 @@ class PDFPageAggregator(PDFTextDevice):
     def end_page(self, _):
         assert not self.stack
         assert isinstance(self.cur_item, LTPage)
-        self.cur_item.fixate(self.laparams)
+        self.cur_item.fixate()
+        self.cur_item.analyze(self.laparams)
         self.pageno += 1
         return self.cur_item
 
@@ -43,7 +44,9 @@ class PDFPageAggregator(PDFTextDevice):
 
     def end_figure(self, _):
         fig = self.cur_item
+        assert isinstance(self.cur_item, LTFigure)
         self.cur_item.fixate()
+        self.cur_item.analyze(self.laparams)
         self.cur_item = self.stack.pop()
         self.cur_item.add(fig)
         return
@@ -226,14 +229,13 @@ class HTMLConverter(PDFConverter):
                 for child in item:
                     render(child)
             elif isinstance(item, LTImage):
-                name = ''
                 if self.outdir:
                     name = self.write_image(item)
-                self.outfp.write('<img src="%s" style="position:absolute; left:%dpx; top:%dpx;" '
-                                 'width="%d" height="%d" />\n' %
-                                 (enc(name),
-                                  item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
-                                  item.width*self.scale, item.height*self.scale))
+                    self.outfp.write('<img src="%s" style="position:absolute; left:%dpx; top:%dpx;" '
+                                     'width="%d" height="%d" />\n' %
+                                     (enc(name),
+                                      item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
+                                      item.width*self.scale, item.height*self.scale))
             return
         page = PDFConverter.end_page(self, page)
         render(page)
@@ -311,11 +313,13 @@ class XMLConverter(PDFConverter):
             elif isinstance(item, LTText):
                 self.outfp.write('<text>%s</text>\n' % item.text)
             elif isinstance(item, LTImage):
-                name = ''
                 if self.outdir:
                     name = self.write_image(item)
-                self.outfp.write('<image name="%s" width="%d" height="%d" />\n' %
-                                 (enc(name), item.width, item.height))
+                    self.outfp.write('<image src="%s" width="%d" height="%d" />\n' %
+                                     (enc(name), item.width, item.height))
+                else:
+                    self.outfp.write('<image width="%d" height="%d" />\n' %
+                                     (item.width, item.height))
             else:
                 assert 0, item
             return
