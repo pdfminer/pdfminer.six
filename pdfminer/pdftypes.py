@@ -187,6 +187,12 @@ class PDFStream(PDFObject):
                 return self.attrs[name]
         return default
 
+    def get_filters(self):
+        filters = self.get_any(('F', 'Filter'))
+        if not filters: return []
+        if isinstance(filters, list): return filters
+        return [ filters ]
+
     def decomp(self,data):
         buf = data
         # some FlateDecode streams have garbage (newlines, etc) appended to the
@@ -206,13 +212,11 @@ class PDFStream(PDFObject):
         if self.decipher:
             # Handle encryption
             data = self.decipher(self.objid, self.genno, data)
-        filters = self.get_any(('F', 'Filter'))
+        filters = self.get_filters()
         if not filters:
             self.data = data
             self.rawdata = None
             return
-        if not isinstance(filters, list):
-            filters = [ filters ]
         for f in filters:
             if f in LITERALS_FLATE_DECODE:
                 # will get errors if the document is encrypted.

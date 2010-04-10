@@ -457,8 +457,7 @@ class PDFType3Font(PDFSimpleFont):
         if 'FontDescriptor' in spec:
             descriptor = dict_value(spec['FontDescriptor'])
         else:
-            descriptor = {'FontName':spec.get('Name'),
-                          'Ascent':0, 'Descent':0,
+            descriptor = {'Ascent':0, 'Descent':0,
                           'FontBBox':spec['FontBBox']}
         PDFSimpleFont.__init__(self, descriptor, widths, spec)
         self.matrix = tuple(list_value(spec.get('FontMatrix')))

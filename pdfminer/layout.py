@@ -198,17 +198,22 @@ class LTRect(LTPolygon):
 ##
 class LTImage(LayoutItem):
 
-    def __init__(self, name, type, srcsize, bbox, data):
+    def __init__(self, name, stream, bbox):
         LayoutItem.__init__(self, bbox)
         self.name = name
-        self.type = type
-        self.srcsize = srcsize
-        self.data = data
+        self.stream = stream
+        self.srcsize = (stream.get_any(('W', 'Width')),
+                        stream.get_any(('H', 'Height')))
+        self.imagemask = stream.get_any(('IM', 'ImageMask'))
+        self.bits = stream.get_any(('BPC', 'BitsPerComponent'), 1)
+        self.colorspace = stream.get_any(('CS', 'ColorSpace'))
+        if not isinstance(self.colorspace, list):
+            self.colorspace = [colorspace]
         return
 
     def __repr__(self):
         (w,h) = self.srcsize
-        return '<image %s %s %dx%d>' % (self.name, self.type, w, h)
+        return '<image %s %dx%d>' % (self.name, w, h)
 
 
 ##  LTText

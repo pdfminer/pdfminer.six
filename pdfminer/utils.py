@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from struct import unpack
+from struct import pack, unpack
 
 
 ##  Matrix operations
@@ -165,3 +165,12 @@ class ObjIdRange(object):
 
     def get_nobjs(self):
         return self.nobjs
+
+
+# create_bmp
+def create_bmp(data, bits, width, height):
+    info = pack('<IiiHHIIIIII', 40, width, height, 1, bits, 0, len(data), 0, 0, 0, 0)
+    assert len(info) == 40, len(info)
+    header = pack('<ccIHHI', 'B', 'M', 14+40+len(data), 0, 0, 14+40)
+    # XXX re-rasterize every line
+    return header+info+data

@@ -3,11 +3,12 @@ import sys, os.path
 from pdfdevice import PDFDevice, PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
 from pdftypes import LITERALS_DCT_DECODE
+from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
 from layout import LayoutContainer
 from layout import LTPage, LTText, LTLine, LTRect, LTPolygon
 from layout import LTFigure, LTImage, LTChar, LTTextLine, LTTextBox, LTTextGroup
 from utils import apply_matrix_pt, mult_matrix
-from utils import enc, bbox2str
+from utils import enc, bbox2str, create_bmp
 
 
 ##  PDFPageAggregator
@@ -50,17 +51,9 @@ class PDFPageAggregator(PDFTextDevice):
 
     def render_image(self, name, stream):
         assert isinstance(self.cur_item, LTFigure)
-        ismask = stream.get_any(('IM', 'ImageMask'))
-        bits = stream.get_any(('BPC', 'BitsPerComponent'), 1)
-        csp = stream.get_any(('CS', 'ColorSpace'))
-        if not isinstance(csp, list):
-            csp = [csp]
-        item = LTImage(name, stream.get_any(('F', 'Filter')),
-                       (stream.get_any(('W', 'Width')),
-                        stream.get_any(('H', 'Height'))),
+        item = LTImage(name, stream,
                        (self.cur_item.x0, self.cur_item.y0,
-                        self.cur_item.x1, self.cur_item.y1),
-                       stream.get_rawdata())
+                        self.cur_item.x1, self.cur_item.y1))
         self.cur_item.add(item)
         return
 
@@ -115,6 +108,29 @@ class PDFConverter(PDFPageAggregator):
         self.outfp.write(enc(text, self.codec))
         return
 
+    def write_image(self, image):
+        stream = image.stream
+        filters = stream.get_filters()
+        if len(filters) == 1 and filters[0] in LITERALS_DCT_DECODE:
+            ext = '.jpg'
+            data = stream.get_rawdata()
+        elif stream.colorspace is LITERAL_DEVICE_RGB:
+            ext = '.bmp'
+            data = create_bmp(stream.get_data(), stream.bits*3, image.width, image.height)
+        elif stream.colorspace is LITERAL_DEVICE_GRAY:
+            ext = '.bmp'
+            data = create_bmp(stream.get_data(), stream.bits, image.width, image.height)
+        else:
+            ext = '.img'
+            data = stream.get_data()
+        name = image.name+ext
+        path = os.path.join(self.outdir, name)
+        fp = file(path, 'wb')
+        fp.write(data)
+        fp.close()
+        return name
+        return
+    
 
 ##  TextConverter
 ##
@@ -180,23 +196,6 @@ class HTMLConverter(PDFConverter):
         self.outfp.write('</span>\n')
         return
 
-    def write_image(self, image):
-        if image.type in LITERALS_DCT_DECODE:
-            ext = '.jpg'
-        else:
-            return
-        name = image.name+ext
-        path = os.path.join(self.outdir, name)
-        fp = file(path, 'wb')
-        fp.write(image.data)
-        fp.close()
-        self.outfp.write('<img src="%s" style="position:absolute; left:%dpx; top:%dpx;" '
-                         'width="%d" height="%d" />\n' %
-                         (enc(name),
-                          image.x0*self.scale, (self.yoffset-image.y1)*self.scale,
-                          image.width*self.scale, image.height*self.scale))
-        return
-    
     def end_page(self, page):
         def render(item):
             if isinstance(item, LTPage):
@@ -228,8 +227,14 @@ class HTMLConverter(PDFConverter):
                 for child in item:
                     render(child)
             elif isinstance(item, LTImage):
+                name = ''
                 if self.outdir:
-                    self.write_image(item)
+                    name = self.write_image(item)
+                self.outfp.write('<img src="%s" style="position:absolute; left:%dpx; top:%dpx;" '
+                                 'width="%d" height="%d" />\n' %
+                                 (enc(name),
+                                  item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
+                                  item.width*self.scale, item.height*self.scale))
             return
         page = PDFConverter.end_page(self, page)
         render(page)
@@ -262,18 +267,6 @@ class XMLConverter(PDFConverter):
         self.outfp.write('<pages>\n')
         return
 
-    def write_image(self, image):
-        if image.type in LITERALS_DCT_DECODE:
-            ext = '.jpg'
-        else:
-            return None
-        name = image.name+ext
-        path = os.path.join(self.outdir, name)
-        fp = file(path, 'wb')
-        fp.write(image.data)
-        fp.close()
-        return name
-    
     def end_page(self, page):
         def render(item):
             if isinstance(item, LTPage):
@@ -308,21 +301,22 @@ class XMLConverter(PDFConverter):
                     render(child)
                 self.outfp.write('</textbox>\n')
             elif isinstance(item, LTChar):
-                self.outfp.write('<text font="%s" vertical="%s" bbox="%s" size="%.3f">' %
-                                 (enc(item.font.fontname), item.is_vertical(),
+                vertical = ''
+                if item.is_vertical():
+                    vertical = 'vertical="true" '
+                self.outfp.write('<text font="%s" %sbbox="%s" size="%.3f">' %
+                                 (enc(item.font.fontname), vertical,
                                   bbox2str(item.bbox), item.get_size()))
                 self.write(item.text)
                 self.outfp.write('</text>\n')
             elif isinstance(item, LTText):
                 self.outfp.write('<text>%s</text>\n' % item.text)
             elif isinstance(item, LTImage):
-                x = ''
+                name = ''
                 if self.outdir:
                     name = self.write_image(item)
-                    if name:
-                        x = 'name="%s" ' % enc(name)
-                self.outfp.write('<image %stype="%s" width="%d" height="%d" />\n' %
-                                 (x, item.type, item.width, item.height))
+                self.outfp.write('<image name="%s" width="%d" height="%d" />\n' %
+                                 (enc(name), item.width, item.height))
             else:
                 assert 0, item
             return
