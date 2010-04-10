@@ -4,8 +4,7 @@ from pdfdevice import PDFDevice, PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
 from pdftypes import LITERALS_DCT_DECODE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
-from layout import LayoutContainer
-from layout import LTPage, LTText, LTLine, LTRect, LTPolygon
+from layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTPolygon
 from layout import LTFigure, LTImage, LTChar, LTTextLine, LTTextBox, LTTextGroup
 from utils import apply_matrix_pt, mult_matrix
 from utils import enc, bbox2str, create_bmp
@@ -150,7 +149,7 @@ class TextConverter(PDFConverter):
         def render(item):
             if isinstance(item, LTText):
                 self.write(item.text)
-            elif isinstance(item, LayoutContainer):
+            elif isinstance(item, LTContainer):
                 for child in item:
                     render(child)
             if isinstance(item, LTTextBox):
