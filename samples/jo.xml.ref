@@ -3,1168 +3,1168 @@
 <page id="1" bbox="0.000,0.000,792.000,612.000" rotate="0">
 <textbox id="0" bbox="715.511,518.573,727.341,547.331">
 <textline bbox="715.511,518.573,727.341,547.331">
-<text font="Ryumin-Light" vertical="True" bbox="715.511,537.745,727.341,547.331" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="715.511,528.159,727.341,537.745" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="715.511,518.573,727.341,528.159" size="11.829">序</text>
+<text font="Ryumin-Light" vertical="true" bbox="715.511,537.745,727.341,547.331" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="715.511,528.159,727.341,537.745" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="715.511,518.573,727.341,528.159" size="11.829">序</text>
 <text>
 </text>
 </textline>
 </textbox>
 <textbox id="1" bbox="715.511,277.813,727.341,287.399">
 <textline bbox="715.511,277.813,727.341,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="715.511,277.813,727.341,287.399" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="715.511,277.813,727.341,287.399" size="11.829">　</text>
 <text>
 </text>
 </textline>
 </textbox>
 <textbox id="2" bbox="168.654,346.025,671.642,556.917">
 <textline bbox="659.812,461.057,671.642,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="659.812,547.331,671.642,556.917" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="659.812,537.745,671.642,547.331" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="659.812,528.159,671.642,537.745" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="659.812,518.573,671.642,528.159" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="659.812,508.987,671.642,518.573" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="659.812,499.401,671.642,508.987" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="659.812,489.815,671.642,499.401" size="11.829">ふ</text>
-<text font="Ryumin-Light" vertical="True" bbox="659.812,480.229,671.642,489.815" size="11.829">現</text>
-<text font="Ryumin-Light" vertical="True" bbox="659.812,470.643,671.642,480.229" size="11.829">象</text>
-<text font="Ryumin-Light" vertical="True" bbox="659.812,461.057,671.642,470.643" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,547.331,671.642,556.917" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,537.745,671.642,547.331" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,528.159,671.642,537.745" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,518.573,671.642,528.159" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,508.987,671.642,518.573" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,499.401,671.642,508.987" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,489.815,671.642,499.401" size="11.829">ふ</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,480.229,671.642,489.815" size="11.829">現</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,470.643,671.642,480.229" size="11.829">象</text>
+<text font="Ryumin-Light" vertical="true" bbox="659.812,461.057,671.642,470.643" size="11.829">は</text>
 <text>
 </text>
 </textline>
 <textline bbox="642.876,441.885,654.706,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="642.876,547.331,654.706,556.917" size="11.829">假</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,537.745,654.706,547.331" size="11.829">定</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,528.159,654.706,537.745" size="11.829">さ</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,518.573,654.706,528.159" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,508.987,654.706,518.573" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,499.401,654.706,508.987" size="11.829">有</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,489.815,654.706,499.401" size="11.829">機</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,480.229,654.706,489.815" size="11.829">交</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,470.643,654.706,480.229" size="11.829">流</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,461.057,654.706,470.643" size="11.829">電</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,451.471,654.706,461.057" size="11.829">燈</text>
-<text font="Ryumin-Light" vertical="True" bbox="642.876,441.885,654.706,451.471" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,547.331,654.706,556.917" size="11.829">假</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,537.745,654.706,547.331" size="11.829">定</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,528.159,654.706,537.745" size="11.829">さ</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,518.573,654.706,528.159" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,508.987,654.706,518.573" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,499.401,654.706,508.987" size="11.829">有</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,489.815,654.706,499.401" size="11.829">機</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,480.229,654.706,489.815" size="11.829">交</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,470.643,654.706,480.229" size="11.829">流</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,461.057,654.706,470.643" size="11.829">電</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,451.471,654.706,461.057" size="11.829">燈</text>
+<text font="Ryumin-Light" vertical="true" bbox="642.876,441.885,654.706,451.471" size="11.829">の</text>
 <text>
 </text>
 </textline>
 <textline bbox="625.939,461.057,637.769,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="625.939,547.331,637.769,556.917" size="11.829">ひ</text>
-<text font="Ryumin-Light" vertical="True" bbox="625.939,537.745,637.769,547.331" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="625.939,528.159,637.769,537.745" size="11.829">つ</text>
-<text font="Ryumin-Light" vertical="True" bbox="625.939,518.573,637.769,528.159" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="625.939,508.987,637.769,518.573" size="11.829">青</text>
-<text font="Ryumin-Light" vertical="True" bbox="625.939,499.401,637.769,508.987" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="625.939,489.815,637.769,499.401" size="11.829">照</text>
-<text font="Ryumin-Light" vertical="True" bbox="625.939,480.229,637.769,489.815" size="11.829">明</text>
-<text font="Ryumin-Light" vertical="True" bbox="625.939,470.643,637.769,480.229" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="625.939,461.057,637.769,470.643" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,547.331,637.769,556.917" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,537.745,637.769,547.331" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,528.159,637.769,537.745" size="11.829">つ</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,518.573,637.769,528.159" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,508.987,637.769,518.573" size="11.829">青</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,499.401,637.769,508.987" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,489.815,637.769,499.401" size="11.829">照</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,480.229,637.769,489.815" size="11.829">明</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,470.643,637.769,480.229" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="625.939,461.057,637.769,470.643" size="11.829">す</text>
 <text>
 </text>
 </textline>
 <textline bbox="609.003,413.127,620.833,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="609.003,547.331,620.833,556.917" size="11.829">（</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,537.745,620.833,547.331" size="11.829">あ</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,528.159,620.833,537.745" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,518.573,620.833,528.159" size="11.829">ゆ</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,508.987,620.833,518.573" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,499.401,620.833,508.987" size="11.829">透</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,489.815,620.833,499.401" size="11.829">明</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,480.229,620.833,489.815" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,470.643,620.833,480.229" size="11.829">幽</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,461.057,620.833,470.643" size="11.829">霊</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,451.471,620.833,461.057" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,441.885,620.833,451.471" size="11.829">複</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,432.299,620.833,441.885" size="11.829">合</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,422.713,620.833,432.299" size="11.829">体</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.003,413.127,620.833,422.713" size="11.829">）</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,547.331,620.833,556.917" size="11.829">（</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,537.745,620.833,547.331" size="11.829">あ</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,528.159,620.833,537.745" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,518.573,620.833,528.159" size="11.829">ゆ</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,508.987,620.833,518.573" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,499.401,620.833,508.987" size="11.829">透</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,489.815,620.833,499.401" size="11.829">明</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,480.229,620.833,489.815" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,470.643,620.833,480.229" size="11.829">幽</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,461.057,620.833,470.643" size="11.829">霊</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,451.471,620.833,461.057" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,441.885,620.833,451.471" size="11.829">複</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,432.299,620.833,441.885" size="11.829">合</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,422.713,620.833,432.299" size="11.829">体</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.003,413.127,620.833,422.713" size="11.829">）</text>
 <text>
 </text>
 </textline>
 <textline bbox="592.066,441.885,603.896,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="592.066,547.331,603.896,556.917" size="11.829">風</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,537.745,603.896,547.331" size="11.829">景</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,528.159,603.896,537.745" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,518.573,603.896,528.159" size="11.829">み</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,508.987,603.896,518.573" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,499.401,603.896,508.987" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,489.815,603.896,499.401" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,480.229,603.896,489.815" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,470.643,603.896,480.229" size="11.829">っ</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,461.057,603.896,470.643" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,451.471,603.896,461.057" size="11.829">ょ</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.066,441.885,603.896,451.471" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,547.331,603.896,556.917" size="11.829">風</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,537.745,603.896,547.331" size="11.829">景</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,528.159,603.896,537.745" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,518.573,603.896,528.159" size="11.829">み</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,508.987,603.896,518.573" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,499.401,603.896,508.987" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,489.815,603.896,499.401" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,480.229,603.896,489.815" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,470.643,603.896,480.229" size="11.829">っ</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,461.057,603.896,470.643" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,451.471,603.896,461.057" size="11.829">ょ</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.066,441.885,603.896,451.471" size="11.829">に</text>
 <text>
 </text>
 </textline>
 <textline bbox="575.130,422.713,586.960,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="575.130,547.331,586.960,556.917" size="11.829">せ</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,537.745,586.960,547.331" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,528.159,586.960,537.745" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,518.573,586.960,528.159" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,508.987,586.960,518.573" size="11.829">せ</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,499.401,586.960,508.987" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,489.815,586.960,499.401" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,480.229,586.960,489.815" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,470.643,586.960,480.229" size="11.829">明</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,461.057,586.960,470.643" size="11.829">滅</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,451.471,586.960,461.057" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,441.885,586.960,451.471" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,432.299,586.960,441.885" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.130,422.713,586.960,432.299" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,547.331,586.960,556.917" size="11.829">せ</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,537.745,586.960,547.331" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,528.159,586.960,537.745" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,518.573,586.960,528.159" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,508.987,586.960,518.573" size="11.829">せ</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,499.401,586.960,508.987" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,489.815,586.960,499.401" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,480.229,586.960,489.815" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,470.643,586.960,480.229" size="11.829">明</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,461.057,586.960,470.643" size="11.829">滅</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,451.471,586.960,461.057" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,441.885,586.960,451.471" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,432.299,586.960,441.885" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.130,422.713,586.960,432.299" size="11.829">ら</text>
 <text>
 </text>
 </textline>
 <textline bbox="558.193,413.127,570.023,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="558.193,547.331,570.023,556.917" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,537.745,570.023,547.331" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,528.159,570.023,537.745" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,518.573,570.023,528.159" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,508.987,570.023,518.573" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,499.401,570.023,508.987" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,489.815,570.023,499.401" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,480.229,570.023,489.815" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,470.643,570.023,480.229" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,461.057,570.023,470.643" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,451.471,570.023,461.057" size="11.829">り</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,441.885,570.023,451.471" size="11.829">つ</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,432.299,570.023,441.885" size="11.829">づ</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,422.713,570.023,432.299" size="11.829">け</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.193,413.127,570.023,422.713" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,547.331,570.023,556.917" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,537.745,570.023,547.331" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,528.159,570.023,537.745" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,518.573,570.023,528.159" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,508.987,570.023,518.573" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,499.401,570.023,508.987" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,489.815,570.023,499.401" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,480.229,570.023,489.815" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,470.643,570.023,480.229" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,461.057,570.023,470.643" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,451.471,570.023,461.057" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,441.885,570.023,451.471" size="11.829">つ</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,432.299,570.023,441.885" size="11.829">づ</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,422.713,570.023,432.299" size="11.829">け</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.193,413.127,570.023,422.713" size="11.829">る</text>
 <text>
 </text>
 </textline>
 <textline bbox="541.257,489.815,553.087,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="541.257,547.331,553.087,556.917" size="11.829">因</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.257,537.745,553.087,547.331" size="11.829">果</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.257,528.159,553.087,537.745" size="11.829">交</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.257,518.573,553.087,528.159" size="11.829">流</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.257,508.987,553.087,518.573" size="11.829">電</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.257,499.401,553.087,508.987" size="11.829">燈</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.257,489.815,553.087,499.401" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.257,547.331,553.087,556.917" size="11.829">因</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.257,537.745,553.087,547.331" size="11.829">果</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.257,528.159,553.087,537.745" size="11.829">交</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.257,518.573,553.087,528.159" size="11.829">流</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.257,508.987,553.087,518.573" size="11.829">電</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.257,499.401,553.087,508.987" size="11.829">燈</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.257,489.815,553.087,499.401" size="11.829">の</text>
 <text>
 </text>
 </textline>
 <textline bbox="524.320,461.057,536.150,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="524.320,547.331,536.150,556.917" size="11.829">ひ</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.320,537.745,536.150,547.331" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.320,528.159,536.150,537.745" size="11.829">つ</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.320,518.573,536.150,528.159" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.320,508.987,536.150,518.573" size="11.829">青</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.320,499.401,536.150,508.987" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.320,489.815,536.150,499.401" size="11.829">照</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.320,480.229,536.150,489.815" size="11.829">明</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.320,470.643,536.150,480.229" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.320,461.057,536.150,470.643" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,547.331,536.150,556.917" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,537.745,536.150,547.331" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,528.159,536.150,537.745" size="11.829">つ</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,518.573,536.150,528.159" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,508.987,536.150,518.573" size="11.829">青</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,499.401,536.150,508.987" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,489.815,536.150,499.401" size="11.829">照</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,480.229,536.150,489.815" size="11.829">明</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,470.643,536.150,480.229" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.320,461.057,536.150,470.643" size="11.829">す</text>
 <text>
 </text>
 </textline>
 <textline bbox="507.384,384.369,519.214,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="507.384,547.331,519.214,556.917" size="11.829">（</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,537.745,519.214,547.331" size="11.829">ひ</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,528.159,519.214,537.745" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,518.573,519.214,528.159" size="11.829">り</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,508.987,519.214,518.573" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,499.401,519.214,508.987" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,489.815,519.214,499.401" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,480.229,519.214,489.815" size="11.829">ち</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,470.643,519.214,480.229" size="11.829">、</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,461.057,519.214,470.643" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,451.471,519.214,461.057" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,441.885,519.214,451.471" size="11.829">電</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,432.299,519.214,441.885" size="11.829">燈</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,422.713,519.214,432.299" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,413.127,519.214,422.713" size="11.829">失</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,403.541,519.214,413.127" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,393.955,519.214,403.541" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="507.384,384.369,519.214,393.955" size="11.829">）</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,547.331,519.214,556.917" size="11.829">（</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,537.745,519.214,547.331" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,528.159,519.214,537.745" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,518.573,519.214,528.159" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,508.987,519.214,518.573" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,499.401,519.214,508.987" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,489.815,519.214,499.401" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,480.229,519.214,489.815" size="11.829">ち</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,470.643,519.214,480.229" size="11.829">、</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,461.057,519.214,470.643" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,451.471,519.214,461.057" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,441.885,519.214,451.471" size="11.829">電</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,432.299,519.214,441.885" size="11.829">燈</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,422.713,519.214,432.299" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,413.127,519.214,422.713" size="11.829">失</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,403.541,519.214,413.127" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,393.955,519.214,403.541" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="507.384,384.369,519.214,393.955" size="11.829">）</text>
 <text>
 </text>
 </textline>
 <textline bbox="490.447,537.745,502.277,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="490.447,547.331,502.277,556.917" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="490.447,537.745,502.277,547.331" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="490.447,547.331,502.277,556.917" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="490.447,537.745,502.277,547.331" size="11.829">　</text>
 <text>
 </text>
 </textline>
 <textline bbox="473.511,461.057,485.341,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="473.511,547.331,485.341,556.917" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="473.511,537.745,485.341,547.331" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="473.511,528.159,485.341,537.745" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="473.511,518.573,485.341,528.159" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="473.511,508.987,485.341,518.573" size="11.829">二</text>
-<text font="Ryumin-Light" vertical="True" bbox="473.511,499.401,485.341,508.987" size="11.829">十</text>
-<text font="Ryumin-Light" vertical="True" bbox="473.511,489.815,485.341,499.401" size="11.829">二</text>
-<text font="Ryumin-Light" vertical="True" bbox="473.511,480.229,485.341,489.815" size="11.829">箇</text>
-<text font="Ryumin-Light" vertical="True" bbox="473.511,470.643,485.341,480.229" size="11.829">月</text>
-<text font="Ryumin-Light" vertical="True" bbox="473.511,461.057,485.341,470.643" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,547.331,485.341,556.917" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,537.745,485.341,547.331" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,528.159,485.341,537.745" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,518.573,485.341,528.159" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,508.987,485.341,518.573" size="11.829">二</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,499.401,485.341,508.987" size="11.829">十</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,489.815,485.341,499.401" size="11.829">二</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,480.229,485.341,489.815" size="11.829">箇</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,470.643,485.341,480.229" size="11.829">月</text>
+<text font="Ryumin-Light" vertical="true" bbox="473.511,461.057,485.341,470.643" size="11.829">の</text>
 <text>
 </text>
 </textline>
 <textline bbox="456.574,451.471,468.404,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="456.574,547.331,468.404,556.917" size="11.829">過</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,537.745,468.404,547.331" size="11.829">去</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,528.159,468.404,537.745" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,518.573,468.404,528.159" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,508.987,468.404,518.573" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,499.401,468.404,508.987" size="11.829">ず</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,489.815,468.404,499.401" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,480.229,468.404,489.815" size="11.829">方</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,470.643,468.404,480.229" size="11.829">角</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,461.057,468.404,470.643" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="456.574,451.471,468.404,461.057" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,547.331,468.404,556.917" size="11.829">過</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,537.745,468.404,547.331" size="11.829">去</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,528.159,468.404,537.745" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,518.573,468.404,528.159" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,508.987,468.404,518.573" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,499.401,468.404,508.987" size="11.829">ず</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,489.815,468.404,499.401" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,480.229,468.404,489.815" size="11.829">方</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,470.643,468.404,480.229" size="11.829">角</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,461.057,468.404,470.643" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="456.574,451.471,468.404,461.057" size="11.829">ら</text>
 <text>
 </text>
 </textline>
 <textline bbox="439.638,451.471,451.468,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="439.638,547.331,451.468,556.917" size="11.829">紙</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,537.745,451.468,547.331" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,528.159,451.468,537.745" size="11.829">鑛</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,518.573,451.468,528.159" size="11.829">質</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,508.987,451.468,518.573" size="11.829">イ</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,499.401,451.468,508.987" size="11.829">ン</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,489.815,451.468,499.401" size="11.829">ク</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,480.229,451.468,489.815" size="11.829">を</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,470.643,451.468,480.229" size="11.829">つ</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,461.057,451.468,470.643" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="439.638,451.471,451.468,461.057" size="11.829">ね</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,547.331,451.468,556.917" size="11.829">紙</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,537.745,451.468,547.331" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,528.159,451.468,537.745" size="11.829">鑛</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,518.573,451.468,528.159" size="11.829">質</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,508.987,451.468,518.573" size="11.829">イ</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,499.401,451.468,508.987" size="11.829">ン</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,489.815,451.468,499.401" size="11.829">ク</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,480.229,451.468,489.815" size="11.829">を</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,470.643,451.468,480.229" size="11.829">つ</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,461.057,451.468,470.643" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="439.638,451.471,451.468,461.057" size="11.829">ね</text>
 <text>
 </text>
 </textline>
 <textline bbox="422.701,441.885,434.531,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="422.701,547.331,434.531,556.917" size="11.829">（</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,537.745,434.531,547.331" size="11.829">す</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,528.159,434.531,537.745" size="11.829">べ</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,518.573,434.531,528.159" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,508.987,434.531,518.573" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,499.401,434.531,508.987" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,489.815,434.531,499.401" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,480.229,434.531,489.815" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,470.643,434.531,480.229" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,461.057,434.531,470.643" size="11.829">明</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,451.471,434.531,461.057" size="11.829">滅</text>
-<text font="Ryumin-Light" vertical="True" bbox="422.701,441.885,434.531,451.471" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,547.331,434.531,556.917" size="11.829">（</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,537.745,434.531,547.331" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,528.159,434.531,537.745" size="11.829">べ</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,518.573,434.531,528.159" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,508.987,434.531,518.573" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,499.401,434.531,508.987" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,489.815,434.531,499.401" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,480.229,434.531,489.815" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,470.643,434.531,480.229" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,461.057,434.531,470.643" size="11.829">明</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,451.471,434.531,461.057" size="11.829">滅</text>
+<text font="Ryumin-Light" vertical="true" bbox="422.701,441.885,434.531,451.471" size="11.829">し</text>
 <text>
 </text>
 </textline>
 <textline bbox="405.765,422.713,417.595,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="405.765,547.331,417.595,556.917" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,537.745,417.595,547.331" size="11.829">み</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,528.159,417.595,537.745" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,518.573,417.595,528.159" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,508.987,417.595,518.573" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,499.401,417.595,508.987" size="11.829">同</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,489.815,417.595,499.401" size="11.829">時</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,480.229,417.595,489.815" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,470.643,417.595,480.229" size="11.829">感</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,461.057,417.595,470.643" size="11.829">ず</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,451.471,417.595,461.057" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,441.885,417.595,451.471" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,432.299,417.595,441.885" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="405.765,422.713,417.595,432.299" size="11.829">）</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,547.331,417.595,556.917" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,537.745,417.595,547.331" size="11.829">み</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,528.159,417.595,537.745" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,518.573,417.595,528.159" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,508.987,417.595,518.573" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,499.401,417.595,508.987" size="11.829">同</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,489.815,417.595,499.401" size="11.829">時</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,480.229,417.595,489.815" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,470.643,417.595,480.229" size="11.829">感</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,461.057,417.595,470.643" size="11.829">ず</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,451.471,417.595,461.057" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,441.885,417.595,451.471" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,432.299,417.595,441.885" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="405.765,422.713,417.595,432.299" size="11.829">）</text>
 <text>
 </text>
 </textline>
 <textline bbox="388.828,432.299,400.658,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="388.828,547.331,400.658,556.917" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,537.745,400.658,547.331" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,528.159,400.658,537.745" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,518.573,400.658,528.159" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,508.987,400.658,518.573" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,499.401,400.658,508.987" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,489.815,400.658,499.401" size="11.829">ち</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,480.229,400.658,489.815" size="11.829">つ</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,470.643,400.658,480.229" size="11.829">ゞ</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,461.057,400.658,470.643" size="11.829">け</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,451.471,400.658,461.057" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,441.885,400.658,451.471" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="388.828,432.299,400.658,441.885" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,547.331,400.658,556.917" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,537.745,400.658,547.331" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,528.159,400.658,537.745" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,518.573,400.658,528.159" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,508.987,400.658,518.573" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,499.401,400.658,508.987" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,489.815,400.658,499.401" size="11.829">ち</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,480.229,400.658,489.815" size="11.829">つ</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,470.643,400.658,480.229" size="11.829">ゞ</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,461.057,400.658,470.643" size="11.829">け</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,451.471,400.658,461.057" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,441.885,400.658,451.471" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="388.828,432.299,400.658,441.885" size="11.829">た</text>
 <text>
 </text>
 </textline>
 <textline bbox="371.892,422.713,383.722,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="371.892,547.331,383.722,556.917" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,537.745,383.722,547.331" size="11.829">げ</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,528.159,383.722,537.745" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,518.573,383.722,528.159" size="11.829">ひ</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,508.987,383.722,518.573" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,499.401,383.722,508.987" size="11.829">り</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,489.815,383.722,499.401" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,480.229,383.722,489.815" size="11.829">ひ</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,470.643,383.722,480.229" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,461.057,383.722,470.643" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,451.471,383.722,461.057" size="11.829">さ</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,441.885,383.722,451.471" size="11.829">り</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,432.299,383.722,441.885" size="11.829">づ</text>
-<text font="Ryumin-Light" vertical="True" bbox="371.892,422.713,383.722,432.299" size="11.829">つ</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,547.331,383.722,556.917" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,537.745,383.722,547.331" size="11.829">げ</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,528.159,383.722,537.745" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,518.573,383.722,528.159" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,508.987,383.722,518.573" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,499.401,383.722,508.987" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,489.815,383.722,499.401" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,480.229,383.722,489.815" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,470.643,383.722,480.229" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,461.057,383.722,470.643" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,451.471,383.722,461.057" size="11.829">さ</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,441.885,383.722,451.471" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,432.299,383.722,441.885" size="11.829">づ</text>
+<text font="Ryumin-Light" vertical="true" bbox="371.892,422.713,383.722,432.299" size="11.829">つ</text>
 <text>
 </text>
 </textline>
 <textline bbox="354.955,422.713,366.785,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="354.955,547.331,366.785,556.917" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,537.745,366.785,547.331" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,528.159,366.785,537.745" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,518.573,366.785,528.159" size="11.829">ほ</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,508.987,366.785,518.573" size="11.829">り</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,499.401,366.785,508.987" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,489.815,366.785,499.401" size="11.829">心</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,480.229,366.785,489.815" size="11.829">象</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,470.643,366.785,480.229" size="11.829">ス</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,461.057,366.785,470.643" size="11.829">ケ</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,451.471,366.785,461.057" size="11.829">ッ</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,441.885,366.785,451.471" size="11.829">チ</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,432.299,366.785,441.885" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="354.955,422.713,366.785,432.299" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,547.331,366.785,556.917" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,537.745,366.785,547.331" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,528.159,366.785,537.745" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,518.573,366.785,528.159" size="11.829">ほ</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,508.987,366.785,518.573" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,499.401,366.785,508.987" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,489.815,366.785,499.401" size="11.829">心</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,480.229,366.785,489.815" size="11.829">象</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,470.643,366.785,480.229" size="11.829">ス</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,461.057,366.785,470.643" size="11.829">ケ</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,451.471,366.785,461.057" size="11.829">ッ</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,441.885,366.785,451.471" size="11.829">チ</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,432.299,366.785,441.885" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="354.955,422.713,366.785,432.299" size="11.829">す</text>
 <text>
 </text>
 </textline>
 <textline bbox="338.019,537.745,349.849,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="338.019,547.331,349.849,556.917" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.019,537.745,349.849,547.331" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.019,547.331,349.849,556.917" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.019,537.745,349.849,547.331" size="11.829">　</text>
 <text>
 </text>
 </textline>
 <textline bbox="321.082,384.369,332.912,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="321.082,547.331,332.912,556.917" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,537.745,332.912,547.331" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,528.159,332.912,537.745" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,518.573,332.912,528.159" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,508.987,332.912,518.573" size="11.829">つ</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,499.401,332.912,508.987" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,489.815,332.912,499.401" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,480.229,332.912,489.815" size="11.829">人</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,470.643,332.912,480.229" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,461.057,332.912,470.643" size="11.829">銀</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,451.471,332.912,461.057" size="11.829">河</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,441.885,332.912,451.471" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,432.299,332.912,441.885" size="11.829">修</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,422.713,332.912,432.299" size="11.829">羅</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,413.127,332.912,422.713" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,403.541,332.912,413.127" size="11.829">海</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,393.955,332.912,403.541" size="11.829">膽</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.082,384.369,332.912,393.955" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,547.331,332.912,556.917" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,537.745,332.912,547.331" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,528.159,332.912,537.745" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,518.573,332.912,528.159" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,508.987,332.912,518.573" size="11.829">つ</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,499.401,332.912,508.987" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,489.815,332.912,499.401" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,480.229,332.912,489.815" size="11.829">人</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,470.643,332.912,480.229" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,461.057,332.912,470.643" size="11.829">銀</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,451.471,332.912,461.057" size="11.829">河</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,441.885,332.912,451.471" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,432.299,332.912,441.885" size="11.829">修</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,422.713,332.912,432.299" size="11.829">羅</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,413.127,332.912,422.713" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,403.541,332.912,413.127" size="11.829">海</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,393.955,332.912,403.541" size="11.829">膽</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.082,384.369,332.912,393.955" size="11.829">は</text>
 <text>
 </text>
 </textline>
 <textline bbox="304.146,346.025,315.976,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="304.146,547.331,315.976,556.917" size="11.829">宇</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,537.745,315.976,547.331" size="11.829">宙</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,528.159,315.976,537.745" size="11.829">塵</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,518.573,315.976,528.159" size="11.829">を</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,508.987,315.976,518.573" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,499.401,315.976,508.987" size="11.829">べ</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,489.815,315.976,499.401" size="11.829">、</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,480.229,315.976,489.815" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,470.643,315.976,480.229" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,461.057,315.976,470.643" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,451.471,315.976,461.057" size="11.829">空</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,441.885,315.976,451.471" size="11.829">気</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,432.299,315.976,441.885" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,422.713,315.976,432.299" size="11.829">塩</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,413.127,315.976,422.713" size="11.829">水</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,403.541,315.976,413.127" size="11.829">を</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,393.955,315.976,403.541" size="11.829">呼</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,384.369,315.976,393.955" size="11.829">吸</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,374.783,315.976,384.369" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,365.197,315.976,374.783" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,355.611,315.976,365.197" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.146,346.025,315.976,355.611" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,547.331,315.976,556.917" size="11.829">宇</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,537.745,315.976,547.331" size="11.829">宙</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,528.159,315.976,537.745" size="11.829">塵</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,518.573,315.976,528.159" size="11.829">を</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,508.987,315.976,518.573" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,499.401,315.976,508.987" size="11.829">べ</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,489.815,315.976,499.401" size="11.829">、</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,480.229,315.976,489.815" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,470.643,315.976,480.229" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,461.057,315.976,470.643" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,451.471,315.976,461.057" size="11.829">空</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,441.885,315.976,451.471" size="11.829">気</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,432.299,315.976,441.885" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,422.713,315.976,432.299" size="11.829">塩</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,413.127,315.976,422.713" size="11.829">水</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,403.541,315.976,413.127" size="11.829">を</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,393.955,315.976,403.541" size="11.829">呼</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,384.369,315.976,393.955" size="11.829">吸</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,374.783,315.976,384.369" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,365.197,315.976,374.783" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,355.611,315.976,365.197" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.146,346.025,315.976,355.611" size="11.829">ら</text>
 <text>
 </text>
 </textline>
 <textline bbox="287.209,374.783,299.039,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="287.209,547.331,299.039,556.917" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,537.745,299.039,547.331" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,528.159,299.039,537.745" size="11.829">ぞ</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,518.573,299.039,528.159" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,508.987,299.039,518.573" size="11.829">新</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,499.401,299.039,508.987" size="11.829">鮮</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,489.815,299.039,499.401" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,480.229,299.039,489.815" size="11.829">本</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,470.643,299.039,480.229" size="11.829">体</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,461.057,299.039,470.643" size="11.829">論</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,451.471,299.039,461.057" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,441.885,299.039,451.471" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,432.299,299.039,441.885" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,422.713,299.039,432.299" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,413.127,299.039,422.713" size="11.829">へ</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,403.541,299.039,413.127" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,393.955,299.039,403.541" size="11.829">せ</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,384.369,299.039,393.955" size="11.829">う</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.209,374.783,299.039,384.369" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,547.331,299.039,556.917" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,537.745,299.039,547.331" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,528.159,299.039,537.745" size="11.829">ぞ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,518.573,299.039,528.159" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,508.987,299.039,518.573" size="11.829">新</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,499.401,299.039,508.987" size="11.829">鮮</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,489.815,299.039,499.401" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,480.229,299.039,489.815" size="11.829">本</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,470.643,299.039,480.229" size="11.829">体</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,461.057,299.039,470.643" size="11.829">論</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,451.471,299.039,461.057" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,441.885,299.039,451.471" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,432.299,299.039,441.885" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,422.713,299.039,432.299" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,413.127,299.039,422.713" size="11.829">へ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,403.541,299.039,413.127" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,393.955,299.039,403.541" size="11.829">せ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,384.369,299.039,393.955" size="11.829">う</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.209,374.783,299.039,384.369" size="11.829">が</text>
 <text>
 </text>
 </textline>
 <textline bbox="270.273,384.369,282.103,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="270.273,547.331,282.103,556.917" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,537.745,282.103,547.331" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,528.159,282.103,537.745" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,518.573,282.103,528.159" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,508.987,282.103,518.573" size="11.829">畢</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,499.401,282.103,508.987" size="11.829">竟</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,489.815,282.103,499.401" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,480.229,282.103,489.815" size="11.829">ゝ</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,470.643,282.103,480.229" size="11.829">ろ</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,461.057,282.103,470.643" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,451.471,282.103,461.057" size="11.829">ひ</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,441.885,282.103,451.471" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,432.299,282.103,441.885" size="11.829">つ</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,422.713,282.103,432.299" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,413.127,282.103,422.713" size="11.829">風</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,403.541,282.103,413.127" size="11.829">物</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,393.955,282.103,403.541" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.273,384.369,282.103,393.955" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,547.331,282.103,556.917" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,537.745,282.103,547.331" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,528.159,282.103,537.745" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,518.573,282.103,528.159" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,508.987,282.103,518.573" size="11.829">畢</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,499.401,282.103,508.987" size="11.829">竟</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,489.815,282.103,499.401" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,480.229,282.103,489.815" size="11.829">ゝ</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,470.643,282.103,480.229" size="11.829">ろ</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,461.057,282.103,470.643" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,451.471,282.103,461.057" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,441.885,282.103,451.471" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,432.299,282.103,441.885" size="11.829">つ</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,422.713,282.103,432.299" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,413.127,282.103,422.713" size="11.829">風</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,403.541,282.103,413.127" size="11.829">物</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,393.955,282.103,403.541" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.273,384.369,282.103,393.955" size="11.829">す</text>
 <text>
 </text>
 </textline>
 <textline bbox="253.337,374.783,265.167,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="253.337,547.331,265.167,556.917" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,537.745,265.167,547.331" size="11.829">ゞ</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,528.159,265.167,537.745" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,518.573,265.167,528.159" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,508.987,265.167,518.573" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,499.401,265.167,508.987" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,489.815,265.167,499.401" size="11.829">記</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,480.229,265.167,489.815" size="11.829">録</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,470.643,265.167,480.229" size="11.829">さ</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,461.057,265.167,470.643" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,451.471,265.167,461.057" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,441.885,265.167,451.471" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,432.299,265.167,441.885" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,422.713,265.167,432.299" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,413.127,265.167,422.713" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,403.541,265.167,413.127" size="11.829">け</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,393.955,265.167,403.541" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,384.369,265.167,393.955" size="11.829">き</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.337,374.783,265.167,384.369" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,547.331,265.167,556.917" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,537.745,265.167,547.331" size="11.829">ゞ</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,528.159,265.167,537.745" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,518.573,265.167,528.159" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,508.987,265.167,518.573" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,499.401,265.167,508.987" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,489.815,265.167,499.401" size="11.829">記</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,480.229,265.167,489.815" size="11.829">録</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,470.643,265.167,480.229" size="11.829">さ</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,461.057,265.167,470.643" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,451.471,265.167,461.057" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,441.885,265.167,451.471" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,432.299,265.167,441.885" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,422.713,265.167,432.299" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,413.127,265.167,422.713" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,403.541,265.167,413.127" size="11.829">け</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,393.955,265.167,403.541" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,384.369,265.167,393.955" size="11.829">き</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.337,374.783,265.167,384.369" size="11.829">は</text>
 <text>
 </text>
 </textline>
 <textline bbox="236.400,393.955,248.230,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="236.400,547.331,248.230,556.917" size="11.829">記</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,537.745,248.230,547.331" size="11.829">録</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,528.159,248.230,537.745" size="11.829">さ</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,518.573,248.230,528.159" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,508.987,248.230,518.573" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,499.401,248.230,508.987" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,489.815,248.230,499.401" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,480.229,248.230,489.815" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,470.643,248.230,480.229" size="11.829">ほ</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,461.057,248.230,470.643" size="11.829">り</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,451.471,248.230,461.057" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,441.885,248.230,451.471" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,432.299,248.230,441.885" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,422.713,248.230,432.299" size="11.829">け</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,413.127,248.230,422.713" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,403.541,248.230,413.127" size="11.829">き</text>
-<text font="Ryumin-Light" vertical="True" bbox="236.400,393.955,248.230,403.541" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,547.331,248.230,556.917" size="11.829">記</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,537.745,248.230,547.331" size="11.829">録</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,528.159,248.230,537.745" size="11.829">さ</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,518.573,248.230,528.159" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,508.987,248.230,518.573" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,499.401,248.230,508.987" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,489.815,248.230,499.401" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,480.229,248.230,489.815" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,470.643,248.230,480.229" size="11.829">ほ</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,461.057,248.230,470.643" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,451.471,248.230,461.057" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,441.885,248.230,451.471" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,432.299,248.230,441.885" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,422.713,248.230,432.299" size="11.829">け</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,413.127,248.230,422.713" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,403.541,248.230,413.127" size="11.829">き</text>
+<text font="Ryumin-Light" vertical="true" bbox="236.400,393.955,248.230,403.541" size="11.829">で</text>
 <text>
 </text>
 </textline>
 <textline bbox="219.464,374.783,231.294,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="219.464,547.331,231.294,556.917" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,537.745,231.294,547.331" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,528.159,231.294,537.745" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,518.573,231.294,528.159" size="11.829">虚</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,508.987,231.294,518.573" size="11.829">無</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,499.401,231.294,508.987" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,489.815,231.294,499.401" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,480.229,231.294,489.815" size="11.829">ば</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,470.643,231.294,480.229" size="11.829">虚</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,461.057,231.294,470.643" size="11.829">無</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,451.471,231.294,461.057" size="11.829">自</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,441.885,231.294,451.471" size="11.829">身</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,432.299,231.294,441.885" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,422.713,231.294,432.299" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,413.127,231.294,422.713" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,403.541,231.294,413.127" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,393.955,231.294,403.541" size="11.829">ほ</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,384.369,231.294,393.955" size="11.829">り</text>
-<text font="Ryumin-Light" vertical="True" bbox="219.464,374.783,231.294,384.369" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,547.331,231.294,556.917" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,537.745,231.294,547.331" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,528.159,231.294,537.745" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,518.573,231.294,528.159" size="11.829">虚</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,508.987,231.294,518.573" size="11.829">無</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,499.401,231.294,508.987" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,489.815,231.294,499.401" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,480.229,231.294,489.815" size="11.829">ば</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,470.643,231.294,480.229" size="11.829">虚</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,461.057,231.294,470.643" size="11.829">無</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,451.471,231.294,461.057" size="11.829">自</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,441.885,231.294,451.471" size="11.829">身</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,432.299,231.294,441.885" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,422.713,231.294,432.299" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,413.127,231.294,422.713" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,403.541,231.294,413.127" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,393.955,231.294,403.541" size="11.829">ほ</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,384.369,231.294,393.955" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="219.464,374.783,231.294,384.369" size="11.829">で</text>
 <text>
 </text>
 </textline>
 <textline bbox="202.527,384.369,214.357,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="202.527,547.331,214.357,556.917" size="11.829">あ</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,537.745,214.357,547.331" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,528.159,214.357,537.745" size="11.829">程</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,518.573,214.357,528.159" size="11.829">度</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,508.987,214.357,518.573" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,499.401,214.357,508.987" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,489.815,214.357,499.401" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,480.229,214.357,489.815" size="11.829">み</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,470.643,214.357,480.229" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,461.057,214.357,470.643" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,451.471,214.357,461.057" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,441.885,214.357,451.471" size="11.829">共</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,432.299,214.357,441.885" size="11.829">通</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,422.713,214.357,432.299" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,413.127,214.357,422.713" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,403.541,214.357,413.127" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,393.955,214.357,403.541" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="202.527,384.369,214.357,393.955" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,547.331,214.357,556.917" size="11.829">あ</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,537.745,214.357,547.331" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,528.159,214.357,537.745" size="11.829">程</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,518.573,214.357,528.159" size="11.829">度</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,508.987,214.357,518.573" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,499.401,214.357,508.987" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,489.815,214.357,499.401" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,480.229,214.357,489.815" size="11.829">み</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,470.643,214.357,480.229" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,461.057,214.357,470.643" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,451.471,214.357,461.057" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,441.885,214.357,451.471" size="11.829">共</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,432.299,214.357,441.885" size="11.829">通</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,422.713,214.357,432.299" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,413.127,214.357,422.713" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,403.541,214.357,413.127" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,393.955,214.357,403.541" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="202.527,384.369,214.357,393.955" size="11.829">す</text>
 <text>
 </text>
 </textline>
 <textline bbox="185.591,355.611,197.421,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="185.591,547.331,197.421,556.917" size="11.829">（</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,537.745,197.421,547.331" size="11.829">す</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,528.159,197.421,537.745" size="11.829">べ</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,518.573,197.421,528.159" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,508.987,197.421,518.573" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,499.401,197.421,508.987" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,489.815,197.421,499.401" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,480.229,197.421,489.815" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,470.643,197.421,480.229" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,461.057,197.421,470.643" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,451.471,197.421,461.057" size="11.829">中</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,441.885,197.421,451.471" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,432.299,197.421,441.885" size="11.829">み</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,422.713,197.421,432.299" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,413.127,197.421,422.713" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,403.541,197.421,413.127" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,393.955,197.421,403.541" size="11.829">あ</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,384.369,197.421,393.955" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,374.783,197.421,384.369" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,365.197,197.421,374.783" size="11.829">う</text>
-<text font="Ryumin-Light" vertical="True" bbox="185.591,355.611,197.421,365.197" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,547.331,197.421,556.917" size="11.829">（</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,537.745,197.421,547.331" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,528.159,197.421,537.745" size="11.829">べ</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,518.573,197.421,528.159" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,508.987,197.421,518.573" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,499.401,197.421,508.987" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,489.815,197.421,499.401" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,480.229,197.421,489.815" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,470.643,197.421,480.229" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,461.057,197.421,470.643" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,451.471,197.421,461.057" size="11.829">中</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,441.885,197.421,451.471" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,432.299,197.421,441.885" size="11.829">み</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,422.713,197.421,432.299" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,413.127,197.421,422.713" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,403.541,197.421,413.127" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,393.955,197.421,403.541" size="11.829">あ</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,384.369,197.421,393.955" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,374.783,197.421,384.369" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,365.197,197.421,374.783" size="11.829">う</text>
+<text font="Ryumin-Light" vertical="true" bbox="185.591,355.611,197.421,365.197" size="11.829">に</text>
 <text>
 </text>
 </textline>
 <textline bbox="168.654,355.611,180.484,556.917">
-<text font="Ryumin-Light" vertical="True" bbox="168.654,547.331,180.484,556.917" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,537.745,180.484,547.331" size="11.829">み</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,528.159,180.484,537.745" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,518.573,180.484,528.159" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,508.987,180.484,518.573" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,499.401,180.484,508.987" size="11.829">お</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,489.815,180.484,499.401" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,480.229,180.484,489.815" size="11.829">お</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,470.643,180.484,480.229" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,461.057,180.484,470.643" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,451.471,180.484,461.057" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,441.885,180.484,451.471" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,432.299,180.484,441.885" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,422.713,180.484,432.299" size="11.829">す</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,413.127,180.484,422.713" size="11.829">べ</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,403.541,180.484,413.127" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,393.955,180.484,403.541" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,384.369,180.484,393.955" size="11.829">す</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,374.783,180.484,384.369" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,365.197,180.484,374.783" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="168.654,355.611,180.484,365.197" size="11.829">）</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,547.331,180.484,556.917" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,537.745,180.484,547.331" size="11.829">み</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,528.159,180.484,537.745" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,518.573,180.484,528.159" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,508.987,180.484,518.573" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,499.401,180.484,508.987" size="11.829">お</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,489.815,180.484,499.401" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,480.229,180.484,489.815" size="11.829">お</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,470.643,180.484,480.229" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,461.057,180.484,470.643" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,451.471,180.484,461.057" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,441.885,180.484,451.471" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,432.299,180.484,441.885" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,422.713,180.484,432.299" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,413.127,180.484,422.713" size="11.829">べ</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,403.541,180.484,413.127" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,393.955,180.484,403.541" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,384.369,180.484,393.955" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,374.783,180.484,384.369" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,365.197,180.484,374.783" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="168.654,355.611,180.484,365.197" size="11.829">）</text>
 <text>
 </text>
 </textline>
 </textbox>
 <textbox id="3" bbox="101.543,95.679,638.404,287.399">
 <textline bbox="626.574,153.195,638.404,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="626.574,277.813,638.404,287.399" size="11.829">け</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,268.227,638.404,277.813" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,258.641,638.404,268.227" size="11.829">ど</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,249.055,638.404,258.641" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,239.469,638.404,249.055" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,229.883,638.404,239.469" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,220.297,638.404,229.883" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,210.711,638.404,220.297" size="11.829">新</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,201.125,638.404,210.711" size="11.829">世</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,191.539,638.404,201.125" size="11.829">代</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,181.953,638.404,191.539" size="11.829">沖</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,172.367,638.404,181.953" size="11.829">積</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,162.781,638.404,172.367" size="11.829">世</text>
-<text font="Ryumin-Light" vertical="True" bbox="626.574,153.195,638.404,162.781" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,277.813,638.404,287.399" size="11.829">け</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,268.227,638.404,277.813" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,258.641,638.404,268.227" size="11.829">ど</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,249.055,638.404,258.641" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,239.469,638.404,249.055" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,229.883,638.404,239.469" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,220.297,638.404,229.883" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,210.711,638.404,220.297" size="11.829">新</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,201.125,638.404,210.711" size="11.829">世</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,191.539,638.404,201.125" size="11.829">代</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,181.953,638.404,191.539" size="11.829">沖</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,172.367,638.404,181.953" size="11.829">積</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,162.781,638.404,172.367" size="11.829">世</text>
+<text font="Ryumin-Light" vertical="true" bbox="626.574,153.195,638.404,162.781" size="11.829">の</text>
 <text>
 </text>
 </textline>
 <textline bbox="609.638,143.609,621.468,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="609.638,277.813,621.468,287.399" size="11.829">巨</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,268.227,621.468,277.813" size="11.829">大</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,258.641,621.468,268.227" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,249.055,621.468,258.641" size="11.829">明</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,239.469,621.468,249.055" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,229.883,621.468,239.469" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,220.297,621.468,229.883" size="11.829">時</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,210.711,621.468,220.297" size="11.829">間</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,201.125,621.468,210.711" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,191.539,621.468,201.125" size="11.829">集</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,181.953,621.468,191.539" size="11.829">積</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,172.367,621.468,181.953" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,162.781,621.468,172.367" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,153.195,621.468,162.781" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="609.638,143.609,621.468,153.195" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,277.813,621.468,287.399" size="11.829">巨</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,268.227,621.468,277.813" size="11.829">大</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,258.641,621.468,268.227" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,249.055,621.468,258.641" size="11.829">明</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,239.469,621.468,249.055" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,229.883,621.468,239.469" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,220.297,621.468,229.883" size="11.829">時</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,210.711,621.468,220.297" size="11.829">間</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,201.125,621.468,210.711" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,191.539,621.468,201.125" size="11.829">集</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,181.953,621.468,191.539" size="11.829">積</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,172.367,621.468,181.953" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,162.781,621.468,172.367" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,153.195,621.468,162.781" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="609.638,143.609,621.468,153.195" size="11.829">で</text>
 <text>
 </text>
 </textline>
 <textline bbox="592.701,114.851,604.531,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="592.701,277.813,604.531,287.399" size="11.829">正</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,268.227,604.531,277.813" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,258.641,604.531,268.227" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,249.055,604.531,258.641" size="11.829">う</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,239.469,604.531,249.055" size="11.829">つ</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,229.883,604.531,239.469" size="11.829">さ</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,220.297,604.531,229.883" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,210.711,604.531,220.297" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,201.125,604.531,210.711" size="11.829">筈</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,191.539,604.531,201.125" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,181.953,604.531,191.539" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,172.367,604.531,181.953" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,162.781,604.531,172.367" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,153.195,604.531,162.781" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,143.609,604.531,153.195" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,134.023,604.531,143.609" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,124.437,604.531,134.023" size="11.829">ば</text>
-<text font="Ryumin-Light" vertical="True" bbox="592.701,114.851,604.531,124.437" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,277.813,604.531,287.399" size="11.829">正</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,268.227,604.531,277.813" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,258.641,604.531,268.227" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,249.055,604.531,258.641" size="11.829">う</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,239.469,604.531,249.055" size="11.829">つ</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,229.883,604.531,239.469" size="11.829">さ</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,220.297,604.531,229.883" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,210.711,604.531,220.297" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,201.125,604.531,210.711" size="11.829">筈</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,191.539,604.531,201.125" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,181.953,604.531,191.539" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,172.367,604.531,181.953" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,162.781,604.531,172.367" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,153.195,604.531,162.781" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,143.609,604.531,153.195" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,134.023,604.531,143.609" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,124.437,604.531,134.023" size="11.829">ば</text>
+<text font="Ryumin-Light" vertical="true" bbox="592.701,114.851,604.531,124.437" size="11.829">が</text>
 <text>
 </text>
 </textline>
 <textline bbox="575.765,114.851,587.595,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="575.765,277.813,587.595,287.399" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,268.227,587.595,277.813" size="11.829">づ</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,258.641,587.595,268.227" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,249.055,587.595,258.641" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,239.469,587.595,249.055" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,229.883,587.595,239.469" size="11.829">一</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,220.297,587.595,229.883" size="11.829">點</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,210.711,587.595,220.297" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,201.125,587.595,210.711" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,191.539,587.595,201.125" size="11.829">均</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,181.953,587.595,191.539" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,172.367,587.595,181.953" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,162.781,587.595,172.367" size="11.829">明</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,153.195,587.595,162.781" size="11.829">暗</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,143.609,587.595,153.195" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,134.023,587.595,143.609" size="11.829">う</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,124.437,587.595,134.023" size="11.829">ち</text>
-<text font="Ryumin-Light" vertical="True" bbox="575.765,114.851,587.595,124.437" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,277.813,587.595,287.399" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,268.227,587.595,277.813" size="11.829">づ</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,258.641,587.595,268.227" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,249.055,587.595,258.641" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,239.469,587.595,249.055" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,229.883,587.595,239.469" size="11.829">一</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,220.297,587.595,229.883" size="11.829">點</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,210.711,587.595,220.297" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,201.125,587.595,210.711" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,191.539,587.595,201.125" size="11.829">均</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,181.953,587.595,191.539" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,172.367,587.595,181.953" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,162.781,587.595,172.367" size="11.829">明</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,153.195,587.595,162.781" size="11.829">暗</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,143.609,587.595,153.195" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,134.023,587.595,143.609" size="11.829">う</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,124.437,587.595,134.023" size="11.829">ち</text>
+<text font="Ryumin-Light" vertical="true" bbox="575.765,114.851,587.595,124.437" size="11.829">に</text>
 <text>
 </text>
 </textline>
 <textline bbox="558.828,143.609,570.658,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="558.828,277.813,570.658,287.399" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,268.227,570.658,277.813" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,258.641,570.658,268.227" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,249.055,570.658,258.641" size="11.829">（</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,239.469,570.658,249.055" size="11.829">あ</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,229.883,570.658,239.469" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,220.297,570.658,229.883" size="11.829">ひ</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,210.711,570.658,220.297" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,201.125,570.658,210.711" size="11.829">修</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,191.539,570.658,201.125" size="11.829">羅</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,181.953,570.658,191.539" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,172.367,570.658,181.953" size="11.829">十</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,162.781,570.658,172.367" size="11.829">億</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,153.195,570.658,162.781" size="11.829">年</text>
-<text font="Ryumin-Light" vertical="True" bbox="558.828,143.609,570.658,153.195" size="11.829">）</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,277.813,570.658,287.399" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,268.227,570.658,277.813" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,258.641,570.658,268.227" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,249.055,570.658,258.641" size="11.829">（</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,239.469,570.658,249.055" size="11.829">あ</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,229.883,570.658,239.469" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,220.297,570.658,229.883" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,210.711,570.658,220.297" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,201.125,570.658,210.711" size="11.829">修</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,191.539,570.658,201.125" size="11.829">羅</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,181.953,570.658,191.539" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,172.367,570.658,181.953" size="11.829">十</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,162.781,570.658,172.367" size="11.829">億</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,153.195,570.658,162.781" size="11.829">年</text>
+<text font="Ryumin-Light" vertical="true" bbox="558.828,143.609,570.658,153.195" size="11.829">）</text>
 <text>
 </text>
 </textline>
 <textline bbox="541.892,134.023,553.722,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="541.892,277.813,553.722,287.399" size="11.829">す</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,268.227,553.722,277.813" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,258.641,553.722,268.227" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,249.055,553.722,258.641" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,239.469,553.722,249.055" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,229.883,553.722,239.469" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,220.297,553.722,229.883" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,210.711,553.722,220.297" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,201.125,553.722,210.711" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,191.539,553.722,201.125" size="11.829">組</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,181.953,553.722,191.539" size="11.829">立</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,172.367,553.722,181.953" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,162.781,553.722,172.367" size="11.829">質</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,153.195,553.722,162.781" size="11.829">を</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,143.609,553.722,153.195" size="11.829">變</text>
-<text font="Ryumin-Light" vertical="True" bbox="541.892,134.023,553.722,143.609" size="11.829">じ</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,277.813,553.722,287.399" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,268.227,553.722,277.813" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,258.641,553.722,268.227" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,249.055,553.722,258.641" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,239.469,553.722,249.055" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,229.883,553.722,239.469" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,220.297,553.722,229.883" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,210.711,553.722,220.297" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,201.125,553.722,210.711" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,191.539,553.722,201.125" size="11.829">組</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,181.953,553.722,191.539" size="11.829">立</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,172.367,553.722,181.953" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,162.781,553.722,172.367" size="11.829">質</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,153.195,553.722,162.781" size="11.829">を</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,143.609,553.722,153.195" size="11.829">變</text>
+<text font="Ryumin-Light" vertical="true" bbox="541.892,134.023,553.722,143.609" size="11.829">じ</text>
 <text>
 </text>
 </textline>
 <textline bbox="524.955,172.367,536.785,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="524.955,277.813,536.785,287.399" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,268.227,536.785,277.813" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,258.641,536.785,268.227" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,249.055,536.785,258.641" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,239.469,536.785,249.055" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,229.883,536.785,239.469" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,220.297,536.785,229.883" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,210.711,536.785,220.297" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,201.125,536.785,210.711" size="11.829">印</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,191.539,536.785,201.125" size="11.829">刷</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,181.953,536.785,191.539" size="11.829">者</text>
-<text font="Ryumin-Light" vertical="True" bbox="524.955,172.367,536.785,181.953" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,277.813,536.785,287.399" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,268.227,536.785,277.813" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,258.641,536.785,268.227" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,249.055,536.785,258.641" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,239.469,536.785,249.055" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,229.883,536.785,239.469" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,220.297,536.785,229.883" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,210.711,536.785,220.297" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,201.125,536.785,210.711" size="11.829">印</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,191.539,536.785,201.125" size="11.829">刷</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,181.953,536.785,191.539" size="11.829">者</text>
+<text font="Ryumin-Light" vertical="true" bbox="524.955,172.367,536.785,181.953" size="11.829">も</text>
 <text>
 </text>
 </textline>
 <textline bbox="508.019,134.023,519.849,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="508.019,277.813,519.849,287.399" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,268.227,519.849,277.813" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,258.641,519.849,268.227" size="11.829">を</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,249.055,519.849,258.641" size="11.829">変</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,239.469,519.849,249.055" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,229.883,519.849,239.469" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,220.297,519.849,229.883" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,210.711,519.849,220.297" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,201.125,519.849,210.711" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,191.539,519.849,201.125" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,181.953,519.849,191.539" size="11.829">感</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,172.367,519.849,181.953" size="11.829">ず</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,162.781,519.849,172.367" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,153.195,519.849,162.781" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,143.609,519.849,153.195" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="508.019,134.023,519.849,143.609" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,277.813,519.849,287.399" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,268.227,519.849,277.813" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,258.641,519.849,268.227" size="11.829">を</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,249.055,519.849,258.641" size="11.829">変</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,239.469,519.849,249.055" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,229.883,519.849,239.469" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,220.297,519.849,229.883" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,210.711,519.849,220.297" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,201.125,519.849,210.711" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,191.539,519.849,201.125" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,181.953,519.849,191.539" size="11.829">感</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,172.367,519.849,181.953" size="11.829">ず</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,162.781,519.849,172.367" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,153.195,519.849,162.781" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,143.609,519.849,153.195" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="508.019,134.023,519.849,143.609" size="11.829">は</text>
 <text>
 </text>
 </textline>
 <textline bbox="491.082,181.953,502.912,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="491.082,277.813,502.912,287.399" size="11.829">傾</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,268.227,502.912,277.813" size="11.829">向</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,258.641,502.912,268.227" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,249.055,502.912,258.641" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,239.469,502.912,249.055" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,229.883,502.912,239.469" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,220.297,502.912,229.883" size="11.829">あ</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,210.711,502.912,220.297" size="11.829">り</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,201.125,502.912,210.711" size="11.829">得</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,191.539,502.912,201.125" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="491.082,181.953,502.912,191.539" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,277.813,502.912,287.399" size="11.829">傾</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,268.227,502.912,277.813" size="11.829">向</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,258.641,502.912,268.227" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,249.055,502.912,258.641" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,239.469,502.912,249.055" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,229.883,502.912,239.469" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,220.297,502.912,229.883" size="11.829">あ</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,210.711,502.912,220.297" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,201.125,502.912,210.711" size="11.829">得</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,191.539,502.912,201.125" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="491.082,181.953,502.912,191.539" size="11.829">す</text>
 <text>
 </text>
 </textline>
 <textline bbox="474.146,134.023,485.976,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="474.146,277.813,485.976,287.399" size="11.829">け</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,268.227,485.976,277.813" size="11.829">だ</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,258.641,485.976,268.227" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,249.055,485.976,258.641" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,239.469,485.976,249.055" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,229.883,485.976,239.469" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,220.297,485.976,229.883" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,210.711,485.976,220.297" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,201.125,485.976,210.711" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,191.539,485.976,201.125" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,181.953,485.976,191.539" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,172.367,485.976,181.953" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,162.781,485.976,172.367" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,153.195,485.976,162.781" size="11.829">感</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,143.609,485.976,153.195" size="11.829">官</text>
-<text font="Ryumin-Light" vertical="True" bbox="474.146,134.023,485.976,143.609" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,277.813,485.976,287.399" size="11.829">け</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,268.227,485.976,277.813" size="11.829">だ</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,258.641,485.976,268.227" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,249.055,485.976,258.641" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,239.469,485.976,249.055" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,229.883,485.976,239.469" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,220.297,485.976,229.883" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,210.711,485.976,220.297" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,201.125,485.976,210.711" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,191.539,485.976,201.125" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,181.953,485.976,191.539" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,172.367,485.976,181.953" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,162.781,485.976,172.367" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,153.195,485.976,162.781" size="11.829">感</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,143.609,485.976,153.195" size="11.829">官</text>
+<text font="Ryumin-Light" vertical="true" bbox="474.146,134.023,485.976,143.609" size="11.829">や</text>
 <text>
 </text>
 </textline>
 <textline bbox="457.209,162.781,469.039,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="457.209,277.813,469.039,287.399" size="11.829">風</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,268.227,469.039,277.813" size="11.829">景</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,258.641,469.039,268.227" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,249.055,469.039,258.641" size="11.829">人</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,239.469,469.039,249.055" size="11.829">物</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,229.883,469.039,239.469" size="11.829">を</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,220.297,469.039,229.883" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,210.711,469.039,220.297" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,201.125,469.039,210.711" size="11.829">ず</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,191.539,469.039,201.125" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,181.953,469.039,191.539" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,172.367,469.039,181.953" size="11.829">う</text>
-<text font="Ryumin-Light" vertical="True" bbox="457.209,162.781,469.039,172.367" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,277.813,469.039,287.399" size="11.829">風</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,268.227,469.039,277.813" size="11.829">景</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,258.641,469.039,268.227" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,249.055,469.039,258.641" size="11.829">人</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,239.469,469.039,249.055" size="11.829">物</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,229.883,469.039,239.469" size="11.829">を</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,220.297,469.039,229.883" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,210.711,469.039,220.297" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,201.125,469.039,210.711" size="11.829">ず</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,191.539,469.039,201.125" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,181.953,469.039,191.539" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,172.367,469.039,181.953" size="11.829">う</text>
+<text font="Ryumin-Light" vertical="true" bbox="457.209,162.781,469.039,172.367" size="11.829">に</text>
 <text>
 </text>
 </textline>
 <textline bbox="440.273,105.265,452.103,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="440.273,277.813,452.103,287.399" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,268.227,452.103,277.813" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,258.641,452.103,268.227" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,249.055,452.103,258.641" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,239.469,452.103,249.055" size="11.829">ゞ</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,229.883,452.103,239.469" size="11.829">共</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,220.297,452.103,229.883" size="11.829">通</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,210.711,452.103,220.297" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,201.125,452.103,210.711" size="11.829">感</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,191.539,452.103,201.125" size="11.829">ず</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,181.953,452.103,191.539" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,172.367,452.103,181.953" size="11.829">だ</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,162.781,452.103,172.367" size="11.829">け</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,153.195,452.103,162.781" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,143.609,452.103,153.195" size="11.829">あ</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,134.023,452.103,143.609" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,124.437,452.103,134.023" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,114.851,452.103,124.437" size="11.829">う</text>
-<text font="Ryumin-Light" vertical="True" bbox="440.273,105.265,452.103,114.851" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,277.813,452.103,287.399" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,268.227,452.103,277.813" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,258.641,452.103,268.227" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,249.055,452.103,258.641" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,239.469,452.103,249.055" size="11.829">ゞ</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,229.883,452.103,239.469" size="11.829">共</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,220.297,452.103,229.883" size="11.829">通</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,210.711,452.103,220.297" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,201.125,452.103,210.711" size="11.829">感</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,191.539,452.103,201.125" size="11.829">ず</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,181.953,452.103,191.539" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,172.367,452.103,181.953" size="11.829">だ</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,162.781,452.103,172.367" size="11.829">け</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,153.195,452.103,162.781" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,143.609,452.103,153.195" size="11.829">あ</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,134.023,452.103,143.609" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,124.437,452.103,134.023" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,114.851,452.103,124.437" size="11.829">う</text>
+<text font="Ryumin-Light" vertical="true" bbox="440.273,105.265,452.103,114.851" size="11.829">に</text>
 <text>
 </text>
 </textline>
 <textline bbox="423.337,114.851,435.167,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="423.337,277.813,435.167,287.399" size="11.829">記</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,268.227,435.167,277.813" size="11.829">録</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,258.641,435.167,268.227" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,249.055,435.167,258.641" size="11.829">歴</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,239.469,435.167,249.055" size="11.829">史</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,229.883,435.167,239.469" size="11.829">、</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,220.297,435.167,229.883" size="11.829">あ</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,210.711,435.167,220.297" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,201.125,435.167,210.711" size="11.829">ひ</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,191.539,435.167,201.125" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,181.953,435.167,191.539" size="11.829">地</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,172.367,435.167,181.953" size="11.829">史</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,162.781,435.167,172.367" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,153.195,435.167,162.781" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,143.609,435.167,153.195" size="11.829">ふ</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,134.023,435.167,143.609" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,124.437,435.167,134.023" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="423.337,114.851,435.167,124.437" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,277.813,435.167,287.399" size="11.829">記</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,268.227,435.167,277.813" size="11.829">録</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,258.641,435.167,268.227" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,249.055,435.167,258.641" size="11.829">歴</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,239.469,435.167,249.055" size="11.829">史</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,229.883,435.167,239.469" size="11.829">、</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,220.297,435.167,229.883" size="11.829">あ</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,210.711,435.167,220.297" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,201.125,435.167,210.711" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,191.539,435.167,201.125" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,181.953,435.167,191.539" size="11.829">地</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,172.367,435.167,181.953" size="11.829">史</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,162.781,435.167,172.367" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,153.195,435.167,162.781" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,143.609,435.167,153.195" size="11.829">ふ</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,134.023,435.167,143.609" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,124.437,435.167,134.023" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="423.337,114.851,435.167,124.437" size="11.829">も</text>
 <text>
 </text>
 </textline>
 <textline bbox="406.400,134.023,418.230,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="406.400,277.813,418.230,287.399" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,268.227,418.230,277.813" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,258.641,418.230,268.227" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,249.055,418.230,258.641" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,239.469,418.230,249.055" size="11.829">ろ</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,229.883,418.230,239.469" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,220.297,418.230,229.883" size="11.829">ろ</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,210.711,418.230,220.297" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,201.125,418.230,210.711" size="11.829">論</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,191.539,418.230,201.125" size="11.829">料</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,181.953,418.230,191.539" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,172.367,418.230,181.953" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,162.781,418.230,172.367" size="11.829">っ</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,153.195,418.230,162.781" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,143.609,418.230,153.195" size="11.829">ょ</text>
-<text font="Ryumin-Light" vertical="True" bbox="406.400,134.023,418.230,143.609" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,277.813,418.230,287.399" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,268.227,418.230,277.813" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,258.641,418.230,268.227" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,249.055,418.230,258.641" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,239.469,418.230,249.055" size="11.829">ろ</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,229.883,418.230,239.469" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,220.297,418.230,229.883" size="11.829">ろ</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,210.711,418.230,220.297" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,201.125,418.230,210.711" size="11.829">論</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,191.539,418.230,201.125" size="11.829">料</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,181.953,418.230,191.539" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,172.367,418.230,181.953" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,162.781,418.230,172.367" size="11.829">っ</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,153.195,418.230,162.781" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,143.609,418.230,153.195" size="11.829">ょ</text>
+<text font="Ryumin-Light" vertical="true" bbox="406.400,134.023,418.230,143.609" size="11.829">に</text>
 <text>
 </text>
 </textline>
 <textline bbox="389.464,153.195,401.294,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="389.464,277.813,401.294,287.399" size="11.829">（</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,268.227,401.294,277.813" size="11.829">因</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,258.641,401.294,268.227" size="11.829">果</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,249.055,401.294,258.641" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,239.469,401.294,249.055" size="11.829">時</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,229.883,401.294,239.469" size="11.829">空</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,220.297,401.294,229.883" size="11.829">的</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,210.711,401.294,220.297" size="11.829">制</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,201.125,401.294,210.711" size="11.829">約</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,191.539,401.294,201.125" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,181.953,401.294,191.539" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,172.367,401.294,181.953" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,162.781,401.294,172.367" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="389.464,153.195,401.294,162.781" size="11.829">）</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,277.813,401.294,287.399" size="11.829">（</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,268.227,401.294,277.813" size="11.829">因</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,258.641,401.294,268.227" size="11.829">果</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,249.055,401.294,258.641" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,239.469,401.294,249.055" size="11.829">時</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,229.883,401.294,239.469" size="11.829">空</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,220.297,401.294,229.883" size="11.829">的</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,210.711,401.294,220.297" size="11.829">制</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,201.125,401.294,210.711" size="11.829">約</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,191.539,401.294,201.125" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,181.953,401.294,191.539" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,172.367,401.294,181.953" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,162.781,401.294,172.367" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="389.464,153.195,401.294,162.781" size="11.829">）</text>
 <text>
 </text>
 </textline>
 <textline bbox="372.527,114.851,384.357,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="372.527,277.813,384.357,287.399" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,268.227,384.357,277.813" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,258.641,384.357,268.227" size="11.829">わ</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,249.055,384.357,258.641" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,239.469,384.357,249.055" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,229.883,384.357,239.469" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,220.297,384.357,229.883" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,210.711,384.357,220.297" size="11.829">じ</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,201.125,384.357,210.711" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,191.539,384.357,201.125" size="11.829">ゐ</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,181.953,384.357,191.539" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,172.367,384.357,181.953" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,162.781,384.357,172.367" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,153.195,384.357,162.781" size="11.829">過</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,143.609,384.357,153.195" size="11.829">ぎ</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,134.023,384.357,143.609" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,124.437,384.357,134.023" size="11.829">せ</text>
-<text font="Ryumin-Light" vertical="True" bbox="372.527,114.851,384.357,124.437" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,277.813,384.357,287.399" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,268.227,384.357,277.813" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,258.641,384.357,268.227" size="11.829">わ</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,249.055,384.357,258.641" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,239.469,384.357,249.055" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,229.883,384.357,239.469" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,220.297,384.357,229.883" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,210.711,384.357,220.297" size="11.829">じ</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,201.125,384.357,210.711" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,191.539,384.357,201.125" size="11.829">ゐ</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,181.953,384.357,191.539" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,172.367,384.357,181.953" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,162.781,384.357,172.367" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,153.195,384.357,162.781" size="11.829">過</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,143.609,384.357,153.195" size="11.829">ぎ</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,134.023,384.357,143.609" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,124.437,384.357,134.023" size="11.829">せ</text>
+<text font="Ryumin-Light" vertical="true" bbox="372.527,114.851,384.357,124.437" size="11.829">ん</text>
 <text>
 </text>
 </textline>
 <textline bbox="355.591,114.851,367.421,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="355.591,277.813,367.421,287.399" size="11.829">お</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,268.227,367.421,277.813" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,258.641,367.421,268.227" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,249.055,367.421,258.641" size="11.829">く</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,239.469,367.421,249.055" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,229.883,367.421,239.469" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,220.297,367.421,229.883" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,210.711,367.421,220.297" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,201.125,367.421,210.711" size="11.829">二</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,191.539,367.421,201.125" size="11.829">千</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,181.953,367.421,191.539" size="11.829">年</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,172.367,367.421,181.953" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,162.781,367.421,172.367" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,153.195,367.421,162.781" size="11.829">っ</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,143.609,367.421,153.195" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,134.023,367.421,143.609" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,124.437,367.421,134.023" size="11.829">ろ</text>
-<text font="Ryumin-Light" vertical="True" bbox="355.591,114.851,367.421,124.437" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,277.813,367.421,287.399" size="11.829">お</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,268.227,367.421,277.813" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,258.641,367.421,268.227" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,249.055,367.421,258.641" size="11.829">く</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,239.469,367.421,249.055" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,229.883,367.421,239.469" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,220.297,367.421,229.883" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,210.711,367.421,220.297" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,201.125,367.421,210.711" size="11.829">二</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,191.539,367.421,201.125" size="11.829">千</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,181.953,367.421,191.539" size="11.829">年</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,172.367,367.421,181.953" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,162.781,367.421,172.367" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,153.195,367.421,162.781" size="11.829">っ</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,143.609,367.421,153.195" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,134.023,367.421,143.609" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,124.437,367.421,134.023" size="11.829">ろ</text>
+<text font="Ryumin-Light" vertical="true" bbox="355.591,114.851,367.421,124.437" size="11.829">は</text>
 <text>
 </text>
 </textline>
 <textline bbox="338.654,124.437,350.484,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="338.654,277.813,350.484,287.399" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,268.227,350.484,277.813" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,258.641,350.484,268.227" size="11.829">相</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,249.055,350.484,258.641" size="11.829">當</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,239.469,350.484,249.055" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,229.883,350.484,239.469" size="11.829">ち</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,220.297,350.484,229.883" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,210.711,350.484,220.297" size="11.829">っ</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,201.125,350.484,210.711" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,191.539,350.484,201.125" size="11.829">地</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,181.953,350.484,191.539" size="11.829">質</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,172.367,350.484,181.953" size="11.829">學</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,162.781,350.484,172.367" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,153.195,350.484,162.781" size="11.829">流</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,143.609,350.484,153.195" size="11.829">用</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,134.023,350.484,143.609" size="11.829">さ</text>
-<text font="Ryumin-Light" vertical="True" bbox="338.654,124.437,350.484,134.023" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,277.813,350.484,287.399" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,268.227,350.484,277.813" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,258.641,350.484,268.227" size="11.829">相</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,249.055,350.484,258.641" size="11.829">當</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,239.469,350.484,249.055" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,229.883,350.484,239.469" size="11.829">ち</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,220.297,350.484,229.883" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,210.711,350.484,220.297" size="11.829">っ</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,201.125,350.484,210.711" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,191.539,350.484,201.125" size="11.829">地</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,181.953,350.484,191.539" size="11.829">質</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,172.367,350.484,181.953" size="11.829">學</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,162.781,350.484,172.367" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,153.195,350.484,162.781" size="11.829">流</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,143.609,350.484,153.195" size="11.829">用</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,134.023,350.484,143.609" size="11.829">さ</text>
+<text font="Ryumin-Light" vertical="true" bbox="338.654,124.437,350.484,134.023" size="11.829">れ</text>
 <text>
 </text>
 </textline>
 <textline bbox="321.718,114.851,333.548,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="321.718,277.813,333.548,287.399" size="11.829">相</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,268.227,333.548,277.813" size="11.829">當</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,258.641,333.548,268.227" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,249.055,333.548,258.641" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,239.469,333.548,249.055" size="11.829">證</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,229.883,333.548,239.469" size="11.829">據</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,220.297,333.548,229.883" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,210.711,333.548,220.297" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,201.125,333.548,210.711" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,191.539,333.548,201.125" size="11.829">次</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,181.953,333.548,191.539" size="11.829">次</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,172.367,333.548,181.953" size="11.829">過</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,162.781,333.548,172.367" size="11.829">去</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,153.195,333.548,162.781" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,143.609,333.548,153.195" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,134.023,333.548,143.609" size="11.829">現</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,124.437,333.548,134.023" size="11.829">出</text>
-<text font="Ryumin-Light" vertical="True" bbox="321.718,114.851,333.548,124.437" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,277.813,333.548,287.399" size="11.829">相</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,268.227,333.548,277.813" size="11.829">當</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,258.641,333.548,268.227" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,249.055,333.548,258.641" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,239.469,333.548,249.055" size="11.829">證</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,229.883,333.548,239.469" size="11.829">據</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,220.297,333.548,229.883" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,210.711,333.548,220.297" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,201.125,333.548,210.711" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,191.539,333.548,201.125" size="11.829">次</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,181.953,333.548,191.539" size="11.829">次</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,172.367,333.548,181.953" size="11.829">過</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,162.781,333.548,172.367" size="11.829">去</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,153.195,333.548,162.781" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,143.609,333.548,153.195" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,134.023,333.548,143.609" size="11.829">現</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,124.437,333.548,134.023" size="11.829">出</text>
+<text font="Ryumin-Light" vertical="true" bbox="321.718,114.851,333.548,124.437" size="11.829">し</text>
 <text>
 </text>
 </textline>
 <textline bbox="304.781,162.781,316.611,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="304.781,277.813,316.611,287.399" size="11.829">み</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,268.227,316.611,277.813" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,258.641,316.611,268.227" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,249.055,316.611,258.641" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,239.469,316.611,249.055" size="11.829">二</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,229.883,316.611,239.469" size="11.829">千</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,220.297,316.611,229.883" size="11.829">年</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,210.711,316.611,220.297" size="11.829">ぐ</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,201.125,316.611,210.711" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,191.539,316.611,201.125" size="11.829">ゐ</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,181.953,316.611,191.539" size="11.829">前</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,172.367,316.611,181.953" size="11.829">に</text>
-<text font="Ryumin-Light" vertical="True" bbox="304.781,162.781,316.611,172.367" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,277.813,316.611,287.399" size="11.829">み</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,268.227,316.611,277.813" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,258.641,316.611,268.227" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,249.055,316.611,258.641" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,239.469,316.611,249.055" size="11.829">二</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,229.883,316.611,239.469" size="11.829">千</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,220.297,316.611,229.883" size="11.829">年</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,210.711,316.611,220.297" size="11.829">ぐ</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,201.125,316.611,210.711" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,191.539,316.611,201.125" size="11.829">ゐ</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,181.953,316.611,191.539" size="11.829">前</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,172.367,316.611,181.953" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="304.781,162.781,316.611,172.367" size="11.829">は</text>
 <text>
 </text>
 </textline>
 <textline bbox="287.845,95.679,299.675,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="287.845,277.813,299.675,287.399" size="11.829">青</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,268.227,299.675,277.813" size="11.829">ぞ</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,258.641,299.675,268.227" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,249.055,299.675,258.641" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,239.469,299.675,249.055" size="11.829">っ</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,229.883,299.675,239.469" size="11.829">ぱ</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,220.297,299.675,229.883" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,210.711,299.675,220.297" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,201.125,299.675,210.711" size="11.829">無</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,191.539,299.675,201.125" size="11.829">色</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,181.953,299.675,191.539" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,172.367,299.675,181.953" size="11.829">孔</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,162.781,299.675,172.367" size="11.829">雀</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,153.195,299.675,162.781" size="11.829">が</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,143.609,299.675,153.195" size="11.829">居</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,134.023,299.675,143.609" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,124.437,299.675,134.023" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,114.851,299.675,124.437" size="11.829">お</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,105.265,299.675,114.851" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="287.845,95.679,299.675,105.265" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,277.813,299.675,287.399" size="11.829">青</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,268.227,299.675,277.813" size="11.829">ぞ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,258.641,299.675,268.227" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,249.055,299.675,258.641" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,239.469,299.675,249.055" size="11.829">っ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,229.883,299.675,239.469" size="11.829">ぱ</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,220.297,299.675,229.883" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,210.711,299.675,220.297" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,201.125,299.675,210.711" size="11.829">無</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,191.539,299.675,201.125" size="11.829">色</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,181.953,299.675,191.539" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,172.367,299.675,181.953" size="11.829">孔</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,162.781,299.675,172.367" size="11.829">雀</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,153.195,299.675,162.781" size="11.829">が</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,143.609,299.675,153.195" size="11.829">居</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,134.023,299.675,143.609" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,124.437,299.675,134.023" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,114.851,299.675,124.437" size="11.829">お</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,105.265,299.675,114.851" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="287.845,95.679,299.675,105.265" size="11.829">ひ</text>
 <text>
 </text>
 </textline>
 <textline bbox="270.908,105.265,282.738,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="270.908,277.813,282.738,287.399" size="11.829">新</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,268.227,282.738,277.813" size="11.829">進</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,258.641,282.738,268.227" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,249.055,282.738,258.641" size="11.829">大</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,239.469,282.738,249.055" size="11.829">學</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,229.883,282.738,239.469" size="11.829">士</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,220.297,282.738,229.883" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,210.711,282.738,220.297" size="11.829">ち</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,201.125,282.738,210.711" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,191.539,282.738,201.125" size="11.829">気</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,181.953,282.738,191.539" size="11.829">圏</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,172.367,282.738,181.953" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,162.781,282.738,172.367" size="11.829">い</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,153.195,282.738,162.781" size="11.829">ち</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,143.609,282.738,153.195" size="11.829">ば</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,134.023,282.738,143.609" size="11.829">ん</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,124.437,282.738,134.023" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,114.851,282.738,124.437" size="11.829">上</text>
-<text font="Ryumin-Light" vertical="True" bbox="270.908,105.265,282.738,114.851" size="11.829">層</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,277.813,282.738,287.399" size="11.829">新</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,268.227,282.738,277.813" size="11.829">進</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,258.641,282.738,268.227" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,249.055,282.738,258.641" size="11.829">大</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,239.469,282.738,249.055" size="11.829">學</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,229.883,282.738,239.469" size="11.829">士</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,220.297,282.738,229.883" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,210.711,282.738,220.297" size="11.829">ち</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,201.125,282.738,210.711" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,191.539,282.738,201.125" size="11.829">気</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,181.953,282.738,191.539" size="11.829">圏</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,172.367,282.738,181.953" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,162.781,282.738,172.367" size="11.829">い</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,153.195,282.738,162.781" size="11.829">ち</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,143.609,282.738,153.195" size="11.829">ば</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,134.023,282.738,143.609" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,124.437,282.738,134.023" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,114.851,282.738,124.437" size="11.829">上</text>
+<text font="Ryumin-Light" vertical="true" bbox="270.908,105.265,282.738,114.851" size="11.829">層</text>
 <text>
 </text>
 </textline>
 <textline bbox="253.972,143.609,265.802,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="253.972,277.813,265.802,287.399" size="11.829">き</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,268.227,265.802,277.813" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,258.641,265.802,268.227" size="11.829">び</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,249.055,265.802,258.641" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,239.469,265.802,249.055" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,229.883,265.802,239.469" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,220.297,265.802,229.883" size="11.829">氷</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,210.711,265.802,220.297" size="11.829">窒</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,201.125,265.802,210.711" size="11.829">素</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,191.539,265.802,201.125" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,181.953,265.802,191.539" size="11.829">あ</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,172.367,265.802,181.953" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,162.781,265.802,172.367" size="11.829">り</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,153.195,265.802,162.781" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="253.972,143.609,265.802,153.195" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,277.813,265.802,287.399" size="11.829">き</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,268.227,265.802,277.813" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,258.641,265.802,268.227" size="11.829">び</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,249.055,265.802,258.641" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,239.469,265.802,249.055" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,229.883,265.802,239.469" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,220.297,265.802,229.883" size="11.829">氷</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,210.711,265.802,220.297" size="11.829">窒</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,201.125,265.802,210.711" size="11.829">素</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,191.539,265.802,201.125" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,181.953,265.802,191.539" size="11.829">あ</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,172.367,265.802,181.953" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,162.781,265.802,172.367" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,153.195,265.802,162.781" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="253.972,143.609,265.802,153.195" size="11.829">ら</text>
 <text>
 </text>
 </textline>
 <textline bbox="237.035,172.367,248.865,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="237.035,277.813,248.865,287.399" size="11.829">す</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,268.227,248.865,277.813" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,258.641,248.865,268.227" size="11.829">き</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,249.055,248.865,258.641" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,239.469,248.865,249.055" size="11.829">化</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,229.883,248.865,239.469" size="11.829">石</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,220.297,248.865,229.883" size="11.829">を</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,210.711,248.865,220.297" size="11.829">發</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,201.125,248.865,210.711" size="11.829">堀</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,191.539,248.865,201.125" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,181.953,248.865,191.539" size="11.829">た</text>
-<text font="Ryumin-Light" vertical="True" bbox="237.035,172.367,248.865,181.953" size="11.829">り</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,277.813,248.865,287.399" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,268.227,248.865,277.813" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,258.641,248.865,268.227" size="11.829">き</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,249.055,248.865,258.641" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,239.469,248.865,249.055" size="11.829">化</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,229.883,248.865,239.469" size="11.829">石</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,220.297,248.865,229.883" size="11.829">を</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,210.711,248.865,220.297" size="11.829">發</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,201.125,248.865,210.711" size="11.829">堀</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,191.539,248.865,201.125" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,181.953,248.865,191.539" size="11.829">た</text>
+<text font="Ryumin-Light" vertical="true" bbox="237.035,172.367,248.865,181.953" size="11.829">り</text>
 <text>
 </text>
 </textline>
 <textline bbox="220.099,162.781,231.929,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="220.099,277.813,231.929,287.399" size="11.829">あ</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,268.227,231.929,277.813" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,258.641,231.929,268.227" size="11.829">ひ</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,249.055,231.929,258.641" size="11.829">は</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,239.469,231.929,249.055" size="11.829">白</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,229.883,231.929,239.469" size="11.829">堊</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,220.297,231.929,229.883" size="11.829">紀</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,210.711,231.929,220.297" size="11.829">砂</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,201.125,231.929,210.711" size="11.829">岩</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,191.539,231.929,201.125" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,181.953,231.929,191.539" size="11.829">層</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,172.367,231.929,181.953" size="11.829">面</text>
-<text font="Ryumin-Light" vertical="True" bbox="220.099,162.781,231.929,172.367" size="11.829">に</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,277.813,231.929,287.399" size="11.829">あ</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,268.227,231.929,277.813" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,258.641,231.929,268.227" size="11.829">ひ</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,249.055,231.929,258.641" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,239.469,231.929,249.055" size="11.829">白</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,229.883,231.929,239.469" size="11.829">堊</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,220.297,231.929,229.883" size="11.829">紀</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,210.711,231.929,220.297" size="11.829">砂</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,201.125,231.929,210.711" size="11.829">岩</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,191.539,231.929,201.125" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,181.953,231.929,191.539" size="11.829">層</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,172.367,231.929,181.953" size="11.829">面</text>
+<text font="Ryumin-Light" vertical="true" bbox="220.099,162.781,231.929,172.367" size="11.829">に</text>
 <text>
 </text>
 </textline>
 <textline bbox="203.162,172.367,214.992,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="203.162,277.813,214.992,287.399" size="11.829">透</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,268.227,214.992,277.813" size="11.829">明</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,258.641,214.992,268.227" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,249.055,214.992,258.641" size="11.829">人</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,239.469,214.992,249.055" size="11.829">類</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,229.883,214.992,239.469" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,220.297,214.992,229.883" size="11.829">巨</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,210.711,214.992,220.297" size="11.829">大</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,201.125,214.992,210.711" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,191.539,214.992,201.125" size="11.829">足</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,181.953,214.992,191.539" size="11.829">跡</text>
-<text font="Ryumin-Light" vertical="True" bbox="203.162,172.367,214.992,181.953" size="11.829">を</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,277.813,214.992,287.399" size="11.829">透</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,268.227,214.992,277.813" size="11.829">明</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,258.641,214.992,268.227" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,249.055,214.992,258.641" size="11.829">人</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,239.469,214.992,249.055" size="11.829">類</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,229.883,214.992,239.469" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,220.297,214.992,229.883" size="11.829">巨</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,210.711,214.992,220.297" size="11.829">大</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,201.125,214.992,210.711" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,191.539,214.992,201.125" size="11.829">足</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,181.953,214.992,191.539" size="11.829">跡</text>
+<text font="Ryumin-Light" vertical="true" bbox="203.162,172.367,214.992,181.953" size="11.829">を</text>
 <text>
 </text>
 </textline>
 <textline bbox="186.226,181.953,198.056,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="186.226,277.813,198.056,287.399" size="11.829">発</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,268.227,198.056,277.813" size="11.829">見</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,258.641,198.056,268.227" size="11.829">す</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,249.055,198.056,258.641" size="11.829">る</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,239.469,198.056,249.055" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,229.883,198.056,239.469" size="11.829">も</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,220.297,198.056,229.883" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,210.711,198.056,220.297" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,201.125,198.056,210.711" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,191.539,198.056,201.125" size="11.829">せ</text>
-<text font="Ryumin-Light" vertical="True" bbox="186.226,181.953,198.056,191.539" size="11.829">ん</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,277.813,198.056,287.399" size="11.829">発</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,268.227,198.056,277.813" size="11.829">見</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,258.641,198.056,268.227" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,249.055,198.056,258.641" size="11.829">る</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,239.469,198.056,249.055" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,229.883,198.056,239.469" size="11.829">も</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,220.297,198.056,229.883" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,210.711,198.056,220.297" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,201.125,198.056,210.711" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,191.539,198.056,201.125" size="11.829">せ</text>
+<text font="Ryumin-Light" vertical="true" bbox="186.226,181.953,198.056,191.539" size="11.829">ん</text>
 <text>
 </text>
 </textline>
 <textline bbox="169.289,268.227,181.119,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="169.289,277.813,181.119,287.399" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="169.289,268.227,181.119,277.813" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="169.289,277.813,181.119,287.399" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="169.289,268.227,181.119,277.813" size="11.829">　</text>
 <text>
 </text>
 </textline>
 <textline bbox="152.353,191.539,164.183,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="152.353,277.813,164.183,287.399" size="11.829">す</text>
-<text font="Ryumin-Light" vertical="True" bbox="152.353,268.227,164.183,277.813" size="11.829">べ</text>
-<text font="Ryumin-Light" vertical="True" bbox="152.353,258.641,164.183,268.227" size="11.829">て</text>
-<text font="Ryumin-Light" vertical="True" bbox="152.353,249.055,164.183,258.641" size="11.829">こ</text>
-<text font="Ryumin-Light" vertical="True" bbox="152.353,239.469,164.183,249.055" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="152.353,229.883,164.183,239.469" size="11.829">ら</text>
-<text font="Ryumin-Light" vertical="True" bbox="152.353,220.297,164.183,229.883" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="152.353,210.711,164.183,220.297" size="11.829">命</text>
-<text font="Ryumin-Light" vertical="True" bbox="152.353,201.125,164.183,210.711" size="11.829">題</text>
-<text font="Ryumin-Light" vertical="True" bbox="152.353,191.539,164.183,201.125" size="11.829">は</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,277.813,164.183,287.399" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,268.227,164.183,277.813" size="11.829">べ</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,258.641,164.183,268.227" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,249.055,164.183,258.641" size="11.829">こ</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,239.469,164.183,249.055" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,229.883,164.183,239.469" size="11.829">ら</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,220.297,164.183,229.883" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,210.711,164.183,220.297" size="11.829">命</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,201.125,164.183,210.711" size="11.829">題</text>
+<text font="Ryumin-Light" vertical="true" bbox="152.353,191.539,164.183,201.125" size="11.829">は</text>
 <text>
 </text>
 </textline>
 <textline bbox="135.416,143.609,147.246,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="135.416,277.813,147.246,287.399" size="11.829">心</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,268.227,147.246,277.813" size="11.829">象</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,258.641,147.246,268.227" size="11.829">や</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,249.055,147.246,258.641" size="11.829">時</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,239.469,147.246,249.055" size="11.829">間</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,229.883,147.246,239.469" size="11.829">そ</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,220.297,147.246,229.883" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,210.711,147.246,220.297" size="11.829">自</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,201.125,147.246,210.711" size="11.829">身</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,191.539,147.246,201.125" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,181.953,147.246,191.539" size="11.829">性</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,172.367,147.246,181.953" size="11.829">質</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,162.781,147.246,172.367" size="11.829">と</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,153.195,147.246,162.781" size="11.829">し</text>
-<text font="Ryumin-Light" vertical="True" bbox="135.416,143.609,147.246,153.195" size="11.829">て</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,277.813,147.246,287.399" size="11.829">心</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,268.227,147.246,277.813" size="11.829">象</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,258.641,147.246,268.227" size="11.829">や</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,249.055,147.246,258.641" size="11.829">時</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,239.469,147.246,249.055" size="11.829">間</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,229.883,147.246,239.469" size="11.829">そ</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,220.297,147.246,229.883" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,210.711,147.246,220.297" size="11.829">自</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,201.125,147.246,210.711" size="11.829">身</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,191.539,147.246,201.125" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,181.953,147.246,191.539" size="11.829">性</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,172.367,147.246,181.953" size="11.829">質</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,162.781,147.246,172.367" size="11.829">と</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,153.195,147.246,162.781" size="11.829">し</text>
+<text font="Ryumin-Light" vertical="true" bbox="135.416,143.609,147.246,153.195" size="11.829">て</text>
 <text>
 </text>
 </textline>
 <textline bbox="118.480,143.609,130.310,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="118.480,277.813,130.310,287.399" size="11.829">第</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,268.227,130.310,277.813" size="11.829">四</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,258.641,130.310,268.227" size="11.829">次</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,249.055,130.310,258.641" size="11.829">延</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,239.469,130.310,249.055" size="11.829">長</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,229.883,130.310,239.469" size="11.829">の</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,220.297,130.310,229.883" size="11.829">な</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,210.711,130.310,220.297" size="11.829">か</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,201.125,130.310,210.711" size="11.829">で</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,191.539,130.310,201.125" size="11.829">主</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,181.953,130.310,191.539" size="11.829">張</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,172.367,130.310,181.953" size="11.829">さ</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,162.781,130.310,172.367" size="11.829">れ</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,153.195,130.310,162.781" size="11.829">ま</text>
-<text font="Ryumin-Light" vertical="True" bbox="118.480,143.609,130.310,153.195" size="11.829">す</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,277.813,130.310,287.399" size="11.829">第</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,268.227,130.310,277.813" size="11.829">四</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,258.641,130.310,268.227" size="11.829">次</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,249.055,130.310,258.641" size="11.829">延</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,239.469,130.310,249.055" size="11.829">長</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,229.883,130.310,239.469" size="11.829">の</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,220.297,130.310,229.883" size="11.829">な</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,210.711,130.310,220.297" size="11.829">か</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,201.125,130.310,210.711" size="11.829">で</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,191.539,130.310,201.125" size="11.829">主</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,181.953,130.310,191.539" size="11.829">張</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,172.367,130.310,181.953" size="11.829">さ</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,162.781,130.310,172.367" size="11.829">れ</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,153.195,130.310,162.781" size="11.829">ま</text>
+<text font="Ryumin-Light" vertical="true" bbox="118.480,143.609,130.310,153.195" size="11.829">す</text>
 <text>
 </text>
 </textline>
 <textline bbox="101.543,268.227,113.373,287.399">
-<text font="Ryumin-Light" vertical="True" bbox="101.543,277.813,113.373,287.399" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="101.543,268.227,113.373,277.813" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="101.543,277.813,113.373,287.399" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="101.543,268.227,113.373,277.813" size="11.829">　</text>
 <text>
 </text>
 </textline>
 </textbox>
 <textbox id="4" bbox="74.644,46.684,86.474,190.474">
 <textline bbox="74.644,46.684,86.474,190.474">
-<text font="Ryumin-Light" vertical="True" bbox="74.644,180.888,86.474,190.474" size="11.829">大</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,171.302,86.474,180.888" size="11.829">正</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,161.716,86.474,171.302" size="11.829">十</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,152.130,86.474,161.716" size="11.829">三</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,142.544,86.474,152.130" size="11.829">年</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,132.958,86.474,142.544" size="11.829">一</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,123.372,86.474,132.958" size="11.829">月</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,113.786,86.474,123.372" size="11.829">廿</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,104.200,86.474,113.786" size="11.829">日</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,94.614,86.474,104.200" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,85.028,86.474,94.614" size="11.829">　</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,75.442,86.474,85.028" size="11.829">宮</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,65.856,86.474,75.442" size="11.829">澤</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,56.270,86.474,65.856" size="11.829">賢</text>
-<text font="Ryumin-Light" vertical="True" bbox="74.644,46.684,86.474,56.270" size="11.829">治</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,180.888,86.474,190.474" size="11.829">大</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,171.302,86.474,180.888" size="11.829">正</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,161.716,86.474,171.302" size="11.829">十</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,152.130,86.474,161.716" size="11.829">三</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,142.544,86.474,152.130" size="11.829">年</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,132.958,86.474,142.544" size="11.829">一</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,123.372,86.474,132.958" size="11.829">月</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,113.786,86.474,123.372" size="11.829">廿</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,104.200,86.474,113.786" size="11.829">日</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,94.614,86.474,104.200" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,85.028,86.474,94.614" size="11.829">　</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,75.442,86.474,85.028" size="11.829">宮</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,65.856,86.474,75.442" size="11.829">澤</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,56.270,86.474,65.856" size="11.829">賢</text>
+<text font="Ryumin-Light" vertical="true" bbox="74.644,46.684,86.474,56.270" size="11.829">治</text>
 <text>
 </text>
 </textline>
