@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Wed Apr  7 10:20:18 UTC 2010
+Last Modified: Sat Apr 24 02:48:00 UTC 2010
 <!-- hhmts end -->
 </div>
 
@@ -143,6 +143,16 @@ writing 'CNS1_H.py'...
 <em>(this may take several minutes)</em>
 
 # <strong>python setup.py install</strong>
+</pre></blockquote>
+<p>
+On Windows machines which don't have <code>make</code> command, 
+paste the following commands on a command line prompt:
+<blockquote><pre>
+<strong>python tools\conv_cmap.py pdfminer\cmap Adobe-CNS1 cmaprsrc\cid2code_Adobe_CNS1.txt cp950 big5</strong>
+<strong>python tools\conv_cmap.py pdfminer\cmap Adobe-GB1 cmaprsrc\cid2code_Adobe_GB1.txt cp936 gb2312</strong>
+<strong>python tools\conv_cmap.py pdfminer\cmap Adobe-Japan1 cmaprsrc\cid2code_Adobe_Japan1.txt cp932 euc-jp</strong>
+<strong>python tools\conv_cmap.py pdfminer\cmap Adobe-Korea1 cmaprsrc\cid2code_Adobe_Korea1.txt cp949 euc-kr</strong>
+<strong>python setup.py install</strong>
 </pre></blockquote>
 
 <a name="usage"></a>
