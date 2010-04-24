@@ -59,7 +59,7 @@ def main(argv):
     PDFPageInterpreter.debug = debug
     PDFDevice.debug = debug
     #
-    rsrc = PDFResourceManager()
+    rsrcmgr = PDFResourceManager()
     if not outtype:
         outtype = 'text'
         if outfile:
@@ -74,18 +74,18 @@ def main(argv):
     else:
         outfp = sys.stdout
     if outtype == 'text':
-        device = TextConverter(rsrc, outfp, codec=codec, laparams=laparams)
+        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
     elif outtype == 'xml':
-        device = XMLConverter(rsrc, outfp, codec=codec, laparams=laparams, outdir=outdir)
+        device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams, outdir=outdir)
     elif outtype == 'html':
-        device = HTMLConverter(rsrc, outfp, codec=codec, scale=scale, laparams=laparams, outdir=outdir)
+        device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale, laparams=laparams, outdir=outdir)
     elif outtype == 'tag':
-        device = TagExtractor(rsrc, outfp, codec=codec)
+        device = TagExtractor(rsrcmgr, outfp, codec=codec)
     else:
         return usage()
     for fname in args:
         fp = file(fname, 'rb')
-        process_pdf(rsrc, device, fp, pagenos, maxpages=maxpages, password=password)
+        process_pdf(rsrcmgr, device, fp, pagenos, maxpages=maxpages, password=password)
         fp.close()
     device.close()
     outfp.close()

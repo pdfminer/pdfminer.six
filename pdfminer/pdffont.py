@@ -419,7 +419,7 @@ class PDFSimpleFont(PDFFont):
 # PDFType1Font
 class PDFType1Font(PDFSimpleFont):
 
-    def __init__(self, rsrc, spec):
+    def __init__(self, rsrcmgr, spec):
         try:
             self.basefont = literal_name(spec['BaseFont'])
         except KeyError:
@@ -449,7 +449,7 @@ class PDFTrueTypeFont(PDFType1Font):
 # PDFType3Font
 class PDFType3Font(PDFSimpleFont):
 
-    def __init__(self, rsrc, spec):
+    def __init__(self, rsrcmgr, spec):
         firstchar = int_value(spec.get('FirstChar', 0))
         lastchar = int_value(spec.get('LastChar', 0))
         widths = list_value(spec.get('Widths', [0]*256))
@@ -472,7 +472,7 @@ class PDFType3Font(PDFSimpleFont):
 # PDFCIDFont
 class PDFCIDFont(PDFFont):
 
-    def __init__(self, rsrc, spec):
+    def __init__(self, rsrcmgr, spec):
         try:
             self.basefont = literal_name(spec['BaseFont'])
         except KeyError:

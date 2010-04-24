@@ -11,8 +11,8 @@ class PDFDevice(object):
 
     debug = 0
 
-    def __init__(self, rsrc):
-        self.rsrc = rsrc
+    def __init__(self, rsrcmgr):
+        self.rsrcmgr = rsrcmgr
         self.ctm = None
         return
 

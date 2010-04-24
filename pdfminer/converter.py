@@ -14,8 +14,8 @@ from utils import enc, bbox2str, create_bmp
 ##
 class PDFPageAggregator(PDFTextDevice):
 
-    def __init__(self, rsrc, pageno=1, laparams=None):
-        PDFTextDevice.__init__(self, rsrc)
+    def __init__(self, rsrcmgr, pageno=1, laparams=None):
+        PDFTextDevice.__init__(self, rsrcmgr)
         self.laparams = laparams
         self.pageno = pageno
         self.stack = []
@@ -100,8 +100,8 @@ class PDFPageAggregator(PDFTextDevice):
 ##
 class PDFConverter(PDFPageAggregator):
 
-    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None):
-        PDFPageAggregator.__init__(self, rsrc, pageno=pageno, laparams=laparams)
+    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None):
+        PDFPageAggregator.__init__(self, rsrcmgr, pageno=pageno, laparams=laparams)
         self.outfp = outfp
         self.codec = codec
         return
@@ -138,9 +138,9 @@ class PDFConverter(PDFPageAggregator):
 ##
 class TextConverter(PDFConverter):
 
-    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None,
+    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
                  showpageno=False):
-        PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno, laparams=laparams)
+        PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.showpageno = showpageno
         return
 
@@ -169,9 +169,9 @@ class TextConverter(PDFConverter):
 ##
 class HTMLConverter(PDFConverter):
 
-    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None,
+    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
                  scale=1, showpageno=True, pagepad=50, outdir=None):
-        PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno, laparams=laparams)
+        PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.showpageno = showpageno
         self.pagepad = pagepad
         self.outdir = outdir
@@ -261,8 +261,8 @@ class HTMLConverter(PDFConverter):
 ##
 class XMLConverter(PDFConverter):
 
-    def __init__(self, rsrc, outfp, codec='utf-8', pageno=1, laparams=None, outdir=None):
-        PDFConverter.__init__(self, rsrc, outfp, codec=codec, pageno=pageno, laparams=laparams)
+    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None, outdir=None):
+        PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.outdir = outdir
         self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % codec)
         self.outfp.write('<pages>\n')
@@ -349,8 +349,8 @@ class XMLConverter(PDFConverter):
 ##
 class TagExtractor(PDFDevice):
 
-    def __init__(self, rsrc, outfp, codec='utf-8'):
-        PDFDevice.__init__(self, rsrc)
+    def __init__(self, rsrcmgr, outfp, codec='utf-8'):
+        PDFDevice.__init__(self, rsrcmgr)
         self.outfp = outfp
         self.codec = codec
         self.pageno = 0

@@ -157,6 +157,8 @@ class PDFResourceManager(object):
         if objid and objid in self.fonts:
             font = self.fonts[objid]
         else:
+            if 2 <= self.debug:
+                print >>stderr, 'get_font: create: objid=%r, spec=%r' % (objid, spec)
             if STRICT:
                 if spec['Type'] is not LITERAL_FONT:
                     raise PDFFontError('Type is not /Font')
@@ -297,17 +299,18 @@ class PDFPageInterpreter(object):
 
     debug = 0
 
-    def __init__(self, rsrc, device):
-        self.rsrc = rsrc
+    def __init__(self, rsrcmgr, device):
+        self.rsrcmgr = rsrcmgr
         self.device = device
         return
 
     def dup(self):
-        return PDFPageInterpreter(self.rsrc, self.device)
+        return PDFPageInterpreter(self.rsrcmgr, self.device)
 
     # init_resources(resources):
     #   Prepare the fonts and XObjects listed in the Resource attribute.
     def init_resources(self, resources):
+        self.resources = resources
         self.fontmap = {}
         self.xobjmap = {}
         self.csmap = PREDEFINED_COLORSPACE.copy()
@@ -324,7 +327,7 @@ class PDFPageInterpreter(object):
             else:
                 return PREDEFINED_COLORSPACE[name]
         for (k,v) in dict_value(resources).iteritems():
-            if 1 <= self.debug:
+            if 2 <= self.debug:
                 print >>stderr, 'Resource: %r: %r' % (k,v)
             if k == 'Font':
                 for (fontid,spec) in dict_value(v).iteritems():
@@ -332,12 +335,12 @@ class PDFPageInterpreter(object):
                     if isinstance(spec, PDFObjRef):
                         objid = spec.objid
                     spec = dict_value(spec)
-                    self.fontmap[fontid] = self.rsrc.get_font(objid, spec)
+                    self.fontmap[fontid] = self.rsrcmgr.get_font(objid, spec)
             elif k == 'ColorSpace':
                 for (csid,spec) in dict_value(v).iteritems():
                     self.csmap[csid] = get_colorspace(resolve1(spec))
             elif k == 'ProcSet':
-                self.rsrc.get_procset(list_value(v))
+                self.rsrcmgr.get_procset(list_value(v))
             elif k == 'XObject':
                 for (xobjid,xobjstrm) in dict_value(v).iteritems():
                     self.xobjmap[xobjid] = xobjstrm
@@ -625,6 +628,7 @@ class PDFPageInterpreter(object):
         try:
             self.textstate.font = self.fontmap[literal_name(fontid)]
         except KeyError:
+            raise
             if STRICT:
                 raise PDFInterpreterError('Undefined Font id: %r' % fontid)
             return
@@ -669,6 +673,10 @@ class PDFPageInterpreter(object):
     # show-pos
     def do_TJ(self, seq):
         #print >>stderr, 'TJ(%r): %r' % (seq,self.textstate)
+        if self.textstate.font is None:
+            if STRICT:
+                raise PDFInterpreterError('No font specified!')
+            return
         self.device.render_string(self.textstate, seq)
         return
     # show
@@ -716,8 +724,12 @@ class PDFPageInterpreter(object):
             interpreter = self.dup()
             bbox = list_value(xobj['BBox'])
             matrix = list_value(xobj.get('Matrix', MATRIX_IDENTITY))
+            # According to PDF reference 1.7 section 4.9.1, XObjects in 
+            # earlier PDFs (prior to v1.2) use the page's Resources entry
+            # instead of having their own Resources entry.
+            resources = dict_value(xobj.get('Resources')) or self.resources.copy()
             self.device.begin_figure(xobjid, bbox, matrix)
-            interpreter.render_contents(dict_value(xobj.get('Resources')), [xobj], ctm=mult_matrix(matrix, self.ctm))
+            interpreter.render_contents(resources, [xobj], ctm=mult_matrix(matrix, self.ctm))
             self.device.end_figure(xobjid)
         elif subtype is LITERAL_IMAGE and 'Width' in xobj and 'Height' in xobj:
             self.device.begin_figure(xobjid, (0,0,1,1), MATRIX_IDENTITY)
@@ -749,6 +761,9 @@ class PDFPageInterpreter(object):
     #   Render the content streams.
     #   This method may be called recursively.
     def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY):
+        if 1 <= self.debug:
+            print >>stderr, ('render_contents: resources=%r, streams=%r, ctm=%r' %
+                             (resources, streams, ctm))
         self.init_resources(resources)
         self.init_state(ctm)
         self.execute(list_value(streams))
@@ -773,12 +788,12 @@ class PDFPageInterpreter(object):
                     nargs = func.func_code.co_argcount-1
                     if nargs:
                         args = self.pop(nargs)
-                        if 1 <= self.debug:
+                        if 2 <= self.debug:
                             print >>stderr, 'exec: %s %r' % (name, args)
                         if len(args) == nargs:
                             func(*args)
                     else:
-                        if 1 <= self.debug:
+                        if 2 <= self.debug:
                             print >>stderr, 'exec: %s' % (name)
                         func()
                 else:
@@ -793,7 +808,7 @@ class PDFPageInterpreter(object):
 ##
 class PDFTextExtractionNotAllowed(PDFInterpreterError): pass
 
-def process_pdf(rsrc, device, fp, pagenos=None, maxpages=0, password=''):
+def process_pdf(rsrcmgr, device, fp, pagenos=None, maxpages=0, password=''):
     doc = PDFDocument()
     parser = PDFParser(fp)
     parser.set_document(doc)
@@ -801,7 +816,7 @@ def process_pdf(rsrc, device, fp, pagenos=None, maxpages=0, password=''):
     doc.initialize(password)
     if not doc.is_extractable:
         raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fp)
-    interpreter = PDFPageInterpreter(rsrc, device)
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
     for (pageno,page) in enumerate(doc.get_pages()):
         if pagenos and (pageno not in pagenos): continue
         interpreter.process_page(page)

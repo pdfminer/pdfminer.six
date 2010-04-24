@@ -94,7 +94,7 @@ class PDFXRef(PDFBaseXRef):
                 (pos, genno, use) = f
                 if use != 'n': continue
                 self.offsets[objid] = (int(genno), long(pos))
-        if debug:
+        if 1 <= debug:
             print >>stderr, 'xref objects:', self.offsets
         self.load_trailer(parser)
         return
@@ -178,7 +178,7 @@ class PDFXRefStream(PDFBaseXRef):
         self.data = stream.get_data()
         self.entlen = self.fl1+self.fl2+self.fl3
         self.trailer = stream.attrs
-        if debug:
+        if 1 <= debug:
             print >>stderr, ('xref stream: objid=%s, fields=%d,%d,%d' %
                              (', '.join(map(repr, self.objid_ranges)),
                               self.fl1, self.fl2, self.fl3))
@@ -650,7 +650,7 @@ class PDFParser(PSStackParser):
                 objlen += len(line)
                 data += line
             self.seek(pos+objlen)
-            if 1 <= self.debug:
+            if 2 <= self.debug:
                 print >>stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
                       (pos, objlen, dic, data[:10])
             obj = PDFStream(dic, data, self.doc.decipher)
