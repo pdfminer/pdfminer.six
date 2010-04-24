@@ -10,9 +10,9 @@ from utils import apply_matrix_pt, mult_matrix
 from utils import enc, bbox2str, create_bmp
 
 
-##  PDFPageAggregator
+##  PDFLayoutAnalyzer
 ##
-class PDFPageAggregator(PDFTextDevice):
+class PDFLayoutAnalyzer(PDFTextDevice):
 
     def __init__(self, rsrcmgr, pageno=1, laparams=None):
         PDFTextDevice.__init__(self, rsrcmgr)
@@ -29,13 +29,14 @@ class PDFPageAggregator(PDFTextDevice):
         self.cur_item = LTPage(self.pageno, mediabox)
         return
 
-    def end_page(self, _):
+    def end_page(self, page):
         assert not self.stack
         assert isinstance(self.cur_item, LTPage)
         self.cur_item.fixate()
         self.cur_item.analyze(self.laparams)
         self.pageno += 1
-        return self.cur_item
+        self.receive_layout(self.cur_item)
+        return
 
     def begin_figure(self, name, bbox, matrix):
         self.stack.append(self.cur_item)
@@ -95,13 +96,33 @@ class PDFPageAggregator(PDFTextDevice):
         self.cur_item.add(item)
         return item.adv
 
+    def receive_layout(self, ltpage):
+        return
+
+
+##  PDFPageAggregator
+##
+class PDFPageAggregator(PDFLayoutAnalyzer):
+
+    def __init__(self, rsrcmgr, pageno=1, laparams=None):
+        PDFLayoutAnalyzer.__init__(self, rsrcmgr, pageno=pageno, laparams=laparams)
+        self.result = None
+        return
+    
+    def receive_layout(self, ltpage):
+        self.result = ltpage
+        return
+
+    def get_result(self):
+        return self.result
+
 
 ##  PDFConverter
 ##
-class PDFConverter(PDFPageAggregator):
+class PDFConverter(PDFLayoutAnalyzer):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None):
-        PDFPageAggregator.__init__(self, rsrcmgr, pageno=pageno, laparams=laparams)
+        PDFLayoutAnalyzer.__init__(self, rsrcmgr, pageno=pageno, laparams=laparams)
         self.outfp = outfp
         self.codec = codec
         return
@@ -148,7 +169,7 @@ class TextConverter(PDFConverter):
         self.outfp.write(text.encode(self.codec, 'ignore'))
         return
 
-    def end_page(self, page):
+    def receive_layout(self, ltpage):
         def render(item):
             if isinstance(item, LTText):
                 self.write(item.text)
@@ -157,10 +178,9 @@ class TextConverter(PDFConverter):
                     render(child)
             if isinstance(item, LTTextBox):
                 self.write('\n')
-        page = PDFConverter.end_page(self, page)
         if self.showpageno:
-            self.write('Page %s\n' % page.pageid)
-        render(page)
+            self.write('Page %s\n' % ltpage.pageid)
+        render(ltpage)
         self.write('\f')
         return
 
@@ -198,7 +218,7 @@ class HTMLConverter(PDFConverter):
         self.outfp.write('</span>\n')
         return
 
-    def end_page(self, page):
+    def receive_layout(self, ltpage):
         def render(item):
             if isinstance(item, LTPage):
                 self.yoffset += item.y1
@@ -206,7 +226,7 @@ class HTMLConverter(PDFConverter):
                 if self.showpageno:
                     self.outfp.write('<div style="position:absolute; top:%dpx;">' %
                                      ((self.yoffset-item.y1)*self.scale))
-                    self.outfp.write('<a name="%s">Page %s</a></div>\n' % (page.pageid, page.pageid))
+                    self.outfp.write('<a name="%s">Page %s</a></div>\n' % (item.pageid, item.pageid))
                 for child in item:
                     render(child)
             elif isinstance(item, LTChar):
@@ -237,16 +257,15 @@ class HTMLConverter(PDFConverter):
                                       item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
                                       item.width*self.scale, item.height*self.scale))
             return
-        page = PDFConverter.end_page(self, page)
-        render(page)
-        if self.debug and page.layout:
+        render(ltpage)
+        if self.debug and ltpage.layout:
             def show_layout(item):
                 if isinstance(item, LTTextGroup):
                     self.write_rect('red', 1, item.x0, item.y1, item.width, item.height)
                     for child in item:
                         show_layout(child)
                 return
-            show_layout(page.layout)
+            show_layout(ltpage.layout)
         self.yoffset += self.pagepad
         return
 
@@ -268,7 +287,7 @@ class XMLConverter(PDFConverter):
         self.outfp.write('<pages>\n')
         return
 
-    def end_page(self, page):
+    def receive_layout(self, ltpage):
         def render(item):
             if isinstance(item, LTPage):
                 self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
@@ -323,20 +342,19 @@ class XMLConverter(PDFConverter):
             else:
                 assert 0, item
             return
-        page = PDFConverter.end_page(self, page)
-        render(page)
-        if page.layout:
-            def show_layout(item):
-                if isinstance(item, LTTextBox):
-                    self.outfp.write('<textbox id="%d" bbox="%s" />\n' % (item.index, bbox2str(item.bbox)))
-                elif isinstance(item, LTTextGroup):
-                    self.outfp.write('<textgroup bbox="%s">\n' % bbox2str(item.bbox))
-                    for child in item:
-                        show_layout(child)
-                    self.outfp.write('</textgroup>\n')
-                return
+        def show_layout(item):
+            if isinstance(item, LTTextBox):
+                self.outfp.write('<textbox id="%d" bbox="%s" />\n' % (item.index, bbox2str(item.bbox)))
+            elif isinstance(item, LTTextGroup):
+                self.outfp.write('<textgroup bbox="%s">\n' % bbox2str(item.bbox))
+                for child in item:
+                    show_layout(child)
+                self.outfp.write('</textgroup>\n')
+            return
+        render(ltpage)
+        if ltpage.layout:
             self.outfp.write('<layout>\n')
-            show_layout(page.layout)
+            show_layout(ltpage.layout)
             self.outfp.write('</layout>\n')
         return
 
