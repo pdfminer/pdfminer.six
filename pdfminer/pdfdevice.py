@@ -115,3 +115,61 @@ class PDFTextDevice(PDFDevice):
 
     def render_char(self, matrix, font, fontsize, scaling, cid):
         return 0
+
+
+##  TagExtractor
+##
+class TagExtractor(PDFDevice):
+
+    def __init__(self, rsrcmgr, outfp, codec='utf-8'):
+        PDFDevice.__init__(self, rsrcmgr)
+        self.outfp = outfp
+        self.codec = codec
+        self.pageno = 0
+        self.tag = None
+        return
+
+    def render_string(self, textstate, seq):
+        font = textstate.font
+        text = ''
+        for obj in seq:
+            if not isinstance(obj, str): continue
+            chars = font.decode(obj)
+            for cid in chars:
+                try:
+                    char = font.to_unichr(cid)
+                    text += char
+                except PDFUnicodeNotDefined:
+                    pass
+        self.outfp.write(enc(text, self.codec))
+        return
+
+    def begin_page(self, page, ctm):
+        self.outfp.write('<page id="%s" bbox="%s" rotate="%d">' %
+                         (self.pageno, bbox2str(page.mediabox), page.rotate))
+        return
+
+    def end_page(self, page):
+        self.outfp.write('</page>\n')
+        self.pageno += 1
+        return
+
+    def begin_tag(self, tag, props=None):
+        s = ''
+        if props:
+            s = ''.join( ' %s="%s"' % (enc(k), enc(str(v))) for (k,v)
+                         in sorted(props.iteritems()) )
+        self.outfp.write('<%s%s>' % (enc(tag.name), s))
+        self.tag = tag
+        return
+
+    def end_tag(self):
+        assert self.tag
+        self.outfp.write('</%s>' % enc(self.tag.name))
+        self.tag = None
+        return
+
+    def do_tag(self, tag, props=None):
+        self.begin_tag(tag, props)
+        self.tag = None
+        return
