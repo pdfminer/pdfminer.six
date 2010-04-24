@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>PDFMiner Development Guide</title>
+<style type="text/css"><!--
+blockquote { background: #eeeeee; }
+.comment { color: darkgreen; }
+--></style>
+</head><body>
+
+<h1>PDFMiner Development Guide</h1>
+<p>
+This document describes how to use PDFMiner as a library 
+from other applications.
+<ul>
+<li> <a href="#basic">Basic Usage</a>
+<li> <a href="#layout">Layout Analysis</a>
+<li> <a href="#toc">TOC Extraction</a>
+</ul>
+
+<a name="basic">
+<hr noshade>
+<h2>Basic Usage</h2>
+<p>
+A typical way to parse a PDF file is the following:
+<blockquote><pre>
+<span class="comment"># Open a PDF file.</span>
+fp = open('mypdf.pdf', 'rb')
+<span class="comment"># Create a PDF parser object associated with the file object.</span>
+parser = PDFParser(fp)
+<span class="comment"># Create a PDF document object that stores the document structure.</span>
+doc = PDFDocument()
+<span class="comment"># Connect the parser and document objects.</span>
+parser.set_document(doc)
+doc.set_parser(parser)
+<span class="comment"># Supply the document password for initialization.</span>
+<span class="comment"># (If no password is set, give an empty string.)</span>
+doc.initialize(password)
+<span class="comment"># Check if the document allows text extraction. If not, abort.</span>
+if not doc.is_extractable:
+    raise PDFTextExtractionNotAllowed
+<span class="comment"># Create a PDF resource manager object that stores shared resources.</span>
+rsrcmgr = PDFResourceManager()
+<span class="comment"># Create a PDF device object.</span>
+device = PDFDevice(rsrcmgr)
+<span class="comment"># Create a PDF interpreter object.</span>
+interpreter = PDFPageInterpreter(rsrcmgr, device)
+<span class="comment"># Process each page contained in the document.</span>
+for page in doc.get_pages():
+    interpreter.process_page(page)
+</pre></blockquote>
+
+<p>
+In PDFMiner, there are several objects involved in parsing a PDF file.
+Figure 1. shows the relationships between these objects.
+
+<div>
+<img src="objrel.png"><br>
+<small>Figure 1. Relationships between objects</small>
+</div>
+
+<a name="layout">
+<hr noshade>
+<h2>Accessing Layout Objects</h2>
+<p>
+PDFMiner performs a basic layout analysis.
+
+<blockquote><pre>
+<span class="comment"># Set parameters for analysis.</span>
+laparams = LAParams()
+<span class="comment"># Create a PDF page aggregator object.</span>
+device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+interpreter = PDFPageInterpreter(rsrcmgr, device)
+for page in doc.get_pages():
+    interpreter.process_page(page)
+    <span class="comment"># receive the top-level layout object.</span>
+    ltpage = device.get_result()
+</pre></blockquote>
+
+<ul>
+<li> <code>LTPage</code>
+<li> <code>LTTextBox</code>
+<li> <code>LTTextLine</code>
+<li> <code>LTChar</code>
+<li> <code>LTText</code>
+<li> <code>LTFigure</code>
+<li> <code>LTImage</code>
+<li> <code>LTRect</code>
+<li> <code>LTPolygon</code>
+<li> <code>LTLine</code>
+</ul>
+
+<a name="toc">
+<hr noshade>
+<h2>TOC Extraction</h2>
+
+<blockquote><pre>
+fp = open('mypdf.pdf', 'rb')
+parser = PDFParser(fp)
+doc = PDFDocument()
+parser.set_document(doc)
+doc.set_parser(parser)
+doc.initialize(password)
+<span class="comment"># Get the outlines of the document.</span>
+outlines = doc.get_outlines()
+for (level,title,dest,a,se) in outlines:
+    print (level, title)
+</pre></blockquote>
+
+
+<hr noshade>
+<address>Yusuke Shinyama</address>
+</body>
