@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sat Apr 24 02:48:00 UTC 2010
+Last Modified: Sat Apr 24 04:30:10 UTC 2010
 <!-- hhmts end -->
 </div>
 
@@ -41,8 +41,7 @@ Last Modified: Sat Apr 24 02:48:00 UTC 2010
 <hr noshade>
 <h2>What's It?</h2>
 <p>
-PDFMiner is a suite of programs that help
-extracting some information from PDF documents.
+PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting 
 and analyzing text data. PDFMiner allows to obtain
 the exact location of texts in a page, as well as 
@@ -270,6 +269,10 @@ are M = 1.0, L = 0.3, and W = 0.2, respectively.
 <dt> <code>-n</code> 
 <dd> Suppress layout analysis.
 <p>
+<dt> <code>-A</code> 
+<dd> Forces to perform layout analysis for all the text strings, 
+including texts contained in figures.
+<p>
 <dt> <code>-s <em>scale</em></code> 
 <dd> Specifies the output scale. Can be used in HTML format only.
 <p>
@@ -374,6 +377,7 @@ no stream header is displayed for the ease of saving it to a file.
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2010/04/24: Bugfixes and tiny improvements on TOC extraction. Thanks to Jose Maria.
 <li> 2010/03/26: Bugfixes. Thanks to Brian Berry and Lubos Pintes.
 <li> 2010/03/22: Improved layout analysis. Added regression tests.
 <li> 2010/03/12: A couple of bugfixes. Thanks to Sean Manefield.
