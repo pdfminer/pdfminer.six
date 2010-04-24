@@ -59,14 +59,14 @@ def convert(outfp, infp, path, codec='utf-8',
     infp.close()
     # perform conversion and
     # send the results over the network.
-    rsrc = PDFResourceManager()
+    rsrcmgr = PDFResourceManager()
     laparams = LAParams()
     if html:
-        device = HTMLConverter(rsrc, outfp, codec=codec, laparams=laparams)
+        device = HTMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
     else:
-        device = TextConverter(rsrc, outfp, codec=codec, laparams=laparams)
+        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
     fp = file(path, 'rb')
-    process_pdf(rsrc, device, fp, pagenos, maxpages=maxpages)
+    process_pdf(rsrcmgr, device, fp, pagenos, maxpages=maxpages)
     fp.close()
     return
 
