@@ -14,7 +14,7 @@ other extra information such as font information or ruled lines.
 It can also infer its text flow and reconstruct the original layout.
 PDFMiner includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
-PDF parser that can be used for other purposes instead of text analysis.''',
+PDF parser library that can be used for other purposes instead of text analysis.''',
     license='MIT/X',
     author='Yusuke Shinyama',
     author_email='yusuke at cs dot nyu dot edu',
