@@ -29,6 +29,7 @@ from utils import decode_text, ObjIdRange
 ##
 class PDFSyntaxError(PDFException): pass
 class PDFNoValidXRef(PDFSyntaxError): pass
+class PDFNoOutlines(PDFException): pass
 class PDFEncryptionError(PDFException): pass
 class PDFPasswordIncorrect(PDFEncryptionError): pass
 
@@ -513,7 +514,7 @@ class PDFDocument(object):
 
     def get_outlines(self):
         if 'Outlines' not in self.catalog:
-            raise PDFException('No /Outlines defined!')
+            raise PDFNoOutlines('No /Outlines defined!')
         def search(entry, level):
             entry = dict_value(entry)
             if 'Title' in entry:

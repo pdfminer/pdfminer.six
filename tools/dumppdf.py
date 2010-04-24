@@ -8,17 +8,21 @@
 #
 import sys, re
 from pdfminer.psparser import PSKeyword, PSLiteral
-from pdfminer.pdfparser import PDFDocument, PDFParser
+from pdfminer.pdfparser import PDFDocument, PDFParser, PDFNoOutlines
 from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
 
 
-ESC_PAT = re.compile(r'[\000-\037&<>()\042\047\134\177-\377]')
-def esc(s):
+ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
+def e(s):
     return ESC_PAT.sub(lambda m:'&#%d;' % ord(m.group(0)), s)
 
 
 # dumpxml
 def dumpxml(out, obj, codec=None):
+    if obj is None:
+        out.write('<null />')
+        return
+    
     if isinstance(obj, dict):
         out.write('<dict size="%d">\n' % len(obj))
         for (k,v) in obj.iteritems():
@@ -38,7 +42,7 @@ def dumpxml(out, obj, codec=None):
         return
 
     if isinstance(obj, str):
-        out.write('<string size="%d">%s</string>' % (len(obj), esc(obj)))
+        out.write('<string size="%d">%s</string>' % (len(obj), e(obj)))
         return
 
     if isinstance(obj, PDFStream):
@@ -52,12 +56,12 @@ def dumpxml(out, obj, codec=None):
             out.write('\n</props>\n')
             if codec == 'text':
                 data = obj.get_data()
-                out.write('<data size="%d">%s</data>\n' % (len(data), esc(data)))
+                out.write('<data size="%d">%s</data>\n' % (len(data), e(data)))
             out.write('</stream>')
         return
 
     if isinstance(obj, PDFObjRef):
-        out.write('<ref id="%d"/>' % obj.objid)
+        out.write('<ref id="%d" />' % obj.objid)
         return
 
     if isinstance(obj, PSKeyword):
@@ -109,21 +113,35 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
     doc.set_parser(parser)
     doc.initialize(password)
     pages = dict( (page.pageid, pageno) for (pageno,page) in enumerate(doc.get_pages()) )
-    for (level,title,dest,a,se) in doc.get_outlines():
-        pageno = None
-        if dest:
-            dest = resolve1( doc.lookup_name('Dests', dest) )
-            if isinstance(dest, dict):
-                dest = dest['D']
-            pageno = pages[dest[0].objid]
-        elif a:
-            action = a.resolve()
-            if isinstance(action, dict):
-                subtype = action.get('S')
-                if subtype and repr(subtype) == '/GoTo' and action.get('D'):
-                    dest = action['D']
-                    pageno = pages[dest[0].objid]
-        outfp.write(repr((level,title,dest,pageno))+'\n')
+    try:
+        outlines = doc.get_outlines()
+        outfp.write('<outlines>\n')
+        for (level,title,dest,a,se) in outlines:
+            pageno = None
+            if dest:
+                dest = resolve1( doc.lookup_name('Dests', dest) )
+                if isinstance(dest, dict):
+                    dest = dest['D']
+                pageno = pages[dest[0].objid]
+            elif a:
+                action = a.resolve()
+                if isinstance(action, dict):
+                    subtype = action.get('S')
+                    if subtype and repr(subtype) == '/GoTo' and action.get('D'):
+                        dest = action['D']
+                        pageno = pages[dest[0].objid]
+            s = e(title).encode('utf-8', 'xmlcharrefreplace')
+            outfp.write('<outline level="%r" title="%s">\n' % (level, s))
+            if dest is not None:
+                outfp.write('<dest>')
+                dumpxml(outfp, dest)
+                outfp.write('</dest>\n')
+            if pageno is not None:
+                outfp.write('<pageno>%r</pageno>\n' % pageno)
+            outfp.write('</outline>\n')
+        outfp.write('</outlines>\n')
+    except PDFNoOutlines:
+        pass
     parser.close()
     fp.close()
     return
