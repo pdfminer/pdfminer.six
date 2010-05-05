@@ -25,6 +25,10 @@ from other applications.
 <p>
 A typical way to parse a PDF file is the following:
 <blockquote><pre>
+from pdfminer.pdfparser import PDFParser, PDFDocument
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfdevice import PDFDevice
+
 <span class="comment"># Open a PDF file.</span>
 fp = open('mypdf.pdf', 'rb')
 <span class="comment"># Create a PDF parser object associated with the file object.</span>
@@ -34,7 +38,7 @@ doc = PDFDocument()
 <span class="comment"># Connect the parser and document objects.</span>
 parser.set_document(doc)
 doc.set_parser(parser)
-<span class="comment"># Supply the document password for initialization.</span>
+<span class="comment"># Supply the password for initialization.</span>
 <span class="comment"># (If no password is set, give an empty string.)</span>
 doc.initialize(password)
 <span class="comment"># Check if the document allows text extraction. If not, abort.</span>
@@ -52,12 +56,12 @@ for page in doc.get_pages():
 </pre></blockquote>
 
 <p>
-In PDFMiner, there are several objects involved in parsing a PDF file.
-Figure 1. shows the relationships between these objects.
+In PDFMiner, there are several objects involved in parsing a PDF file,
+as shown in Figure 1.
 
 <div>
 <img src="objrel.png"><br>
-<small>Figure 1. Relationships between objects</small>
+<small>Figure 1. Relationships between PDFMiner objects</small>
 </div>
 
 <a name="layout">
@@ -67,6 +71,9 @@ Figure 1. shows the relationships between these objects.
 PDFMiner performs a basic layout analysis.
 
 <blockquote><pre>
+from pdfminer.layout import LAParams
+from pdfminer.converter import PDFPageAggregator
+
 <span class="comment"># Set parameters for analysis.</span>
 laparams = LAParams()
 <span class="comment"># Create a PDF page aggregator object.</span>
