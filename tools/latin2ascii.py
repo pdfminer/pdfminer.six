@@ -1,15 +1,20 @@
 #!/usr/bin/env python
+#
+#  latin2ascii.py - converts latin1 characters into ascii.
+#
+
+import sys
 
 """ Mappings from Latin-1 characters to ASCII.
 
 This is an in-house mapping table for some Latin-1 characters
 (acutes, umlauts, etc.) to ASCII strings.
-
-This file is *not* used currently.
-
 """
 
 LATIN2ASCII = {
+  #0x00a0: '',
+  #0x00a7: '',
+  
   # iso-8859-1
   0x00c0: 'A`',
   0x00c1: "A'",
@@ -87,4 +92,39 @@ LATIN2ASCII = {
   0xfb05: 'ft',
   0xfb06: 'st',
 
+  # Symbols
+  #0x2013: '',
+  0x2014: '--',
+  0x2015: '||',
+  0x2018: '`',
+  0x2019: "'",
+  0x201c: '``',
+  0x201d: "''",
+  #0x2022: '',
+  #0x2212: '',
+
 }
+
+def latin2ascii(s):
+    return ''.join( LATIN2ASCII.get(ord(c),c) for c in s )
+
+
+def main(argv):
+    import getopt, fileinput
+    def usage():
+        print 'usage: %s [-c codec] file ...' % argv[0]
+        return 100
+    try:
+        (opts, args) = getopt.getopt(argv[1:], 'c')
+    except getopt.GetoptError:
+        return usage()
+    if not args: return usage()
+    codec = 'utf-8'
+    for (k, v) in opts:
+        if k == '-c': codec = v
+    for line in fileinput.input(args):
+        line = latin2ascii(unicode(line, codec, 'ignore'))
+        sys.stdout.write(line.encode('ascii', 'replace'))
+    return
+
+if __name__ == '__main__': sys.exit(main(sys.argv))
