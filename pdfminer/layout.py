@@ -204,7 +204,7 @@ class LTChar(LTItem, LTText):
 
     debug = 0
 
-    def __init__(self, matrix, font, fontsize, scaling, cid):
+    def __init__(self, matrix, font, fontsize, scaling, rise, cid):
         self.matrix = matrix
         self.font = font
         self.fontsize = fontsize
@@ -214,6 +214,8 @@ class LTChar(LTItem, LTText):
             text = font.to_unichr(cid)
         except PDFUnicodeNotDefined:
             text = '?'
+        (a,b,c,d,e,f) = self.matrix
+        self.upright = (0 < a*d*scaling and b*c <= 0)
         LTText.__init__(self, text)
         # compute the boundary rectangle.
         if self.vertical:
@@ -224,7 +226,7 @@ class LTChar(LTItem, LTText):
             (dx,dy) = apply_matrix_norm(self.matrix, (size, self.adv))
             (_,_,_,_,tx,ty) = self.matrix
             tx -= dx/2
-            ty += displacement
+            ty += displacement + rise
             bbox = (tx, ty+dy, tx+dx, ty)
         else:
             # horizontal
@@ -233,7 +235,7 @@ class LTChar(LTItem, LTText):
             (_,descent) = apply_matrix_norm(self.matrix, (0, descent))
             (dx,dy) = apply_matrix_norm(self.matrix, (self.adv, size))
             (_,_,_,_,tx,ty) = self.matrix
-            ty += descent
+            ty += descent + rise
             bbox = (tx, ty, tx+dx, ty+dy)
         LTItem.__init__(self, bbox)
         return
@@ -253,8 +255,7 @@ class LTChar(LTItem, LTText):
         return self.vertical
 
     def is_upright(self):
-        (a,b,c,d,e,f) = self.matrix
-        return 0 < a*d and b*c <= 0
+        return self.upright
 
     
 ##  LTContainer

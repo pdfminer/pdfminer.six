@@ -66,19 +66,22 @@ class PDFTextDevice(PDFDevice):
         scaling = textstate.scaling * .01
         charspace = textstate.charspace * scaling
         wordspace = textstate.wordspace * scaling
+        rise = textstate.rise
         if font.is_multibyte():
             wordspace = 0
         dxscale = .001 * fontsize * scaling
         if font.is_vertical():
             textstate.linematrix = self.render_string_vertical(
-                seq, matrix, textstate.linematrix, font, fontsize, scaling, charspace, wordspace, dxscale)
+                seq, matrix, textstate.linematrix, font, fontsize,
+                scaling, charspace, wordspace, rise, dxscale)
         else:
             textstate.linematrix = self.render_string_horizontal(
-                seq, matrix, textstate.linematrix, font, fontsize, scaling, charspace, wordspace, dxscale)
+                seq, matrix, textstate.linematrix, font, fontsize,
+                scaling, charspace, wordspace, rise, dxscale)
         return
     
     def render_string_horizontal(self, seq, matrix, (x,y), 
-                                 font, fontsize, scaling, charspace, wordspace, dxscale):
+                                 font, fontsize, scaling, charspace, wordspace, rise, dxscale):
         needcharspace = False
         for obj in seq:
             if isinstance(obj, int) or isinstance(obj, float):
@@ -89,14 +92,14 @@ class PDFTextDevice(PDFDevice):
                     if needcharspace:
                         x += charspace
                     x += self.render_char(translate_matrix(matrix, (x,y)),
-                                          font, fontsize, scaling, cid)
+                                          font, fontsize, scaling, rise, cid)
                     if cid == 32 and wordspace:
                         x += wordspace
                     needcharspace = True
         return (x, y)
 
     def render_string_vertical(self, seq, matrix, (x,y), 
-                               font, fontsize, scaling, charspace, wordspace, dxscale):
+                               font, fontsize, scaling, charspace, wordspace, rise, dxscale):
         needcharspace = False
         for obj in seq:
             if isinstance(obj, int) or isinstance(obj, float):
@@ -107,13 +110,13 @@ class PDFTextDevice(PDFDevice):
                     if needcharspace:
                         y += charspace
                     y += self.render_char(translate_matrix(matrix, (x,y)), 
-                                          font, fontsize, scaling, cid)
+                                          font, fontsize, scaling, rise, cid)
                     if cid == 32 and wordspace:
                         y += wordspace
                     needcharspace = True
         return (x, y)
 
-    def render_char(self, matrix, font, fontsize, scaling, cid):
+    def render_char(self, matrix, font, fontsize, scaling, rise, cid):
         return 0
 
 

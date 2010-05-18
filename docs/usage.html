@@ -56,7 +56,7 @@ for page in doc.get_pages():
 </pre></blockquote>
 
 <p>
-In PDFMiner, there are several objects involved in parsing a PDF file,
+In PDFMiner, there are several Python classes involved in parsing a PDF file,
 as shown in Figure 1.
 
 <div>
@@ -68,7 +68,12 @@ as shown in Figure 1.
 <hr noshade>
 <h2>Accessing Layout Objects</h2>
 <p>
-PDFMiner performs a basic layout analysis.
+PDF documents are more like graphics, rather than text documents.
+It presents no logical structure such as sentences or paragraphs (for most cases).
+PDFMiner tries to reconstruct the original structure by performing
+basic layout analysis.
+<p>
+
 
 <blockquote><pre>
 from pdfminer.layout import LAParams

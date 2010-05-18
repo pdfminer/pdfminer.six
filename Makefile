@@ -4,7 +4,6 @@
 PACKAGE=pdfminer
 PREFIX=/usr/local
 
-SVN=svn
 PYTHON=python
 RM=rm -f
 CP=cp -f
@@ -22,8 +21,6 @@ clean:
 
 distclean: clean test_clean cmap_clean
 
-commit: distclean
-	$(SVN) commit
 pack: distclean
 	$(PYTHON) setup.py sdist
 register: distclean

@@ -91,8 +91,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             self.cur_item.add(LTPolygon(gstate.linewidth, pts))
         return
 
-    def render_char(self, matrix, font, fontsize, scaling, cid):
-        item = LTChar(matrix, font, fontsize, scaling, cid)
+    def render_char(self, matrix, font, fontsize, scaling, rise, cid):
+        item = LTChar(matrix, font, fontsize, scaling, rise, cid)
         self.cur_item.add(item)
         return item.adv
 
