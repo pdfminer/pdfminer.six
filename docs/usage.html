@@ -2,16 +2,18 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>PDFMiner Development Guide</title>
+<title>Programming with PDFMiner</title>
 <style type="text/css"><!--
 blockquote { background: #eeeeee; }
 .comment { color: darkgreen; }
 --></style>
 </head><body>
-
-<h1>PDFMiner Development Guide</h1>
 <p>
-This document describes how to use PDFMiner as a library 
+<a href="index.html">[Back to PDFMiner]</a>
+
+<h1>Programming with PDFMiner</h1>
+<p>
+This document explains how to use PDFMiner as a library 
 from other applications.
 <ul>
 <li> <a href="#basic">Basic Usage</a>
@@ -59,7 +61,7 @@ for page in doc.get_pages():
 In PDFMiner, there are several Python classes involved in parsing a PDF file,
 as shown in Figure 1.
 
-<div>
+<div align=center>
 <img src="objrel.png"><br>
 <small>Figure 1. Relationships between PDFMiner objects</small>
 </div>
@@ -70,11 +72,10 @@ as shown in Figure 1.
 <p>
 PDF documents are more like graphics, rather than text documents.
 It presents no logical structure such as sentences or paragraphs (for most cases).
-PDFMiner tries to reconstruct the original structure by performing
+PDFMiner attempts to reconstruct some of these structures by performing
 basic layout analysis.
 <p>
-
-
+Here is a typical way to do it:
 <blockquote><pre>
 from pdfminer.layout import LAParams
 from pdfminer.converter import PDFPageAggregator
@@ -86,40 +87,96 @@ device = PDFPageAggregator(rsrcmgr, laparams=laparams)
 interpreter = PDFPageInterpreter(rsrcmgr, device)
 for page in doc.get_pages():
     interpreter.process_page(page)
-    <span class="comment"># receive the top-level layout object.</span>
-    ltpage = device.get_result()
+    <span class="comment"># receive the LTPage object for the page.</span>
+    layout = device.get_result()
 </pre></blockquote>
 
-<ul>
-<li> <code>LTPage</code>
-<li> <code>LTTextBox</code>
-<li> <code>LTTextLine</code>
-<li> <code>LTChar</code>
-<li> <code>LTText</code>
-<li> <code>LTFigure</code>
-<li> <code>LTImage</code>
-<li> <code>LTRect</code>
-<li> <code>LTPolygon</code>
-<li> <code>LTLine</code>
-</ul>
+The layout analyzer gives a "<code>LTPage</code>" object for each page
+in the PDF document. The object contains child objects within the page,
+forming a tree-like structure. Figure 2 shows the relationship between
+these objects.
+
+<div align=center>
+<img src="layout.png"><br>
+<small>Figure 2. Layout objects and its tree structure</small>
+</div>
+
+<dl>
+<dt> <code>LTPage</code>
+<dd> Represents an entire page. May contain child objects like
+<code>LTTextBox</code>, <code>LTFigure</code>, <code>LTImage</code>, <code>LTRect</code>, 
+<code>LTPolygon</code> and <code>LTLine</code>.
+
+<dt> <code>LTTextBox</code>
+<dd> Represents a group of text chunks that can be contained in a rectangular area.
+Note that this box is created by geometric analysis and does not necessarily
+represents a logical boundary of the text. 
+It contains a list of <code>LTTextLine</code> objects.
+
+<dt> <code>LTTextLine</code>
+<dd> Contains a list of <code>LTChar</code> objects that represent
+a single text line. The characters are aligned either horizontaly
+or vertically, depending on the text's writing mode.
+
+<dt> <code>LTChar</code>
+<dt> <code>LTText</code>
+<dd> These objects represent an actual letter in the text as a Unicode string.
+Note that, while a <code>LTChar</code> object has actual boundaries,
+<code>LTText</code> objects does not, as these are "virtual" characters,
+inserted by a layout analyzer according to the relationship between two characters
+(e.g. a space).
+
+<dt> <code>LTFigure</code>
+<dd> Represents an area used by PDF Form objects. PDF Forms can be used to
+present figures or pictures by embedding yet another PDF document within a page.
+Note that <code>LTFigure</code> objects can appear recursively.
+
+<dt> <code>LTImage</code>
+<dd> Represents an image object. Embedded images can be 
+in JPEG or other formats, but currently PDFMiner does not 
+pay much attention to graphical objects.
+
+<dt> <code>LTLine</code>
+<dd> Represents a single straight line shown in a page. 
+Could be used for separating texts or figures.
+
+<dt> <code>LTRect</code>
+<dd> Represents a rectangle shown in a page. 
+Could be used for framing another pictures or figures.
+
+<dt> <code>LTPolygon</code>
+<dd> Represents a polygon in a page. 
+</dl>
 
 <a name="toc">
 <hr noshade>
 <h2>TOC Extraction</h2>
+<p>
+PDFMiner provides functions to access the document's table of contents
+("Outlines").
 
 <blockquote><pre>
+from pdfminer.pdfparser import PDFParser, PDFDocument
+
 fp = open('mypdf.pdf', 'rb')
 parser = PDFParser(fp)
 doc = PDFDocument()
 parser.set_document(doc)
 doc.set_parser(parser)
 doc.initialize(password)
+
 <span class="comment"># Get the outlines of the document.</span>
 outlines = doc.get_outlines()
 for (level,title,dest,a,se) in outlines:
     print (level, title)
 </pre></blockquote>
 
+<p>
+In some PDF documents, destinations are referred to as page numbers.
+In other PDF documents, destinations are referred to as page numbers plus
+the location within the page. Since PDF does not provide a way to
+point to graphical objects in a page, normally these in-page destinations
+are specified by physical coordinates.
 
 <hr noshade>
 <address>Yusuke Shinyama</address>
