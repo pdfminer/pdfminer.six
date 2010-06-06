@@ -152,7 +152,6 @@ class PDFConverter(PDFLayoutAnalyzer):
         fp.write(data)
         fp.close()
         return name
-        return
     
 
 ##  TextConverter
