@@ -528,8 +528,9 @@ def group_lines(groupfunc, objs, findfunc, debug=0):
 
 ##  group_boxes
 ##
-def group_boxes(groupfunc, objs, distfunc, debug=0):
-    assert objs
+def group_boxes(groupfunc, objs0, distfunc, debug=0):
+    assert objs0
+    objs = objs0[:]
     while 2 <= len(objs):
         mindist = INF
         minpair = None

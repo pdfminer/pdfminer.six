@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
-from utils import mult_matrix
-from utils import translate_matrix
+from utils import mult_matrix, translate_matrix
+from utils import enc, bbox2str
 from pdffont import PDFUnicodeNotDefined
 
 
@@ -129,7 +129,7 @@ class TagExtractor(PDFDevice):
         self.outfp = outfp
         self.codec = codec
         self.pageno = 0
-        self.tag = None
+        self.stack = []
         return
 
     def render_string(self, textstate, seq):
@@ -163,16 +163,16 @@ class TagExtractor(PDFDevice):
             s = ''.join( ' %s="%s"' % (enc(k), enc(str(v))) for (k,v)
                          in sorted(props.iteritems()) )
         self.outfp.write('<%s%s>' % (enc(tag.name), s))
-        self.tag = tag
+        self.stack.append(tag)
         return
 
     def end_tag(self):
-        assert self.tag
-        self.outfp.write('</%s>' % enc(self.tag.name))
-        self.tag = None
+        assert self.stack
+        tag = self.stack.pop(-1)
+        self.outfp.write('</%s>' % enc(tag.name))
         return
 
     def do_tag(self, tag, props=None):
         self.begin_tag(tag, props)
-        self.tag = None
+        self.stack.pop(-1)
         return
