@@ -6,5 +6,4 @@ clean:
 	-rm *.pyc *.pyo
 
 cmap_clean:
-	-rm *.py
-	touch __init__.py
+	rm -f *.pickle.gz

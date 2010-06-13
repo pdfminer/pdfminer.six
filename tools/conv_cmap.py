@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import sys
 import os.path
+import gzip
+import cPickle as pickle
 
 def process_cid2code(fp, check_codecs=[]):
 
@@ -118,9 +120,6 @@ def main(argv):
         print 'usage: %s output_dir regname cid2code.txt codecs ...' % argv[0]
         return 100
     
-    def pyname(name):
-        return name.replace('-','_')+'.py'
-
     args = argv[1:]
     if len(args) < 3: return usage()
     (outdir, regname, src) = args[:3]
@@ -132,22 +131,24 @@ def main(argv):
     fp.close()
 
     for (name, cmap) in code2cid.iteritems():
-        fname = pyname(name)
+        fname = '%s.pickle.gz' % name
         print >>sys.stderr, 'writing %r...' % fname
-        fp = file(os.path.join(outdir, fname), 'w')
-        print >>fp, '#!/usr/bin/env python'
-        print >>fp, '#', fname
-        print >>fp, 'IS_VERTICAL = %r' % is_vertical.get(name, False)
-        print >>fp, 'CODE2CID = %r' % cmap
+        fp = gzip.open(os.path.join(outdir, fname), 'wb')
+        data = dict(
+            IS_VERTICAL=is_vertical.get(name, False),
+            CODE2CID=cmap,
+        )
+        fp.write(pickle.dumps(data))
         fp.close()
 
-    fname = 'TO_UNICODE_'+pyname(regname)
+    fname = 'to-unicode-%s.pickle.gz' % regname
     print >>sys.stderr, 'writing %r...' % fname
-    fp = file(os.path.join(outdir, fname), 'w')
-    print >>fp, '#!/usr/bin/env python'
-    print >>fp, '#', fname
-    print >>fp, 'CID2UNICHR_H = %r' % cid2unichr_h
-    print >>fp, 'CID2UNICHR_V = %r' % cid2unichr_v
+    fp = gzip.open(os.path.join(outdir, fname), 'wb')
+    data = dict(
+        CID2UNICHR_H=cid2unichr_h,
+        CID2UNICHR_V=cid2unichr_v,
+    )
+    fp.write(pickle.dumps(data))
     fp.close()
 
     return 0

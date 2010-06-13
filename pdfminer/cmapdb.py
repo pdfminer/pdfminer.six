@@ -15,6 +15,9 @@ import sys
 import re
 import os
 import os.path
+import gzip
+import cPickle as pickle
+import cmap
 from struct import pack, unpack
 from psparser import PSStackParser
 from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF
@@ -210,8 +213,26 @@ class PyUnicodeMap(UnicodeMap):
 class CMapDB(object):
 
     debug = 0
+    _cmap_cache = {}
+    _umap_cache = {}
     
     class CMapNotFound(CMapError): pass
+
+    @classmethod
+    def _load_data(klass, name):
+        filename = '%s.pickle.gz' % name
+        if klass.debug:
+            print >>sys.stderr, 'loading:', name
+        for directory in os.path.dirname(cmap.__file__), '/usr/share/pdfminer/':
+            path = os.path.join(directory, filename)
+            if os.path.exists(path):
+                gzfile = gzip.open(path)
+                try:
+                    return type(name, (), pickle.loads(gzfile.read()))
+                finally:
+                    gzfile.close()
+        else:
+            raise CMapDB.CMapNotFound(name)
 
     @classmethod
     def get_cmap(klass, name):
@@ -219,25 +240,23 @@ class CMapDB(object):
             return IdentityCMap(False)
         elif name == 'Identity-V':
             return IdentityCMap(True)
-        modname = 'pdfminer.cmap.%s' % name.replace('-','_')
-        if klass.debug:
-            print >>sys.stderr, 'loading:', modname
         try:
-            module = __import__(modname, fromlist=['pdfminer.cmap'])
-        except ImportError:
-            raise CMapDB.CMapNotFound(name)
-        return PyCMap(name, module)
+            return klass._cmap_cache[name]
+        except KeyError:
+            pass
+        data = klass._load_data(name)
+        klass._cmap_cache[name] = cmap = PyCMap(name, data)
+        return cmap
 
     @classmethod
     def get_unicode_map(klass, name, vertical=False):
-        modname = 'pdfminer.cmap.TO_UNICODE_%s' % name.replace('-','_')
-        if klass.debug:
-            print >>sys.stderr, 'loading:', modname, vertical
         try:
-            module = __import__(modname, fromlist=['pdfminer.cmap'])
-        except ImportError:
-            raise CMapDB.CMapNotFound(name)
-        return PyUnicodeMap(name, module, vertical)
+            return klass._umap_cache[name][vertical]
+        except KeyError:
+            pass
+        data = klass._load_data('to-unicode-%s' % name)
+        klass._umap_cache[name] = umaps = [PyUnicodeMap(name, data, v) for v in (False, True)]
+        return umaps[vertical]
 
 
 ##  CMapParser

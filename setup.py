@@ -22,6 +22,9 @@ PDF parser that can be used for other purposes instead of text analysis.''',
     'pdfminer',
     'pdfminer.cmap',
     ],
+    package_data={
+    'pdfminer.cmap': ['*.pickle.gz'],
+    },
     scripts=[
     'tools/pdf2txt.py',
     'tools/dumppdf.py',
