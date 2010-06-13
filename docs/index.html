@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sat May 29 11:57:59 UTC 2010
+Last Modified: Sun Jun 13 04:20:47 UTC 2010
 <!-- hhmts end -->
 </div>
 
@@ -29,7 +29,9 @@ Last Modified: Sat May 29 11:57:59 UTC 2010
 <li> <a href="#install">Install</a> 
 &nbsp; <small>(<a href="#cmap">for CJK languages</a>)</small>
 <li> <a href="#usage">How to Use</a>
-&nbsp; <small>(<a href="#pdf2txt">pdf2txt.py</a>, <a href="#dumppdf">dumppdf.py</a>, <a href="#library">use as library</a>)</small>
+&nbsp; <small>(<a href="#pdf2txt">pdf2txt.py</a>, 
+<a href="#dumppdf">dumppdf.py</a>, 
+<a href="programming.html">use as library</a>)</small>
 <li> <a href="#techdocs">Technical Documents</a>
 <li> <a href="#todos">TODOs</a>
 <li> <a href="#changes">Changes</a>
@@ -375,7 +377,7 @@ For details, see the <a href="programming.html">Programming with PDFMiner</a> pa
 <li> <A href="http://www.python.org/dev/peps/pep-0008/">PEP-8</a> and
 <a href="http://www.python.org/dev/peps/pep-0257/">PEP-257</a> conformance.
 <li> Better documentation.
-<li> Better text extraction / layout analysis.
+<li> Better text extraction / layout analysis. (writing mode detection, Type1 font file analysis, etc.)
 <li> Robust error handling.
 <li> Crypt stream filter support. (More sample documents are needed!)
 <li> CCITTFax stream filter support.
@@ -385,7 +387,8 @@ For details, see the <a href="programming.html">Programming with PDFMiner</a> pa
 <hr noshade>
 <h2>Changes</h2>
 <ul>
-<li> 2010/04/24: Bugfixes and tiny improvements on TOC extraction. Thanks to Jose Maria.
+<li> 2010/06/13: Bugfixes and improvements on CMap data compression. Thanks to Jakub Wilk.
+<li> 2010/04/24: Bugfixes and improvements on TOC extraction. Thanks to Jose Maria.
 <li> 2010/03/26: Bugfixes. Thanks to Brian Berry and Lubos Pintes.
 <li> 2010/03/22: Improved layout analysis. Added regression tests.
 <li> 2010/03/12: A couple of bugfixes. Thanks to Sean Manefield.

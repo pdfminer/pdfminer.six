@@ -6,38 +6,44 @@ CMP=:
 PYTHON=python
 PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -Dx -p1
 
-HTMLS= \
+HTMLS=$(HTMLS_FREE) $(HTMLS_NONFREE)
+HTMLS_FREE= \
 	simple1.html \
 	simple2.html \
-	dmca.html \
-	f1040nr.html \
-	i1040nr.html \
-	jo.html \
-	kampo.html \
-	naacl06-shinyama.html \
-	nlp2004slides.html
+	jo.html
+HTMLS_NONFREE= \
+	nonfree/dmca.html \
+	nonfree/f1040nr.html \
+	nonfree/i1040nr.html \
+	nonfree/kampo.html \
+	nonfree/naacl06-shinyama.html \
+	nonfree/nlp2004slides.html
 
-TEXTS= \
+TEXTS=$(TEXTS_FREE) $(TEXTS_NONFREE)
+TEXTS_FREE= \
 	simple1.txt \
 	simple2.txt \
-	dmca.txt \
-	f1040nr.txt \
-	i1040nr.txt \
-	jo.txt \
-	kampo.txt \
-	naacl06-shinyama.txt \
-	nlp2004slides.txt
+	jo.txt
+TEXTS_NONFREE= \
+	nonfree/dmca.txt \
+	nonfree/f1040nr.txt \
+	nonfree/i1040nr.txt \
+	nonfree/kampo.txt \
+	nonfree/naacl06-shinyama.txt \
+	nonfree/nlp2004slides.txt
 
-XMLS= \
+XMLS=$(XMLS_FREE) $(XMLS_NONFREE)
+XMLS_FREE= \
 	simple1.xml \
 	simple2.xml \
-	dmca.xml \
-	f1040nr.xml \
-	i1040nr.xml \
-	jo.xml \
-	kampo.xml \
-	naacl06-shinyama.xml \
-	nlp2004slides.xml
+	jo.xml
+XMLS_NONFREE= \
+	nonfree/dmca.xml \
+	nonfree/f1040nr.xml \
+	nonfree/i1040nr.xml \
+	nonfree/kampo.xml \
+	nonfree/naacl06-shinyama.xml \
+	nonfree/nlp2004slides.xml
 
 test: htmls texts xmls
 
