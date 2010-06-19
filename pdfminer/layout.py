@@ -559,15 +559,21 @@ class LTAnalyzer(LTContainer):
     def analyze(self, laparams):
         """Perform the layout analysis."""
         (textobjs, otherobjs) = self.get_textobjs()
+        # textobjs is a list of LTChar objects, i.e.
+        # it has all the individual characters in the page.
         if not laparams or not textobjs: return
         if laparams.writing_mode not in ('lr-tb', 'tb-rl'):
             laparams.writing_mode = guess_wmode(textobjs)
         if (laparams.writing_mode.startswith('tb-') or
             laparams.writing_mode.startswith('bt-')):
+            # assemble them into vertical rows of text.
             textboxes = self.build_textbox_vertical(textobjs, laparams)
+            # turn them into a tree.
             top = self.group_textbox_tb_rl(textboxes, laparams)
         else:
+            # assemble them into horizontal rows of text.
             textboxes = self.build_textbox_horizontal(textobjs, laparams)
+            # turn them into a tree.
             top = self.group_textbox_lr_tb(textboxes, laparams)
         def assign_index(obj, i):
             if isinstance(obj, LTTextBox):
@@ -635,7 +641,7 @@ class LTAnalyzer(LTContainer):
             #   |      |
             #   +------+
             #
-            #   |<--->|
+            #   |<-->|
             # (line_overlap)
             return ((min(obj1.width, obj2.width) * laparams.line_overlap < obj1.hoverlap(obj2)) and
                     (obj1.vdistance(obj2) < min(obj1.height, obj2.height) * laparams.char_margin))
@@ -656,6 +662,17 @@ class LTAnalyzer(LTContainer):
 
     def group_textbox_lr_tb(self, boxes, laparams):
         def dist(obj1, obj2):
+            """A distance function between two TextBoxes.
+            
+            Consider the bounding rectangle for obj1 and obj2.
+            Return its area less the areas of obj1 and obj2, 
+            shown as 'www' below. This value may be negative.
+            +------+..........+
+            | obj1 |wwwwwwwwww:
+            +------+www+------+
+            :wwwwwwwwww| obj2 |
+            +..........+------+
+            """
             return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) * 
                     (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
                     (obj1.width*obj1.height + obj2.width*obj2.height))
