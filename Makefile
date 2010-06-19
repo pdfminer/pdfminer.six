@@ -15,13 +15,13 @@ install:
 
 clean:
 	-$(PYTHON) setup.py clean
-	-$(RM) -r build dist
+	-$(RM) -r build dist MANIFEST
 	-cd $(PACKAGE) && $(MAKE) clean
 	-cd tools && $(MAKE) clean
 
 distclean: clean test_clean cmap_clean
 
-pack: distclean
+pack: distclean MANIFEST
 	$(PYTHON) setup.py sdist
 register: distclean
 	$(PYTHON) setup.py sdist upload register
@@ -50,3 +50,11 @@ test: cmap
 	cd samples && $(MAKE) test CMP=cmp
 test_clean:
 	-cd samples && $(MAKE) clean
+
+SED=sed
+FIND=find . '(' -name .git -o -name .svn -o -name CVS -o -name dev -o -name dist -o -name build ')' -prune -false -o
+SORT=sort
+TOUCH=touch
+MANIFEST:
+	$(TOUCH) MANIFEST
+	$(FIND) -type f '!' -name '.*' | $(SED) 's:./::' | $(SORT) > MANIFEST
