@@ -30,7 +30,7 @@ PDF parser that can be used for other purposes instead of text analysis.''',
     'tools/dumppdf.py',
     'tools/latin2ascii.py',
     ],
-    keywords=['pdf parser', 'pdf converter', 'text mining'],
+    keywords=['pdf parser', 'pdf converter', 'layout analysis', 'text mining'],
     classifiers=[
     'Development Status :: 4 - Beta',
     'Environment :: Console',
