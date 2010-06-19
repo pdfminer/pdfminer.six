@@ -23,7 +23,7 @@ distclean: clean test_clean cmap_clean
 
 pack: distclean MANIFEST
 	$(PYTHON) setup.py sdist
-register: distclean
+register: distclean MANIFEST
 	$(PYTHON) setup.py sdist upload register
 
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
