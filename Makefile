@@ -2,7 +2,6 @@
 ##
 
 PACKAGE=pdfminer
-PREFIX=/usr/local
 
 PYTHON=python
 RM=rm -f
@@ -11,7 +10,7 @@ CP=cp -f
 all:
 
 install:
-	$(PYTHON) setup.py install --prefix=$(PREFIX)
+	$(PYTHON) setup.py install --home=$(HOME)
 
 clean:
 	-$(PYTHON) setup.py clean
