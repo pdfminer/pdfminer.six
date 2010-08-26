@@ -704,7 +704,7 @@ class LTFigure(LTAnalyzer):
                 (self.name, bbox2str(self.bbox), matrix2str(self.matrix)))
 
     def analyze(self, laparams):
-        if laparams.all_texts:
+        if laparams and laparams.all_texts:
             LTAnalyzer.analyze(self, laparams)
         return
 
