@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import sys
 import fileinput
-stdout = sys.stdout
-stderr = sys.stderr
 
 def main(argv):
     fonts = {}

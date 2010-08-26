@@ -163,7 +163,7 @@ class FileUnicodeMap(UnicodeMap):
         assert isinstance(cid, int)
         if isinstance(code, PSLiteral):
             # Interpret as an Adobe glyph name.
-            self.cid2unichr[cid] = unichr(name2unicode(code.name))
+            self.cid2unichr[cid] = name2unicode(code.name)
         elif isinstance(code, str):
             # Interpret as UTF-16BE.
             self.cid2unichr[cid] = unicode(code, 'UTF-16BE', 'ignore')

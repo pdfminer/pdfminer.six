@@ -212,6 +212,7 @@ class LTChar(LTItem, LTText):
         self.adv = font.char_width(cid) * fontsize * scaling
         try:
             text = font.to_unichr(cid)
+            assert isinstance(text, unicode), text
         except PDFUnicodeNotDefined:
             text = '?'
         (a,b,c,d,e,f) = self.matrix

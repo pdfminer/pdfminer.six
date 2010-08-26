@@ -159,7 +159,7 @@ class TagExtractor(PDFDevice):
 
     def begin_tag(self, tag, props=None):
         s = ''
-        if props:
+        if isinstance(props, dict):
             s = ''.join( ' %s="%s"' % (enc(k), enc(str(v))) for (k,v)
                          in sorted(props.iteritems()) )
         self.outfp.write('<%s%s>' % (enc(tag.name), s))
