@@ -10,6 +10,7 @@ HTMLS=$(HTMLS_FREE) $(HTMLS_NONFREE)
 HTMLS_FREE= \
 	simple1.html \
 	simple2.html \
+	simple3.html \
 	jo.html
 HTMLS_NONFREE= \
 	nonfree/dmca.html \
@@ -23,6 +24,7 @@ TEXTS=$(TEXTS_FREE) $(TEXTS_NONFREE)
 TEXTS_FREE= \
 	simple1.txt \
 	simple2.txt \
+	simple3.txt \
 	jo.txt
 TEXTS_NONFREE= \
 	nonfree/dmca.txt \
@@ -36,6 +38,7 @@ XMLS=$(XMLS_FREE) $(XMLS_NONFREE)
 XMLS_FREE= \
 	simple1.xml \
 	simple2.xml \
+	simple3.xml \
 	jo.xml
 XMLS_NONFREE= \
 	nonfree/dmca.xml \

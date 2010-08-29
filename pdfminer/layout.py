@@ -255,7 +255,7 @@ class LTChar(LTItem, LTText):
         return max(self.width, self.height)
 
     def is_vertical(self):
-        return self.font.is_vertical
+        return self.font.is_vertical()
 
     def is_upright(self):
         return self.upright
