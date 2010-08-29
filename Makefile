@@ -4,6 +4,7 @@
 PACKAGE=pdfminer
 
 PYTHON=python
+GIT=git
 RM=rm -f
 CP=cp -f
 
@@ -50,10 +51,5 @@ test: cmap
 test_clean:
 	-cd samples && $(MAKE) clean
 
-SED=sed
-FIND=find . '(' -name .git -o -name .svn -o -name CVS -o -name dev -o -name dist -o -name build ')' -prune -false -o
-SORT=sort
-TOUCH=touch
 MANIFEST:
-	$(TOUCH) MANIFEST
-	$(FIND) -type f '!' -name '.*' | $(SED) 's:./::' | $(SORT) > MANIFEST
+	$(GIT) ls-tree --name-only -r HEAD > MANIFEST
