@@ -13,7 +13,52 @@ from pdftypes import PDFException, resolve1
 from pdftypes import int_value, float_value, num_value
 from pdftypes import str_value, list_value, dict_value, stream_value
 from fontmetrics import FONT_METRICS
-from utils import apply_matrix_norm, nunpack
+from utils import apply_matrix_norm, nunpack, choplist
+
+
+def get_widths(seq):
+    widths = {}
+    r = []
+    for v in seq:
+        if isinstance(v, list):
+            if r:
+                char1 = r[-1]
+                for (i,w) in enumerate(v):
+                    widths[char1+i] = w
+                r = []
+        elif isinstance(v, int):
+            r.append(v)
+            if len(r) == 3:
+                (char1,char2,w) = r
+                for i in xrange(char1, char2+1):
+                    widths[i] = w
+                r = []
+    return widths
+#assert get_widths([1]) == {}
+#assert get_widths([1,2,3]) == {1:3, 2:3}
+#assert get_widths([1,[2,3],6,[7,8]]) == {1:2,2:3, 6:7,7:8}
+
+def get_widths2(seq):
+    widths = {}
+    r = []
+    for v in seq:
+        if isinstance(v, list):
+            if r:
+                char1 = r[-1]
+                for (i,(w,vx,vy)) in enumerate(choplist(3,v)):
+                    widths[char1+i] = (w,(vx,vy))
+                r = []
+        elif isinstance(v, int):
+            r.append(v)
+            if len(r) == 5:
+                (char1,char2,w,vx,vy) = r
+                for i in xrange(char1, char2+1):
+                    widths[i] = (w,(vx,vy))
+                r = []
+    return widths
+#assert get_widths2([1]) == {}
+#assert get_widths2([1,2,3,4,5]) == {1:(3,(4,5)), 2:(3,(4,5))}
+#assert get_widths2([1,[2,3,4,5],6,[7,8,9]]) == {1:(2,(3,4)), 6:(7,(8,9))}
 
 
 ##  FontMetricsDB
@@ -345,9 +390,6 @@ class PDFFont(object):
         self.default_width = default_width or descriptor.get('MissingWidth', 0)
         self.leading = num_value(descriptor.get('Leading', 0))
         self.bbox = list_value(descriptor.get('FontBBox', (0,0,0,0)))
-        self.size = self.bbox[3]-self.bbox[1]
-        if self.size == 0:
-            self.size = self.ascent - self.descent
         self.hscale = self.vscale = .001
         return
 
@@ -367,8 +409,17 @@ class PDFFont(object):
         return self.ascent * self.vscale
     def get_descent(self):
         return self.descent * self.vscale
-    def get_size(self):
-        return self.size * self.vscale
+
+    def get_width(self):
+        w = self.bbox[2]-self.bbox[0]
+        if w == 0:
+            w = -self.default_width
+        return w * self.hscale
+    def get_height(self):
+        h = self.bbox[3]-self.bbox[1]
+        if h == 0:
+            h = self.ascent - self.descent
+        return h * self.vscale
 
     def char_width(self, cid):
         return self.widths.get(cid, self.default_width) * self.hscale
@@ -522,38 +573,21 @@ class PDFCIDFont(PDFFont):
             except CMapDB.CMapNotFound, e:
                 pass
 
-        def get_width(seq):
-            dic = {}
-            char1 = char2 = None
-            for v in seq:
-                if char1 is None:
-                    char1 = v
-                elif char2 is None and isinstance(v, int):
-                    char2 = v
-                else:
-                    if char2 is None:
-                        for (i,w) in enumerate(v):
-                            dic[char1+i] = w
-                    else:
-                        for i in xrange(char1, char2+1):
-                            dic[i] = v
-                    char1 = char2 = None
-            return dic
         self.vertical = self.cmap.is_vertical()
         if self.vertical:
             # writing mode: vertical
-            dic = get_width(list_value(spec.get('W2', [])))
-            widths = dict( (cid,w) for (cid,(d,w)) in dic.iteritems() )
-            self.disps = dict( (cid,d) for (cid,(d,w)) in dic.iteritems() )
-            (d,w) = spec.get('DW2', [880, -1000])
+            widths = get_widths2(list_value(spec.get('W2', [])))
+            self.disps = dict( (cid,(vx,vy)) for (cid,(_,(vx,vy))) in widths.iteritems() )
+            (vy,w) = spec.get('DW2', [880, -1000])
+            self.default_disp = (None,vy)
+            widths = dict( (cid,w) for (cid,(w,_)) in widths.iteritems() )
             default_width = w
-            self.default_disp = d
         else:
             # writing mode: horizontal
-            widths = get_width(list_value(spec.get('W', [])))
             self.disps = {}
-            default_width = spec.get('DW', 1000)
             self.default_disp = 0
+            widths = get_widths(list_value(spec.get('W', [])))
+            default_width = spec.get('DW', 1000)
         PDFFont.__init__(self, descriptor, widths, default_width=default_width)
         return
 
@@ -570,6 +604,7 @@ class PDFCIDFont(PDFFont):
         return self.cmap.decode(bytes)
 
     def char_disp(self, cid):
+        "Returns an integer for horizontal fonts, a tuple for vertical fonts."
         return self.disps.get(cid, self.default_disp)
 
     def to_unichr(self, cid):

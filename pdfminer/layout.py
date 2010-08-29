@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 from sys import maxint as INF
-from utils import apply_matrix_norm, apply_matrix_pt
+from utils import apply_matrix_pt
 from utils import bsearch, bbox2str, matrix2str
 from pdffont import PDFUnicodeNotDefined
 
@@ -208,36 +208,38 @@ class LTChar(LTItem, LTText):
         self.matrix = matrix
         self.font = font
         self.fontsize = fontsize
-        self.vertical = font.is_vertical()
         self.adv = font.char_width(cid) * fontsize * scaling
         try:
             text = font.to_unichr(cid)
             assert isinstance(text, unicode), text
         except PDFUnicodeNotDefined:
             text = '?'
-        (a,b,c,d,e,f) = self.matrix
-        self.upright = (0 < a*d*scaling and b*c <= 0)
         LTText.__init__(self, text)
         # compute the boundary rectangle.
-        if self.vertical:
+        if self.font.is_vertical():
             # vertical
-            size = font.get_size() * fontsize
-            displacement = (1000 - font.char_disp(cid)) * fontsize * .001
-            (_,displacement) = apply_matrix_norm(self.matrix, (0, displacement))
-            (dx,dy) = apply_matrix_norm(self.matrix, (size, self.adv))
-            (_,_,_,_,tx,ty) = self.matrix
-            tx -= dx/2
-            ty += displacement + rise
-            bbox = (tx, ty+dy, tx+dx, ty)
+            width = font.get_width() * fontsize
+            (vx,vy) = font.char_disp(cid)
+            if vx is None:
+                vx = width/2
+            else:
+                vx = vx * fontsize * .001
+            vy = (1000 - vy) * fontsize * .001
+            tx = -vx
+            ty = vy + rise
+            bll = (tx, ty+self.adv)
+            bur = (tx+width, ty)
         else:
             # horizontal
-            size = font.get_size() * fontsize
+            height = font.get_height() * fontsize
             descent = font.get_descent() * fontsize
-            (_,descent) = apply_matrix_norm(self.matrix, (0, descent))
-            (dx,dy) = apply_matrix_norm(self.matrix, (self.adv, size))
-            (_,_,_,_,tx,ty) = self.matrix
-            ty += descent + rise
-            bbox = (tx, ty, tx+dx, ty+dy)
+            ty = descent + rise
+            bll = (0, ty)
+            bur = (self.adv, ty+height)
+        (a,b,c,d,e,f) = self.matrix
+        self.upright = (0 < a*d*scaling and b*c <= 0)
+        bbox = (apply_matrix_pt(self.matrix, bll) +
+                apply_matrix_pt(self.matrix, bur))
         LTItem.__init__(self, bbox)
         return
 
@@ -253,7 +255,7 @@ class LTChar(LTItem, LTText):
         return max(self.width, self.height)
 
     def is_vertical(self):
-        return self.vertical
+        return self.font.is_vertical
 
     def is_upright(self):
         return self.upright
@@ -692,12 +694,12 @@ class LTAnalyzer(LTContainer):
 class LTFigure(LTAnalyzer):
 
     def __init__(self, name, bbox, matrix):
+        self.name = name
+        self.matrix = matrix
         (x,y,w,h) = bbox
         bbox = get_bounds( apply_matrix_pt(matrix, (p,q))
                            for (p,q) in ((x,y), (x+w,y), (x,y+h), (x+w,y+h)) )
         LTAnalyzer.__init__(self, bbox)
-        self.name = name
-        self.matrix = matrix
         return
 
     def __repr__(self):
