@@ -460,8 +460,8 @@ class PDFDocument(object):
                 (_,objid1) = self._parser.nexttoken() # objid
                 (_,genno) = self._parser.nexttoken() # genno
                 (_,kwd) = self._parser.nexttoken()
-# #### hack around malformed pdf files
-#        assert objid1 == objid, (objid, objid1)
+                # #### hack around malformed pdf files
+                #assert objid1 == objid, (objid, objid1)
                 if objid1 != objid:
                     x = []
                     while kwd is not self.KEYWORD_OBJ:
@@ -470,12 +470,15 @@ class PDFDocument(object):
                     if x:
                         objid1 = x[-2]
                         genno = x[-1]
-# #### end hack around malformed pdf files
+                # #### end hack around malformed pdf files
                 if kwd is not self.KEYWORD_OBJ:
                     raise PDFSyntaxError('Invalid object spec: offset=%r' % index)
-                (_,obj) = self._parser.nextobject()
-                if isinstance(obj, PDFStream):
-                    obj.set_objid(objid, genno)
+                try:
+                    (_,obj) = self._parser.nextobject()
+                    if isinstance(obj, PDFStream):
+                        obj.set_objid(objid, genno)
+                except PSEOF:
+                    return None
             if 2 <= self.debug:
                 print >>stderr, 'register: objid=%r: %r' % (objid, obj)
             self.objs[objid] = obj
@@ -578,6 +581,7 @@ class PDFParser(PSStackParser):
     def __init__(self, fp):
         PSStackParser.__init__(self, fp)
         self.doc = None
+        self.fallback = False
         return
 
     def set_document(self, doc):
@@ -618,12 +622,13 @@ class PDFParser(PSStackParser):
             # stream object
             ((_,dic),) = self.pop(1)
             dic = dict_value(dic)
-            try:
-                objlen = int_value(dic['Length'])
-            except KeyError:
-                if STRICT:
-                    raise PDFSyntaxError('/Length is undefined: %r' % dic)
-                objlen = 0
+            objlen = 0
+            if not self.fallback:
+                try:
+                    objlen = int_value(dic['Length'])
+                except KeyError:
+                    if STRICT:
+                        raise PDFSyntaxError('/Length is undefined: %r' % dic)
             self.seek(pos)
             try:
                 (_, line) = self.nextline()  # 'stream'
@@ -650,6 +655,7 @@ class PDFParser(PSStackParser):
                 objlen += len(line)
                 data += line
             self.seek(pos+objlen)
+            # XXX limit objlen not to exceed object boundary
             if 2 <= self.debug:
                 print >>stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
                       (pos, objlen, dic, data[:10])
@@ -725,6 +731,7 @@ class PDFParser(PSStackParser):
             # fallback
             if 1 <= self.debug:
                 print >>stderr, 'no xref, fallback'
+            self.fallback = True
             xref = PDFXRef()
             xref.load_fallback(self)
             xrefs.append(xref)
