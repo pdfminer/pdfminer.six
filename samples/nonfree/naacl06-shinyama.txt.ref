@@ -28,30 +28,37 @@ good results.
 1 Background
 
 Every day, a large number of news articles are cre-
-ated and reported, many of which are unique. But
+ated and reported, many of which are unique.
+But
 certain types of events, such as hurricanes or mur-
 ders, are reported again and again throughout a year.
 The goal of Information Extraction, or IE, is to re-
 trieve a certain type of news event from past articles
 and present the events as a table whose columns are
 ﬁlled with a name of a person or company, accord-
-ing to its role in the event. However, existing IE
-techniques require a lot of human labor. First, you
+However, existing IE
+ing to its role in the event.
+techniques require a lot of human labor.
+First, you
 have to specify the type of information you want and
-collect articles that include this information. Then,
+collect articles that include this information.
+Then,
 you have to analyze the articles and manually craft
 a set of patterns to capture these events. Most exist-
 ing IE research focuses on reducing this burden by
-helping people create such patterns. But each time
+helping people create such patterns.
+But each time
 you want to extract a different kind of information,
 you need to repeat the whole process: specify arti-
 
 cles and adjust its patterns, either manually or semi-
-automatically. There is a bit of a dangerous pitfall
+automatically.
+There is a bit of a dangerous pitfall
 here. First, it is hard to estimate how good the sys-
 tem can be after months of work. Furthermore, you
 might not know if the task is even doable in the ﬁrst
-place. Knowing what kind of information is easily
+place.
+Knowing what kind of information is easily
 obtained in advance would help reduce this risk.
 An IE task can be deﬁned as ﬁnding a relation
 among several entities involved in a certain type of
@@ -59,7 +66,8 @@ event.
 For example, in the MUC-6 management
 succession scenario, one seeks a relation between
 COMPANY, PERSON and POST involved with hir-
-ing/ﬁring events. For each row of an extracted ta-
+ing/ﬁring events.
+For each row of an extracted ta-
 ble, you can always read it as “COMPANY hired
 (or ﬁred) PERSON for POST.” The relation between
 these entities is retained throughout the table. There

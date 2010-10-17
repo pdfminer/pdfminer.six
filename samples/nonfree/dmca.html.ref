@@ -3,7 +3,8 @@
 </head><body>
 <span style="position:absolute; border: gray 1px solid; left:0px; top:50px; width:612px; height:792px;"></span>
 <div style="position:absolute; top:50px;"><a name="1">Page 1</a></div>
-<span style="position:absolute; border: blue 1px solid; left:138px; top:113px; width:335px; height:32px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:138px; top:113px; width:335px; height:32px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:138px; top:113px; width:335px; height:17px;"></span>
 <span style="position:absolute; left:138px; top:113px; font-size:17px;">T</span>
 <span style="position:absolute; left:148px; top:118px; font-size:13px;">H</span>
 <span style="position:absolute; left:158px; top:118px; font-size:13px;">E</span>
@@ -48,6 +49,7 @@
 <span style="position:absolute; left:452px; top:113px; font-size:17px;">9</span>
 <span style="position:absolute; left:459px; top:113px; font-size:17px;">9</span>
 <span style="position:absolute; left:466px; top:113px; font-size:17px;">8</span>
+<span style="position:absolute; border: magenta 1px solid; left:218px; top:132px; width:174px; height:14px;"></span>
 <span style="position:absolute; left:218px; top:132px; font-size:14px;">U</span>
 <span style="position:absolute; left:228px; top:132px; font-size:14px;">.</span>
 <span style="position:absolute; left:231px; top:132px; font-size:14px;">S</span>
@@ -77,7 +79,8 @@
 <span style="position:absolute; left:376px; top:132px; font-size:14px;">a</span>
 <span style="position:absolute; left:383px; top:132px; font-size:14px;">r</span>
 <span style="position:absolute; left:387px; top:132px; font-size:14px;">y</span>
-<span style="position:absolute; border: blue 1px solid; left:72px; top:240px; width:93px; height:16px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:72px; top:240px; width:93px; height:16px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:72px; top:240px; width:93px; height:16px;"></span>
 <span style="position:absolute; left:72px; top:240px; font-size:15px;">I</span>
 <span style="position:absolute; left:77px; top:244px; font-size:12px;">N</span>
 <span style="position:absolute; left:86px; top:244px; font-size:12px;">T</span>
@@ -90,7 +93,8 @@
 <span style="position:absolute; left:142px; top:244px; font-size:12px;">I</span>
 <span style="position:absolute; left:147px; top:244px; font-size:12px;">O</span>
 <span style="position:absolute; left:156px; top:244px; font-size:12px;">N</span>
-<span style="position:absolute; border: blue 1px solid; left:267px; top:214px; width:76px; height:13px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:267px; top:214px; width:76px; height:13px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:267px; top:214px; width:76px; height:13px;"></span>
 <span style="position:absolute; left:267px; top:214px; font-size:13px;">D</span>
 <span style="position:absolute; left:276px; top:214px; font-size:13px;">e</span>
 <span style="position:absolute; left:282px; top:214px; font-size:13px;">c</span>
@@ -104,7 +108,8 @@
 <span style="position:absolute; left:327px; top:214px; font-size:13px;">9</span>
 <span style="position:absolute; left:333px; top:214px; font-size:13px;">9</span>
 <span style="position:absolute; left:338px; top:214px; font-size:13px;">8</span>
-<span style="position:absolute; border: blue 1px solid; left:108px; top:270px; width:396px; height:67px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:108px; top:270px; width:396px; height:67px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:144px; top:270px; width:359px; height:13px;"></span>
 <span style="position:absolute; left:144px; top:270px; font-size:13px;">T</span>
 <span style="position:absolute; left:151px; top:270px; font-size:13px;">h</span>
 <span style="position:absolute; left:157px; top:270px; font-size:13px;">e</span>
@@ -171,7 +176,9 @@
 <span style="position:absolute; left:487px; top:270px; font-size:13px;"> </span>
 <span style="position:absolute; left:492px; top:270px; font-size:13px;">b</span>
 <span style="position:absolute; left:498px; top:270px; font-size:13px;">y</span>
+<span style="position:absolute; border: magenta 1px solid; left:381px; top:272px; width:3px; height:8px;"></span>
 <span style="position:absolute; left:381px; top:272px; font-size:8px;">1</span>
+<span style="position:absolute; border: magenta 1px solid; left:108px; top:283px; width:395px; height:13px;"></span>
 <span style="position:absolute; left:108px; top:283px; font-size:13px;">P</span>
 <span style="position:absolute; left:114px; top:283px; font-size:13px;">r</span>
 <span style="position:absolute; left:118px; top:283px; font-size:13px;">e</span>
@@ -253,6 +260,7 @@
 <span style="position:absolute; left:491px; top:283px; font-size:13px;">r</span>
 <span style="position:absolute; left:495px; top:283px; font-size:13px;">l</span>
 <span style="position:absolute; left:497px; top:283px; font-size:13px;">d</span>
+<span style="position:absolute; border: magenta 1px solid; left:108px; top:297px; width:395px; height:13px;"></span>
 <span style="position:absolute; left:108px; top:297px; font-size:13px;">I</span>
 <span style="position:absolute; left:112px; top:297px; font-size:13px;">n</span>
 <span style="position:absolute; left:118px; top:297px; font-size:13px;">t</span>
@@ -335,6 +343,7 @@
 <span style="position:absolute; left:486px; top:297px; font-size:13px;">a</span>
 <span style="position:absolute; left:491px; top:297px; font-size:13px;">n</span>
 <span style="position:absolute; left:497px; top:297px; font-size:13px;">d</span>
+<span style="position:absolute; border: magenta 1px solid; left:108px; top:310px; width:396px; height:13px;"></span>
 <span style="position:absolute; left:108px; top:310px; font-size:13px;">t</span>
 <span style="position:absolute; left:111px; top:310px; font-size:13px;">h</span>
 <span style="position:absolute; left:117px; top:310px; font-size:13px;">e</span>
@@ -406,6 +415,7 @@
 <span style="position:absolute; left:489px; top:310px; font-size:13px;">s</span>
 <span style="position:absolute; left:494px; top:310px; font-size:13px;"> </span>
 <span style="position:absolute; left:499px; top:310px; font-size:13px;">a</span>
+<span style="position:absolute; border: magenta 1px solid; left:108px; top:324px; width:243px; height:13px;"></span>
 <span style="position:absolute; left:108px; top:324px; font-size:13px;">n</span>
 <span style="position:absolute; left:114px; top:324px; font-size:13px;">u</span>
 <span style="position:absolute; left:120px; top:324px; font-size:13px;">m</span>
@@ -459,7 +469,8 @@
 <span style="position:absolute; left:339px; top:324px; font-size:13px;">e</span>
 <span style="position:absolute; left:344px; top:324px; font-size:13px;">s</span>
 <span style="position:absolute; left:348px; top:324px; font-size:13px;">.</span>
-<span style="position:absolute; border: blue 1px solid; left:144px; top:351px; width:179px; height:13px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:144px; top:351px; width:179px; height:13px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:144px; top:351px; width:179px; height:13px;"></span>
 <span style="position:absolute; left:144px; top:351px; font-size:13px;">T</span>
 <span style="position:absolute; left:151px; top:351px; font-size:13px;">h</span>
 <span style="position:absolute; left:157px; top:351px; font-size:13px;">e</span>
@@ -499,17 +510,8 @@
 <span style="position:absolute; left:315px; top:351px; font-size:13px;">:</span>
 <span style="position:absolute; left:317px; top:351px; font-size:13px;"> </span>
 <span style="position:absolute; left:320px; top:351px; font-size:13px;"> </span>
-<span style="position:absolute; border: blue 1px solid; left:144px; top:379px; width:8px; height:12px;"></span>
-<span style="position:absolute; left:144px; top:379px; font-size:12px;">!</span>
-<span style="position:absolute; border: blue 1px solid; left:144px; top:419px; width:8px; height:12px;"></span>
-<span style="position:absolute; left:144px; top:419px; font-size:12px;">!</span>
-<span style="position:absolute; border: blue 1px solid; left:144px; top:460px; width:8px; height:12px;"></span>
-<span style="position:absolute; left:144px; top:460px; font-size:12px;">!</span>
-<span style="position:absolute; border: blue 1px solid; left:143px; top:500px; width:8px; height:12px;"></span>
-<span style="position:absolute; left:143px; top:500px; font-size:12px;">!</span>
-<span style="position:absolute; border: blue 1px solid; left:144px; top:581px; width:8px; height:12px;"></span>
-<span style="position:absolute; left:144px; top:581px; font-size:12px;">!</span>
-<span style="position:absolute; border: blue 1px solid; left:179px; top:377px; width:324px; height:228px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:179px; top:377px; width:324px; height:228px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:377px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:377px; font-size:13px;">T</span>
 <span style="position:absolute; left:187px; top:377px; font-size:13px;">i</span>
 <span style="position:absolute; left:189px; top:377px; font-size:13px;">t</span>
@@ -570,6 +572,7 @@
 <span style="position:absolute; left:483px; top:377px; font-size:13px;">a</span>
 <span style="position:absolute; left:488px; top:377px; font-size:13px;">m</span>
 <span style="position:absolute; left:498px; top:377px; font-size:13px;">s</span>
+<span style="position:absolute; border: magenta 1px solid; left:179px; top:391px; width:324px; height:13px;"></span>
 <span style="position:absolute; left:179px; top:391px; font-size:13px;">T</span>
 <span style="position:absolute; left:188px; top:391px; font-size:13px;">r</span>
 <span style="position:absolute; left:192px; top:391px; font-size:13px;">e</span>
@@ -627,6 +630,7 @@
 <span style="position:absolute; left:483px; top:391px; font-size:13px;">I</span>
 <span style="position:absolute; left:487px; top:391px; font-size:13px;">P</span>
 <span style="position:absolute; left:494px; top:391px; font-size:13px;">O</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:404px; width:35px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:404px; font-size:13px;">t</span>
 <span style="position:absolute; left:183px; top:404px; font-size:13px;">r</span>
 <span style="position:absolute; left:187px; top:404px; font-size:13px;">e</span>
@@ -636,6 +640,7 @@
 <span style="position:absolute; left:203px; top:404px; font-size:13px;">e</span>
 <span style="position:absolute; left:208px; top:404px; font-size:13px;">s</span>
 <span style="position:absolute; left:213px; top:404px; font-size:13px;">.</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:418px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:418px; font-size:13px;">T</span>
 <span style="position:absolute; left:187px; top:418px; font-size:13px;">i</span>
 <span style="position:absolute; left:189px; top:418px; font-size:13px;">t</span>
@@ -701,6 +706,7 @@
 <span style="position:absolute; left:487px; top:418px; font-size:13px;">i</span>
 <span style="position:absolute; left:491px; top:418px; font-size:13px;">o</span>
 <span style="position:absolute; left:497px; top:418px; font-size:13px;">n</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:431px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:431px; font-size:13px;">A</span>
 <span style="position:absolute; left:187px; top:431px; font-size:13px;">c</span>
 <span style="position:absolute; left:193px; top:431px; font-size:13px;">t</span>
@@ -775,6 +781,7 @@
 <span style="position:absolute; left:489px; top:431px; font-size:13px;">f</span>
 <span style="position:absolute; left:493px; top:431px; font-size:13px;">o</span>
 <span style="position:absolute; left:499px; top:431px; font-size:13px;">r</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:445px; width:316px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:445px; font-size:13px;">c</span>
 <span style="position:absolute; left:185px; top:445px; font-size:13px;">o</span>
 <span style="position:absolute; left:191px; top:445px; font-size:13px;">p</span>
@@ -844,6 +851,7 @@
 <span style="position:absolute; left:484px; top:445px; font-size:13px;">e</span>
 <span style="position:absolute; left:489px; top:445px; font-size:13px;">s</span>
 <span style="position:absolute; left:493px; top:445px; font-size:13px;">.</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:458px; width:324px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:458px; font-size:13px;">T</span>
 <span style="position:absolute; left:187px; top:458px; font-size:13px;">i</span>
 <span style="position:absolute; left:190px; top:458px; font-size:13px;">t</span>
@@ -902,6 +910,7 @@
 <span style="position:absolute; left:486px; top:458px; font-size:13px;">n</span>
 <span style="position:absolute; left:492px; top:458px; font-size:13px;">c</span>
 <span style="position:absolute; left:498px; top:458px; font-size:13px;">e</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:471px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:471px; font-size:13px;">A</span>
 <span style="position:absolute; left:187px; top:471px; font-size:13px;">c</span>
 <span style="position:absolute; left:193px; top:471px; font-size:13px;">t</span>
@@ -968,6 +977,7 @@
 <span style="position:absolute; left:485px; top:472px; font-size:13px;">r</span>
 <span style="position:absolute; left:489px; top:472px; font-size:13px;">a</span>
 <span style="position:absolute; left:494px; top:472px; font-size:13px;">m</span>
+<span style="position:absolute; border: magenta 1px solid; left:179px; top:485px; width:299px; height:13px;"></span>
 <span style="position:absolute; left:179px; top:485px; font-size:13px;">b</span>
 <span style="position:absolute; left:186px; top:485px; font-size:13px;">y</span>
 <span style="position:absolute; left:191px; top:485px; font-size:13px;"> </span>
@@ -1031,6 +1041,7 @@
 <span style="position:absolute; left:469px; top:485px; font-size:13px;">i</span>
 <span style="position:absolute; left:472px; top:485px; font-size:13px;">r</span>
 <span style="position:absolute; left:476px; top:485px; font-size:13px;">.</span>
+<span style="position:absolute; border: magenta 1px solid; left:179px; top:498px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:179px; top:498px; font-size:13px;">T</span>
 <span style="position:absolute; left:187px; top:498px; font-size:13px;">i</span>
 <span style="position:absolute; left:190px; top:498px; font-size:13px;">t</span>
@@ -1094,6 +1105,7 @@
 <span style="position:absolute; left:489px; top:498px; font-size:13px;">t</span>
 <span style="position:absolute; left:492px; top:498px; font-size:13px;">h</span>
 <span style="position:absolute; left:498px; top:498px; font-size:13px;">e</span>
+<span style="position:absolute; border: magenta 1px solid; left:179px; top:512px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:179px; top:512px; font-size:13px;">f</span>
 <span style="position:absolute; left:183px; top:512px; font-size:13px;">u</span>
 <span style="position:absolute; left:189px; top:512px; font-size:13px;">n</span>
@@ -1163,6 +1175,7 @@
 <span style="position:absolute; left:487px; top:512px; font-size:13px;">o</span>
 <span style="position:absolute; left:493px; top:512px; font-size:13px;">n</span>
 <span style="position:absolute; left:499px; top:512px; font-size:13px;">s</span>
+<span style="position:absolute; border: magenta 1px solid; left:179px; top:525px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:179px; top:525px; font-size:13px;">i</span>
 <span style="position:absolute; left:182px; top:525px; font-size:13px;">n</span>
 <span style="position:absolute; left:188px; top:525px; font-size:13px;"> </span>
@@ -1234,6 +1247,7 @@
 <span style="position:absolute; left:491px; top:525px; font-size:13px;">g</span>
 <span style="position:absolute; left:496px; top:525px; font-size:13px;">s</span>
 <span style="position:absolute; left:501px; top:525px; font-size:13px;">,</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:539px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:539px; font-size:13px;">“</span>
 <span style="position:absolute; left:185px; top:539px; font-size:13px;">w</span>
 <span style="position:absolute; left:193px; top:539px; font-size:13px;">e</span>
@@ -1305,6 +1319,7 @@
 <span style="position:absolute; left:492px; top:539px; font-size:13px;">i</span>
 <span style="position:absolute; left:495px; top:539px; font-size:13px;">t</span>
 <span style="position:absolute; left:498px; top:539px; font-size:13px;">y</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:552px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:552px; font-size:13px;">o</span>
 <span style="position:absolute; left:186px; top:552px; font-size:13px;">f</span>
 <span style="position:absolute; left:190px; top:552px; font-size:13px;"> </span>
@@ -1376,6 +1391,7 @@
 <span style="position:absolute; left:490px; top:552px; font-size:13px;">e</span>
 <span style="position:absolute; left:495px; top:552px; font-size:13px;">r</span>
 <span style="position:absolute; left:499px; top:552px; font-size:13px;">s</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:566px; width:131px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:566px; font-size:13px;">o</span>
 <span style="position:absolute; left:186px; top:566px; font-size:13px;">f</span>
 <span style="position:absolute; left:190px; top:566px; font-size:13px;"> </span>
@@ -1405,6 +1421,7 @@
 <span style="position:absolute; left:299px; top:566px; font-size:13px;">e</span>
 <span style="position:absolute; left:304px; top:566px; font-size:13px;">s</span>
 <span style="position:absolute; left:308px; top:566px; font-size:13px;">.</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:579px; width:323px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:579px; font-size:13px;">T</span>
 <span style="position:absolute; left:187px; top:579px; font-size:13px;">i</span>
 <span style="position:absolute; left:189px; top:579px; font-size:13px;">t</span>
@@ -1473,6 +1490,7 @@
 <span style="position:absolute; left:484px; top:579px; font-size:13px;">o</span>
 <span style="position:absolute; left:490px; top:579px; font-size:13px;">r</span>
 <span style="position:absolute; left:494px; top:579px; font-size:13px;">m</span>
+<span style="position:absolute; border: magenta 1px solid; left:180px; top:592px; width:200px; height:13px;"></span>
 <span style="position:absolute; left:180px; top:592px; font-size:13px;">o</span>
 <span style="position:absolute; left:186px; top:592px; font-size:13px;">f</span>
 <span style="position:absolute; left:190px; top:592px; font-size:13px;"> </span>
@@ -1518,7 +1536,23 @@
 <span style="position:absolute; left:370px; top:592px; font-size:13px;">l</span>
 <span style="position:absolute; left:373px; top:592px; font-size:13px;">s</span>
 <span style="position:absolute; left:377px; top:592px; font-size:13px;">.</span>
-<span style="position:absolute; border: blue 1px solid; left:107px; top:619px; width:396px; height:53px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:144px; top:379px; width:8px; height:12px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:144px; top:379px; width:8px; height:12px;"></span>
+<span style="position:absolute; left:144px; top:379px; font-size:12px;">!</span>
+<span style="position:absolute; border: cyan 1px solid; left:144px; top:419px; width:8px; height:12px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:144px; top:419px; width:8px; height:12px;"></span>
+<span style="position:absolute; left:144px; top:419px; font-size:12px;">!</span>
+<span style="position:absolute; border: cyan 1px solid; left:144px; top:460px; width:8px; height:12px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:144px; top:460px; width:8px; height:12px;"></span>
+<span style="position:absolute; left:144px; top:460px; font-size:12px;">!</span>
+<span style="position:absolute; border: cyan 1px solid; left:143px; top:500px; width:8px; height:12px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:143px; top:500px; width:8px; height:12px;"></span>
+<span style="position:absolute; left:143px; top:500px; font-size:12px;">!</span>
+<span style="position:absolute; border: cyan 1px solid; left:144px; top:581px; width:8px; height:12px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:144px; top:581px; width:8px; height:12px;"></span>
+<span style="position:absolute; left:144px; top:581px; font-size:12px;">!</span>
+<span style="position:absolute; border: cyan 1px solid; left:107px; top:619px; width:396px; height:53px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:144px; top:619px; width:360px; height:13px;"></span>
 <span style="position:absolute; left:144px; top:619px; font-size:13px;">T</span>
 <span style="position:absolute; left:151px; top:619px; font-size:13px;">h</span>
 <span style="position:absolute; left:157px; top:619px; font-size:13px;">i</span>
@@ -1590,6 +1624,7 @@
 <span style="position:absolute; left:488px; top:619px; font-size:13px;">d</span>
 <span style="position:absolute; left:494px; top:619px; font-size:13px;">e</span>
 <span style="position:absolute; left:499px; top:619px; font-size:13px;">s</span>
+<span style="position:absolute; border: magenta 1px solid; left:107px; top:633px; width:396px; height:13px;"></span>
 <span style="position:absolute; left:107px; top:633px; font-size:13px;">m</span>
 <span style="position:absolute; left:117px; top:633px; font-size:13px;">e</span>
 <span style="position:absolute; left:122px; top:633px; font-size:13px;">r</span>
@@ -1674,6 +1709,7 @@
 <span style="position:absolute; left:490px; top:633px; font-size:13px;">y</span>
 <span style="position:absolute; left:495px; top:633px; font-size:13px;"> </span>
 <span style="position:absolute; left:499px; top:633px; font-size:13px;">a</span>
+<span style="position:absolute; border: magenta 1px solid; left:107px; top:646px; width:396px; height:13px;"></span>
 <span style="position:absolute; left:107px; top:646px; font-size:13px;">s</span>
 <span style="position:absolute; left:112px; top:646px; font-size:13px;">i</span>
 <span style="position:absolute; left:115px; top:646px; font-size:13px;">g</span>
@@ -1753,6 +1789,7 @@
 <span style="position:absolute; left:486px; top:646px; font-size:13px;">a</span>
 <span style="position:absolute; left:491px; top:646px; font-size:13px;">n</span>
 <span style="position:absolute; left:498px; top:646px; font-size:13px;">y</span>
+<span style="position:absolute; border: magenta 1px solid; left:107px; top:660px; width:385px; height:13px;"></span>
 <span style="position:absolute; left:107px; top:660px; font-size:13px;">p</span>
 <span style="position:absolute; left:114px; top:660px; font-size:13px;">r</span>
 <span style="position:absolute; left:118px; top:660px; font-size:13px;">o</span>
@@ -1832,7 +1869,8 @@
 <span style="position:absolute; left:483px; top:660px; font-size:13px;">l</span>
 <span style="position:absolute; left:486px; top:660px; font-size:13px;">f</span>
 <span style="position:absolute; left:490px; top:660px; font-size:13px;">.</span>
-<span style="position:absolute; border: blue 1px solid; left:144px; top:726px; width:228px; height:12px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:144px; top:726px; width:228px; height:12px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:147px; top:726px; width:224px; height:12px;"></span>
 <span style="position:absolute; left:147px; top:726px; font-size:12px;">P</span>
 <span style="position:absolute; left:153px; top:726px; font-size:12px;">u</span>
 <span style="position:absolute; left:159px; top:726px; font-size:12px;">b</span>
@@ -1885,8 +1923,10 @@
 <span style="position:absolute; left:361px; top:726px; font-size:12px;">8</span>
 <span style="position:absolute; left:366px; top:726px; font-size:12px;">)</span>
 <span style="position:absolute; left:369px; top:726px; font-size:12px;">.</span>
+<span style="position:absolute; border: magenta 1px solid; left:144px; top:727px; width:3px; height:8px;"></span>
 <span style="position:absolute; left:144px; top:727px; font-size:8px;">1</span>
-<span style="position:absolute; border: blue 1px solid; left:108px; top:750px; width:106px; height:13px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:108px; top:750px; width:106px; height:13px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:108px; top:750px; width:106px; height:13px;"></span>
 <span style="position:absolute; left:108px; top:750px; font-size:13px;">C</span>
 <span style="position:absolute; left:115px; top:750px; font-size:13px;">o</span>
 <span style="position:absolute; left:119px; top:750px; font-size:13px;">p</span>
@@ -1911,7 +1951,8 @@
 <span style="position:absolute; left:202px; top:750px; font-size:13px;">a</span>
 <span style="position:absolute; left:206px; top:750px; font-size:13px;">r</span>
 <span style="position:absolute; left:210px; top:750px; font-size:13px;">y</span>
-<span style="position:absolute; border: blue 1px solid; left:274px; top:750px; width:63px; height:13px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:274px; top:750px; width:63px; height:13px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:274px; top:750px; width:63px; height:13px;"></span>
 <span style="position:absolute; left:274px; top:750px; font-size:13px;">D</span>
 <span style="position:absolute; left:282px; top:750px; font-size:13px;">e</span>
 <span style="position:absolute; left:286px; top:750px; font-size:13px;">c</span>
@@ -1925,7 +1966,8 @@
 <span style="position:absolute; left:321px; top:750px; font-size:13px;">9</span>
 <span style="position:absolute; left:326px; top:750px; font-size:13px;">9</span>
 <span style="position:absolute; left:332px; top:750px; font-size:13px;">8</span>
-<span style="position:absolute; border: blue 1px solid; left:476px; top:750px; width:27px; height:13px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:476px; top:750px; width:27px; height:13px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:476px; top:750px; width:27px; height:13px;"></span>
 <span style="position:absolute; left:476px; top:750px; font-size:13px;">P</span>
 <span style="position:absolute; left:483px; top:750px; font-size:13px;">a</span>
 <span style="position:absolute; left:487px; top:750px; font-size:13px;">g</span>
@@ -1933,6 +1975,6 @@
 <span style="position:absolute; left:495px; top:750px; font-size:13px;"> </span>
 <span style="position:absolute; left:498px; top:750px; font-size:13px;">1</span>
 <span style="position:absolute; border: black 1px solid; left:108px; top:719px; width:144px; height:1px;"></span>
-<span style="position:absolute; border: green 1px solid; left:285px; top:163px; width:44px; height:42px;"></span>
+<span style="position:absolute; border: yellow 1px solid; left:285px; top:163px; width:44px; height:42px;"></span>
 <div style="position:absolute; top:0px;">Page: <a href="#1">1</a></div>
 </body></html>

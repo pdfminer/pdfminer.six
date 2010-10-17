@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <pages>
 <page id="1" bbox="0.000,0.000,612.000,792.000" rotate="0">
-<textbox id="0" bbox="0.000,215.032,344.016,769.552">
+<textbox id="0" bbox="0.000,690.064,218.688,769.552">
 <textline bbox="0.000,690.064,218.688,769.552">
 <text font="Helvetica" bbox="0.000,690.064,34.656,745.552" size="55.488">H</text>
 <text font="Helvetica" bbox="34.656,690.064,61.344,745.552" size="55.488">e</text>
@@ -16,56 +16,26 @@
 <text>
 </text>
 </textline>
-<textline bbox="194.688,657.760,242.688,705.760">
-<text font="unknown" vertical="true" bbox="194.688,657.760,242.688,705.760" size="48.000">あ</text>
+</textbox>
+<textbox id="1" bbox="194.688,215.032,242.688,705.760" wmode="vertical">
+<textline bbox="194.688,215.032,242.688,705.760">
+<text font="unknown" bbox="194.688,657.760,242.688,705.760" size="48.000">あ</text>
+<text font="unknown" bbox="194.688,609.760,242.688,657.760" size="48.000">い</text>
+<text font="unknown" bbox="194.688,561.760,242.688,609.760" size="48.000">う</text>
+<text font="unknown" bbox="194.688,513.760,242.688,561.760" size="48.000">え</text>
+<text font="unknown" bbox="194.688,465.760,242.688,513.760" size="48.000">お</text>
+<text font="unknown" bbox="194.688,441.760,242.688,489.760" size="48.000">あ</text>
+<text font="unknown" bbox="194.688,393.760,242.688,441.760" size="48.000">い</text>
+<text font="unknown" bbox="194.688,345.760,242.688,393.760" size="48.000">う</text>
+<text font="unknown" bbox="194.688,297.760,242.688,345.760" size="48.000">え</text>
+<text font="unknown" bbox="194.688,249.760,242.688,297.760" size="48.000">お</text>
+<text> </text>
+<text font="Helvetica" bbox="218.688,215.032,241.344,242.776" size="27.744">W</text>
 <text>
 </text>
 </textline>
-<textline bbox="194.688,609.760,242.688,657.760">
-<text font="unknown" vertical="true" bbox="194.688,609.760,242.688,657.760" size="48.000">い</text>
-<text>
-</text>
-</textline>
-<textline bbox="194.688,561.760,242.688,609.760">
-<text font="unknown" vertical="true" bbox="194.688,561.760,242.688,609.760" size="48.000">う</text>
-<text>
-</text>
-</textline>
-<textline bbox="194.688,513.760,242.688,561.760">
-<text font="unknown" vertical="true" bbox="194.688,513.760,242.688,561.760" size="48.000">え</text>
-<text>
-</text>
-</textline>
-<textline bbox="194.688,465.760,242.688,513.760">
-<text font="unknown" vertical="true" bbox="194.688,465.760,242.688,513.760" size="48.000">お</text>
-<text>
-</text>
-</textline>
-<textline bbox="194.688,441.760,242.688,489.760">
-<text font="unknown" vertical="true" bbox="194.688,441.760,242.688,489.760" size="48.000">あ</text>
-<text>
-</text>
-</textline>
-<textline bbox="194.688,393.760,242.688,441.760">
-<text font="unknown" vertical="true" bbox="194.688,393.760,242.688,441.760" size="48.000">い</text>
-<text>
-</text>
-</textline>
-<textline bbox="194.688,345.760,242.688,393.760">
-<text font="unknown" vertical="true" bbox="194.688,345.760,242.688,393.760" size="48.000">う</text>
-<text>
-</text>
-</textline>
-<textline bbox="194.688,297.760,242.688,345.760">
-<text font="unknown" vertical="true" bbox="194.688,297.760,242.688,345.760" size="48.000">え</text>
-<text>
-</text>
-</textline>
-<textline bbox="194.688,249.760,242.688,297.760">
-<text font="unknown" vertical="true" bbox="194.688,249.760,242.688,297.760" size="48.000">お</text>
-<text>
-</text>
-</textline>
+</textbox>
+<textbox id="2" bbox="241.344,215.032,344.016,266.776">
 <textline bbox="281.352,239.032,344.016,266.776">
 <text font="Helvetica" bbox="281.352,239.032,304.008,266.776" size="27.744">W</text>
 <text font="Helvetica" bbox="304.008,239.032,317.352,266.776" size="27.744">o</text>
@@ -75,8 +45,7 @@
 <text>
 </text>
 </textline>
-<textline bbox="218.688,215.032,281.352,242.776">
-<text font="Helvetica" bbox="218.688,215.032,241.344,242.776" size="27.744">W</text>
+<textline bbox="241.344,215.032,281.352,242.776">
 <text font="Helvetica" bbox="241.344,215.032,254.688,242.776" size="27.744">o</text>
 <text font="Helvetica" bbox="254.688,215.032,262.680,242.776" size="27.744">r</text>
 <text font="Helvetica" bbox="262.680,215.032,268.008,242.776" size="27.744">l</text>
@@ -87,6 +56,12 @@
 </textbox>
 </page>
 <layout>
-<textbox id="0" bbox="0.000,215.032,344.016,769.552" />
+<textgroup bbox="0.000,215.032,344.016,769.552">
+<textbox id="0" bbox="0.000,690.064,218.688,769.552" />
+<textgroup bbox="194.688,215.032,344.016,705.760">
+<textbox id="1" bbox="194.688,215.032,242.688,705.760" />
+<textbox id="2" bbox="241.344,215.032,344.016,266.776" />
+</textgroup>
+</textgroup>
 </layout>
 </pages>

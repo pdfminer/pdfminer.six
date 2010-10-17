@@ -1,129 +1,68 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <pages>
 <page id="1" bbox="0.000,0.000,595.000,842.000" rotate="0">
-<textbox id="0" bbox="527.500,789.064,537.500,798.234">
+<textbox id="0" bbox="392.500,787.804,457.500,800.144">
+<textline bbox="392.500,787.804,457.500,800.144">
+<text font="Ryumin-Light" bbox="392.500,787.804,402.500,800.144" size="12.340">第</text>
+<text> </text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="405.000,789.064,415.000,798.234" size="10.000">›</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="415.000,789.064,425.000,798.234" size="10.000">Ÿ</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="425.000,789.064,435.000,798.234" size="10.000">˜</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="435.000,789.064,445.000,798.234" size="10.000"></text>
+<text> </text>
+<text font="Ryumin-Light" bbox="447.500,787.804,457.500,800.144" size="12.340">号</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="1" bbox="527.500,789.064,537.500,798.234">
 <textline bbox="527.500,789.064,537.500,798.234">
 <text font="GMALPM+DFHSMincho-W3G014" bbox="527.500,789.064,537.500,798.234" size="10.000">›</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="1" bbox="392.500,787.804,457.500,800.144">
-<textline bbox="447.500,787.804,457.500,800.144">
-<text font="Ryumin-Light" bbox="447.500,787.804,457.500,800.144" size="12.340">号</text>
-<text>
-</text>
-</textline>
-<textline bbox="435.000,789.064,445.000,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="435.000,789.064,445.000,798.234" size="10.000"></text>
-<text>
-</text>
-</textline>
-<textline bbox="425.000,789.064,435.000,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="425.000,789.064,435.000,798.234" size="10.000">˜</text>
-<text>
-</text>
-</textline>
-<textline bbox="415.000,789.064,425.000,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="415.000,789.064,425.000,798.234" size="10.000">Ÿ</text>
-<text>
-</text>
-</textline>
-<textline bbox="405.000,789.064,415.000,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="405.000,789.064,415.000,798.234" size="10.000">›</text>
-<text>
-</text>
-</textline>
-<textline bbox="392.500,787.804,402.500,800.144">
-<text font="Ryumin-Light" bbox="392.500,787.804,402.500,800.144" size="12.340">第</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="2" bbox="315.500,787.572,327.500,802.380">
-<textline bbox="315.500,787.572,327.500,802.380">
-<text font="Ryumin-Light" bbox="315.500,787.572,327.500,802.380" size="14.808">報</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="3" bbox="267.500,787.572,279.500,802.380">
+<textbox id="2" bbox="267.500,787.572,279.500,802.380">
 <textline bbox="267.500,787.572,279.500,802.380">
 <text font="Ryumin-Light" bbox="267.500,787.572,279.500,802.380" size="14.808">官</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="4" bbox="212.500,787.804,242.500,800.144">
-<textline bbox="232.500,787.804,242.500,800.144">
+<textbox id="3" bbox="315.500,787.572,327.500,802.380">
+<textline bbox="315.500,787.572,327.500,802.380">
+<text font="Ryumin-Light" bbox="315.500,787.572,327.500,802.380" size="14.808">報</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="4" bbox="87.500,787.804,242.500,800.144">
+<textline bbox="87.500,787.804,242.500,800.144">
+<text font="Ryumin-Light" bbox="87.500,787.804,97.500,800.144" size="12.340">平</text>
+<text font="Ryumin-Light" bbox="97.500,787.804,107.500,800.144" size="12.340">成</text>
+<text> </text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="110.000,789.064,120.000,798.234" size="10.000">™</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="120.000,789.064,130.000,798.234" size="10.000">—</text>
+<text> </text>
+<text font="Ryumin-Light" bbox="132.500,787.804,142.500,800.144" size="12.340">年</text>
+<text> </text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="145.000,789.064,155.000,798.234" size="10.000">›</text>
+<text> </text>
+<text font="Ryumin-Light" bbox="157.500,787.804,167.500,800.144" size="12.340">月</text>
+<text> </text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="170.000,789.064,180.000,798.234" size="10.000">™</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="180.000,789.064,190.000,798.234" size="10.000">œ</text>
+<text> </text>
+<text font="Ryumin-Light" bbox="192.500,787.804,202.500,800.144" size="12.340">日</text>
+<text> </text>
+<text font="Ryumin-Light" bbox="212.500,787.804,222.500,800.144" size="12.340">金</text>
+<text font="Ryumin-Light" bbox="222.500,787.804,232.500,800.144" size="12.340">曜</text>
 <text font="Ryumin-Light" bbox="232.500,787.804,242.500,800.144" size="12.340">日</text>
 <text>
 </text>
 </textline>
-<textline bbox="222.500,787.804,232.500,800.144">
-<text font="Ryumin-Light" bbox="222.500,787.804,232.500,800.144" size="12.340">曜</text>
-<text>
-</text>
-</textline>
-<textline bbox="212.500,787.804,222.500,800.144">
-<text font="Ryumin-Light" bbox="212.500,787.804,222.500,800.144" size="12.340">金</text>
-<text>
-</text>
-</textline>
 </textbox>
-<textbox id="5" bbox="87.500,787.804,202.500,800.144">
-<textline bbox="192.500,787.804,202.500,800.144">
-<text font="Ryumin-Light" bbox="192.500,787.804,202.500,800.144" size="12.340">日</text>
-<text>
-</text>
-</textline>
-<textline bbox="180.000,789.064,190.000,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="180.000,789.064,190.000,798.234" size="10.000">œ</text>
-<text>
-</text>
-</textline>
-<textline bbox="170.000,789.064,180.000,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="170.000,789.064,180.000,798.234" size="10.000">™</text>
-<text>
-</text>
-</textline>
-<textline bbox="157.500,787.804,167.500,800.144">
-<text font="Ryumin-Light" bbox="157.500,787.804,167.500,800.144" size="12.340">月</text>
-<text>
-</text>
-</textline>
-<textline bbox="145.000,789.064,155.000,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="145.000,789.064,155.000,798.234" size="10.000">›</text>
-<text>
-</text>
-</textline>
-<textline bbox="132.500,787.804,142.500,800.144">
-<text font="Ryumin-Light" bbox="132.500,787.804,142.500,800.144" size="12.340">年</text>
-<text>
-</text>
-</textline>
-<textline bbox="120.000,789.064,130.000,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="120.000,789.064,130.000,798.234" size="10.000">—</text>
-<text>
-</text>
-</textline>
-<textline bbox="110.000,789.064,120.000,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="110.000,789.064,120.000,798.234" size="10.000">™</text>
-<text>
-</text>
-</textline>
-<textline bbox="97.500,787.804,107.500,800.144">
-<text font="Ryumin-Light" bbox="97.500,787.804,107.500,800.144" size="12.340">成</text>
-<text>
-</text>
-</textline>
-<textline bbox="87.500,787.804,97.500,800.144">
-<text font="Ryumin-Light" bbox="87.500,787.804,97.500,800.144" size="12.340">平</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="6" bbox="409.474,420.036,548.988,781.908">
+<textbox id="5" bbox="420.474,420.036,548.988,781.908" wmode="vertical">
 <textline bbox="540.988,715.796,548.988,781.492">
 <text font="GothicBBB-Medium" bbox="540.988,771.796,548.988,781.492" size="9.696">政</text>
 <text font="GothicBBB-Medium" bbox="540.988,763.796,548.988,773.492" size="9.696">令</text>
@@ -162,7 +101,7 @@
 <text font="Ryumin-Light" bbox="519.274,764.036,527.274,773.908" size="9.872">内</text>
 <text font="Ryumin-Light" bbox="519.274,756.036,527.274,765.908" size="9.872">閣</text>
 <text font="Ryumin-Light" bbox="519.274,748.036,527.274,757.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="518.498,741.960,528.050,749.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="518.498,741.960,528.050,749.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="519.274,732.036,527.274,741.908" size="9.872">道</text>
 <text font="Ryumin-Light" bbox="519.274,724.036,527.274,733.908" size="9.872">路</text>
 <text font="Ryumin-Light" bbox="519.274,716.036,527.274,725.908" size="9.872">交</text>
@@ -178,7 +117,7 @@
 <text font="Ryumin-Light" bbox="519.274,636.036,527.274,645.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="519.274,628.036,527.274,637.908" size="9.872">法</text>
 <text font="Ryumin-Light" bbox="519.274,620.036,527.274,629.908" size="9.872">律</text>
-<text font="Ryumin-Light" vertical="true" bbox="518.498,613.960,528.050,621.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="518.498,613.960,528.050,621.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="519.274,604.036,527.274,613.908" size="9.872">平</text>
 <text font="Ryumin-Light" bbox="519.274,596.036,527.274,605.908" size="9.872">成</text>
 <text font="Ryumin-Light" bbox="519.274,588.036,527.274,597.908" size="9.872">十</text>
@@ -190,7 +129,7 @@
 <text font="Ryumin-Light" bbox="519.274,540.036,527.274,549.908" size="9.872">九</text>
 <text font="Ryumin-Light" bbox="519.274,532.036,527.274,541.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="519.274,524.036,527.274,533.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="518.498,517.960,528.050,525.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="518.498,517.960,528.050,525.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="519.274,508.036,527.274,517.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="519.274,500.036,527.274,509.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="519.274,492.036,527.274,501.908" size="9.872">部</text>
@@ -200,7 +139,7 @@
 <text font="Ryumin-Light" bbox="519.274,460.036,527.274,469.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="519.274,452.036,527.274,461.908" size="9.872">伴</text>
 <text font="Ryumin-Light" bbox="519.274,444.036,527.274,453.908" size="9.872">い</text>
-<text font="Ryumin-Light" vertical="true" bbox="518.498,437.960,528.050,445.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="518.498,437.960,528.050,445.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="519.274,428.036,527.274,437.908" size="9.872">並</text>
 <text font="Ryumin-Light" bbox="519.274,420.036,527.274,429.908" size="9.872">び</text>
 <text>
@@ -213,7 +152,7 @@
 <text font="Ryumin-Light" bbox="508.381,748.036,516.381,757.908" size="9.872">交</text>
 <text font="Ryumin-Light" bbox="508.381,740.036,516.381,749.908" size="9.872">通</text>
 <text font="Ryumin-Light" bbox="508.381,732.036,516.381,741.908" size="9.872">法</text>
-<text font="Ryumin-Light" vertical="true" bbox="507.605,725.960,517.157,733.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="507.605,725.960,517.157,733.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="508.381,716.036,516.381,725.908" size="9.872">昭</text>
 <text font="Ryumin-Light" bbox="508.381,708.036,516.381,717.908" size="9.872">和</text>
 <text font="Ryumin-Light" bbox="508.381,700.036,516.381,709.908" size="9.872">三</text>
@@ -226,7 +165,7 @@
 <text font="Ryumin-Light" bbox="508.381,644.036,516.381,653.908" size="9.872">百</text>
 <text font="Ryumin-Light" bbox="508.381,636.036,516.381,645.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="508.381,628.036,516.381,637.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="507.605,621.960,517.157,629.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="507.605,621.960,517.157,629.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="508.381,612.036,516.381,621.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="508.381,604.036,516.381,613.908" size="9.872">四</text>
 <text font="Ryumin-Light" bbox="508.381,596.036,516.381,605.908" size="9.872">条</text>
@@ -238,14 +177,14 @@
 <text font="Ryumin-Light" bbox="508.381,548.036,516.381,557.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="508.381,540.036,516.381,549.908" size="9.872">四</text>
 <text font="Ryumin-Light" bbox="508.381,532.036,516.381,541.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="507.605,525.960,517.157,533.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="507.605,525.960,517.157,533.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="508.381,516.036,516.381,525.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="508.381,508.036,516.381,517.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="508.381,500.036,516.381,509.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="508.381,492.036,516.381,501.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="508.381,484.036,516.381,493.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="508.381,476.036,516.381,485.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="507.605,469.960,517.157,477.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="507.605,469.960,517.157,477.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="508.381,460.036,516.381,469.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="508.381,452.036,516.381,461.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="508.381,444.036,516.381,453.908" size="9.872">十</text>
@@ -258,7 +197,7 @@
 <textline bbox="496.712,420.036,506.264,781.908">
 <text font="Ryumin-Light" bbox="497.488,772.036,505.488,781.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="497.488,764.036,505.488,773.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="496.712,757.960,506.264,765.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="496.712,757.960,506.264,765.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="497.488,748.036,505.488,757.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="497.488,740.036,505.488,749.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="497.488,732.036,505.488,741.908" size="9.872">十</text>
@@ -267,7 +206,7 @@
 <text font="Ryumin-Light" bbox="497.488,708.036,505.488,717.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="497.488,700.036,505.488,709.908" size="9.872">九</text>
 <text font="Ryumin-Light" bbox="497.488,692.036,505.488,701.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="496.712,685.960,506.264,693.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="496.712,685.960,506.264,693.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="497.488,676.036,505.488,685.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="497.488,668.036,505.488,677.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="497.488,660.036,505.488,669.908" size="9.872">第</text>
@@ -275,7 +214,7 @@
 <text font="Ryumin-Light" bbox="497.488,644.036,505.488,653.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="497.488,636.036,505.488,645.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="497.488,628.036,505.488,637.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="496.712,621.960,506.264,629.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="496.712,621.960,506.264,629.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="497.488,612.036,505.488,621.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="497.488,604.036,505.488,613.908" size="9.872">法</text>
 <text font="Ryumin-Light" bbox="497.488,596.036,505.488,605.908" size="9.872">第</text>
@@ -317,9 +256,9 @@
 <text font="Ryumin-Light" bbox="486.595,700.036,494.595,709.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="486.595,692.036,494.595,701.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="486.595,684.036,494.595,693.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="485.819,677.960,495.371,685.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="485.819,673.960,495.371,681.960" size="9.552">）</text>
-<text font="Ryumin-Light" vertical="true" bbox="485.819,669.960,495.371,677.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="485.819,677.960,495.371,685.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="485.819,673.960,495.371,681.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="485.819,669.960,495.371,677.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="486.595,660.036,494.595,669.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="486.595,652.036,494.595,661.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="486.595,644.036,494.595,653.908" size="9.872">十</text>
@@ -330,7 +269,7 @@
 <text font="Ryumin-Light" bbox="486.595,604.036,494.595,613.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="486.595,596.036,494.595,605.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="486.595,588.036,494.595,597.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="485.819,581.960,495.371,589.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="485.819,581.960,495.371,589.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="486.595,572.036,494.595,581.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="486.595,564.036,494.595,573.908" size="9.872">六</text>
 <text font="Ryumin-Light" bbox="486.595,556.036,494.595,565.908" size="9.872">十</text>
@@ -344,7 +283,7 @@
 <text font="Ryumin-Light" bbox="486.595,492.036,494.595,501.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="486.595,484.036,494.595,493.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="486.595,476.036,494.595,485.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="485.819,469.960,495.371,477.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="485.819,469.960,495.371,477.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="486.595,460.036,494.595,469.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="486.595,452.036,494.595,461.908" size="9.872">七</text>
 <text font="Ryumin-Light" bbox="486.595,444.036,494.595,453.908" size="9.872">十</text>
@@ -363,7 +302,7 @@
 <text font="Ryumin-Light" bbox="475.703,732.036,483.703,741.908" size="9.872">だ</text>
 <text font="Ryumin-Light" bbox="475.703,724.036,483.703,733.908" size="9.872">し</text>
 <text font="Ryumin-Light" bbox="475.703,716.036,483.703,725.908" size="9.872">書</text>
-<text font="Ryumin-Light" vertical="true" bbox="474.927,709.960,484.479,717.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="474.927,709.960,484.479,717.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="475.703,700.036,483.703,709.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="475.703,692.036,483.703,701.908" size="9.872">七</text>
 <text font="Ryumin-Light" bbox="475.703,684.036,483.703,693.908" size="9.872">十</text>
@@ -374,7 +313,7 @@
 <text font="Ryumin-Light" bbox="475.703,644.036,483.703,653.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="475.703,636.036,483.703,645.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="475.703,628.036,483.703,637.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="474.927,621.960,484.479,629.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="474.927,621.960,484.479,629.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="475.703,612.036,483.703,621.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="475.703,604.036,483.703,613.908" size="9.872">九</text>
 <text font="Ryumin-Light" bbox="475.703,596.036,483.703,605.908" size="9.872">十</text>
@@ -386,7 +325,7 @@
 <text font="Ryumin-Light" bbox="475.703,548.036,483.703,557.908" size="9.872">だ</text>
 <text font="Ryumin-Light" bbox="475.703,540.036,483.703,549.908" size="9.872">し</text>
 <text font="Ryumin-Light" bbox="475.703,532.036,483.703,541.908" size="9.872">書</text>
-<text font="Ryumin-Light" vertical="true" bbox="474.927,525.960,484.479,533.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="474.927,525.960,484.479,533.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="475.703,516.036,483.703,525.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="475.703,508.036,483.703,517.908" size="9.872">百</text>
 <text font="Ryumin-Light" bbox="475.703,500.036,483.703,509.908" size="9.872">条</text>
@@ -406,7 +345,7 @@
 <textline bbox="464.034,429.960,473.586,781.908">
 <text font="Ryumin-Light" bbox="464.810,772.036,472.810,781.908" size="9.872">四</text>
 <text font="Ryumin-Light" bbox="464.810,764.036,472.810,773.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="464.034,757.960,473.586,765.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="464.034,757.960,473.586,765.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="464.810,748.036,472.810,757.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="464.810,740.036,472.810,749.908" size="9.872">百</text>
 <text font="Ryumin-Light" bbox="464.810,732.036,472.810,741.908" size="9.872">二</text>
@@ -437,7 +376,7 @@
 <text font="Ryumin-Light" bbox="464.810,532.036,472.810,541.908" size="9.872">基</text>
 <text font="Ryumin-Light" bbox="464.810,524.036,472.810,533.908" size="9.872">づ</text>
 <text font="Ryumin-Light" bbox="464.810,516.036,472.810,525.908" size="9.872">き</text>
-<text font="Ryumin-Light" vertical="true" bbox="464.034,509.960,473.586,517.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="464.034,509.960,473.586,517.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="464.810,500.036,472.810,509.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="464.810,492.036,472.810,501.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="464.810,484.036,472.810,493.908" size="9.872">政</text>
@@ -447,7 +386,7 @@
 <text font="Ryumin-Light" bbox="464.810,452.036,472.810,461.908" size="9.872">定</text>
 <text font="Ryumin-Light" bbox="464.810,444.036,472.810,453.908" size="9.872">す</text>
 <text font="Ryumin-Light" bbox="464.810,436.036,472.810,445.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="464.034,429.960,473.586,437.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="464.034,429.960,473.586,437.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -460,7 +399,7 @@
 <text font="Ryumin-Light" bbox="453.917,724.036,461.917,733.908" size="9.872">施</text>
 <text font="Ryumin-Light" bbox="453.917,716.036,461.917,725.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="453.917,708.036,461.917,717.908" size="9.872">令</text>
-<text font="Ryumin-Light" vertical="true" bbox="453.141,701.960,462.693,709.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="453.141,701.960,462.693,709.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="453.917,692.036,461.917,701.908" size="9.872">昭</text>
 <text font="Ryumin-Light" bbox="453.917,684.036,461.917,693.908" size="9.872">和</text>
 <text font="Ryumin-Light" bbox="453.917,676.036,461.917,685.908" size="9.872">三</text>
@@ -475,7 +414,7 @@
 <text font="Ryumin-Light" bbox="453.917,604.036,461.917,613.908" size="9.872">七</text>
 <text font="Ryumin-Light" bbox="453.917,596.036,461.917,605.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="453.917,588.036,461.917,597.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="453.141,581.960,462.693,589.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="453.141,581.960,462.693,589.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="453.917,572.036,461.917,581.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="453.917,564.036,461.917,573.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="453.917,556.036,461.917,565.908" size="9.872">部</text>
@@ -489,7 +428,7 @@
 <text font="Ryumin-Light" bbox="453.917,492.036,461.917,501.908" size="9.872">正</text>
 <text font="Ryumin-Light" bbox="453.917,484.036,461.917,493.908" size="9.872">す</text>
 <text font="Ryumin-Light" bbox="453.917,476.036,461.917,485.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="453.141,469.960,462.693,477.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="453.141,469.960,462.693,477.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -506,27 +445,27 @@
 <text font="Ryumin-Light" bbox="443.024,692.036,451.024,701.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="443.024,684.036,451.024,693.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="443.024,676.036,451.024,685.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="442.248,669.960,451.800,677.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="442.248,669.960,451.800,677.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="443.024,660.036,451.024,669.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="443.024,652.036,451.024,661.908" size="9.872">・</text>
 <text font="Ryumin-Light" bbox="443.024,644.036,451.024,653.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="443.024,636.036,451.024,645.908" size="9.872">メ</text>
-<text font="Ryumin-Light" vertical="true" bbox="442.248,629.960,451.800,637.960" size="9.552">ー</text>
+<text font="Ryumin-Light" bbox="442.248,629.960,451.800,637.960" size="9.552">ー</text>
 <text font="Ryumin-Light" bbox="443.024,620.036,451.024,629.908" size="9.872">ト</text>
 <text font="Ryumin-Light" bbox="443.024,612.036,451.024,621.908" size="9.872">ル</text>
-<text font="Ryumin-Light" vertical="true" bbox="442.248,605.960,451.800,613.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="442.248,605.960,451.800,613.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="443.024,596.036,451.024,605.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="442.248,589.960,451.800,597.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="442.248,589.960,451.800,597.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="443.024,580.036,451.024,589.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="443.024,572.036,451.024,581.908" size="9.872">メ</text>
-<text font="Ryumin-Light" vertical="true" bbox="442.248,565.960,451.800,573.960" size="9.552">ー</text>
+<text font="Ryumin-Light" bbox="442.248,565.960,451.800,573.960" size="9.552">ー</text>
 <text font="Ryumin-Light" bbox="443.024,556.036,451.024,565.908" size="9.872">ト</text>
 <text font="Ryumin-Light" bbox="443.024,548.036,451.024,557.908" size="9.872">ル</text>
-<text font="Ryumin-Light" vertical="true" bbox="442.248,541.960,451.800,549.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="442.248,541.960,451.800,549.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="443.024,532.036,451.024,541.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="443.024,524.036,451.024,533.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="443.024,516.036,451.024,525.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="442.248,509.960,451.800,517.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="442.248,509.960,451.800,517.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="443.024,500.036,451.024,509.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="443.024,492.036,451.024,501.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="443.024,484.036,451.024,493.908" size="9.872">第</text>
@@ -536,7 +475,7 @@
 <text font="Ryumin-Light" bbox="443.024,452.036,451.024,461.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="443.024,444.036,451.024,453.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="443.024,436.036,451.024,445.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="442.248,429.960,451.800,437.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="442.248,429.960,451.800,437.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="443.024,420.036,451.024,429.908" size="9.872">第</text>
 <text>
 </text>
@@ -551,9 +490,9 @@
 <text font="Ryumin-Light" bbox="432.131,724.036,440.131,733.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="432.131,716.036,440.131,725.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="432.131,708.036,440.131,717.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="431.355,701.960,440.907,709.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="431.355,701.960,440.907,709.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="432.131,692.036,440.131,701.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="431.355,685.960,440.907,693.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="431.355,685.960,440.907,693.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="432.131,676.036,440.131,685.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="432.131,668.036,440.131,677.908" size="9.872">六</text>
 <text font="Ryumin-Light" bbox="432.131,660.036,440.131,669.908" size="9.872">十</text>
@@ -567,12 +506,12 @@
 <text font="Ryumin-Light" bbox="432.131,596.036,440.131,605.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="432.131,588.036,440.131,597.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="432.131,580.036,440.131,589.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="431.355,573.960,440.907,581.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="431.355,573.960,440.907,581.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="432.131,564.036,440.131,573.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="432.131,556.036,440.131,565.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="432.131,548.036,440.131,557.908" size="9.872">め</text>
 <text font="Ryumin-Light" bbox="432.131,540.036,440.131,549.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="431.355,533.960,440.907,541.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="431.355,533.960,440.907,541.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -597,17 +536,17 @@
 <text font="Ryumin-Light" bbox="421.250,628.036,429.250,637.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="421.250,620.036,429.250,629.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="421.250,612.036,429.250,621.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="420.474,605.960,430.026,613.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="420.474,605.960,430.026,613.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="421.250,596.036,429.250,605.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="421.250,588.036,429.250,597.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="420.474,581.960,430.026,589.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="420.474,577.960,430.026,585.960" size="9.552">）</text>
-<text font="Ryumin-Light" vertical="true" bbox="420.474,573.960,430.026,581.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="420.474,581.960,430.026,589.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="420.474,577.960,430.026,585.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="420.474,573.960,430.026,581.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="421.250,564.036,429.250,573.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="420.474,557.960,430.026,565.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="420.474,557.960,430.026,565.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="421.250,548.036,429.250,557.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="421.250,540.036,429.250,549.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="420.474,533.960,430.026,541.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="420.474,533.960,430.026,541.960" size="9.552">。</text>
 <text font="Ryumin-Light" bbox="421.250,524.036,429.250,533.908" size="9.872">青</text>
 <text font="Ryumin-Light" bbox="421.250,516.036,429.250,525.908" size="9.872">色</text>
 <text font="Ryumin-Light" bbox="421.250,508.036,429.250,517.908" size="9.872">の</text>
@@ -621,23 +560,25 @@
 <text font="Ryumin-Light" bbox="421.250,444.036,429.250,453.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="421.250,436.036,429.250,445.908" size="9.872">除</text>
 <text font="Ryumin-Light" bbox="421.250,428.036,429.250,437.908" size="9.872">き</text>
-<text font="Ryumin-Light" vertical="true" bbox="420.474,421.960,430.026,429.960" size="9.552">、</text>
-<text>
-</text>
-</textline>
-<textline bbox="409.474,609.960,419.026,617.960">
-<text font="Ryumin-Light" vertical="true" bbox="409.474,609.960,419.026,617.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="420.474,421.960,430.026,429.960" size="9.552">、</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="7" bbox="404.474,461.960,414.026,605.908">
+<textbox id="6" bbox="409.474,609.960,419.026,617.960">
+<textline bbox="409.474,609.960,419.026,617.960">
+<text font="Ryumin-Light" bbox="409.474,609.960,419.026,617.960" size="9.552">「</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="7" bbox="404.474,461.960,414.026,605.908" wmode="vertical">
 <textline bbox="404.474,461.960,414.026,605.908">
 <text font="Ryumin-Light" bbox="405.250,596.036,413.250,605.908" size="9.872">歩</text>
 <text font="Ryumin-Light" bbox="405.250,588.036,413.250,597.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="405.250,580.036,413.250,589.908" size="9.872">者</text>
 <text font="Ryumin-Light" bbox="405.250,572.036,413.250,581.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="404.474,565.960,414.026,573.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="404.474,565.960,414.026,573.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="405.250,556.036,413.250,565.908" size="9.872">進</text>
 <text font="Ryumin-Light" bbox="405.250,548.036,413.250,557.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="405.250,540.036,413.250,549.908" size="9.872">す</text>
@@ -650,12 +591,12 @@
 <text font="Ryumin-Light" bbox="405.250,484.036,413.250,493.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="405.250,476.036,413.250,485.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="405.250,468.036,413.250,477.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="404.474,461.960,414.026,469.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="404.474,461.960,414.026,469.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="8" bbox="383.474,612.036,393.026,781.908">
+<textbox id="8" bbox="383.474,612.036,393.026,781.908" wmode="vertical">
 <textline bbox="383.474,612.036,393.026,781.908">
 <text font="Ryumin-Light" bbox="384.250,772.036,392.250,781.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="384.250,764.036,392.250,773.908" size="9.872">下</text>
@@ -668,14 +609,14 @@
 <text font="Ryumin-Light" bbox="384.250,708.036,392.250,717.908" size="9.872">て</text>
 <text font="Ryumin-Light" bbox="384.250,700.036,392.250,709.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="384.250,692.036,392.250,701.908" size="9.872">じ</text>
-<text font="Ryumin-Light" vertical="true" bbox="383.474,685.960,393.026,693.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="383.474,681.960,393.026,689.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="383.474,685.960,393.026,693.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="383.474,681.960,393.026,689.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="384.250,676.036,392.250,685.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="383.474,669.960,393.026,677.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="383.474,669.960,393.026,677.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="384.250,660.036,392.250,669.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="384.250,652.036,392.250,661.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="384.250,644.036,392.250,653.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="383.474,637.960,393.026,645.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="383.474,637.960,393.026,645.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="384.250,628.036,392.250,637.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="384.250,620.036,392.250,629.908" size="9.872">表</text>
 <text font="Ryumin-Light" bbox="384.250,612.036,392.250,621.908" size="9.872">中</text>
@@ -683,13 +624,13 @@
 </text>
 </textline>
 </textbox>
-<textbox id="9" bbox="379.474,420.036,397.026,605.908">
+<textbox id="9" bbox="379.474,420.036,397.026,605.908" wmode="vertical">
 <textline bbox="387.474,420.036,397.026,605.908">
 <text font="Ryumin-Light" bbox="388.250,596.036,396.250,605.908" size="9.872">歩</text>
 <text font="Ryumin-Light" bbox="388.250,588.036,396.250,597.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="388.250,580.036,396.250,589.908" size="9.872">者</text>
 <text font="Ryumin-Light" bbox="388.250,572.036,396.250,581.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="387.474,565.960,397.026,573.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="387.474,565.960,397.026,573.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="388.250,556.036,396.250,565.908" size="9.872">道</text>
 <text font="Ryumin-Light" bbox="388.250,548.036,396.250,557.908" size="9.872">路</text>
 <text font="Ryumin-Light" bbox="388.250,540.036,396.250,549.908" size="9.872">の</text>
@@ -703,10 +644,10 @@
 <text font="Ryumin-Light" bbox="388.250,476.036,396.250,485.908" size="9.872">な</text>
 <text font="Ryumin-Light" bbox="388.250,468.036,396.250,477.908" size="9.872">ら</text>
 <text font="Ryumin-Light" bbox="388.250,460.036,396.250,469.908" size="9.872">ず</text>
-<text font="Ryumin-Light" vertical="true" bbox="387.474,453.960,397.026,461.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="387.474,453.960,397.026,461.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="388.250,444.036,396.250,453.908" size="9.872">ま</text>
 <text font="Ryumin-Light" bbox="388.250,436.036,396.250,445.908" size="9.872">た</text>
-<text font="Ryumin-Light" vertical="true" bbox="387.474,429.960,397.026,437.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="387.474,429.960,397.026,437.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="388.250,420.036,396.250,429.908" size="9.872">道</text>
 <text>
 </text>
@@ -719,7 +660,7 @@
 <text font="Ryumin-Light" bbox="380.250,564.036,388.250,573.908" size="9.872">わ</text>
 <text font="Ryumin-Light" bbox="380.250,556.036,388.250,565.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="380.250,548.036,388.250,557.908" size="9.872">か</text>
-<text font="Ryumin-Light" vertical="true" bbox="379.474,541.960,389.026,549.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="379.474,541.960,389.026,549.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="380.250,532.036,388.250,541.908" size="9.872">又</text>
 <text font="Ryumin-Light" bbox="380.250,524.036,388.250,533.908" size="9.872">は</text>
 <text font="Ryumin-Light" bbox="380.250,516.036,388.250,525.908" size="9.872">横</text>
@@ -739,7 +680,7 @@
 </text>
 </textline>
 </textbox>
-<textbox id="10" bbox="294.474,612.036,312.026,781.908">
+<textbox id="10" bbox="294.474,612.036,312.026,781.908" wmode="vertical">
 <textline bbox="302.474,612.036,312.026,781.908">
 <text font="Ryumin-Light" bbox="303.250,772.036,311.250,781.908" size="9.872">路</text>
 <text font="Ryumin-Light" bbox="303.250,764.036,311.250,773.908" size="9.872">を</text>
@@ -753,13 +694,13 @@
 <text font="Ryumin-Light" bbox="303.250,700.036,311.250,709.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="303.250,692.036,311.250,701.908" size="9.872">者</text>
 <text font="Ryumin-Light" bbox="303.250,684.036,311.250,693.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="302.474,677.960,312.026,685.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="302.474,677.960,312.026,685.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="303.250,668.036,311.250,677.908" size="9.872">す</text>
 <text font="Ryumin-Light" bbox="303.250,660.036,311.250,669.908" size="9.872">み</text>
 <text font="Ryumin-Light" bbox="303.250,652.036,311.250,661.908" size="9.872">や</text>
 <text font="Ryumin-Light" bbox="303.250,644.036,311.250,653.908" size="9.872">か</text>
 <text font="Ryumin-Light" bbox="303.250,636.036,311.250,645.908" size="9.872">に</text>
-<text font="Ryumin-Light" vertical="true" bbox="302.474,629.960,312.026,637.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="302.474,629.960,312.026,637.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="303.250,620.036,311.250,629.908" size="9.872">そ</text>
 <text font="Ryumin-Light" bbox="303.250,612.036,311.250,621.908" size="9.872">の</text>
 <text>
@@ -773,7 +714,7 @@
 <text font="Ryumin-Light" bbox="295.250,740.036,303.250,749.908" size="9.872">い</text>
 <text font="Ryumin-Light" bbox="295.250,732.036,303.250,741.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="295.250,724.036,303.250,733.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="294.474,717.960,304.026,725.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="294.474,717.960,304.026,725.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -785,7 +726,7 @@
 </text>
 </textline>
 </textbox>
-<textbox id="12" bbox="214.474,588.036,232.026,781.908">
+<textbox id="12" bbox="214.474,588.036,232.026,781.908" wmode="vertical">
 <textline bbox="222.474,588.036,232.026,781.908">
 <text font="Ryumin-Light" bbox="223.250,772.036,231.250,781.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="223.250,764.036,231.250,773.908" size="9.872">普</text>
@@ -796,7 +737,7 @@
 <text font="Ryumin-Light" bbox="223.250,724.036,231.250,733.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="223.250,716.036,231.250,725.908" size="9.872">い</text>
 <text font="Ryumin-Light" bbox="223.250,708.036,231.250,717.908" size="9.872">う</text>
-<text font="Ryumin-Light" vertical="true" bbox="222.474,701.960,232.026,709.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="222.474,701.960,232.026,709.960" size="9.552">。</text>
 <text font="Ryumin-Light" bbox="223.250,692.036,231.250,701.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="223.250,684.036,231.250,693.908" size="9.872">下</text>
 <text font="Ryumin-Light" bbox="223.250,676.036,231.250,685.908" size="9.872">こ</text>
@@ -818,7 +759,7 @@
 <text font="Ryumin-Light" bbox="215.250,772.036,223.250,781.908" size="9.872">進</text>
 <text font="Ryumin-Light" bbox="215.250,764.036,223.250,773.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="215.250,756.036,223.250,765.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="214.474,749.960,224.026,757.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="214.474,749.960,224.026,757.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="215.250,740.036,223.250,749.908" size="9.872">又</text>
 <text font="Ryumin-Light" bbox="215.250,732.036,223.250,741.908" size="9.872">は</text>
 <text font="Ryumin-Light" bbox="215.250,724.036,223.250,733.908" size="9.872">左</text>
@@ -833,16 +774,16 @@
 <text font="Ryumin-Light" bbox="215.250,652.036,223.250,661.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="215.250,644.036,223.250,653.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="215.250,636.036,223.250,645.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="214.474,629.960,224.026,637.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="214.474,629.960,224.026,637.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="13" bbox="177.474,588.036,207.026,781.908">
+<textbox id="13" bbox="177.474,588.036,207.026,781.908" wmode="vertical">
 <textline bbox="197.474,588.036,207.026,781.908">
 <text font="Ryumin-Light" bbox="198.250,772.036,206.250,781.908" size="9.872">ま</text>
 <text font="Ryumin-Light" bbox="198.250,764.036,206.250,773.908" size="9.872">た</text>
-<text font="Ryumin-Light" vertical="true" bbox="197.474,757.960,207.026,765.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="197.474,757.960,207.026,765.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="198.250,748.036,206.250,757.908" size="9.872">道</text>
 <text font="Ryumin-Light" bbox="198.250,740.036,206.250,749.908" size="9.872">路</text>
 <text font="Ryumin-Light" bbox="198.250,732.036,206.250,741.908" size="9.872">を</text>
@@ -856,12 +797,12 @@
 <text font="Ryumin-Light" bbox="198.250,668.036,206.250,677.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="198.250,660.036,206.250,669.908" size="9.872">者</text>
 <text font="Ryumin-Light" bbox="198.250,652.036,206.250,661.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="197.474,645.960,207.026,653.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="197.474,645.960,207.026,653.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="198.250,636.036,206.250,645.908" size="9.872">速</text>
 <text font="Ryumin-Light" bbox="198.250,628.036,206.250,637.908" size="9.872">や</text>
 <text font="Ryumin-Light" bbox="198.250,620.036,206.250,629.908" size="9.872">か</text>
 <text font="Ryumin-Light" bbox="198.250,612.036,206.250,621.908" size="9.872">に</text>
-<text font="Ryumin-Light" vertical="true" bbox="197.474,605.960,207.026,613.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="197.474,605.960,207.026,613.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="198.250,596.036,206.250,605.908" size="9.872">そ</text>
 <text font="Ryumin-Light" bbox="198.250,588.036,206.250,597.908" size="9.872">の</text>
 <text>
@@ -879,13 +820,13 @@
 <text font="Ryumin-Light" bbox="190.250,708.036,198.250,717.908" size="9.872">い</text>
 <text font="Ryumin-Light" bbox="190.250,700.036,198.250,709.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="190.250,692.036,198.250,701.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="189.474,685.960,199.026,693.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="189.474,685.960,199.026,693.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 <textline bbox="177.474,629.960,187.026,781.908">
 <text font="Ryumin-Light" bbox="178.250,772.036,186.250,781.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="177.474,765.960,187.026,773.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="177.474,765.960,187.026,773.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="178.250,756.036,186.250,765.908" size="9.872">道</text>
 <text font="Ryumin-Light" bbox="178.250,748.036,186.250,757.908" size="9.872">路</text>
 <text font="Ryumin-Light" bbox="178.250,740.036,186.250,749.908" size="9.872">の</text>
@@ -902,21 +843,21 @@
 <text font="Ryumin-Light" bbox="178.250,652.036,186.250,661.908" size="9.872">い</text>
 <text font="Ryumin-Light" bbox="178.250,644.036,186.250,653.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="178.250,636.036,186.250,645.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="177.474,629.960,187.026,637.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="177.474,629.960,187.026,637.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="14" bbox="148.474,629.960,170.026,781.908">
+<textbox id="14" bbox="148.474,629.960,170.026,781.908" wmode="vertical">
 <textline bbox="160.474,765.960,170.026,781.908">
 <text font="Ryumin-Light" bbox="161.250,772.036,169.250,781.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="160.474,765.960,170.026,773.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="160.474,765.960,170.026,773.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 <textline bbox="148.474,629.960,158.026,781.908">
 <text font="Ryumin-Light" bbox="149.250,772.036,157.250,781.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="148.474,765.960,158.026,773.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="148.474,765.960,158.026,773.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="149.250,756.036,157.250,765.908" size="9.872">道</text>
 <text font="Ryumin-Light" bbox="149.250,748.036,157.250,757.908" size="9.872">路</text>
 <text font="Ryumin-Light" bbox="149.250,740.036,157.250,749.908" size="9.872">の</text>
@@ -933,18 +874,25 @@
 <text font="Ryumin-Light" bbox="149.250,652.036,157.250,661.908" size="9.872">い</text>
 <text font="Ryumin-Light" bbox="149.250,644.036,157.250,653.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="149.250,636.036,157.250,645.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="148.474,629.960,158.026,637.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="148.474,629.960,158.026,637.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="15" bbox="362.474,445.960,372.026,605.908">
+<textbox id="15" bbox="143.474,577.960,153.026,585.960">
+<textline bbox="143.474,577.960,153.026,585.960">
+<text font="Ryumin-Light" bbox="143.474,577.960,153.026,585.960" size="9.552">」</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="16" bbox="362.474,445.960,372.026,605.908" wmode="vertical">
 <textline bbox="362.474,445.960,372.026,605.908">
 <text font="Ryumin-Light" bbox="363.250,596.036,371.250,605.908" size="9.872">歩</text>
 <text font="Ryumin-Light" bbox="363.250,588.036,371.250,597.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="363.250,580.036,371.250,589.908" size="9.872">者</text>
 <text font="Ryumin-Light" bbox="363.250,572.036,371.250,581.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="362.474,565.960,372.026,573.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="362.474,565.960,372.026,573.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="363.250,556.036,371.250,565.908" size="9.872">道</text>
 <text font="Ryumin-Light" bbox="363.250,548.036,371.250,557.908" size="9.872">路</text>
 <text font="Ryumin-Light" bbox="363.250,540.036,371.250,549.908" size="9.872">を</text>
@@ -959,19 +907,19 @@
 <text font="Ryumin-Light" bbox="363.250,468.036,371.250,477.908" size="9.872">い</text>
 <text font="Ryumin-Light" bbox="363.250,460.036,371.250,469.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="363.250,452.036,371.250,461.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="362.474,445.960,372.026,453.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="362.474,445.960,372.026,453.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="16" bbox="346.474,585.960,356.026,593.960">
+<textbox id="17" bbox="346.474,585.960,356.026,593.960">
 <textline bbox="346.474,585.960,356.026,593.960">
-<text font="Ryumin-Light" vertical="true" bbox="346.474,585.960,356.026,593.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="346.474,585.960,356.026,593.960" size="9.552">「</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="17" bbox="321.474,420.036,351.026,581.908">
+<textbox id="18" bbox="321.474,420.036,351.026,581.908" wmode="vertical">
 <textline bbox="341.474,421.960,351.026,581.908">
 <text font="Ryumin-Light" bbox="342.250,572.036,350.250,581.908" size="9.872">一</text>
 <text> </text>
@@ -979,7 +927,7 @@
 <text font="Ryumin-Light" bbox="342.250,548.036,350.250,557.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="342.250,540.036,350.250,549.908" size="9.872">者</text>
 <text font="Ryumin-Light" bbox="342.250,532.036,350.250,541.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="341.474,525.960,351.026,533.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="341.474,525.960,351.026,533.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="342.250,516.036,350.250,525.908" size="9.872">進</text>
 <text font="Ryumin-Light" bbox="342.250,508.036,350.250,517.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="342.250,500.036,350.250,509.908" size="9.872">す</text>
@@ -992,7 +940,7 @@
 <text font="Ryumin-Light" bbox="342.250,444.036,350.250,453.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="342.250,436.036,350.250,445.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="342.250,428.036,350.250,437.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="341.474,421.960,351.026,429.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="341.474,421.960,351.026,429.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -1004,7 +952,7 @@
 <text font="Ryumin-Light" bbox="330.250,540.036,338.250,549.908" size="9.872">自</text>
 <text font="Ryumin-Light" bbox="330.250,532.036,338.250,541.908" size="9.872">転</text>
 <text font="Ryumin-Light" bbox="330.250,524.036,338.250,533.908" size="9.872">車</text>
-<text font="Ryumin-Light" vertical="true" bbox="329.474,517.960,339.026,525.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="329.474,517.960,339.026,525.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="330.250,508.036,338.250,517.908" size="9.872">法</text>
 <text font="Ryumin-Light" bbox="330.250,500.036,338.250,509.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="330.250,492.036,338.250,501.908" size="9.872">六</text>
@@ -1028,10 +976,10 @@
 <text font="Ryumin-Light" bbox="322.250,532.036,330.250,541.908" size="9.872">て</text>
 <text font="Ryumin-Light" bbox="322.250,524.036,330.250,533.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="322.250,516.036,330.250,525.908" size="9.872">じ</text>
-<text font="Ryumin-Light" vertical="true" bbox="321.474,509.960,331.026,517.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="321.474,505.960,331.026,513.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="321.474,509.960,331.026,517.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="321.474,505.960,331.026,513.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="322.250,500.036,330.250,509.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="321.474,493.960,331.026,501.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="321.474,493.960,331.026,501.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="322.250,484.036,330.250,493.908" size="9.872">横</text>
 <text font="Ryumin-Light" bbox="322.250,476.036,330.250,485.908" size="9.872">断</text>
 <text font="Ryumin-Light" bbox="322.250,468.036,330.250,477.908" size="9.872">歩</text>
@@ -1045,14 +993,14 @@
 </text>
 </textline>
 </textbox>
-<textbox id="18" bbox="272.474,601.960,282.026,609.960">
+<textbox id="19" bbox="272.474,601.960,282.026,609.960">
 <textline bbox="272.474,601.960,282.026,609.960">
-<text font="Ryumin-Light" vertical="true" bbox="272.474,601.960,282.026,609.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="272.474,601.960,282.026,609.960" size="9.552">」</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="19" bbox="285.250,417.960,314.026,581.908">
+<textbox id="20" bbox="285.250,417.960,314.026,581.908" wmode="vertical">
 <textline bbox="304.474,417.960,314.026,581.908">
 <text font="Ryumin-Light" bbox="305.250,572.036,313.250,581.908" size="9.872">一</text>
 <text> </text>
@@ -1060,7 +1008,7 @@
 <text font="Ryumin-Light" bbox="305.250,548.036,313.250,557.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="305.250,540.036,313.250,549.908" size="9.872">者</text>
 <text font="Ryumin-Light" bbox="305.250,532.036,313.250,541.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="304.474,525.960,314.026,533.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="304.474,525.960,314.026,533.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="305.250,520.036,313.250,529.908" size="9.872">道</text>
 <text font="Ryumin-Light" bbox="305.250,512.036,313.250,521.908" size="9.872">路</text>
 <text font="Ryumin-Light" bbox="305.250,504.036,313.250,513.908" size="9.872">の</text>
@@ -1074,7 +1022,7 @@
 <text font="Ryumin-Light" bbox="305.250,440.036,313.250,449.908" size="9.872">な</text>
 <text font="Ryumin-Light" bbox="305.250,432.036,313.250,441.908" size="9.872">ら</text>
 <text font="Ryumin-Light" bbox="305.250,424.036,313.250,433.908" size="9.872">ず</text>
-<text font="Ryumin-Light" vertical="true" bbox="304.474,417.960,314.026,425.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="304.474,417.960,314.026,425.960" size="9.552">、</text>
 <text>
 </text>
 </textline>
@@ -1086,7 +1034,7 @@
 <text font="Ryumin-Light" bbox="297.250,532.036,305.250,541.908" size="9.872">わ</text>
 <text font="Ryumin-Light" bbox="297.250,524.036,305.250,533.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="297.250,516.036,305.250,525.908" size="9.872">か</text>
-<text font="Ryumin-Light" vertical="true" bbox="296.474,509.960,306.026,517.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="296.474,509.960,306.026,517.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="297.250,500.036,305.250,509.908" size="9.872">又</text>
 <text font="Ryumin-Light" bbox="297.250,492.036,305.250,501.908" size="9.872">は</text>
 <text font="Ryumin-Light" bbox="297.250,484.036,305.250,493.908" size="9.872">横</text>
@@ -1126,7 +1074,7 @@
 </text>
 </textline>
 </textbox>
-<textbox id="20" bbox="256.250,420.036,277.026,581.908">
+<textbox id="21" bbox="256.250,420.036,277.026,581.908" wmode="vertical">
 <textline bbox="267.474,420.036,277.026,581.908">
 <text font="Ryumin-Light" bbox="268.250,572.036,276.250,581.908" size="9.872">一</text>
 <text> </text>
@@ -1134,7 +1082,7 @@
 <text font="Ryumin-Light" bbox="268.250,548.036,276.250,557.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="268.250,540.036,276.250,549.908" size="9.872">者</text>
 <text font="Ryumin-Light" bbox="268.250,532.036,276.250,541.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="267.474,525.960,277.026,533.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="267.474,525.960,277.026,533.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="268.250,516.036,276.250,525.908" size="9.872">道</text>
 <text font="Ryumin-Light" bbox="268.250,508.036,276.250,517.908" size="9.872">路</text>
 <text font="Ryumin-Light" bbox="268.250,500.036,276.250,509.908" size="9.872">を</text>
@@ -1176,12 +1124,12 @@
 </text>
 </textline>
 </textbox>
-<textbox id="21" bbox="191.474,420.036,201.026,581.908">
+<textbox id="22" bbox="191.474,420.036,201.026,581.908" wmode="vertical">
 <textline bbox="191.474,420.036,201.026,581.908">
 <text font="Ryumin-Light" bbox="192.250,572.036,200.250,581.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="192.250,564.036,200.250,573.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="192.250,556.036,200.250,565.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="191.474,549.960,201.026,557.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="191.474,549.960,201.026,557.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="192.250,540.036,200.250,549.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="192.250,532.036,200.250,541.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="192.250,524.036,200.250,533.908" size="9.872">第</text>
@@ -1202,12 +1150,7 @@
 </text>
 </textline>
 </textbox>
-<textbox id="22" bbox="45.224,420.036,153.026,781.960">
-<textline bbox="143.474,577.960,153.026,585.960">
-<text font="Ryumin-Light" vertical="true" bbox="143.474,577.960,153.026,585.960" size="9.552">」</text>
-<text>
-</text>
-</textline>
+<textbox id="23" bbox="45.224,420.036,142.026,781.960" wmode="vertical">
 <textline bbox="132.474,420.036,142.026,781.908">
 <text font="Ryumin-Light" bbox="133.250,772.036,141.250,781.908" size="9.872">す</text>
 <text font="Ryumin-Light" bbox="133.250,764.036,141.250,773.908" size="9.872">る</text>
@@ -1222,10 +1165,10 @@
 <text font="Ryumin-Light" bbox="133.250,692.036,141.250,701.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="133.250,684.036,141.250,693.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="133.250,676.036,141.250,685.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="132.474,669.960,142.026,677.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="132.474,669.960,142.026,677.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="133.250,660.036,141.250,669.908" size="9.872">直</text>
 <text font="Ryumin-Light" bbox="133.250,652.036,141.250,661.908" size="9.872">進</text>
-<text font="Ryumin-Light" vertical="true" bbox="132.474,645.960,142.026,653.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="132.474,645.960,142.026,653.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="133.250,636.036,141.250,645.908" size="9.872">右</text>
 <text font="Ryumin-Light" bbox="133.250,628.036,141.250,637.908" size="9.872">折</text>
 <text font="Ryumin-Light" bbox="133.250,620.036,141.250,629.908" size="9.872">し</text>
@@ -1245,7 +1188,7 @@
 <text font="Ryumin-Light" bbox="133.250,508.036,141.250,517.908" size="9.872">直</text>
 <text font="Ryumin-Light" bbox="133.250,500.036,141.250,509.908" size="9.872">進</text>
 <text font="Ryumin-Light" bbox="133.250,492.036,141.250,501.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="132.474,485.960,142.026,493.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="132.474,485.960,142.026,493.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="133.250,476.036,141.250,485.908" size="9.872">そ</text>
 <text font="Ryumin-Light" bbox="133.250,468.036,141.250,477.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="133.250,460.036,141.250,469.908" size="9.872">地</text>
@@ -1267,22 +1210,22 @@
 <text font="Ryumin-Light" bbox="122.250,724.036,130.250,733.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="122.250,716.036,130.250,725.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="122.250,708.036,130.250,717.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="121.474,701.960,131.026,709.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="121.474,697.960,131.026,705.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="121.474,701.960,131.026,709.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="121.474,697.960,131.026,705.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="122.250,692.036,130.250,701.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="121.474,685.960,131.026,693.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="121.474,685.960,131.026,693.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="122.250,676.036,130.250,685.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="121.474,669.960,131.026,677.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="121.474,669.960,131.026,677.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="122.250,660.036,130.250,669.908" size="9.872">直</text>
 <text font="Ryumin-Light" bbox="122.250,652.036,130.250,661.908" size="9.872">進</text>
 <text font="Ryumin-Light" bbox="122.250,644.036,130.250,653.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="122.250,636.036,130.250,645.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="121.474,629.960,131.026,637.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="121.474,629.960,131.026,637.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="122.250,620.036,130.250,629.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="122.250,612.036,130.250,621.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="122.250,604.036,130.250,613.908" size="9.872">め</text>
 <text font="Ryumin-Light" bbox="122.250,596.036,130.250,605.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="121.474,589.960,131.026,597.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="121.474,589.960,131.026,597.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -1296,57 +1239,57 @@
 <text font="Ryumin-Light" bbox="111.357,716.036,119.357,725.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="111.357,708.036,119.357,717.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="111.357,700.036,119.357,709.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,693.960,120.133,701.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="110.581,693.960,120.133,701.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="111.357,684.036,119.357,693.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="111.357,676.036,119.357,685.908" size="9.872">な</text>
 <text font="Ryumin-Light" bbox="111.357,668.036,119.357,677.908" size="9.872">わ</text>
 <text font="Ryumin-Light" bbox="111.357,660.036,119.357,669.908" size="9.872">せ</text>
 <text font="Ryumin-Light" bbox="111.357,652.036,119.357,661.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,645.960,120.133,653.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="110.581,645.960,120.133,653.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="111.357,636.036,119.357,645.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,629.960,120.133,637.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="110.581,629.960,120.133,637.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="111.357,620.036,119.357,629.908" size="9.872">行</text>
 <text font="Ryumin-Light" bbox="111.357,612.036,119.357,621.908" size="9.872">わ</text>
 <text font="Ryumin-Light" bbox="111.357,604.036,119.357,613.908" size="9.872">せ</text>
 <text font="Ryumin-Light" bbox="111.357,596.036,119.357,605.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,589.960,120.133,597.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="110.581,589.960,120.133,597.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="111.357,580.036,119.357,589.908" size="9.872">に</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,573.960,120.133,581.960" size="9.552">、</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,573.960,120.133,581.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="110.581,573.960,120.133,581.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="110.581,573.960,120.133,581.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="111.357,564.036,119.357,573.908" size="9.872">次</text>
 <text font="Ryumin-Light" bbox="111.357,556.036,119.357,565.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="111.357,548.036,119.357,557.908" size="9.872">各</text>
 <text font="Ryumin-Light" bbox="111.357,540.036,119.357,549.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="111.357,532.036,119.357,541.908" size="9.872">に</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,525.960,120.133,533.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="110.581,525.960,120.133,533.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="111.357,516.036,119.357,525.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,509.960,120.133,517.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="110.581,509.960,120.133,517.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="111.357,500.036,119.357,509.908" size="9.872">次</text>
 <text font="Ryumin-Light" bbox="111.357,492.036,119.357,501.908" size="9.872">に</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,485.960,120.133,493.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="110.581,485.960,120.133,493.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="111.357,476.036,119.357,485.908" size="9.872">に</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,469.960,120.133,477.960" size="9.552">、</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,469.960,120.133,477.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="110.581,469.960,120.133,477.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="110.581,469.960,120.133,477.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="111.357,460.036,119.357,469.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="111.357,452.036,119.357,461.908" size="9.872">え</text>
 <text font="Ryumin-Light" bbox="111.357,444.036,119.357,453.908" size="9.872">な</text>
 <text font="Ryumin-Light" bbox="111.357,436.036,119.357,445.908" size="9.872">い</text>
-<text font="Ryumin-Light" vertical="true" bbox="110.581,429.960,120.133,437.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="110.581,429.960,120.133,437.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="111.357,420.036,119.357,429.908" size="9.872">を</text>
 <text>
 </text>
 </textline>
 <textline bbox="99.688,420.036,109.240,781.960">
-<text font="Ryumin-Light" vertical="true" bbox="99.688,773.960,109.240,781.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="99.688,773.960,109.240,781.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="100.464,764.036,108.464,773.908" size="9.872">超</text>
 <text font="Ryumin-Light" bbox="100.464,756.036,108.464,765.908" size="9.872">え</text>
 <text font="Ryumin-Light" bbox="100.464,748.036,108.464,757.908" size="9.872">な</text>
 <text font="Ryumin-Light" bbox="100.464,740.036,108.464,749.908" size="9.872">い</text>
-<text font="Ryumin-Light" vertical="true" bbox="99.688,733.960,109.240,741.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="99.688,733.960,109.240,741.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="100.464,724.036,108.464,733.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="100.464,716.036,108.464,725.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="100.464,708.036,108.464,717.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="99.688,701.960,109.240,709.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="99.688,701.960,109.240,709.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="100.464,692.036,108.464,701.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="100.464,684.036,108.464,693.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="100.464,676.036,108.464,685.908" size="9.872">号</text>
@@ -1357,7 +1300,7 @@
 <text font="Ryumin-Light" bbox="100.464,636.036,108.464,645.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="100.464,628.036,108.464,637.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="100.464,620.036,108.464,629.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="99.688,613.960,109.240,621.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="99.688,613.960,109.240,621.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="100.464,604.036,108.464,613.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="100.464,596.036,108.464,605.908" size="9.872">四</text>
 <text font="Ryumin-Light" bbox="100.464,588.036,108.464,597.908" size="9.872">号</text>
@@ -1377,7 +1320,7 @@
 <text font="Ryumin-Light" bbox="100.464,476.036,108.464,485.908" size="9.872">り</text>
 <text font="Ryumin-Light" bbox="100.464,468.036,108.464,477.908" size="9.872">下</text>
 <text font="Ryumin-Light" bbox="100.464,460.036,108.464,469.908" size="9.872">げ</text>
-<text font="Ryumin-Light" vertical="true" bbox="99.688,453.960,109.240,461.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="99.688,453.960,109.240,461.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="100.464,444.036,108.464,453.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="100.464,436.036,108.464,445.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="100.464,428.036,108.464,437.908" size="9.872">号</text>
@@ -1391,7 +1334,7 @@
 <text font="Ryumin-Light" bbox="89.572,756.036,97.572,765.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="89.572,748.036,97.572,757.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="89.572,740.036,97.572,749.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="88.796,733.960,98.348,741.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="88.796,733.960,98.348,741.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="89.572,724.036,97.572,733.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="89.572,716.036,97.572,725.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="89.572,708.036,97.572,717.908" size="9.872">の</text>
@@ -1405,7 +1348,7 @@
 <text font="Ryumin-Light" bbox="89.572,644.036,97.572,653.908" size="9.872">加</text>
 <text font="Ryumin-Light" bbox="89.572,636.036,97.572,645.908" size="9.872">え</text>
 <text font="Ryumin-Light" bbox="89.572,628.036,97.572,637.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="88.796,621.960,98.348,629.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="88.796,621.960,98.348,629.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -1455,7 +1398,7 @@
 <text font="Ryumin-Light" bbox="67.786,612.036,75.786,621.908" size="9.872">加</text>
 <text font="Ryumin-Light" bbox="67.786,604.036,75.786,613.908" size="9.872">え</text>
 <text font="Ryumin-Light" bbox="67.786,596.036,75.786,605.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="67.010,589.960,76.562,597.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="67.010,589.960,76.562,597.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -1501,7 +1444,7 @@
 <text font="Ryumin-Light" bbox="46.000,620.036,54.000,629.908" size="9.872">六</text>
 <text font="Ryumin-Light" bbox="46.000,612.036,54.000,621.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="46.000,604.036,54.000,613.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="45.224,597.960,54.776,605.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="45.224,597.960,54.776,605.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="46.000,588.036,54.000,597.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="46.000,580.036,54.000,589.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="46.000,572.036,54.000,581.908" size="9.872">号</text>
@@ -1518,12 +1461,12 @@
 <text font="Ryumin-Light" bbox="46.000,484.036,54.000,493.908" size="9.872">加</text>
 <text font="Ryumin-Light" bbox="46.000,476.036,54.000,485.908" size="9.872">え</text>
 <text font="Ryumin-Light" bbox="46.000,468.036,54.000,477.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="45.224,461.960,54.776,469.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="45.224,461.960,54.776,469.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 </textbox>
-<textbox id="23" bbox="45.212,52.036,549.776,413.960">
+<textbox id="24" bbox="45.212,52.036,549.776,413.960" wmode="vertical">
 <textline bbox="540.224,52.036,549.776,405.908">
 <text font="Ryumin-Light" bbox="541.000,396.036,549.000,405.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="541.000,388.036,549.000,397.908" size="9.872">の</text>
@@ -1534,7 +1477,7 @@
 <text font="Ryumin-Light" bbox="541.000,348.036,549.000,357.908" size="9.872">機</text>
 <text font="Ryumin-Light" bbox="541.000,340.036,549.000,349.908" size="9.872">関</text>
 <text font="Ryumin-Light" bbox="541.000,332.036,549.000,341.908" size="9.872">が</text>
-<text font="Ryumin-Light" vertical="true" bbox="540.224,325.960,549.776,333.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="540.224,325.960,549.776,333.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="541.000,316.036,549.000,325.908" size="9.872">傷</text>
 <text font="Ryumin-Light" bbox="541.000,308.036,549.000,317.908" size="9.872">病</text>
 <text font="Ryumin-Light" bbox="541.000,300.036,549.000,309.908" size="9.872">者</text>
@@ -1566,7 +1509,7 @@
 <text font="Ryumin-Light" bbox="541.000,92.036,549.000,101.908" size="9.872">受</text>
 <text font="Ryumin-Light" bbox="541.000,84.036,549.000,93.908" size="9.872">け</text>
 <text font="Ryumin-Light" bbox="541.000,76.036,549.000,85.908" size="9.872">て</text>
-<text font="Ryumin-Light" vertical="true" bbox="540.224,69.960,549.776,77.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="540.224,69.960,549.776,77.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="541.000,60.036,549.000,69.908" size="9.872">当</text>
 <text font="Ryumin-Light" bbox="541.000,52.036,549.000,61.908" size="9.872">該</text>
 <text>
@@ -1657,7 +1600,7 @@
 <text font="Ryumin-Light" bbox="509.500,332.036,517.500,341.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="509.500,324.036,517.500,333.908" size="9.872">削</text>
 <text font="Ryumin-Light" bbox="509.500,316.036,517.500,325.908" size="9.872">り</text>
-<text font="Ryumin-Light" vertical="true" bbox="508.724,309.960,518.276,317.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="508.724,309.960,518.276,317.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="509.500,300.036,517.500,309.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="509.500,292.036,517.500,301.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="509.500,284.036,517.500,293.908" size="9.872">号</text>
@@ -1668,7 +1611,7 @@
 <text font="Ryumin-Light" bbox="509.500,244.036,517.500,253.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="509.500,236.036,517.500,245.908" size="9.872">す</text>
 <text font="Ryumin-Light" bbox="509.500,228.036,517.500,237.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="508.724,221.960,518.276,229.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="508.724,221.960,518.276,229.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -1688,7 +1631,7 @@
 <text font="Ryumin-Light" bbox="499.000,300.036,507.000,309.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="499.000,292.036,507.000,301.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="499.000,284.036,507.000,293.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="498.224,277.960,507.776,285.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="498.224,277.960,507.776,285.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="499.000,268.036,507.000,277.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="499.000,260.036,507.000,269.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="499.000,252.036,507.000,261.908" size="9.872">十</text>
@@ -1698,9 +1641,9 @@
 <text font="Ryumin-Light" bbox="499.000,220.036,507.000,229.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="499.000,212.036,507.000,221.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="499.000,204.036,507.000,213.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="498.224,197.960,507.776,205.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="498.224,197.960,507.776,205.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="499.000,188.036,507.000,197.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="498.224,181.960,507.776,189.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="498.224,181.960,507.776,189.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="499.000,172.036,507.000,181.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="499.000,164.036,507.000,173.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="499.000,156.036,507.000,165.908" size="9.872">十</text>
@@ -1710,12 +1653,12 @@
 <text font="Ryumin-Light" bbox="499.000,124.036,507.000,133.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="499.000,116.036,507.000,125.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="499.000,108.036,507.000,117.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="498.224,101.960,507.776,109.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="498.224,101.960,507.776,109.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="499.000,92.036,507.000,101.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="499.000,84.036,507.000,93.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="499.000,76.036,507.000,85.908" size="9.872">め</text>
 <text font="Ryumin-Light" bbox="499.000,68.036,507.000,77.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="498.224,61.960,507.776,69.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="498.224,61.960,507.776,69.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -1727,7 +1670,7 @@
 <text font="Ryumin-Light" bbox="488.500,364.036,496.500,373.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="488.500,356.036,496.500,365.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="488.500,348.036,496.500,357.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="487.724,341.960,497.276,349.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="487.724,341.960,497.276,349.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="488.500,332.036,496.500,341.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="488.500,324.036,496.500,333.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="488.500,316.036,496.500,325.908" size="9.872">十</text>
@@ -1737,9 +1680,9 @@
 <text font="Ryumin-Light" bbox="488.500,284.036,496.500,293.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="488.500,276.036,496.500,285.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="488.500,268.036,496.500,277.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="487.724,261.960,497.276,269.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="487.724,261.960,497.276,269.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="488.500,252.036,496.500,261.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="487.724,245.960,497.276,253.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="487.724,245.960,497.276,253.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="488.500,236.036,496.500,245.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="488.500,228.036,496.500,237.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="488.500,220.036,496.500,229.908" size="9.872">十</text>
@@ -1750,12 +1693,12 @@
 <text font="Ryumin-Light" bbox="488.500,180.036,496.500,189.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="488.500,172.036,496.500,181.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="488.500,164.036,496.500,173.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="487.724,157.960,497.276,165.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="487.724,157.960,497.276,165.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="488.500,148.036,496.500,157.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="488.500,140.036,496.500,149.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="488.500,132.036,496.500,141.908" size="9.872">め</text>
 <text font="Ryumin-Light" bbox="488.500,124.036,496.500,133.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="487.724,117.960,497.276,125.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="487.724,117.960,497.276,125.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -1765,7 +1708,7 @@
 <text font="Ryumin-Light" bbox="477.964,380.036,485.964,389.908" size="9.872">七</text>
 <text font="Ryumin-Light" bbox="477.964,372.036,485.964,381.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="477.964,364.036,485.964,373.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="477.188,357.960,486.740,365.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="477.188,357.960,486.740,365.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="477.964,348.036,485.964,357.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="477.964,340.036,485.964,349.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="477.964,332.036,485.964,341.908" size="9.872">十</text>
@@ -1776,9 +1719,9 @@
 <text font="Ryumin-Light" bbox="477.964,292.036,485.964,301.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="477.964,284.036,485.964,293.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="477.964,276.036,485.964,285.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="477.188,269.960,486.740,277.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="477.188,269.960,486.740,277.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="477.964,260.036,485.964,269.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="477.188,253.960,486.740,261.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="477.188,253.960,486.740,261.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="477.964,244.036,485.964,253.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="477.964,236.036,485.964,245.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="477.964,228.036,485.964,237.908" size="9.872">十</text>
@@ -1789,22 +1732,22 @@
 <text font="Ryumin-Light" bbox="477.964,188.036,485.964,197.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="477.964,180.036,485.964,189.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="477.964,172.036,485.964,181.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="477.188,165.960,486.740,173.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="477.188,165.960,486.740,173.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="477.964,156.036,485.964,165.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="477.964,148.036,485.964,157.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="477.964,140.036,485.964,149.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="477.188,133.960,486.740,141.960" size="9.552">、</text>
-<text font="Ryumin-Light" vertical="true" bbox="477.188,133.960,486.740,141.960" size="9.552">「</text>
-<text font="Ryumin-Light" vertical="true" bbox="477.188,129.960,486.740,137.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="477.188,133.960,486.740,141.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="477.188,133.960,486.740,141.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="477.188,129.960,486.740,137.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="477.964,120.036,485.964,129.908" size="9.872">前</text>
 <text font="Ryumin-Light" bbox="477.964,112.036,485.964,121.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="477.188,105.960,486.740,113.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="477.188,105.960,486.740,113.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="477.964,96.036,485.964,105.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="477.964,88.036,485.964,97.908" size="9.872">あ</text>
 <text font="Ryumin-Light" bbox="477.964,80.036,485.964,89.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="477.964,72.036,485.964,81.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="477.964,64.036,485.964,73.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="477.188,61.960,486.740,69.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="477.188,61.960,486.740,69.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="477.964,52.036,485.964,61.908" size="9.872">前</text>
 <text>
 </text>
@@ -1840,19 +1783,19 @@
 <text font="Ryumin-Light" bbox="467.428,188.036,475.428,197.908" size="9.872">い</text>
 <text font="Ryumin-Light" bbox="467.428,180.036,475.428,189.908" size="9.872">て</text>
 <text font="Ryumin-Light" bbox="467.428,172.036,475.428,181.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="466.652,165.960,476.204,173.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="466.652,165.960,476.204,173.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="467.428,156.036,475.428,165.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="467.428,148.036,475.428,157.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="466.652,141.960,476.204,149.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="466.652,141.960,476.204,149.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="467.428,132.036,475.428,141.908" size="9.872">と</text>
-<text font="Ryumin-Light" vertical="true" bbox="466.652,125.960,476.204,133.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="466.652,125.960,476.204,133.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="467.428,116.036,475.428,125.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="467.428,108.036,475.428,117.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="467.428,100.036,475.428,109.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="467.428,92.036,475.428,101.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="467.428,84.036,475.428,93.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="467.428,76.036,475.428,85.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="466.652,69.960,476.204,77.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="466.652,69.960,476.204,77.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="467.428,60.036,475.428,69.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="467.428,52.036,475.428,61.908" size="9.872">削</text>
 <text>
@@ -1860,7 +1803,7 @@
 </textline>
 <textline bbox="456.116,397.960,465.668,413.908">
 <text font="Ryumin-Light" bbox="456.892,404.036,464.892,413.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="456.116,397.960,465.668,405.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="456.116,397.960,465.668,405.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -1880,12 +1823,12 @@
 <text font="Ryumin-Light" bbox="446.356,300.036,454.356,309.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="446.356,292.036,454.356,301.908" size="9.872">め</text>
 <text font="Ryumin-Light" bbox="446.356,284.036,454.356,293.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="445.580,277.960,455.132,285.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="445.580,277.960,455.132,285.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 <textline bbox="435.044,285.960,444.596,405.960">
-<text font="Ryumin-Light" vertical="true" bbox="435.044,397.960,444.596,405.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="435.044,397.960,444.596,405.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="435.820,388.036,443.820,397.908" size="9.872">委</text>
 <text font="Ryumin-Light" bbox="435.820,380.036,443.820,389.908" size="9.872">託</text>
 <text font="Ryumin-Light" bbox="435.820,372.036,443.820,381.908" size="9.872">す</text>
@@ -1899,7 +1842,7 @@
 <text font="Ryumin-Light" bbox="435.820,308.036,443.820,317.908" size="9.872">い</text>
 <text font="Ryumin-Light" bbox="435.820,300.036,443.820,309.908" size="9.872">事</text>
 <text font="Ryumin-Light" bbox="435.820,292.036,443.820,301.908" size="9.872">務</text>
-<text font="Ryumin-Light" vertical="true" bbox="435.044,285.960,444.596,293.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="435.044,285.960,444.596,293.960" size="9.552">）</text>
 <text>
 </text>
 </textline>
@@ -1932,7 +1875,7 @@
 <text font="Ryumin-Light" bbox="425.284,204.036,433.284,213.908" size="9.872">も</text>
 <text font="Ryumin-Light" bbox="425.284,196.036,433.284,205.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="425.284,188.036,433.284,197.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="424.508,181.960,434.060,189.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="424.508,181.960,434.060,189.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="425.284,172.036,433.284,181.908" size="9.872">次</text>
 <text font="Ryumin-Light" bbox="425.284,164.036,433.284,173.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="425.284,156.036,433.284,165.908" size="9.872">掲</text>
@@ -1944,7 +1887,7 @@
 <text font="Ryumin-Light" bbox="425.284,108.036,433.284,117.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="425.284,100.036,433.284,109.908" size="9.872">す</text>
 <text font="Ryumin-Light" bbox="425.284,92.036,433.284,101.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="424.508,85.960,434.060,93.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="424.508,85.960,434.060,93.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -1989,7 +1932,7 @@
 <text font="Ryumin-Light" bbox="404.212,332.036,412.212,341.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="404.212,324.036,412.212,333.908" size="9.872">六</text>
 <text font="Ryumin-Light" bbox="404.212,316.036,412.212,325.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="403.436,309.960,412.988,317.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="403.436,309.960,412.988,317.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="404.212,300.036,412.212,309.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="404.212,292.036,412.212,301.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="404.212,284.036,412.212,293.908" size="9.872">第</text>
@@ -2010,8 +1953,8 @@
 <text font="Ryumin-Light" bbox="404.212,164.036,412.212,173.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="404.212,156.036,412.212,165.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="404.212,148.036,412.212,157.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="403.436,141.960,412.988,149.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="403.436,137.960,412.988,145.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="403.436,141.960,412.988,149.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="403.436,137.960,412.988,145.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="404.212,132.036,412.212,141.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="404.212,124.036,412.212,133.908" size="9.872">規</text>
 <text font="Ryumin-Light" bbox="404.212,116.036,412.212,125.908" size="9.872">定</text>
@@ -2028,14 +1971,14 @@
 </textline>
 <textline bbox="392.900,180.036,402.452,397.908">
 <text font="Ryumin-Light" bbox="393.676,388.036,401.676,397.908" size="9.872">両</text>
-<text font="Ryumin-Light" vertical="true" bbox="392.900,381.960,402.452,389.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="392.900,381.960,402.452,389.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="393.676,372.036,401.676,381.908" size="9.872">積</text>
 <text font="Ryumin-Light" bbox="393.676,364.036,401.676,373.908" size="9.872">載</text>
 <text font="Ryumin-Light" bbox="393.676,356.036,401.676,365.908" size="9.872">物</text>
 <text font="Ryumin-Light" bbox="393.676,348.036,401.676,357.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="393.676,340.036,401.676,349.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="393.676,332.036,401.676,341.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="392.900,325.960,402.452,333.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="392.900,325.960,402.452,333.960" size="9.552">。</text>
 <text font="Ryumin-Light" bbox="393.676,316.036,401.676,325.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="393.676,308.036,401.676,317.908" size="9.872">下</text>
 <text font="Ryumin-Light" bbox="393.676,300.036,401.676,309.908" size="9.872">こ</text>
@@ -2047,8 +1990,8 @@
 <text font="Ryumin-Light" bbox="393.676,252.036,401.676,261.908" size="9.872">て</text>
 <text font="Ryumin-Light" bbox="393.676,244.036,401.676,253.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="393.676,236.036,401.676,245.908" size="9.872">じ</text>
-<text font="Ryumin-Light" vertical="true" bbox="392.900,229.960,402.452,237.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="392.900,225.960,402.452,233.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="392.900,229.960,402.452,237.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="392.900,225.960,402.452,233.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="393.676,220.036,401.676,229.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="393.676,212.036,401.676,221.908" size="9.872">返</text>
 <text font="Ryumin-Light" bbox="393.676,204.036,401.676,213.908" size="9.872">還</text>
@@ -2070,7 +2013,7 @@
 <text font="Ryumin-Light" bbox="383.140,332.036,391.140,341.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="383.140,324.036,391.140,333.908" size="9.872">七</text>
 <text font="Ryumin-Light" bbox="383.140,316.036,391.140,325.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="382.364,309.960,391.916,317.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="382.364,309.960,391.916,317.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="383.140,300.036,391.140,309.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="383.140,292.036,391.140,301.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="383.140,284.036,391.140,293.908" size="9.872">第</text>
@@ -2096,8 +2039,8 @@
 <text font="Ryumin-Light" bbox="383.140,124.036,391.140,133.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="383.140,116.036,391.140,125.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="383.140,108.036,391.140,117.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="382.364,101.960,391.916,109.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="382.364,97.960,391.916,105.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="382.364,101.960,391.916,109.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="382.364,97.960,391.916,105.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="383.140,92.036,391.140,101.908" size="9.872">又</text>
 <text font="Ryumin-Light" bbox="383.140,84.036,391.140,93.908" size="9.872">は</text>
 <text font="Ryumin-Light" bbox="383.140,76.036,391.140,85.908" size="9.872">第</text>
@@ -2130,7 +2073,7 @@
 <text font="Ryumin-Light" bbox="362.068,332.036,370.068,341.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="362.068,324.036,370.068,333.908" size="9.872">九</text>
 <text font="Ryumin-Light" bbox="362.068,316.036,370.068,325.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="361.292,309.960,370.844,317.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="361.292,309.960,370.844,317.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="362.068,300.036,370.068,309.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="362.068,292.036,370.068,301.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="362.068,284.036,370.068,293.908" size="9.872">第</text>
@@ -2156,8 +2099,8 @@
 <text font="Ryumin-Light" bbox="362.068,124.036,370.068,133.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="362.068,116.036,370.068,125.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="362.068,108.036,370.068,117.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="361.292,101.960,370.844,109.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="361.292,97.960,370.844,105.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="361.292,101.960,370.844,109.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="361.292,97.960,370.844,105.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="362.068,92.036,370.068,101.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="362.068,84.036,370.068,93.908" size="9.872">規</text>
 <text font="Ryumin-Light" bbox="362.068,76.036,370.068,85.908" size="9.872">定</text>
@@ -2185,7 +2128,7 @@
 <text font="Ryumin-Light" bbox="340.996,332.036,348.996,341.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="340.996,324.036,348.996,333.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="340.996,316.036,348.996,325.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="340.220,309.960,349.772,317.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="340.220,309.960,349.772,317.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="340.996,300.036,348.996,309.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="340.996,292.036,348.996,301.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="340.996,284.036,348.996,293.908" size="9.872">第</text>
@@ -2206,8 +2149,8 @@
 <text font="Ryumin-Light" bbox="340.996,164.036,348.996,173.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="340.996,156.036,348.996,165.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="340.996,148.036,348.996,157.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="340.220,141.960,349.772,149.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="340.220,137.960,349.772,145.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="340.220,141.960,349.772,149.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="340.220,137.960,349.772,145.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="340.996,132.036,348.996,141.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="340.996,124.036,348.996,133.908" size="9.872">規</text>
 <text font="Ryumin-Light" bbox="340.996,116.036,348.996,125.908" size="9.872">定</text>
@@ -2246,7 +2189,7 @@
 <text font="Ryumin-Light" bbox="319.924,324.036,327.924,333.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="319.924,316.036,327.924,325.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="319.924,308.036,327.924,317.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="319.148,301.960,328.700,309.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="319.148,301.960,328.700,309.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="319.924,292.036,327.924,301.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="319.924,284.036,327.924,293.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="319.924,276.036,327.924,285.908" size="9.872">第</text>
@@ -2272,8 +2215,8 @@
 <text font="Ryumin-Light" bbox="319.924,116.036,327.924,125.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="319.924,108.036,327.924,117.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="319.924,100.036,327.924,109.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="319.148,93.960,328.700,101.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="319.148,89.960,328.700,97.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="319.148,93.960,328.700,101.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="319.148,89.960,328.700,97.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="319.924,84.036,327.924,93.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="319.924,76.036,327.924,85.908" size="9.872">規</text>
 <text font="Ryumin-Light" bbox="319.924,68.036,327.924,77.908" size="9.872">定</text>
@@ -2308,7 +2251,7 @@
 <text font="Ryumin-Light" bbox="298.852,324.036,306.852,333.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="298.852,316.036,306.852,325.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="298.852,308.036,306.852,317.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="298.076,301.960,307.628,309.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="298.076,301.960,307.628,309.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="298.852,292.036,306.852,301.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="298.852,284.036,306.852,293.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="298.852,276.036,306.852,285.908" size="9.872">第</text>
@@ -2329,8 +2272,8 @@
 <text font="Ryumin-Light" bbox="298.852,156.036,306.852,165.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="298.852,148.036,306.852,157.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="298.852,140.036,306.852,149.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="298.076,133.960,307.628,141.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="298.076,129.960,307.628,137.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="298.076,133.960,307.628,141.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="298.076,129.960,307.628,137.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="298.852,124.036,306.852,133.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="298.852,116.036,306.852,125.908" size="9.872">規</text>
 <text font="Ryumin-Light" bbox="298.852,108.036,306.852,117.908" size="9.872">定</text>
@@ -2365,7 +2308,7 @@
 <text font="Ryumin-Light" bbox="277.780,324.036,285.780,333.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="277.780,316.036,285.780,325.908" size="9.872">六</text>
 <text font="Ryumin-Light" bbox="277.780,308.036,285.780,317.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="277.004,301.960,286.556,309.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="277.004,301.960,286.556,309.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="277.780,292.036,285.780,301.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="277.780,284.036,285.780,293.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="277.780,276.036,285.780,285.908" size="9.872">第</text>
@@ -2391,8 +2334,8 @@
 <text font="Ryumin-Light" bbox="277.780,116.036,285.780,125.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="277.780,108.036,285.780,117.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="277.780,100.036,285.780,109.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="277.004,93.960,286.556,101.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="277.004,89.960,286.556,97.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="277.004,93.960,286.556,101.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="277.004,89.960,286.556,97.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="277.780,84.036,285.780,93.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="277.780,76.036,285.780,85.908" size="9.872">規</text>
 <text font="Ryumin-Light" bbox="277.780,68.036,285.780,77.908" size="9.872">定</text>
@@ -2421,7 +2364,7 @@
 <text font="Ryumin-Light" bbox="256.708,324.036,264.708,333.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="256.708,316.036,264.708,325.908" size="9.872">七</text>
 <text font="Ryumin-Light" bbox="256.708,308.036,264.708,317.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="255.932,301.960,265.484,309.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="255.932,301.960,265.484,309.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="256.708,292.036,264.708,301.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="256.708,284.036,264.708,293.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="256.708,276.036,264.708,285.908" size="9.872">第</text>
@@ -2442,8 +2385,8 @@
 <text font="Ryumin-Light" bbox="256.708,156.036,264.708,165.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="256.708,148.036,264.708,157.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="256.708,140.036,264.708,149.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="255.932,133.960,265.484,141.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="255.932,129.960,265.484,137.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="255.932,133.960,265.484,141.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="255.932,129.960,265.484,137.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="256.708,124.036,264.708,133.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="256.708,116.036,264.708,125.908" size="9.872">規</text>
 <text font="Ryumin-Light" bbox="256.708,108.036,264.708,117.908" size="9.872">定</text>
@@ -2468,7 +2411,7 @@
 <text font="Ryumin-Light" bbox="246.172,324.036,254.172,333.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="246.172,316.036,254.172,325.908" size="9.872">八</text>
 <text font="Ryumin-Light" bbox="246.172,308.036,254.172,317.908" size="9.872">項</text>
-<text font="Ryumin-Light" vertical="true" bbox="245.396,301.960,254.948,309.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="245.396,301.960,254.948,309.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="246.172,292.036,254.172,301.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="246.172,284.036,254.172,293.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="246.172,276.036,254.172,285.908" size="9.872">第</text>
@@ -2489,8 +2432,8 @@
 <text font="Ryumin-Light" bbox="246.172,156.036,254.172,165.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="246.172,148.036,254.172,157.908" size="9.872">含</text>
 <text font="Ryumin-Light" bbox="246.172,140.036,254.172,149.908" size="9.872">む</text>
-<text font="Ryumin-Light" vertical="true" bbox="245.396,133.960,254.948,141.960" size="9.552">。</text>
-<text font="Ryumin-Light" vertical="true" bbox="245.396,129.960,254.948,137.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="245.396,133.960,254.948,141.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="245.396,129.960,254.948,137.960" size="9.552">）</text>
 <text font="Ryumin-Light" bbox="246.172,124.036,254.172,133.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="246.172,116.036,254.172,125.908" size="9.872">規</text>
 <text font="Ryumin-Light" bbox="246.172,108.036,254.172,117.908" size="9.872">定</text>
@@ -2541,7 +2484,7 @@
 <text font="Ryumin-Light" bbox="225.100,348.036,233.100,357.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="225.100,340.036,233.100,349.908" size="9.872">削</text>
 <text font="Ryumin-Light" bbox="225.100,332.036,233.100,341.908" size="9.872">り</text>
-<text font="Ryumin-Light" vertical="true" bbox="224.324,325.960,233.876,333.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="224.324,325.960,233.876,333.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="225.100,316.036,233.100,325.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="225.100,308.036,233.100,317.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="225.100,300.036,233.100,309.908" size="9.872">七</text>
@@ -2557,7 +2500,7 @@
 <text font="Ryumin-Light" bbox="225.100,220.036,233.100,229.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="225.100,212.036,233.100,221.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="225.100,204.036,233.100,213.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="224.324,197.960,233.876,205.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="224.324,197.960,233.876,205.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="225.100,188.036,233.100,197.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="225.100,180.036,233.100,189.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="225.100,172.036,233.100,181.908" size="9.872">七</text>
@@ -2588,7 +2531,7 @@
 <text font="Ryumin-Light" bbox="214.564,364.036,222.564,373.908" size="9.872">上</text>
 <text font="Ryumin-Light" bbox="214.564,356.036,222.564,365.908" size="9.872">げ</text>
 <text font="Ryumin-Light" bbox="214.564,348.036,222.564,357.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="213.788,341.960,223.340,349.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="213.788,341.960,223.340,349.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -2602,19 +2545,19 @@
 <text font="Ryumin-Light" bbox="204.028,348.036,212.028,357.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="204.028,340.036,212.028,349.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="204.028,332.036,212.028,341.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="203.252,325.960,212.804,333.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="203.252,325.960,212.804,333.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="204.028,316.036,212.028,325.908" size="9.872">乗</text>
 <text font="Ryumin-Light" bbox="204.028,308.036,212.028,317.908" size="9.872">車</text>
 <text font="Ryumin-Light" bbox="204.028,300.036,212.028,309.908" size="9.872">装</text>
 <text font="Ryumin-Light" bbox="204.028,292.036,212.028,301.908" size="9.872">置</text>
-<text font="Ryumin-Light" vertical="true" bbox="203.252,285.960,212.804,293.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="203.252,285.960,212.804,293.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="204.028,276.036,212.028,285.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="204.028,268.036,212.028,277.908" size="9.872">下</text>
-<text font="Ryumin-Light" vertical="true" bbox="203.252,261.960,212.804,269.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="203.252,261.960,212.804,269.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="204.028,252.036,212.028,261.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="204.028,244.036,212.028,253.908" size="9.872">下</text>
 <text font="Ryumin-Light" bbox="204.028,236.036,212.028,245.908" size="9.872">に</text>
-<text font="Ryumin-Light" vertical="true" bbox="203.252,229.960,212.804,237.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="203.252,229.960,212.804,237.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="204.028,220.036,212.028,229.908" size="9.872">こ</text>
 <text font="Ryumin-Light" bbox="204.028,212.036,212.028,221.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="204.028,204.036,212.028,213.908" size="9.872">条</text>
@@ -2622,12 +2565,12 @@
 <text font="Ryumin-Light" bbox="204.028,188.036,212.028,197.908" size="9.872">お</text>
 <text font="Ryumin-Light" bbox="204.028,180.036,212.028,189.908" size="9.872">い</text>
 <text font="Ryumin-Light" bbox="204.028,172.036,212.028,181.908" size="9.872">て</text>
-<text font="Ryumin-Light" vertical="true" bbox="203.252,165.960,212.804,173.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="203.252,165.960,212.804,173.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="204.028,156.036,212.028,165.908" size="9.872">を</text>
 <text font="Ryumin-Light" bbox="204.028,148.036,212.028,157.908" size="9.872">加</text>
 <text font="Ryumin-Light" bbox="204.028,140.036,212.028,149.908" size="9.872">え</text>
 <text font="Ryumin-Light" bbox="204.028,132.036,212.028,141.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="203.252,125.960,212.804,133.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="203.252,125.960,212.804,133.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -2640,15 +2583,15 @@
 <text font="Ryumin-Light" bbox="193.492,356.036,201.492,365.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="193.492,348.036,201.492,357.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="193.492,340.036,201.492,349.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="192.716,333.960,202.268,341.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="192.716,333.960,202.268,341.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="193.492,324.036,201.492,333.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="193.492,316.036,201.492,325.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="193.492,308.036,201.492,317.908" size="9.872">十</text>
 <text font="Ryumin-Light" bbox="193.492,300.036,201.492,309.908" size="9.872">六</text>
 <text font="Ryumin-Light" bbox="193.492,292.036,201.492,301.908" size="9.872">条</text>
-<text font="Ryumin-Light" vertical="true" bbox="192.716,285.960,202.268,293.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="192.716,285.960,202.268,293.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="193.492,276.036,201.492,285.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="192.716,269.960,202.268,277.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="192.716,269.960,202.268,277.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="193.492,260.036,201.492,269.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="193.492,252.036,201.492,261.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="193.492,244.036,201.492,253.908" size="9.872">十</text>
@@ -2656,12 +2599,12 @@
 <text font="Ryumin-Light" bbox="193.492,228.036,201.492,237.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="193.492,220.036,201.492,229.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="193.492,212.036,201.492,221.908" size="9.872">二</text>
-<text font="Ryumin-Light" vertical="true" bbox="192.716,205.960,202.268,213.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="192.716,205.960,202.268,213.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="193.492,196.036,201.492,205.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="193.492,188.036,201.492,197.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="193.492,180.036,201.492,189.908" size="9.872">め</text>
 <text font="Ryumin-Light" bbox="193.492,172.036,201.492,181.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="192.716,165.960,202.268,173.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="192.716,165.960,202.268,173.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -2681,7 +2624,7 @@
 <text font="Ryumin-Light" bbox="182.956,300.036,190.956,309.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="182.956,292.036,190.956,301.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="182.956,284.036,190.956,293.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="182.180,277.960,191.732,285.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="182.180,277.960,191.732,285.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="182.956,268.036,190.956,277.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="182.956,260.036,190.956,269.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="182.956,252.036,190.956,261.908" size="9.872">章</text>
@@ -2699,12 +2642,12 @@
 <text font="Ryumin-Light" bbox="182.956,156.036,190.956,165.908" size="9.872">加</text>
 <text font="Ryumin-Light" bbox="182.956,148.036,190.956,157.908" size="9.872">え</text>
 <text font="Ryumin-Light" bbox="182.956,140.036,190.956,149.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="182.180,133.960,191.732,141.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="182.180,133.960,191.732,141.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
 <textline bbox="171.644,213.960,181.196,405.960">
-<text font="Ryumin-Light" vertical="true" bbox="171.644,397.960,181.196,405.960" size="9.552">（</text>
+<text font="Ryumin-Light" bbox="171.644,397.960,181.196,405.960" size="9.552">（</text>
 <text font="Ryumin-Light" bbox="172.420,388.036,180.420,397.908" size="9.872">普</text>
 <text font="Ryumin-Light" bbox="172.420,380.036,180.420,389.908" size="9.872">通</text>
 <text font="Ryumin-Light" bbox="172.420,372.036,180.420,381.908" size="9.872">自</text>
@@ -2727,7 +2670,7 @@
 <text font="Ryumin-Light" bbox="172.420,236.036,180.420,245.908" size="9.872">き</text>
 <text font="Ryumin-Light" bbox="172.420,228.036,180.420,237.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="172.420,220.036,180.420,229.908" size="9.872">者</text>
-<text font="Ryumin-Light" vertical="true" bbox="171.644,213.960,181.196,221.960" size="9.552">）</text>
+<text font="Ryumin-Light" bbox="171.644,213.960,181.196,221.960" size="9.552">）</text>
 <text>
 </text>
 </textline>
@@ -2761,7 +2704,7 @@
 <text font="Ryumin-Light" bbox="161.884,196.036,169.884,205.908" size="9.872">る</text>
 <text font="Ryumin-Light" bbox="161.884,188.036,169.884,197.908" size="9.872">者</text>
 <text font="Ryumin-Light" bbox="161.884,180.036,169.884,189.908" size="9.872">は</text>
-<text font="Ryumin-Light" vertical="true" bbox="161.108,173.960,170.660,181.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="161.108,173.960,170.660,181.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="161.884,164.036,169.884,173.908" size="9.872">次</text>
 <text font="Ryumin-Light" bbox="161.884,156.036,169.884,165.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="161.884,148.036,169.884,157.908" size="9.872">掲</text>
@@ -2773,7 +2716,7 @@
 <text font="Ryumin-Light" bbox="161.884,100.036,169.884,109.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="161.884,92.036,169.884,101.908" size="9.872">す</text>
 <text font="Ryumin-Light" bbox="161.884,84.036,169.884,93.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="161.108,77.960,170.660,85.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="161.108,77.960,170.660,85.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -2882,32 +2825,32 @@
 <text font="Ryumin-Light" bbox="109.204,292.036,117.204,301.908" size="9.872">四</text>
 <text font="Ryumin-Light" bbox="109.204,284.036,117.204,293.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="109.204,276.036,117.204,285.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="108.428,269.960,117.980,277.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="108.428,269.960,117.980,277.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="109.204,260.036,117.204,269.908" size="9.872">次</text>
 <text font="Ryumin-Light" bbox="109.204,252.036,117.204,261.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="109.204,244.036,117.204,253.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="109.204,236.036,117.204,245.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="109.204,228.036,117.204,237.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="108.428,221.960,117.980,229.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="108.428,221.960,117.980,229.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="109.204,212.036,117.204,221.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="108.428,205.960,117.980,213.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="108.428,205.960,117.980,213.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="109.204,196.036,117.204,205.908" size="9.872">次</text>
 <text font="Ryumin-Light" bbox="109.204,188.036,117.204,197.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="109.204,180.036,117.204,189.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="109.204,172.036,117.204,181.908" size="9.872">四</text>
 <text font="Ryumin-Light" bbox="109.204,164.036,117.204,173.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="108.428,157.960,117.980,165.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="108.428,157.960,117.980,165.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="109.204,148.036,117.204,157.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="109.204,140.036,117.204,149.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="109.204,132.036,117.204,141.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="108.428,125.960,117.980,133.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="108.428,125.960,117.980,133.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="109.204,116.036,117.204,125.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="109.204,108.036,117.204,117.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="109.204,100.036,117.204,109.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="109.204,92.036,117.204,101.908" size="9.872">七</text>
 <text font="Ryumin-Light" bbox="109.204,84.036,117.204,93.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="109.204,76.036,117.204,85.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="108.428,69.960,117.980,77.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="108.428,69.960,117.980,77.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="109.204,60.036,117.204,69.908" size="9.872">次</text>
 <text font="Ryumin-Light" bbox="109.204,52.036,117.204,61.908" size="9.872">項</text>
 <text>
@@ -2917,19 +2860,19 @@
 <text font="Ryumin-Light" bbox="98.668,404.036,106.668,413.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="98.668,396.036,106.668,405.908" size="9.872">六</text>
 <text font="Ryumin-Light" bbox="98.668,388.036,106.668,397.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="97.892,381.960,107.444,389.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="97.892,381.960,107.444,389.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="98.668,372.036,106.668,381.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="97.892,365.960,107.444,373.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="97.892,365.960,107.444,373.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="98.668,356.036,106.668,365.908" size="9.872">次</text>
 <text font="Ryumin-Light" bbox="98.668,348.036,106.668,357.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="98.668,340.036,106.668,349.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="98.668,332.036,106.668,341.908" size="9.872">七</text>
 <text font="Ryumin-Light" bbox="98.668,324.036,106.668,333.908" size="9.872">号</text>
-<text font="Ryumin-Light" vertical="true" bbox="97.892,317.960,107.444,325.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="97.892,317.960,107.444,325.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="98.668,308.036,106.668,317.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="98.668,300.036,106.668,309.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="98.668,292.036,106.668,301.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="97.892,285.960,107.444,293.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="97.892,285.960,107.444,293.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="98.668,276.036,106.668,285.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="98.668,268.036,106.668,277.908" size="9.872">条</text>
 <text font="Ryumin-Light" bbox="98.668,260.036,106.668,269.908" size="9.872">第</text>
@@ -2939,19 +2882,19 @@
 <text font="Ryumin-Light" bbox="98.668,228.036,106.668,237.908" size="9.872">七</text>
 <text font="Ryumin-Light" bbox="98.668,220.036,106.668,229.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="98.668,212.036,106.668,221.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="97.892,205.960,107.444,213.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="97.892,205.960,107.444,213.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="98.668,196.036,106.668,205.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="98.668,188.036,106.668,197.908" size="9.872">横</text>
-<text font="Ryumin-Light" vertical="true" bbox="97.892,181.960,107.444,189.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="97.892,181.960,107.444,189.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="98.668,172.036,106.668,181.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="97.892,165.960,107.444,173.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="97.892,165.960,107.444,173.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="98.668,156.036,106.668,165.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="98.668,148.036,106.668,157.908" size="9.872">外</text>
-<text font="Ryumin-Light" vertical="true" bbox="97.892,141.960,107.444,149.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="97.892,141.960,107.444,149.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="98.668,132.036,106.668,141.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="98.668,124.036,106.668,133.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="98.668,116.036,106.668,125.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="97.892,109.960,107.444,117.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="97.892,109.960,107.444,117.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="98.668,100.036,106.668,109.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="98.668,92.036,106.668,101.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="98.668,84.036,106.668,93.908" size="9.872">を</text>
@@ -2966,26 +2909,26 @@
 <text font="Ryumin-Light" bbox="88.132,404.036,96.132,413.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="88.132,396.036,96.132,405.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="88.132,388.036,96.132,397.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="87.356,381.960,96.908,389.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="87.356,381.960,96.908,389.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="88.132,372.036,96.132,381.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="88.132,364.036,96.132,373.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="88.132,356.036,96.132,365.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="88.132,348.036,96.132,357.908" size="9.872">六</text>
 <text font="Ryumin-Light" bbox="88.132,340.036,96.132,349.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="88.132,332.036,96.132,341.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="87.356,325.960,96.908,333.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="87.356,325.960,96.908,333.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="88.132,316.036,96.132,325.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="88.132,308.036,96.132,317.908" size="9.872">横</text>
-<text font="Ryumin-Light" vertical="true" bbox="87.356,301.960,96.908,309.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="87.356,301.960,96.908,309.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="88.132,292.036,96.132,301.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="87.356,285.960,96.908,293.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="87.356,285.960,96.908,293.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="88.132,276.036,96.132,285.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="88.132,268.036,96.132,277.908" size="9.872">外</text>
-<text font="Ryumin-Light" vertical="true" bbox="87.356,261.960,96.908,269.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="87.356,261.960,96.908,269.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="88.132,252.036,96.132,261.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="88.132,244.036,96.132,253.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="88.132,236.036,96.132,245.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="87.356,229.960,96.908,237.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="87.356,229.960,96.908,237.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="88.132,220.036,96.132,229.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="88.132,212.036,96.132,221.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="88.132,204.036,96.132,213.908" size="9.872">を</text>
@@ -2996,30 +2939,30 @@
 <text font="Ryumin-Light" bbox="88.132,164.036,96.132,173.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="88.132,156.036,96.132,165.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="88.132,148.036,96.132,157.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="87.356,141.960,96.908,149.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="87.356,141.960,96.908,149.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="88.132,132.036,96.132,141.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="88.132,124.036,96.132,133.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="88.132,116.036,96.132,125.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="88.132,108.036,96.132,117.908" size="9.872">五</text>
 <text font="Ryumin-Light" bbox="88.132,100.036,96.132,109.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="88.132,92.036,96.132,101.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="87.356,85.960,96.908,93.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="87.356,85.960,96.908,93.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="88.132,76.036,96.132,85.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="88.132,68.036,96.132,77.908" size="9.872">横</text>
-<text font="Ryumin-Light" vertical="true" bbox="87.356,61.960,96.908,69.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="87.356,61.960,96.908,69.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="88.132,52.036,96.132,61.908" size="9.872">を</text>
 <text>
 </text>
 </textline>
 <textline bbox="76.820,52.036,86.372,413.960">
-<text font="Ryumin-Light" vertical="true" bbox="76.820,405.960,86.372,413.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="76.820,405.960,86.372,413.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="77.596,396.036,85.596,405.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="77.596,388.036,85.596,397.908" size="9.872">外</text>
-<text font="Ryumin-Light" vertical="true" bbox="76.820,381.960,86.372,389.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="76.820,381.960,86.372,389.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="77.596,372.036,85.596,381.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="77.596,364.036,85.596,373.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="77.596,356.036,85.596,365.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="76.820,349.960,86.372,357.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="76.820,349.960,86.372,357.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="77.596,340.036,85.596,349.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="77.596,332.036,85.596,341.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="77.596,324.036,85.596,333.908" size="9.872">を</text>
@@ -3030,26 +2973,26 @@
 <text font="Ryumin-Light" bbox="77.596,284.036,85.596,293.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="77.596,276.036,85.596,285.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="77.596,268.036,85.596,277.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="76.820,261.960,86.372,269.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="76.820,261.960,86.372,269.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="77.596,252.036,85.596,261.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="77.596,244.036,85.596,253.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="77.596,236.036,85.596,245.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="77.596,228.036,85.596,237.908" size="9.872">四</text>
 <text font="Ryumin-Light" bbox="77.596,220.036,85.596,229.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="77.596,212.036,85.596,221.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="76.820,205.960,86.372,213.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="76.820,205.960,86.372,213.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="77.596,196.036,85.596,205.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="77.596,188.036,85.596,197.908" size="9.872">横</text>
-<text font="Ryumin-Light" vertical="true" bbox="76.820,181.960,86.372,189.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="76.820,181.960,86.372,189.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="77.596,172.036,85.596,181.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="76.820,165.960,86.372,173.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="76.820,165.960,86.372,173.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="77.596,156.036,85.596,165.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="77.596,148.036,85.596,157.908" size="9.872">外</text>
-<text font="Ryumin-Light" vertical="true" bbox="76.820,141.960,86.372,149.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="76.820,141.960,86.372,149.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="77.596,132.036,85.596,141.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="77.596,124.036,85.596,133.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="77.596,116.036,85.596,125.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="76.820,109.960,86.372,117.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="76.820,109.960,86.372,117.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="77.596,100.036,85.596,109.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="77.596,92.036,85.596,101.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="77.596,84.036,85.596,93.908" size="9.872">を</text>
@@ -3064,26 +3007,26 @@
 <text font="Ryumin-Light" bbox="67.060,404.036,75.060,413.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="67.060,396.036,75.060,405.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="67.060,388.036,75.060,397.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="66.284,381.960,75.836,389.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="66.284,381.960,75.836,389.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="67.060,372.036,75.060,381.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="67.060,364.036,75.060,373.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="67.060,356.036,75.060,365.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="67.060,348.036,75.060,357.908" size="9.872">三</text>
 <text font="Ryumin-Light" bbox="67.060,340.036,75.060,349.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="67.060,332.036,75.060,341.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="66.284,325.960,75.836,333.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="66.284,325.960,75.836,333.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="67.060,316.036,75.060,325.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="67.060,308.036,75.060,317.908" size="9.872">横</text>
-<text font="Ryumin-Light" vertical="true" bbox="66.284,301.960,75.836,309.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="66.284,301.960,75.836,309.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="67.060,292.036,75.060,301.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="66.284,285.960,75.836,293.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="66.284,285.960,75.836,293.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="67.060,276.036,75.060,285.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="67.060,268.036,75.060,277.908" size="9.872">外</text>
-<text font="Ryumin-Light" vertical="true" bbox="66.284,261.960,75.836,269.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="66.284,261.960,75.836,269.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="67.060,252.036,75.060,261.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="67.060,244.036,75.060,253.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="67.060,236.036,75.060,245.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="66.284,229.960,75.836,237.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="66.284,229.960,75.836,237.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="67.060,220.036,75.060,229.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="67.060,212.036,75.060,221.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="67.060,204.036,75.060,213.908" size="9.872">を</text>
@@ -3094,30 +3037,30 @@
 <text font="Ryumin-Light" bbox="67.060,164.036,75.060,173.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="67.060,156.036,75.060,165.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="67.060,148.036,75.060,157.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="66.284,141.960,75.836,149.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="66.284,141.960,75.836,149.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="67.060,132.036,75.060,141.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="67.060,124.036,75.060,133.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="67.060,116.036,75.060,125.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="67.060,108.036,75.060,117.908" size="9.872">二</text>
 <text font="Ryumin-Light" bbox="67.060,100.036,75.060,109.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="67.060,92.036,75.060,101.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="66.284,85.960,75.836,93.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="66.284,85.960,75.836,93.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="67.060,76.036,75.060,85.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="67.060,68.036,75.060,77.908" size="9.872">横</text>
-<text font="Ryumin-Light" vertical="true" bbox="66.284,61.960,75.836,69.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="66.284,61.960,75.836,69.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="67.060,52.036,75.060,61.908" size="9.872">を</text>
 <text>
 </text>
 </textline>
 <textline bbox="55.748,52.036,65.300,413.960">
-<text font="Ryumin-Light" vertical="true" bbox="55.748,405.960,65.300,413.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="55.748,405.960,65.300,413.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="56.524,396.036,64.524,405.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="56.524,388.036,64.524,397.908" size="9.872">外</text>
-<text font="Ryumin-Light" vertical="true" bbox="55.748,381.960,65.300,389.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="55.748,381.960,65.300,389.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="56.524,372.036,64.524,381.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="56.524,364.036,64.524,373.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="56.524,356.036,64.524,365.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="55.748,349.960,65.300,357.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="55.748,349.960,65.300,357.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="56.524,340.036,64.524,349.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="56.524,332.036,64.524,341.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="56.524,324.036,64.524,333.908" size="9.872">を</text>
@@ -3128,26 +3071,26 @@
 <text font="Ryumin-Light" bbox="56.524,284.036,64.524,293.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="56.524,276.036,64.524,285.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="56.524,268.036,64.524,277.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="55.748,261.960,65.300,269.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="55.748,261.960,65.300,269.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="56.524,252.036,64.524,261.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="56.524,244.036,64.524,253.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="56.524,236.036,64.524,245.908" size="9.872">第</text>
 <text font="Ryumin-Light" bbox="56.524,228.036,64.524,237.908" size="9.872">一</text>
 <text font="Ryumin-Light" bbox="56.524,220.036,64.524,229.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="56.524,212.036,64.524,221.908" size="9.872">中</text>
-<text font="Ryumin-Light" vertical="true" bbox="55.748,205.960,65.300,213.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="55.748,205.960,65.300,213.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="56.524,196.036,64.524,205.908" size="9.872">の</text>
 <text font="Ryumin-Light" bbox="56.524,188.036,64.524,197.908" size="9.872">横</text>
-<text font="Ryumin-Light" vertical="true" bbox="55.748,181.960,65.300,189.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="55.748,181.960,65.300,189.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="56.524,172.036,64.524,181.908" size="9.872">を</text>
-<text font="Ryumin-Light" vertical="true" bbox="55.748,165.960,65.300,173.960" size="9.552">「</text>
+<text font="Ryumin-Light" bbox="55.748,165.960,65.300,173.960" size="9.552">「</text>
 <text font="Ryumin-Light" bbox="56.524,156.036,64.524,165.908" size="9.872">以</text>
 <text font="Ryumin-Light" bbox="56.524,148.036,64.524,157.908" size="9.872">外</text>
-<text font="Ryumin-Light" vertical="true" bbox="55.748,141.960,65.300,149.960" size="9.552">」</text>
+<text font="Ryumin-Light" bbox="55.748,141.960,65.300,149.960" size="9.552">」</text>
 <text font="Ryumin-Light" bbox="56.524,132.036,64.524,141.908" size="9.872">に</text>
 <text font="Ryumin-Light" bbox="56.524,124.036,64.524,133.908" size="9.872">改</text>
 <text font="Ryumin-Light" bbox="56.524,116.036,64.524,125.908" size="9.872">め</text>
-<text font="Ryumin-Light" vertical="true" bbox="55.748,109.960,65.300,117.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="55.748,109.960,65.300,117.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="56.524,100.036,64.524,109.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="56.524,92.036,64.524,101.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="56.524,84.036,64.524,93.908" size="9.872">を</text>
@@ -3162,7 +3105,7 @@
 <text font="Ryumin-Light" bbox="45.988,404.036,53.988,413.908" size="9.872">号</text>
 <text font="Ryumin-Light" bbox="45.988,396.036,53.988,405.908" size="9.872">と</text>
 <text font="Ryumin-Light" bbox="45.988,388.036,53.988,397.908" size="9.872">し</text>
-<text font="Ryumin-Light" vertical="true" bbox="45.212,381.960,54.764,389.960" size="9.552">、</text>
+<text font="Ryumin-Light" bbox="45.212,381.960,54.764,389.960" size="9.552">、</text>
 <text font="Ryumin-Light" bbox="45.988,372.036,53.988,381.908" size="9.872">同</text>
 <text font="Ryumin-Light" bbox="45.988,364.036,53.988,373.908" size="9.872">項</text>
 <text font="Ryumin-Light" bbox="45.988,356.036,53.988,365.908" size="9.872">に</text>
@@ -3180,7 +3123,7 @@
 <text font="Ryumin-Light" bbox="45.988,260.036,53.988,269.908" size="9.872">加</text>
 <text font="Ryumin-Light" bbox="45.988,252.036,53.988,261.908" size="9.872">え</text>
 <text font="Ryumin-Light" bbox="45.988,244.036,53.988,253.908" size="9.872">る</text>
-<text font="Ryumin-Light" vertical="true" bbox="45.212,237.960,54.764,245.960" size="9.552">。</text>
+<text font="Ryumin-Light" bbox="45.212,237.960,54.764,245.960" size="9.552">。</text>
 <text>
 </text>
 </textline>
@@ -3194,26 +3137,26 @@
 <textgroup bbox="45.212,52.036,549.776,802.380">
 <textgroup bbox="87.500,787.572,537.500,802.380">
 <textgroup bbox="392.500,787.804,537.500,800.144">
-<textbox id="0" bbox="527.500,789.064,537.500,798.234" />
-<textbox id="1" bbox="392.500,787.804,457.500,800.144" />
+<textbox id="0" bbox="392.500,787.804,457.500,800.144" />
+<textbox id="1" bbox="527.500,789.064,537.500,798.234" />
 </textgroup>
 <textgroup bbox="87.500,787.572,327.500,802.380">
 <textgroup bbox="267.500,787.572,327.500,802.380">
-<textbox id="2" bbox="315.500,787.572,327.500,802.380" />
-<textbox id="3" bbox="267.500,787.572,279.500,802.380" />
+<textbox id="2" bbox="267.500,787.572,279.500,802.380" />
+<textbox id="3" bbox="315.500,787.572,327.500,802.380" />
 </textgroup>
-<textgroup bbox="87.500,787.804,242.500,800.144">
-<textbox id="4" bbox="212.500,787.804,242.500,800.144" />
-<textbox id="5" bbox="87.500,787.804,202.500,800.144" />
-</textgroup>
+<textbox id="4" bbox="87.500,787.804,242.500,800.144" />
 </textgroup>
 </textgroup>
 <textgroup bbox="45.212,52.036,549.776,781.960">
 <textgroup bbox="45.224,417.960,548.988,781.960">
 <textgroup bbox="379.474,420.036,548.988,781.908">
 <textgroup bbox="404.474,420.036,548.988,781.908">
-<textbox id="6" bbox="409.474,420.036,548.988,781.908" />
+<textbox id="5" bbox="420.474,420.036,548.988,781.908" />
+<textgroup bbox="404.474,461.960,419.026,617.960">
+<textbox id="6" bbox="409.474,609.960,419.026,617.960" />
 <textbox id="7" bbox="404.474,461.960,414.026,605.908" />
+</textgroup>
 </textgroup>
 <textgroup bbox="379.474,420.036,397.026,781.908">
 <textbox id="8" bbox="383.474,612.036,393.026,781.908" />
@@ -3221,44 +3164,47 @@
 </textgroup>
 </textgroup>
 <textgroup bbox="45.224,417.960,372.026,781.960">
-<textgroup bbox="148.474,417.960,372.026,781.908">
-<textgroup bbox="148.474,588.036,312.026,781.908">
+<textgroup bbox="143.474,417.960,372.026,781.908">
+<textgroup bbox="143.474,577.960,312.026,781.908">
 <textgroup bbox="294.474,592.036,312.026,781.908">
 <textbox id="10" bbox="294.474,612.036,312.026,781.908" />
 <textbox id="11" bbox="299.250,592.036,307.250,601.908" />
 </textgroup>
-<textgroup bbox="148.474,588.036,232.026,781.908">
+<textgroup bbox="143.474,577.960,232.026,781.908">
 <textgroup bbox="177.474,588.036,232.026,781.908">
 <textbox id="12" bbox="214.474,588.036,232.026,781.908" />
 <textbox id="13" bbox="177.474,588.036,207.026,781.908" />
 </textgroup>
+<textgroup bbox="143.474,577.960,170.026,781.908">
 <textbox id="14" bbox="148.474,629.960,170.026,781.908" />
+<textbox id="15" bbox="143.474,577.960,153.026,585.960" />
+</textgroup>
 </textgroup>
 </textgroup>
 <textgroup bbox="191.474,417.960,372.026,609.960">
 <textgroup bbox="256.250,417.960,372.026,609.960">
 <textgroup bbox="321.474,420.036,372.026,605.908">
-<textbox id="15" bbox="362.474,445.960,372.026,605.908" />
+<textbox id="16" bbox="362.474,445.960,372.026,605.908" />
 <textgroup bbox="321.474,420.036,356.026,593.960">
-<textbox id="16" bbox="346.474,585.960,356.026,593.960" />
-<textbox id="17" bbox="321.474,420.036,351.026,581.908" />
+<textbox id="17" bbox="346.474,585.960,356.026,593.960" />
+<textbox id="18" bbox="321.474,420.036,351.026,581.908" />
 </textgroup>
 </textgroup>
 <textgroup bbox="256.250,417.960,314.026,609.960">
-<textbox id="18" bbox="272.474,601.960,282.026,609.960" />
+<textbox id="19" bbox="272.474,601.960,282.026,609.960" />
 <textgroup bbox="256.250,417.960,314.026,581.908">
-<textbox id="19" bbox="285.250,417.960,314.026,581.908" />
-<textbox id="20" bbox="256.250,420.036,277.026,581.908" />
+<textbox id="20" bbox="285.250,417.960,314.026,581.908" />
+<textbox id="21" bbox="256.250,420.036,277.026,581.908" />
 </textgroup>
 </textgroup>
 </textgroup>
-<textbox id="21" bbox="191.474,420.036,201.026,581.908" />
+<textbox id="22" bbox="191.474,420.036,201.026,581.908" />
 </textgroup>
 </textgroup>
-<textbox id="22" bbox="45.224,420.036,153.026,781.960" />
+<textbox id="23" bbox="45.224,420.036,142.026,781.960" />
 </textgroup>
 </textgroup>
-<textbox id="23" bbox="45.212,52.036,549.776,413.960" />
+<textbox id="24" bbox="45.212,52.036,549.776,413.960" />
 </textgroup>
 </textgroup>
 </layout>

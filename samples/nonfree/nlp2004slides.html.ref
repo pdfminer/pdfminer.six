@@ -3,7 +3,8 @@
 </head><body>
 <span style="position:absolute; border: gray 1px solid; left:0px; top:50px; width:800px; height:600px;"></span>
 <div style="position:absolute; top:50px;"><a name="1">Page 1</a></div>
-<span style="position:absolute; border: blue 1px solid; left:62px; top:126px; width:672px; height:157px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:62px; top:126px; width:672px; height:157px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:62px; top:126px; width:672px; height:85px;"></span>
 <span style="position:absolute; left:62px; top:126px; font-size:85px;">コ</span>
 <span style="position:absolute; left:110px; top:126px; font-size:85px;">ン</span>
 <span style="position:absolute; left:158px; top:126px; font-size:85px;">パ</span>
@@ -18,6 +19,7 @@
 <span style="position:absolute; left:590px; top:126px; font-size:85px;">か</span>
 <span style="position:absolute; left:638px; top:126px; font-size:85px;">ら</span>
 <span style="position:absolute; left:686px; top:126px; font-size:85px;">の</span>
+<span style="position:absolute; border: magenta 1px solid; left:62px; top:198px; width:336px; height:85px;"></span>
 <span style="position:absolute; left:62px; top:198px; font-size:85px;">固</span>
 <span style="position:absolute; left:110px; top:198px; font-size:85px;">有</span>
 <span style="position:absolute; left:158px; top:198px; font-size:85px;">表</span>
@@ -25,16 +27,19 @@
 <span style="position:absolute; left:254px; top:198px; font-size:85px;">の</span>
 <span style="position:absolute; left:302px; top:198px; font-size:85px;">発</span>
 <span style="position:absolute; left:350px; top:198px; font-size:85px;">見</span>
-<span style="position:absolute; border: blue 1px solid; left:263px; top:374px; width:468px; height:212px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:263px; top:374px; width:468px; height:212px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:576px; top:374px; width:155px; height:64px;"></span>
 <span style="position:absolute; left:576px; top:374px; font-size:64px;">新</span>
 <span style="position:absolute; left:612px; top:374px; font-size:64px;">山</span>
 <span style="position:absolute; left:648px; top:374px; font-size:64px;"> </span>
 <span style="position:absolute; left:660px; top:374px; font-size:64px;">祐</span>
 <span style="position:absolute; left:696px; top:374px; font-size:64px;">介</span>
+<span style="position:absolute; border: magenta 1px solid; left:612px; top:430px; width:119px; height:64px;"></span>
 <span style="position:absolute; left:612px; top:430px; font-size:64px;">関</span>
 <span style="position:absolute; left:648px; top:430px; font-size:64px;">根</span>
 <span style="position:absolute; left:684px; top:430px; font-size:64px;"> </span>
 <span style="position:absolute; left:696px; top:430px; font-size:64px;">聡</span>
+<span style="position:absolute; border: magenta 1px solid; left:263px; top:493px; width:468px; height:50px;"></span>
 <span style="position:absolute; left:263px; top:493px; font-size:50px;">C</span>
 <span style="position:absolute; left:285px; top:493px; font-size:50px;">o</span>
 <span style="position:absolute; left:304px; top:493px; font-size:50px;">m</span>
@@ -62,6 +67,7 @@
 <span style="position:absolute; left:683px; top:493px; font-size:50px;">e</span>
 <span style="position:absolute; left:701px; top:493px; font-size:50px;">n</span>
 <span style="position:absolute; left:719px; top:493px; font-size:50px;">t</span>
+<span style="position:absolute; border: magenta 1px solid; left:424px; top:537px; width:307px; height:50px;"></span>
 <span style="position:absolute; left:424px; top:537px; font-size:50px;">N</span>
 <span style="position:absolute; left:447px; top:537px; font-size:50px;">e</span>
 <span style="position:absolute; left:464px; top:537px; font-size:50px;">w</span>
@@ -83,6 +89,6 @@
 <span style="position:absolute; left:714px; top:537px; font-size:50px;">y</span>
 <span style="position:absolute; border: black 1px solid; left:0px; top:50px; width:800px; height:600px;"></span>
 <span style="position:absolute; border: black 1px solid; left:50px; top:308px; width:510px; height:0px;"></span>
-<span style="position:absolute; border: green 1px solid; left:25px; top:587px; width:41px; height:40px;"></span>
+<span style="position:absolute; border: yellow 1px solid; left:25px; top:587px; width:41px; height:40px;"></span>
 <div style="position:absolute; top:0px;">Page: <a href="#1">1</a></div>
 </body></html>

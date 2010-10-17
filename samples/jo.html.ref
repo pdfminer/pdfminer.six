@@ -3,13 +3,16 @@
 </head><body>
 <span style="position:absolute; border: gray 1px solid; left:0px; top:50px; width:792px; height:612px;"></span>
 <div style="position:absolute; top:50px;"><a name="1">Page 1</a></div>
-<span style="position:absolute; border: blue 1px solid; left:715px; top:114px; width:11px; height:28px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:715px; top:114px; width:11px; height:28px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:715px; top:114px; width:11px; height:28px;"></span>
 <span style="position:absolute; left:715px; top:114px; font-size:11px;">　</span>
 <span style="position:absolute; left:715px; top:124px; font-size:11px;">　</span>
 <span style="position:absolute; left:715px; top:133px; font-size:11px;">序</span>
-<span style="position:absolute; border: blue 1px solid; left:715px; top:374px; width:11px; height:9px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:715px; top:374px; width:11px; height:9px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:715px; top:374px; width:11px; height:9px;"></span>
 <span style="position:absolute; left:715px; top:374px; font-size:11px;">　</span>
-<span style="position:absolute; border: blue 1px solid; left:168px; top:105px; width:502px; height:210px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:168px; top:105px; width:502px; height:210px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:660px; top:105px; width:11px; height:95px;"></span>
 <span style="position:absolute; left:660px; top:105px; font-size:11px;">わ</span>
 <span style="position:absolute; left:660px; top:114px; font-size:11px;">た</span>
 <span style="position:absolute; left:660px; top:124px; font-size:11px;">く</span>
@@ -20,6 +23,7 @@
 <span style="position:absolute; left:660px; top:172px; font-size:11px;">現</span>
 <span style="position:absolute; left:660px; top:181px; font-size:11px;">象</span>
 <span style="position:absolute; left:660px; top:191px; font-size:11px;">は</span>
+<span style="position:absolute; border: magenta 1px solid; left:643px; top:105px; width:11px; height:115px;"></span>
 <span style="position:absolute; left:643px; top:105px; font-size:11px;">假</span>
 <span style="position:absolute; left:643px; top:114px; font-size:11px;">定</span>
 <span style="position:absolute; left:643px; top:124px; font-size:11px;">さ</span>
@@ -32,6 +36,7 @@
 <span style="position:absolute; left:643px; top:191px; font-size:11px;">電</span>
 <span style="position:absolute; left:643px; top:200px; font-size:11px;">燈</span>
 <span style="position:absolute; left:643px; top:210px; font-size:11px;">の</span>
+<span style="position:absolute; border: magenta 1px solid; left:626px; top:105px; width:11px; height:95px;"></span>
 <span style="position:absolute; left:626px; top:105px; font-size:11px;">ひ</span>
 <span style="position:absolute; left:626px; top:114px; font-size:11px;">と</span>
 <span style="position:absolute; left:626px; top:124px; font-size:11px;">つ</span>
@@ -42,6 +47,7 @@
 <span style="position:absolute; left:626px; top:172px; font-size:11px;">明</span>
 <span style="position:absolute; left:626px; top:181px; font-size:11px;">で</span>
 <span style="position:absolute; left:626px; top:191px; font-size:11px;">す</span>
+<span style="position:absolute; border: magenta 1px solid; left:609px; top:105px; width:11px; height:143px;"></span>
 <span style="position:absolute; left:609px; top:105px; font-size:11px;">（</span>
 <span style="position:absolute; left:609px; top:114px; font-size:11px;">あ</span>
 <span style="position:absolute; left:609px; top:124px; font-size:11px;">ら</span>
@@ -57,6 +63,7 @@
 <span style="position:absolute; left:609px; top:220px; font-size:11px;">合</span>
 <span style="position:absolute; left:609px; top:229px; font-size:11px;">体</span>
 <span style="position:absolute; left:609px; top:239px; font-size:11px;">）</span>
+<span style="position:absolute; border: magenta 1px solid; left:592px; top:105px; width:11px; height:115px;"></span>
 <span style="position:absolute; left:592px; top:105px; font-size:11px;">風</span>
 <span style="position:absolute; left:592px; top:114px; font-size:11px;">景</span>
 <span style="position:absolute; left:592px; top:124px; font-size:11px;">や</span>
@@ -69,6 +76,7 @@
 <span style="position:absolute; left:592px; top:191px; font-size:11px;">し</span>
 <span style="position:absolute; left:592px; top:200px; font-size:11px;">ょ</span>
 <span style="position:absolute; left:592px; top:210px; font-size:11px;">に</span>
+<span style="position:absolute; border: magenta 1px solid; left:575px; top:105px; width:11px; height:134px;"></span>
 <span style="position:absolute; left:575px; top:105px; font-size:11px;">せ</span>
 <span style="position:absolute; left:575px; top:114px; font-size:11px;">は</span>
 <span style="position:absolute; left:575px; top:124px; font-size:11px;">し</span>
@@ -83,6 +91,7 @@
 <span style="position:absolute; left:575px; top:210px; font-size:11px;">な</span>
 <span style="position:absolute; left:575px; top:220px; font-size:11px;">が</span>
 <span style="position:absolute; left:575px; top:229px; font-size:11px;">ら</span>
+<span style="position:absolute; border: magenta 1px solid; left:558px; top:105px; width:11px; height:143px;"></span>
 <span style="position:absolute; left:558px; top:105px; font-size:11px;">い</span>
 <span style="position:absolute; left:558px; top:114px; font-size:11px;">か</span>
 <span style="position:absolute; left:558px; top:124px; font-size:11px;">に</span>
@@ -98,6 +107,7 @@
 <span style="position:absolute; left:558px; top:220px; font-size:11px;">づ</span>
 <span style="position:absolute; left:558px; top:229px; font-size:11px;">け</span>
 <span style="position:absolute; left:558px; top:239px; font-size:11px;">る</span>
+<span style="position:absolute; border: magenta 1px solid; left:541px; top:105px; width:11px; height:67px;"></span>
 <span style="position:absolute; left:541px; top:105px; font-size:11px;">因</span>
 <span style="position:absolute; left:541px; top:114px; font-size:11px;">果</span>
 <span style="position:absolute; left:541px; top:124px; font-size:11px;">交</span>
@@ -105,6 +115,7 @@
 <span style="position:absolute; left:541px; top:143px; font-size:11px;">電</span>
 <span style="position:absolute; left:541px; top:153px; font-size:11px;">燈</span>
 <span style="position:absolute; left:541px; top:162px; font-size:11px;">の</span>
+<span style="position:absolute; border: magenta 1px solid; left:524px; top:105px; width:11px; height:95px;"></span>
 <span style="position:absolute; left:524px; top:105px; font-size:11px;">ひ</span>
 <span style="position:absolute; left:524px; top:114px; font-size:11px;">と</span>
 <span style="position:absolute; left:524px; top:124px; font-size:11px;">つ</span>
@@ -115,6 +126,7 @@
 <span style="position:absolute; left:524px; top:172px; font-size:11px;">明</span>
 <span style="position:absolute; left:524px; top:181px; font-size:11px;">で</span>
 <span style="position:absolute; left:524px; top:191px; font-size:11px;">す</span>
+<span style="position:absolute; border: magenta 1px solid; left:507px; top:105px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:507px; top:105px; font-size:11px;">（</span>
 <span style="position:absolute; left:507px; top:114px; font-size:11px;">ひ</span>
 <span style="position:absolute; left:507px; top:124px; font-size:11px;">か</span>
@@ -133,8 +145,10 @@
 <span style="position:absolute; left:507px; top:248px; font-size:11px;">は</span>
 <span style="position:absolute; left:507px; top:258px; font-size:11px;">れ</span>
 <span style="position:absolute; left:507px; top:268px; font-size:11px;">）</span>
+<span style="position:absolute; border: magenta 1px solid; left:490px; top:105px; width:11px; height:19px;"></span>
 <span style="position:absolute; left:490px; top:105px; font-size:11px;">　</span>
 <span style="position:absolute; left:490px; top:114px; font-size:11px;">　</span>
+<span style="position:absolute; border: magenta 1px solid; left:473px; top:105px; width:11px; height:95px;"></span>
 <span style="position:absolute; left:473px; top:105px; font-size:11px;">こ</span>
 <span style="position:absolute; left:473px; top:114px; font-size:11px;">れ</span>
 <span style="position:absolute; left:473px; top:124px; font-size:11px;">ら</span>
@@ -145,6 +159,7 @@
 <span style="position:absolute; left:473px; top:172px; font-size:11px;">箇</span>
 <span style="position:absolute; left:473px; top:181px; font-size:11px;">月</span>
 <span style="position:absolute; left:473px; top:191px; font-size:11px;">の</span>
+<span style="position:absolute; border: magenta 1px solid; left:456px; top:105px; width:11px; height:105px;"></span>
 <span style="position:absolute; left:456px; top:105px; font-size:11px;">過</span>
 <span style="position:absolute; left:456px; top:114px; font-size:11px;">去</span>
 <span style="position:absolute; left:456px; top:124px; font-size:11px;">と</span>
@@ -156,6 +171,7 @@
 <span style="position:absolute; left:456px; top:181px; font-size:11px;">角</span>
 <span style="position:absolute; left:456px; top:191px; font-size:11px;">か</span>
 <span style="position:absolute; left:456px; top:200px; font-size:11px;">ら</span>
+<span style="position:absolute; border: magenta 1px solid; left:439px; top:105px; width:11px; height:105px;"></span>
 <span style="position:absolute; left:439px; top:105px; font-size:11px;">紙</span>
 <span style="position:absolute; left:439px; top:114px; font-size:11px;">と</span>
 <span style="position:absolute; left:439px; top:124px; font-size:11px;">鑛</span>
@@ -167,6 +183,7 @@
 <span style="position:absolute; left:439px; top:181px; font-size:11px;">つ</span>
 <span style="position:absolute; left:439px; top:191px; font-size:11px;">ら</span>
 <span style="position:absolute; left:439px; top:200px; font-size:11px;">ね</span>
+<span style="position:absolute; border: magenta 1px solid; left:422px; top:105px; width:11px; height:115px;"></span>
 <span style="position:absolute; left:422px; top:105px; font-size:11px;">（</span>
 <span style="position:absolute; left:422px; top:114px; font-size:11px;">す</span>
 <span style="position:absolute; left:422px; top:124px; font-size:11px;">べ</span>
@@ -179,6 +196,7 @@
 <span style="position:absolute; left:422px; top:191px; font-size:11px;">明</span>
 <span style="position:absolute; left:422px; top:200px; font-size:11px;">滅</span>
 <span style="position:absolute; left:422px; top:210px; font-size:11px;">し</span>
+<span style="position:absolute; border: magenta 1px solid; left:405px; top:105px; width:11px; height:134px;"></span>
 <span style="position:absolute; left:405px; top:105px; font-size:11px;">　</span>
 <span style="position:absolute; left:405px; top:114px; font-size:11px;">み</span>
 <span style="position:absolute; left:405px; top:124px; font-size:11px;">ん</span>
@@ -193,6 +211,7 @@
 <span style="position:absolute; left:405px; top:210px; font-size:11px;">も</span>
 <span style="position:absolute; left:405px; top:220px; font-size:11px;">の</span>
 <span style="position:absolute; left:405px; top:229px; font-size:11px;">）</span>
+<span style="position:absolute; border: magenta 1px solid; left:389px; top:105px; width:11px; height:124px;"></span>
 <span style="position:absolute; left:389px; top:105px; font-size:11px;">こ</span>
 <span style="position:absolute; left:389px; top:114px; font-size:11px;">こ</span>
 <span style="position:absolute; left:389px; top:124px; font-size:11px;">ま</span>
@@ -206,6 +225,7 @@
 <span style="position:absolute; left:389px; top:200px; font-size:11px;">ら</span>
 <span style="position:absolute; left:389px; top:210px; font-size:11px;">れ</span>
 <span style="position:absolute; left:389px; top:220px; font-size:11px;">た</span>
+<span style="position:absolute; border: magenta 1px solid; left:372px; top:105px; width:11px; height:134px;"></span>
 <span style="position:absolute; left:372px; top:105px; font-size:11px;">か</span>
 <span style="position:absolute; left:372px; top:114px; font-size:11px;">げ</span>
 <span style="position:absolute; left:372px; top:124px; font-size:11px;">と</span>
@@ -220,6 +240,7 @@
 <span style="position:absolute; left:372px; top:210px; font-size:11px;">り</span>
 <span style="position:absolute; left:372px; top:220px; font-size:11px;">づ</span>
 <span style="position:absolute; left:372px; top:229px; font-size:11px;">つ</span>
+<span style="position:absolute; border: magenta 1px solid; left:355px; top:105px; width:11px; height:134px;"></span>
 <span style="position:absolute; left:355px; top:105px; font-size:11px;">そ</span>
 <span style="position:absolute; left:355px; top:114px; font-size:11px;">の</span>
 <span style="position:absolute; left:355px; top:124px; font-size:11px;">と</span>
@@ -234,8 +255,10 @@
 <span style="position:absolute; left:355px; top:210px; font-size:11px;">チ</span>
 <span style="position:absolute; left:355px; top:220px; font-size:11px;">で</span>
 <span style="position:absolute; left:355px; top:229px; font-size:11px;">す</span>
+<span style="position:absolute; border: magenta 1px solid; left:338px; top:105px; width:11px; height:19px;"></span>
 <span style="position:absolute; left:338px; top:105px; font-size:11px;">　</span>
 <span style="position:absolute; left:338px; top:114px; font-size:11px;">　</span>
+<span style="position:absolute; border: magenta 1px solid; left:321px; top:105px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:321px; top:105px; font-size:11px;">こ</span>
 <span style="position:absolute; left:321px; top:114px; font-size:11px;">れ</span>
 <span style="position:absolute; left:321px; top:124px; font-size:11px;">ら</span>
@@ -254,6 +277,7 @@
 <span style="position:absolute; left:321px; top:248px; font-size:11px;">海</span>
 <span style="position:absolute; left:321px; top:258px; font-size:11px;">膽</span>
 <span style="position:absolute; left:321px; top:268px; font-size:11px;">は</span>
+<span style="position:absolute; border: magenta 1px solid; left:304px; top:105px; width:11px; height:210px;"></span>
 <span style="position:absolute; left:304px; top:105px; font-size:11px;">宇</span>
 <span style="position:absolute; left:304px; top:114px; font-size:11px;">宙</span>
 <span style="position:absolute; left:304px; top:124px; font-size:11px;">塵</span>
@@ -276,6 +300,7 @@
 <span style="position:absolute; left:304px; top:287px; font-size:11px;">な</span>
 <span style="position:absolute; left:304px; top:296px; font-size:11px;">が</span>
 <span style="position:absolute; left:304px; top:306px; font-size:11px;">ら</span>
+<span style="position:absolute; border: magenta 1px solid; left:287px; top:105px; width:11px; height:182px;"></span>
 <span style="position:absolute; left:287px; top:105px; font-size:11px;">そ</span>
 <span style="position:absolute; left:287px; top:114px; font-size:11px;">れ</span>
 <span style="position:absolute; left:287px; top:124px; font-size:11px;">ぞ</span>
@@ -295,6 +320,7 @@
 <span style="position:absolute; left:287px; top:258px; font-size:11px;">せ</span>
 <span style="position:absolute; left:287px; top:268px; font-size:11px;">う</span>
 <span style="position:absolute; left:287px; top:277px; font-size:11px;">が</span>
+<span style="position:absolute; border: magenta 1px solid; left:270px; top:105px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:270px; top:105px; font-size:11px;">そ</span>
 <span style="position:absolute; left:270px; top:114px; font-size:11px;">れ</span>
 <span style="position:absolute; left:270px; top:124px; font-size:11px;">ら</span>
@@ -313,6 +339,7 @@
 <span style="position:absolute; left:270px; top:248px; font-size:11px;">物</span>
 <span style="position:absolute; left:270px; top:258px; font-size:11px;">で</span>
 <span style="position:absolute; left:270px; top:268px; font-size:11px;">す</span>
+<span style="position:absolute; border: magenta 1px solid; left:253px; top:105px; width:11px; height:182px;"></span>
 <span style="position:absolute; left:253px; top:105px; font-size:11px;">た</span>
 <span style="position:absolute; left:253px; top:114px; font-size:11px;">ゞ</span>
 <span style="position:absolute; left:253px; top:124px; font-size:11px;">た</span>
@@ -332,6 +359,7 @@
 <span style="position:absolute; left:253px; top:258px; font-size:11px;">し</span>
 <span style="position:absolute; left:253px; top:268px; font-size:11px;">き</span>
 <span style="position:absolute; left:253px; top:277px; font-size:11px;">は</span>
+<span style="position:absolute; border: magenta 1px solid; left:236px; top:105px; width:11px; height:162px;"></span>
 <span style="position:absolute; left:236px; top:105px; font-size:11px;">記</span>
 <span style="position:absolute; left:236px; top:114px; font-size:11px;">録</span>
 <span style="position:absolute; left:236px; top:124px; font-size:11px;">さ</span>
@@ -349,6 +377,7 @@
 <span style="position:absolute; left:236px; top:239px; font-size:11px;">し</span>
 <span style="position:absolute; left:236px; top:248px; font-size:11px;">き</span>
 <span style="position:absolute; left:236px; top:258px; font-size:11px;">で</span>
+<span style="position:absolute; border: magenta 1px solid; left:219px; top:105px; width:11px; height:182px;"></span>
 <span style="position:absolute; left:219px; top:105px; font-size:11px;">そ</span>
 <span style="position:absolute; left:219px; top:114px; font-size:11px;">れ</span>
 <span style="position:absolute; left:219px; top:124px; font-size:11px;">が</span>
@@ -368,6 +397,7 @@
 <span style="position:absolute; left:219px; top:258px; font-size:11px;">ほ</span>
 <span style="position:absolute; left:219px; top:268px; font-size:11px;">り</span>
 <span style="position:absolute; left:219px; top:277px; font-size:11px;">で</span>
+<span style="position:absolute; border: magenta 1px solid; left:202px; top:105px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:202px; top:105px; font-size:11px;">あ</span>
 <span style="position:absolute; left:202px; top:114px; font-size:11px;">る</span>
 <span style="position:absolute; left:202px; top:124px; font-size:11px;">程</span>
@@ -386,6 +416,7 @@
 <span style="position:absolute; left:202px; top:248px; font-size:11px;">し</span>
 <span style="position:absolute; left:202px; top:258px; font-size:11px;">ま</span>
 <span style="position:absolute; left:202px; top:268px; font-size:11px;">す</span>
+<span style="position:absolute; border: magenta 1px solid; left:185px; top:105px; width:11px; height:201px;"></span>
 <span style="position:absolute; left:185px; top:105px; font-size:11px;">（</span>
 <span style="position:absolute; left:185px; top:114px; font-size:11px;">す</span>
 <span style="position:absolute; left:185px; top:124px; font-size:11px;">べ</span>
@@ -407,6 +438,7 @@
 <span style="position:absolute; left:185px; top:277px; font-size:11px;">や</span>
 <span style="position:absolute; left:185px; top:287px; font-size:11px;">う</span>
 <span style="position:absolute; left:185px; top:296px; font-size:11px;">に</span>
+<span style="position:absolute; border: magenta 1px solid; left:168px; top:105px; width:11px; height:201px;"></span>
 <span style="position:absolute; left:168px; top:105px; font-size:11px;">　</span>
 <span style="position:absolute; left:168px; top:114px; font-size:11px;">み</span>
 <span style="position:absolute; left:168px; top:124px; font-size:11px;">ん</span>
@@ -428,7 +460,8 @@
 <span style="position:absolute; left:168px; top:277px; font-size:11px;">か</span>
 <span style="position:absolute; left:168px; top:287px; font-size:11px;">ら</span>
 <span style="position:absolute; left:168px; top:296px; font-size:11px;">）</span>
-<span style="position:absolute; border: blue 1px solid; left:101px; top:374px; width:536px; height:191px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:101px; top:374px; width:536px; height:191px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:626px; top:374px; width:11px; height:134px;"></span>
 <span style="position:absolute; left:626px; top:374px; font-size:11px;">け</span>
 <span style="position:absolute; left:626px; top:384px; font-size:11px;">れ</span>
 <span style="position:absolute; left:626px; top:393px; font-size:11px;">ど</span>
@@ -443,6 +476,7 @@
 <span style="position:absolute; left:626px; top:480px; font-size:11px;">積</span>
 <span style="position:absolute; left:626px; top:489px; font-size:11px;">世</span>
 <span style="position:absolute; left:626px; top:499px; font-size:11px;">の</span>
+<span style="position:absolute; border: magenta 1px solid; left:609px; top:374px; width:11px; height:143px;"></span>
 <span style="position:absolute; left:609px; top:374px; font-size:11px;">巨</span>
 <span style="position:absolute; left:609px; top:384px; font-size:11px;">大</span>
 <span style="position:absolute; left:609px; top:393px; font-size:11px;">に</span>
@@ -458,6 +492,7 @@
 <span style="position:absolute; left:609px; top:489px; font-size:11px;">な</span>
 <span style="position:absolute; left:609px; top:499px; font-size:11px;">か</span>
 <span style="position:absolute; left:609px; top:508px; font-size:11px;">で</span>
+<span style="position:absolute; border: magenta 1px solid; left:592px; top:374px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:592px; top:374px; font-size:11px;">正</span>
 <span style="position:absolute; left:592px; top:384px; font-size:11px;">し</span>
 <span style="position:absolute; left:592px; top:393px; font-size:11px;">く</span>
@@ -476,6 +511,7 @@
 <span style="position:absolute; left:592px; top:518px; font-size:11px;">と</span>
 <span style="position:absolute; left:592px; top:527px; font-size:11px;">ば</span>
 <span style="position:absolute; left:592px; top:537px; font-size:11px;">が</span>
+<span style="position:absolute; border: magenta 1px solid; left:575px; top:374px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:575px; top:374px; font-size:11px;">わ</span>
 <span style="position:absolute; left:575px; top:384px; font-size:11px;">づ</span>
 <span style="position:absolute; left:575px; top:393px; font-size:11px;">か</span>
@@ -494,6 +530,7 @@
 <span style="position:absolute; left:575px; top:518px; font-size:11px;">う</span>
 <span style="position:absolute; left:575px; top:527px; font-size:11px;">ち</span>
 <span style="position:absolute; left:575px; top:537px; font-size:11px;">に</span>
+<span style="position:absolute; border: magenta 1px solid; left:559px; top:374px; width:11px; height:143px;"></span>
 <span style="position:absolute; left:559px; top:374px; font-size:11px;">　</span>
 <span style="position:absolute; left:559px; top:384px; font-size:11px;">　</span>
 <span style="position:absolute; left:559px; top:393px; font-size:11px;">　</span>
@@ -509,6 +546,7 @@
 <span style="position:absolute; left:559px; top:489px; font-size:11px;">億</span>
 <span style="position:absolute; left:559px; top:499px; font-size:11px;">年</span>
 <span style="position:absolute; left:559px; top:508px; font-size:11px;">）</span>
+<span style="position:absolute; border: magenta 1px solid; left:542px; top:374px; width:11px; height:153px;"></span>
 <span style="position:absolute; left:542px; top:374px; font-size:11px;">す</span>
 <span style="position:absolute; left:542px; top:384px; font-size:11px;">で</span>
 <span style="position:absolute; left:542px; top:393px; font-size:11px;">に</span>
@@ -525,6 +563,7 @@
 <span style="position:absolute; left:542px; top:499px; font-size:11px;">を</span>
 <span style="position:absolute; left:542px; top:508px; font-size:11px;">變</span>
 <span style="position:absolute; left:542px; top:518px; font-size:11px;">じ</span>
+<span style="position:absolute; border: magenta 1px solid; left:525px; top:374px; width:11px; height:115px;"></span>
 <span style="position:absolute; left:525px; top:374px; font-size:11px;">し</span>
 <span style="position:absolute; left:525px; top:384px; font-size:11px;">か</span>
 <span style="position:absolute; left:525px; top:393px; font-size:11px;">も</span>
@@ -537,6 +576,7 @@
 <span style="position:absolute; left:525px; top:460px; font-size:11px;">刷</span>
 <span style="position:absolute; left:525px; top:470px; font-size:11px;">者</span>
 <span style="position:absolute; left:525px; top:480px; font-size:11px;">も</span>
+<span style="position:absolute; border: magenta 1px solid; left:508px; top:374px; width:11px; height:153px;"></span>
 <span style="position:absolute; left:508px; top:374px; font-size:11px;">そ</span>
 <span style="position:absolute; left:508px; top:384px; font-size:11px;">れ</span>
 <span style="position:absolute; left:508px; top:393px; font-size:11px;">を</span>
@@ -553,6 +593,7 @@
 <span style="position:absolute; left:508px; top:499px; font-size:11px;">こ</span>
 <span style="position:absolute; left:508px; top:508px; font-size:11px;">と</span>
 <span style="position:absolute; left:508px; top:518px; font-size:11px;">は</span>
+<span style="position:absolute; border: magenta 1px solid; left:491px; top:374px; width:11px; height:105px;"></span>
 <span style="position:absolute; left:491px; top:374px; font-size:11px;">傾</span>
 <span style="position:absolute; left:491px; top:384px; font-size:11px;">向</span>
 <span style="position:absolute; left:491px; top:393px; font-size:11px;">と</span>
@@ -564,6 +605,7 @@
 <span style="position:absolute; left:491px; top:451px; font-size:11px;">得</span>
 <span style="position:absolute; left:491px; top:460px; font-size:11px;">ま</span>
 <span style="position:absolute; left:491px; top:470px; font-size:11px;">す</span>
+<span style="position:absolute; border: magenta 1px solid; left:474px; top:374px; width:11px; height:153px;"></span>
 <span style="position:absolute; left:474px; top:374px; font-size:11px;">け</span>
 <span style="position:absolute; left:474px; top:384px; font-size:11px;">だ</span>
 <span style="position:absolute; left:474px; top:393px; font-size:11px;">し</span>
@@ -580,6 +622,7 @@
 <span style="position:absolute; left:474px; top:499px; font-size:11px;">感</span>
 <span style="position:absolute; left:474px; top:508px; font-size:11px;">官</span>
 <span style="position:absolute; left:474px; top:518px; font-size:11px;">や</span>
+<span style="position:absolute; border: magenta 1px solid; left:457px; top:374px; width:11px; height:124px;"></span>
 <span style="position:absolute; left:457px; top:374px; font-size:11px;">風</span>
 <span style="position:absolute; left:457px; top:384px; font-size:11px;">景</span>
 <span style="position:absolute; left:457px; top:393px; font-size:11px;">や</span>
@@ -593,6 +636,7 @@
 <span style="position:absolute; left:457px; top:470px; font-size:11px;">や</span>
 <span style="position:absolute; left:457px; top:480px; font-size:11px;">う</span>
 <span style="position:absolute; left:457px; top:489px; font-size:11px;">に</span>
+<span style="position:absolute; border: magenta 1px solid; left:440px; top:374px; width:11px; height:182px;"></span>
 <span style="position:absolute; left:440px; top:374px; font-size:11px;">そ</span>
 <span style="position:absolute; left:440px; top:384px; font-size:11px;">し</span>
 <span style="position:absolute; left:440px; top:393px; font-size:11px;">て</span>
@@ -612,6 +656,7 @@
 <span style="position:absolute; left:440px; top:527px; font-size:11px;">や</span>
 <span style="position:absolute; left:440px; top:537px; font-size:11px;">う</span>
 <span style="position:absolute; left:440px; top:547px; font-size:11px;">に</span>
+<span style="position:absolute; border: magenta 1px solid; left:423px; top:374px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:423px; top:374px; font-size:11px;">記</span>
 <span style="position:absolute; left:423px; top:384px; font-size:11px;">録</span>
 <span style="position:absolute; left:423px; top:393px; font-size:11px;">や</span>
@@ -630,6 +675,7 @@
 <span style="position:absolute; left:423px; top:518px; font-size:11px;">も</span>
 <span style="position:absolute; left:423px; top:527px; font-size:11px;">の</span>
 <span style="position:absolute; left:423px; top:537px; font-size:11px;">も</span>
+<span style="position:absolute; border: magenta 1px solid; left:406px; top:374px; width:11px; height:153px;"></span>
 <span style="position:absolute; left:406px; top:374px; font-size:11px;">そ</span>
 <span style="position:absolute; left:406px; top:384px; font-size:11px;">れ</span>
 <span style="position:absolute; left:406px; top:393px; font-size:11px;">の</span>
@@ -646,6 +692,7 @@
 <span style="position:absolute; left:406px; top:499px; font-size:11px;">し</span>
 <span style="position:absolute; left:406px; top:508px; font-size:11px;">ょ</span>
 <span style="position:absolute; left:406px; top:518px; font-size:11px;">に</span>
+<span style="position:absolute; border: magenta 1px solid; left:389px; top:374px; width:11px; height:134px;"></span>
 <span style="position:absolute; left:389px; top:374px; font-size:11px;">（</span>
 <span style="position:absolute; left:389px; top:384px; font-size:11px;">因</span>
 <span style="position:absolute; left:389px; top:393px; font-size:11px;">果</span>
@@ -660,6 +707,7 @@
 <span style="position:absolute; left:389px; top:480px; font-size:11px;">と</span>
 <span style="position:absolute; left:389px; top:489px; font-size:11px;">に</span>
 <span style="position:absolute; left:389px; top:499px; font-size:11px;">）</span>
+<span style="position:absolute; border: magenta 1px solid; left:372px; top:374px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:372px; top:374px; font-size:11px;">わ</span>
 <span style="position:absolute; left:372px; top:384px; font-size:11px;">れ</span>
 <span style="position:absolute; left:372px; top:393px; font-size:11px;">わ</span>
@@ -678,6 +726,7 @@
 <span style="position:absolute; left:372px; top:518px; font-size:11px;">ま</span>
 <span style="position:absolute; left:372px; top:527px; font-size:11px;">せ</span>
 <span style="position:absolute; left:372px; top:537px; font-size:11px;">ん</span>
+<span style="position:absolute; border: magenta 1px solid; left:355px; top:374px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:355px; top:374px; font-size:11px;">お</span>
 <span style="position:absolute; left:355px; top:384px; font-size:11px;">そ</span>
 <span style="position:absolute; left:355px; top:393px; font-size:11px;">ら</span>
@@ -696,6 +745,7 @@
 <span style="position:absolute; left:355px; top:518px; font-size:11px;">こ</span>
 <span style="position:absolute; left:355px; top:527px; font-size:11px;">ろ</span>
 <span style="position:absolute; left:355px; top:537px; font-size:11px;">は</span>
+<span style="position:absolute; border: magenta 1px solid; left:338px; top:374px; width:11px; height:162px;"></span>
 <span style="position:absolute; left:338px; top:374px; font-size:11px;">そ</span>
 <span style="position:absolute; left:338px; top:384px; font-size:11px;">れ</span>
 <span style="position:absolute; left:338px; top:393px; font-size:11px;">相</span>
@@ -713,6 +763,7 @@
 <span style="position:absolute; left:338px; top:508px; font-size:11px;">用</span>
 <span style="position:absolute; left:338px; top:518px; font-size:11px;">さ</span>
 <span style="position:absolute; left:338px; top:527px; font-size:11px;">れ</span>
+<span style="position:absolute; border: magenta 1px solid; left:321px; top:374px; width:11px; height:172px;"></span>
 <span style="position:absolute; left:321px; top:374px; font-size:11px;">相</span>
 <span style="position:absolute; left:321px; top:384px; font-size:11px;">當</span>
 <span style="position:absolute; left:321px; top:393px; font-size:11px;">し</span>
@@ -731,6 +782,7 @@
 <span style="position:absolute; left:321px; top:518px; font-size:11px;">現</span>
 <span style="position:absolute; left:321px; top:527px; font-size:11px;">出</span>
 <span style="position:absolute; left:321px; top:537px; font-size:11px;">し</span>
+<span style="position:absolute; border: magenta 1px solid; left:304px; top:374px; width:11px; height:124px;"></span>
 <span style="position:absolute; left:304px; top:374px; font-size:11px;">み</span>
 <span style="position:absolute; left:304px; top:384px; font-size:11px;">ん</span>
 <span style="position:absolute; left:304px; top:393px; font-size:11px;">な</span>
@@ -744,6 +796,7 @@
 <span style="position:absolute; left:304px; top:470px; font-size:11px;">前</span>
 <span style="position:absolute; left:304px; top:480px; font-size:11px;">に</span>
 <span style="position:absolute; left:304px; top:489px; font-size:11px;">は</span>
+<span style="position:absolute; border: magenta 1px solid; left:288px; top:374px; width:11px; height:191px;"></span>
 <span style="position:absolute; left:288px; top:374px; font-size:11px;">青</span>
 <span style="position:absolute; left:288px; top:384px; font-size:11px;">ぞ</span>
 <span style="position:absolute; left:288px; top:393px; font-size:11px;">ら</span>
@@ -764,6 +817,7 @@
 <span style="position:absolute; left:288px; top:537px; font-size:11px;">お</span>
 <span style="position:absolute; left:288px; top:547px; font-size:11px;">も</span>
 <span style="position:absolute; left:288px; top:556px; font-size:11px;">ひ</span>
+<span style="position:absolute; border: magenta 1px solid; left:271px; top:374px; width:11px; height:182px;"></span>
 <span style="position:absolute; left:271px; top:374px; font-size:11px;">新</span>
 <span style="position:absolute; left:271px; top:384px; font-size:11px;">進</span>
 <span style="position:absolute; left:271px; top:393px; font-size:11px;">の</span>
@@ -783,6 +837,7 @@
 <span style="position:absolute; left:271px; top:527px; font-size:11px;">の</span>
 <span style="position:absolute; left:271px; top:537px; font-size:11px;">上</span>
 <span style="position:absolute; left:271px; top:547px; font-size:11px;">層</span>
+<span style="position:absolute; border: magenta 1px solid; left:254px; top:374px; width:11px; height:143px;"></span>
 <span style="position:absolute; left:254px; top:374px; font-size:11px;">き</span>
 <span style="position:absolute; left:254px; top:384px; font-size:11px;">ら</span>
 <span style="position:absolute; left:254px; top:393px; font-size:11px;">び</span>
@@ -798,6 +853,7 @@
 <span style="position:absolute; left:254px; top:489px; font-size:11px;">り</span>
 <span style="position:absolute; left:254px; top:499px; font-size:11px;">か</span>
 <span style="position:absolute; left:254px; top:508px; font-size:11px;">ら</span>
+<span style="position:absolute; border: magenta 1px solid; left:237px; top:374px; width:11px; height:115px;"></span>
 <span style="position:absolute; left:237px; top:374px; font-size:11px;">す</span>
 <span style="position:absolute; left:237px; top:384px; font-size:11px;">て</span>
 <span style="position:absolute; left:237px; top:393px; font-size:11px;">き</span>
@@ -810,6 +866,7 @@
 <span style="position:absolute; left:237px; top:460px; font-size:11px;">し</span>
 <span style="position:absolute; left:237px; top:470px; font-size:11px;">た</span>
 <span style="position:absolute; left:237px; top:480px; font-size:11px;">り</span>
+<span style="position:absolute; border: magenta 1px solid; left:220px; top:374px; width:11px; height:124px;"></span>
 <span style="position:absolute; left:220px; top:374px; font-size:11px;">あ</span>
 <span style="position:absolute; left:220px; top:384px; font-size:11px;">る</span>
 <span style="position:absolute; left:220px; top:393px; font-size:11px;">ひ</span>
@@ -823,6 +880,7 @@
 <span style="position:absolute; left:220px; top:470px; font-size:11px;">層</span>
 <span style="position:absolute; left:220px; top:480px; font-size:11px;">面</span>
 <span style="position:absolute; left:220px; top:489px; font-size:11px;">に</span>
+<span style="position:absolute; border: magenta 1px solid; left:203px; top:374px; width:11px; height:115px;"></span>
 <span style="position:absolute; left:203px; top:374px; font-size:11px;">透</span>
 <span style="position:absolute; left:203px; top:384px; font-size:11px;">明</span>
 <span style="position:absolute; left:203px; top:393px; font-size:11px;">な</span>
@@ -835,6 +893,7 @@
 <span style="position:absolute; left:203px; top:460px; font-size:11px;">足</span>
 <span style="position:absolute; left:203px; top:470px; font-size:11px;">跡</span>
 <span style="position:absolute; left:203px; top:480px; font-size:11px;">を</span>
+<span style="position:absolute; border: magenta 1px solid; left:186px; top:374px; width:11px; height:105px;"></span>
 <span style="position:absolute; left:186px; top:374px; font-size:11px;">発</span>
 <span style="position:absolute; left:186px; top:384px; font-size:11px;">見</span>
 <span style="position:absolute; left:186px; top:393px; font-size:11px;">す</span>
@@ -846,8 +905,10 @@
 <span style="position:absolute; left:186px; top:451px; font-size:11px;">ま</span>
 <span style="position:absolute; left:186px; top:460px; font-size:11px;">せ</span>
 <span style="position:absolute; left:186px; top:470px; font-size:11px;">ん</span>
+<span style="position:absolute; border: magenta 1px solid; left:169px; top:374px; width:11px; height:19px;"></span>
 <span style="position:absolute; left:169px; top:374px; font-size:11px;">　</span>
 <span style="position:absolute; left:169px; top:384px; font-size:11px;">　</span>
+<span style="position:absolute; border: magenta 1px solid; left:152px; top:374px; width:11px; height:95px;"></span>
 <span style="position:absolute; left:152px; top:374px; font-size:11px;">す</span>
 <span style="position:absolute; left:152px; top:384px; font-size:11px;">べ</span>
 <span style="position:absolute; left:152px; top:393px; font-size:11px;">て</span>
@@ -858,6 +919,7 @@
 <span style="position:absolute; left:152px; top:441px; font-size:11px;">命</span>
 <span style="position:absolute; left:152px; top:451px; font-size:11px;">題</span>
 <span style="position:absolute; left:152px; top:460px; font-size:11px;">は</span>
+<span style="position:absolute; border: magenta 1px solid; left:135px; top:374px; width:11px; height:143px;"></span>
 <span style="position:absolute; left:135px; top:374px; font-size:11px;">心</span>
 <span style="position:absolute; left:135px; top:384px; font-size:11px;">象</span>
 <span style="position:absolute; left:135px; top:393px; font-size:11px;">や</span>
@@ -873,6 +935,7 @@
 <span style="position:absolute; left:135px; top:489px; font-size:11px;">と</span>
 <span style="position:absolute; left:135px; top:499px; font-size:11px;">し</span>
 <span style="position:absolute; left:135px; top:508px; font-size:11px;">て</span>
+<span style="position:absolute; border: magenta 1px solid; left:118px; top:374px; width:11px; height:143px;"></span>
 <span style="position:absolute; left:118px; top:374px; font-size:11px;">第</span>
 <span style="position:absolute; left:118px; top:384px; font-size:11px;">四</span>
 <span style="position:absolute; left:118px; top:393px; font-size:11px;">次</span>
@@ -888,9 +951,11 @@
 <span style="position:absolute; left:118px; top:489px; font-size:11px;">れ</span>
 <span style="position:absolute; left:118px; top:499px; font-size:11px;">ま</span>
 <span style="position:absolute; left:118px; top:508px; font-size:11px;">す</span>
+<span style="position:absolute; border: magenta 1px solid; left:101px; top:374px; width:11px; height:19px;"></span>
 <span style="position:absolute; left:101px; top:374px; font-size:11px;">　</span>
 <span style="position:absolute; left:101px; top:384px; font-size:11px;">　</span>
-<span style="position:absolute; border: blue 1px solid; left:74px; top:471px; width:11px; height:143px;"></span>
+<span style="position:absolute; border: cyan 1px solid; left:74px; top:471px; width:11px; height:143px;"></span>
+<span style="position:absolute; border: magenta 1px solid; left:74px; top:471px; width:11px; height:143px;"></span>
 <span style="position:absolute; left:74px; top:471px; font-size:11px;">大</span>
 <span style="position:absolute; left:74px; top:481px; font-size:11px;">正</span>
 <span style="position:absolute; left:74px; top:490px; font-size:11px;">十</span>

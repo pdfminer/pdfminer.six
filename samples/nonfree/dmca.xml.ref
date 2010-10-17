@@ -568,42 +568,7 @@
 </text>
 </textline>
 </textbox>
-<textbox id="5" bbox="144.000,450.000,152.004,462.480">
-<textline bbox="144.000,450.000,152.004,462.480">
-<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,450.000,152.004,462.480" size="12.480">!</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="6" bbox="144.000,409.680,152.004,422.160">
-<textline bbox="144.000,409.680,152.004,422.160">
-<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,409.680,152.004,422.160" size="12.480">!</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="7" bbox="144.000,369.360,152.004,381.840">
-<textline bbox="144.000,369.360,152.004,381.840">
-<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,369.360,152.004,381.840" size="12.480">!</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="8" bbox="144.000,329.040,152.004,341.520">
-<textline bbox="144.000,329.040,152.004,341.520">
-<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,329.040,152.004,341.520" size="12.480">!</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="9" bbox="144.000,248.400,152.004,260.880">
-<textline bbox="144.000,248.400,152.004,260.880">
-<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,248.400,152.004,260.880" size="12.480">!</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="10" bbox="180.000,235.452,504.108,464.124">
+<textbox id="5" bbox="180.000,235.452,504.108,464.124">
 <textline bbox="180.000,450.492,503.985,464.124">
 <text font="Garamond" bbox="180.000,450.492,187.380,464.064" size="13.572">T</text>
 <text font="Garamond" bbox="187.440,450.492,190.188,464.064" size="13.572">i</text>
@@ -1704,6 +1669,41 @@
 </text>
 </textline>
 </textbox>
+<textbox id="6" bbox="144.000,450.000,152.004,462.480">
+<textline bbox="144.000,450.000,152.004,462.480">
+<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,450.000,152.004,462.480" size="12.480">!</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="7" bbox="144.000,409.680,152.004,422.160">
+<textline bbox="144.000,409.680,152.004,422.160">
+<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,409.680,152.004,422.160" size="12.480">!</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="8" bbox="144.000,369.360,152.004,381.840">
+<textline bbox="144.000,369.360,152.004,381.840">
+<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,369.360,152.004,381.840" size="12.480">!</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="9" bbox="144.000,329.040,152.004,341.520">
+<textline bbox="144.000,329.040,152.004,341.520">
+<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,329.040,152.004,341.520" size="12.480">!</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="10" bbox="144.000,248.400,152.004,260.880">
+<textline bbox="144.000,248.400,152.004,260.880">
+<text font="ELCKGH+WPTypographicSymbols" bbox="144.000,248.400,152.004,260.880" size="12.480">!</text>
+<text>
+</text>
+</textline>
+</textbox>
 <textbox id="11" bbox="108.000,168.360,504.108,222.144">
 <textline bbox="144.000,208.572,504.060,222.144">
 <text font="Garamond" bbox="144.000,208.572,151.380,222.144" size="13.572">T</text>
@@ -2194,20 +2194,20 @@
 <textgroup bbox="144.000,235.452,504.108,490.944">
 <textbox id="4" bbox="144.000,477.372,323.881,490.944" />
 <textgroup bbox="144.000,235.452,504.108,464.124">
+<textbox id="5" bbox="180.000,235.452,504.108,464.124" />
 <textgroup bbox="144.000,248.400,152.004,462.480">
 <textgroup bbox="144.000,329.040,152.004,462.480">
 <textgroup bbox="144.000,369.360,152.004,462.480">
 <textgroup bbox="144.000,409.680,152.004,462.480">
-<textbox id="5" bbox="144.000,450.000,152.004,462.480" />
-<textbox id="6" bbox="144.000,409.680,152.004,422.160" />
+<textbox id="6" bbox="144.000,450.000,152.004,462.480" />
+<textbox id="7" bbox="144.000,409.680,152.004,422.160" />
 </textgroup>
-<textbox id="7" bbox="144.000,369.360,152.004,381.840" />
+<textbox id="8" bbox="144.000,369.360,152.004,381.840" />
 </textgroup>
-<textbox id="8" bbox="144.000,329.040,152.004,341.520" />
+<textbox id="9" bbox="144.000,329.040,152.004,341.520" />
 </textgroup>
-<textbox id="9" bbox="144.000,248.400,152.004,260.880" />
+<textbox id="10" bbox="144.000,248.400,152.004,260.880" />
 </textgroup>
-<textbox id="10" bbox="180.000,235.452,504.108,464.124" />
 </textgroup>
 </textgroup>
 <textbox id="11" bbox="108.000,168.360,504.108,222.144" />
