@@ -5,7 +5,8 @@ from pdffont import PDFUnicodeNotDefined
 from pdftypes import LITERALS_DCT_DECODE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
 from layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTPolygon
-from layout import LTFigure, LTImage, LTChar, LTTextLine, LTTextBox, LTTextGroup
+from layout import LTFigure, LTImage, LTChar, LTTextLine
+from layout import LTTextBox, LTTextBoxVertical, LTTextGroup
 from utils import apply_matrix_pt, mult_matrix
 from utils import enc, bbox2str, create_bmp
 
@@ -316,17 +317,16 @@ class XMLConverter(PDFConverter):
                     render(child)
                 self.outfp.write('</textline>\n')
             elif isinstance(item, LTTextBox):
-                self.outfp.write('<textbox id="%d" bbox="%s">\n' % (item.index, bbox2str(item.bbox)))
+                wmode = ''
+                if isinstance(item, LTTextBoxVertical):
+                    wmode = ' wmode="vertical"'
+                self.outfp.write('<textbox id="%d" bbox="%s"%s>\n' % (item.index, bbox2str(item.bbox), wmode))
                 for child in item:
                     render(child)
                 self.outfp.write('</textbox>\n')
             elif isinstance(item, LTChar):
-                vertical = ''
-                if item.is_vertical():
-                    vertical = 'vertical="true" '
-                self.outfp.write('<text font="%s" %sbbox="%s" size="%.3f">' %
-                                 (enc(item.font.fontname), vertical,
-                                  bbox2str(item.bbox), item.get_size()))
+                self.outfp.write('<text font="%s" bbox="%s" size="%.3f">' %
+                                 (enc(item.font.fontname), bbox2str(item.bbox), item.get_size()))
                 self.write(item.text)
                 self.outfp.write('</text>\n')
             elif isinstance(item, LTText):
