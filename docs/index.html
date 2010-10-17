@@ -1,18 +1,15 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="style.css">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>PDFMiner</title>
-<style type="text/css"><!--
-blockquote { background: #eeeeee; }
-h1 { border-bottom: solid black 2px; }
-h2 { border-bottom: solid black 1px; }
---></style>
-</head><body>
+</head>
+<body>
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Oct 17 09:10:34 UTC 2010
+Last Modified: Sun Oct 17 09:20:32 UTC 2010
 <!-- hhmts end -->
 </div>
 
@@ -29,13 +26,17 @@ Python PDF parser and analyzer
 <li> <a href="#intro">What's It?</a>
 <li> <a href="#download">Download</a>
 <li> <a href="#install">How to Install</a> 
-&nbsp; <small>(<a href="#cmap">for CJK languages</a>)</small>
-<li> <a href="#usage">How to Use</a>
-&nbsp; <small>(<a href="#pdf2txt">pdf2txt.py</a>, 
-<a href="#dumppdf">dumppdf.py</a>, 
-<a href="programming.html">use as library</a>)</small>
-<li> <a href="#todos">TODOs</a>
+  <ul> 
+    <li> <a href="#cmap">CJK languages support</a>
+  </ul>
+<li> <a href="#documentation">Documentation</a>
+  <ul>
+    <li> <a href="#pdf2txt">pdf2txt.py</a>
+    <li> <a href="#dumppdf">dumppdf.py</a>
+    <li> <a href="programming.html">PDFMiner as library</a>
+  </ul>
 <li> <a href="#changes">Changes</a>
+<li> <a href="#todo">TODO</a>
 <li> <a href="#related">Related Projects</a>
 <li> <a href="#license">Terms and Conditions</a>
 </ul>
@@ -153,9 +154,9 @@ paste the following commands on a command line prompt:
 <strong>python setup.py install</strong>
 </pre></blockquote>
 
-<h2><a name="usage">How to Use</a></h2>
+<h2><a name="documentation">Documentation</a></h2>
 <p>
-PDFMiner comes with two handy tools:
+PDFMiner comes with two command line tools:
 <code>pdf2txt.py</code> and <code>dumppdf.py</code>.
 
 <h3><a name="pdf2txt">pdf2txt.py</a></h3>
@@ -278,6 +279,8 @@ By default, it extracts all the pages in a document.
 <dd> Increases the debug level.
 </dl>
 
+<hr noshade>
+
 <h3><a name="dumppdf">dumppdf.py</a></h3>
 <p>
 <code>dumppdf.py</code> dumps the internal contents of a PDF file
@@ -336,25 +339,6 @@ no stream header is displayed for the ease of saving it to a file.
 <dd> Increases the debug level.
 </dl>
 
-<h3><a name="library">Use as Library</a></h3>
-<p>
-PDFMiner can be used as a library by other Python programs.
-<p>
-For details, see the <a href="programming.html">Programming with PDFMiner</a> page.
-<p>
-Also, check out <a href="http://denis.papathanasiou.org/?p=343">a more complete example by Denis Papathanasiou</a>.
-
-<h2><a name="todos">TODOs</a></h2>
-<ul>
-<li> <A href="http://www.python.org/dev/peps/pep-0008/">PEP-8</a> and
-<a href="http://www.python.org/dev/peps/pep-0257/">PEP-257</a> conformance.
-<li> Better documentation.
-<li> Better text extraction / layout analysis. (writing mode detection, Type1 font file analysis, etc.)
-<li> Robust error handling.
-<li> Crypt stream filter support. (More sample documents are needed!)
-<li> CCITTFax stream filter support.
-</ul>
-
 <h2><a name="changes">Changes</a></h2>
 <ul>
 <li> 2010/10/17: A couple of bugfixes and a minor improvement. Thanks to standardabweichung and Alastair Irving.
@@ -406,8 +390,18 @@ Also, check out <a href="http://denis.papathanasiou.org/?p=343">a more complete 
 <li> 2004/12/24: Start writing the code out of boredom...
 </ul>
 
-<a name="related"></a>
-<h2>Related Projects</h2>
+<h2><a name="todo">TODO</a></h2>
+<ul>
+<li> <A href="http://www.python.org/dev/peps/pep-0008/">PEP-8</a> and
+<a href="http://www.python.org/dev/peps/pep-0257/">PEP-257</a> conformance.
+<li> Better documentation.
+<li> Better text extraction / layout analysis. (writing mode detection, Type1 font file analysis, etc.)
+<li> Robust error handling.
+<li> Crypt stream filter support. (More sample documents are needed!)
+<li> CCITTFax stream filter support.
+</ul>
+
+<h2><a name="related">Related Projects</a></h2>
 <ul>
 <li> <a href="http://pybrary.net/pyPdf/">pyPdf</a>
 <li> <a href="http://www.foolabs.com/xpdf/">xpdf</a>
@@ -415,8 +409,7 @@ Also, check out <a href="http://denis.papathanasiou.org/?p=343">a more complete 
 <li> <a href="http://mupdf.com/">mupdf</a>
 </ul>
 
-<a name="license"></a>
-<h2>Terms and Conditions</h2>
+<h2><a name="license">Terms and Conditions</a></h2>
 <p>
 (This is so-called MIT/X License)
 <p>
