@@ -5,31 +5,38 @@
 <title>Programming with PDFMiner</title>
 <style type="text/css"><!--
 blockquote { background: #eeeeee; }
+h1 { border-bottom: solid black 2px; }
+h2 { border-bottom: solid black 1px; }
 .comment { color: darkgreen; }
 --></style>
 </head><body>
+
+<div align=right class=lastmod>
+<!-- hhmts start -->
+Last Modified: Sun Oct 17 09:12:03 UTC 2010
+<!-- hhmts end -->
+</div>
+
 <p>
 <a href="index.html">[Back to PDFMiner homepage]</a>
 
 <h1>Programming with PDFMiner</h1>
 <p>
-This document explains how to use PDFMiner as a library 
+This page explains how to use PDFMiner as a library 
 from other applications.
 <ul>
 <li> <a href="#overview">Overview</a>
 <li> <a href="#basic">Basic Usage</a>
 <li> <a href="#layout">Layout Analysis</a>
-<li> <a href="#toc">TOC Extraction</a>
-<li> <a href="#more">more</a>
+<li> <a href="#tocextract">TOC Extraction</a>
+<li> <a href="#extend">Parser Extension</a>
 </ul>
 
-<a name="overview">
-<hr noshade>
-<h2>Overview</h2>
+<h2><a name="overview">Overview</a></h2>
 <p>
 <strong>PDF is evil.</strong>  Although it is called a PDF
-"document", it's nothing like Word or HTML. PDF is more like a
-picture representation.  PDF contents are just a bunch of
+"document", it's nothing like Word or HTML document. PDF is more
+like a graphic representation.  PDF contents are just a bunch of
 instructions that tell how to place the stuff at each exact
 position on a display or paper.  In most cases, it has no logical
 structure such as sentences or paragraphs and it cannot adapt
@@ -37,6 +44,13 @@ itself when the paper size changes. PDFMiner attempts to
 reconstruct some of those structures by guessing from its
 positioning, but there's nothing guaranteed to work. Ugly, I
 know. Again, PDF is evil.
+
+<p>
+[More technical details about the internal structure of PDF:
+"How to Extract Text Contents from PDF Manually"
+<a href="http://www.youtube.com/watch?v=k34wRxaxA_c">(part 1)</a>
+<a href="http://www.youtube.com/watch?v=_A1M4OdNsiQ">(part 2)</a>
+<a href="http://www.youtube.com/watch?v=sfV_7cWPgZE">(part 3)</a>]
 
 <p>
 Because a PDF file has such a big and complex structure,
@@ -61,9 +75,7 @@ Figure 1 shows the relationship between the classes in PDFMiner.
 <small>Figure 1. Relationships between PDFMiner classes</small>
 </div>
 
-<a name="basic">
-<hr noshade>
-<h2>Basic Usage</h2>
+<h2><a name="basic">Basic Usage</a></h2>
 <p>
 A typical way to parse a PDF file is the following:
 <blockquote><pre>
@@ -97,9 +109,7 @@ for page in doc.get_pages():
     interpreter.process_page(page)
 </pre></blockquote>
 
-<a name="layout">
-<hr noshade>
-<h2>Accessing Layout Objects</h2>
+<h2><a name="layout">Accessing Layout Objects</a></h2>
 <p>
 Here is a typical way to use the layout analysis function:
 <blockquote><pre>
@@ -174,9 +184,7 @@ Could be used for framing another pictures or figures.
 <dd> Represents a polygon in a page. 
 </dl>
 
-<a name="toc">
-<hr noshade>
-<h2>TOC Extraction</h2>
+<h2><a name="tocextract">TOC Extraction</a></h2>
 <p>
 PDFMiner provides functions to access the document's table of contents
 ("Outlines").
@@ -205,9 +213,7 @@ way to refer to any in-page object from the outside, there's no
 way to tell exactly which part of text these destinations are
 refering to.
 
-<a name="more">
-<hr noshade>
-<h2>More</h2>
+<h2><a name="extend">Parser Extension</a></h2>
 
 <p>
 You can extend <code>PDFPageInterpreter</code> and <code>PDFDevice</code> class

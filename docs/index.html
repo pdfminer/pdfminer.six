@@ -5,8 +5,16 @@
 <title>PDFMiner</title>
 <style type="text/css"><!--
 blockquote { background: #eeeeee; }
+h1 { border-bottom: solid black 2px; }
+h2 { border-bottom: solid black 1px; }
 --></style>
 </head><body>
+
+<div align=right class=lastmod>
+<!-- hhmts start -->
+Last Modified: Sun Oct 17 09:10:34 UTC 2010
+<!-- hhmts end -->
+</div>
 
 <h1>PDFMiner</h1>
 <p>
@@ -17,31 +25,22 @@ Python PDF parser and analyzer
 &nbsp;
 <a href="#changes">Recent Changes</a>
 
-<div align=right class=lastmod>
-<!-- hhmts start -->
-Last Modified: Sun Oct 17 05:13:01 UTC 2010
-<!-- hhmts end -->
-</div>
-
 <ul>
 <li> <a href="#intro">What's It?</a>
-<li> <a href="#source">Download</a>
-<li> <a href="#install">Install</a> 
+<li> <a href="#download">Download</a>
+<li> <a href="#install">How to Install</a> 
 &nbsp; <small>(<a href="#cmap">for CJK languages</a>)</small>
 <li> <a href="#usage">How to Use</a>
 &nbsp; <small>(<a href="#pdf2txt">pdf2txt.py</a>, 
 <a href="#dumppdf">dumppdf.py</a>, 
 <a href="programming.html">use as library</a>)</small>
-<li> <a href="#techdocs">Technical Documents</a>
 <li> <a href="#todos">TODOs</a>
 <li> <a href="#changes">Changes</a>
 <li> <a href="#related">Related Projects</a>
 <li> <a href="#license">Terms and Conditions</a>
 </ul>
 
-<a name="intro"></a>
-<hr noshade>
-<h2>What's It?</h2>
+<h2><a name="intro">What's It?</a></h2>
 <p>
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting 
@@ -51,8 +50,9 @@ other information such as fonts or lines.
 It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
 PDF parser that can be used for other purposes instead of text analysis.
+
 <p>
-<strong>Features:</strong>
+<h3>Features</h3>
 <ul>
 <li> Written entirely in Python. (for version 2.4 or newer)
 <li> Parse, analyze, and convert PDF documents.
@@ -66,15 +66,20 @@ PDF parser that can be used for other purposes instead of text analysis.
 <li> Reconstruct the original layout by grouping text chunks.
 </ul>
 <p>
-On the performance side, 
 PDFMiner is about 20 times slower than 
-other C/C++-based software such as XPdf.
+other C/C++-based counterparts such as XPdf.
 
-<a name="source"></a>
+<h3><a name="download">Download</a></h3>
 <p>
-<strong>Download from PyPI:</strong><br>
+<strong>Source distribution:</strong><br>
 <a href="http://pypi.python.org/pypi/pdfminer/">
 http://pypi.python.org/pypi/pdfminer/
+</a>
+
+<P>
+<strong>SVN repository:</strong><br>
+<a href="http://code.google.com/p/pdfminerr/source/browse/trunk/pdfminer">
+http://code.google.com/p/pdfminerr/source/browse/trunk/pdfminer
 </a>
 
 <p>
@@ -84,25 +89,16 @@ http://groups.google.com/group/pdfminer-users/
 </a>
 
 <P>
-<strong>View the source:</strong><br>
-<a href="http://code.google.com/p/pdfminerr/source/browse/trunk/pdfminer">
-http://code.google.com/p/pdfminerr/source/browse/trunk/pdfminer
-</a>
-
-<P>
 <strong>Online Demo:</strong> (pdf -&gt; html conversion webapp)<br>
 <a href="http://pdf2html.tabesugi.net:8080/">
 http://pdf2html.tabesugi.net:8080/
 </a>
 
 
-<a name="install"></a>
-<hr noshade>
-<h2>Install</h2>
-
+<h2><a name="install">How to Install</a></h2>
 <ol>
 <li> Install <a href="http://www.python.org/download/">Python</a> 2.4 or newer.
-(<font color=red><strong>Python 3 is not supported.</strong></font>)
+     (<font color=red><strong>Python 3 is not supported.</strong></font>)
 <li> Download the <a href="#source">PDFMiner source</a>.
 <li> Unpack it.
 <li> Run <code>setup.py</code> to install:<br>
@@ -131,9 +127,8 @@ W o r l d
 <li> Done!
 </ol>
 
+<h3><a name="cmap">For CJK languages</a></h3>
 <p>
-<a name="cmap"></a>
-<h3>For CJK languages</h3>
 In order to process CJK languages, you need an additional step to take
 during installation:
 <blockquote><pre>
@@ -146,6 +141,7 @@ writing 'CNS1_H.py'...
 
 # <strong>python setup.py install</strong>
 </pre></blockquote>
+
 <p>
 On Windows machines which don't have <code>make</code> command, 
 paste the following commands on a command line prompt:
@@ -157,16 +153,12 @@ paste the following commands on a command line prompt:
 <strong>python setup.py install</strong>
 </pre></blockquote>
 
-<a name="usage"></a>
-<hr noshade>
-<h2>How to Use</h2>
-
+<h2><a name="usage">How to Use</a></h2>
 <p>
 PDFMiner comes with two handy tools:
 <code>pdf2txt.py</code> and <code>dumppdf.py</code>.
 
-<a name="pdf2txt"></a>
-<h3>pdf2txt.py</h3>
+<h3><a name="pdf2txt">pdf2txt.py</a></h3>
 <p>
 <code>pdf2txt.py</code> extracts text contents from a PDF file.
 It extracts all the texts that are to be rendered programmatically,
@@ -176,11 +168,12 @@ It also extracts the corresponding locations, font names, font sizes, writing
 direction (horizontal or vertical) for each text portion.
 You need to provide a password for protected PDF documents when its access is restricted.
 You cannot extract any text from a PDF document which does not have extraction permission.
-<p>
-<strong>Note:</strong> Not all characters in a PDF can be safely converted to Unicode.
 
 <p>
-Examples:
+<strong>Note:</strong>
+Not all characters in a PDF can be safely converted to Unicode.
+
+<h4>Examples</h4>
 <blockquote><pre>
 $ <strong>pdf2txt.py -o output.html samples/naacl06-shinyama.pdf</strong>
 (extract text as an HTML file whose filename is output.html)
@@ -192,8 +185,7 @@ $ <strong>pdf2txt.py -P mypassword -o output.txt secret.pdf</strong>
 (extract a text from an encrypted PDF file)
 </pre></blockquote>
 
-<p>
-Options:
+<h4>Options</h4>
 <dl>
 <dt> <code>-o <em>filename</em></code> 
 <dd> Specifies the output file name.
@@ -286,16 +278,14 @@ By default, it extracts all the pages in a document.
 <dd> Increases the debug level.
 </dl>
 
-<a name="dumppdf"></a>
-<h3>dumppdf.py</h3>
+<h3><a name="dumppdf">dumppdf.py</a></h3>
 <p>
 <code>dumppdf.py</code> dumps the internal contents of a PDF file
 in pseudo-XML format. This program is primarily for debugging purposes,
 but it's also possible to extract some meaningful contents
 (such as images).
 
-<p>
-Examples:
+<h4>Examples</h4>
 <blockquote><pre>
 $ <strong>dumppdf.py -a foo.pdf</strong>
 (dump all the headers and contents, except stream objects)
@@ -307,8 +297,7 @@ $ <strong>dumppdf.py -r -i6 foo.pdf &gt; pic.jpeg</strong>
 (extract a JPEG image)
 </pre></blockquote>
 
-<p>
-Options:
+<h4>Options</h4>
 <dl>
 <dt> <code>-a</code> 
 <dd> Instructs to dump all the objects.
@@ -347,8 +336,7 @@ no stream header is displayed for the ease of saving it to a file.
 <dd> Increases the debug level.
 </dl>
 
-<a name="library"></a>
-<h3>Use as Library</h3>
+<h3><a name="library">Use as Library</a></h3>
 <p>
 PDFMiner can be used as a library by other Python programs.
 <p>
@@ -356,21 +344,7 @@ For details, see the <a href="programming.html">Programming with PDFMiner</a> pa
 <p>
 Also, check out <a href="http://denis.papathanasiou.org/?p=343">a more complete example by Denis Papathanasiou</a>.
 
-<a name="techdocs"></a>
-<hr noshade>
-<h2>Technical Documents</h2>
-<p>
-<ul>
-<li> Video:
-"How to Extract Text Contents from PDF by Hand"
-<a href="http://www.youtube.com/watch?v=k34wRxaxA_c">(part 1)</a>
-<a href="http://www.youtube.com/watch?v=_A1M4OdNsiQ">(part 2)</a>
-<a href="http://www.youtube.com/watch?v=sfV_7cWPgZE">(part 3)</a>
-</ul>
-
-<a name="todos"></a>
-<hr noshade>
-<h2>TODOs</h2>
+<h2><a name="todos">TODOs</a></h2>
 <ul>
 <li> <A href="http://www.python.org/dev/peps/pep-0008/">PEP-8</a> and
 <a href="http://www.python.org/dev/peps/pep-0257/">PEP-257</a> conformance.
@@ -381,9 +355,7 @@ Also, check out <a href="http://denis.papathanasiou.org/?p=343">a more complete 
 <li> CCITTFax stream filter support.
 </ul>
 
-<a name="changes"></a>
-<hr noshade>
-<h2>Changes</h2>
+<h2><a name="changes">Changes</a></h2>
 <ul>
 <li> 2010/10/17: A couple of bugfixes and a minor improvement. Thanks to standardabweichung and Alastair Irving.
 <li> 2010/09/07: A minor bugfix. Thanks to Alexander Garden.
@@ -435,7 +407,6 @@ Also, check out <a href="http://denis.papathanasiou.org/?p=343">a more complete 
 </ul>
 
 <a name="related"></a>
-<hr noshade>
 <h2>Related Projects</h2>
 <ul>
 <li> <a href="http://pybrary.net/pyPdf/">pyPdf</a>
@@ -445,7 +416,6 @@ Also, check out <a href="http://denis.papathanasiou.org/?p=343">a more complete 
 </ul>
 
 <a name="license"></a>
-<hr noshade>
 <h2>Terms and Conditions</h2>
 <p>
 (This is so-called MIT/X License)
