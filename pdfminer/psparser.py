@@ -99,8 +99,8 @@ PSLiteralTable = PSSymbolTable(PSLiteral)
 PSKeywordTable = PSSymbolTable(PSKeyword)
 LIT = PSLiteralTable.intern
 KWD = PSKeywordTable.intern
-KEYWORD_BRACE_BEGIN = KWD('{')
-KEYWORD_BRACE_END = KWD('}')
+KEYWORD_PROC_BEGIN = KWD('{')
+KEYWORD_PROC_END = KWD('}')
 KEYWORD_ARRAY_BEGIN = KWD('[')
 KEYWORD_ARRAY_END = KWD(']')
 KEYWORD_DICT_BEGIN = KWD('<<')
@@ -540,6 +540,15 @@ class PSStackParser(PSBaseParser):
                     # construct a Python dictionary.
                     d = dict( (literal_name(k), v) for (k,v) in choplist(2, objs) if v is not None )
                     self.push((pos, d))
+                except PSTypeError:
+                    if STRICT: raise
+            elif token == KEYWORD_PROC_BEGIN:
+                # begin proc
+                self.start_type(pos, 'p')
+            elif token == KEYWORD_PROC_END:
+                # end proc
+                try:
+                    self.push(self.end_type('p'))
                 except PSTypeError:
                     if STRICT: raise
             else:

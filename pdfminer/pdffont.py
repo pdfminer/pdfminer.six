@@ -5,9 +5,11 @@ try:
 except ImportError:
     from StringIO import StringIO
 from cmapdb import CMapDB, CMapParser, FileUnicodeMap, CMap
-from encodingdb import EncodingDB
+from encodingdb import EncodingDB, name2unicode
 from struct import pack, unpack
-from psparser import LIT, STRICT
+from psparser import PSStackParser
+from psparser import PSSyntaxError, PSEOF
+from psparser import LIT, KWD, STRICT
 from psparser import PSLiteral, literal_name
 from pdftypes import PDFException, resolve1
 from pdftypes import int_value, float_value, num_value
@@ -70,6 +72,46 @@ class FontMetricsDB(object):
         return FONT_METRICS[fontname]
 
 
+##  Type1FontHeaderParser
+##
+class Type1FontHeaderParser(PSStackParser):
+
+    KEYWORD_BEGIN = KWD('begin')
+    KEYWORD_END = KWD('end')
+    KEYWORD_DEF = KWD('def')
+    KEYWORD_PUT = KWD('put')
+    KEYWORD_DICT = KWD('dict')
+    KEYWORD_ARRAY = KWD('array')
+    KEYWORD_READONLY = KWD('readonly')
+    KEYWORD_FOR = KWD('for')
+    KEYWORD_FOR = KWD('for')
+
+    def __init__(self, data):
+        PSStackParser.__init__(self, data)
+        self._cid2unicode = {}
+        return
+
+    def get_encoding(self):
+        while 1:
+            try:
+                (cid,name) = self.nextobject()
+            except PSEOF:
+                break
+            try:
+                self._cid2unicode[cid] = name2unicode(name)
+            except KeyError:
+                pass
+        return self._cid2unicode
+    
+    def do_keyword(self, pos, token):
+        if token is self.KEYWORD_PUT:
+            ((_,key),(_,value)) = self.pop(2)
+            if (isinstance(key, int) and
+                isinstance(value, PSLiteral)):
+                self.add_results((key, literal_name(value)))
+        return
+
+    
 ##  CFFFont
 ##  (Format specified in Adobe Technical Note: #5176
 ##   "The Compact Font Format Specification")
@@ -445,9 +487,9 @@ class PDFSimpleFont(PDFFont):
         if isinstance(encoding, dict):
             name = literal_name(encoding.get('BaseEncoding', LITERAL_STANDARD_ENCODING))
             diff = list_value(encoding.get('Differences', None))
-            self.encoding = EncodingDB.get_encoding(name, diff)
+            self.cid2unicode = EncodingDB.get_encoding(name, diff)
         else:
-            self.encoding = EncodingDB.get_encoding(literal_name(encoding))
+            self.cid2unicode = EncodingDB.get_encoding(literal_name(encoding))
         self.unicode_map = None
         if 'ToUnicode' in spec:
             strm = stream_value(spec['ToUnicode'])
@@ -463,7 +505,7 @@ class PDFSimpleFont(PDFFont):
             except KeyError:
                 pass
         try:
-            return self.encoding[cid]
+            return self.cid2unicode[cid]
         except KeyError:
             raise PDFUnicodeNotDefined(None, cid)
 
@@ -486,6 +528,13 @@ class PDFType1Font(PDFSimpleFont):
             widths = list_value(spec.get('Widths', [0]*256))
             widths = dict( (i+firstchar,w) for (i,w) in enumerate(widths) )
         PDFSimpleFont.__init__(self, descriptor, widths, spec)
+        if 'Encoding' not in spec and 'FontFile' in descriptor:
+            # try to recover the missing encoding info from the font file.
+            self.fontfile = stream_value(descriptor.get('FontFile'))
+            length1 = int_value(self.fontfile['Length1'])
+            data = self.fontfile.get_data()[:length1]
+            parser = Type1FontHeaderParser(StringIO(data))
+            self.cid2unicode = parser.get_encoding()
         return
 
     def __repr__(self):
