@@ -98,7 +98,7 @@ def nunpack(s, default=0):
     elif l == 4:
         return unpack('>L', s)[0]
     else:
-        return TypeError('invalid length: %d' % l)
+        raise TypeError('invalid length: %d' % l)
 
 # decode_text
 PDFDocEncoding = ''.join( unichr(x) for x in (
