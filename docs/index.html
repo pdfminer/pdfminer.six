@@ -19,7 +19,7 @@ Python PDF parser and analyzer
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Wed Sep  8 23:20:00 UTC 2010
+Last Modified: Sun Oct 17 05:13:01 UTC 2010
 <!-- hhmts end -->
 </div>
 
@@ -185,7 +185,7 @@ Examples:
 $ <strong>pdf2txt.py -o output.html samples/naacl06-shinyama.pdf</strong>
 (extract text as an HTML file whose filename is output.html)
 
-$ <strong>pdf2txt.py -c euc-jp -D tb-rl -o output.html samples/jo.pdf</strong>
+$ <strong>pdf2txt.py -c euc-jp -o output.html samples/jo.pdf</strong>
 (extract a Japanese HTML file in vertical writing, CMap is required)
 
 $ <strong>pdf2txt.py -P mypassword -o output.txt secret.pdf</strong>
@@ -221,10 +221,6 @@ Tags used here are defined in the PDF specification (See &sect;10.7 "<em>Tagged 
 <dt> <code>-I <em>image_directory</em></code> 
 <dd> Specifies the output directory for image extraction.
 Currently only JPEG images are supported.
-<p>
-<dt> <code>-D <em>writing_mode</em></code>
-<dd> Specifies the writing mode of text outputs.
-Currently <code>lr-tb</code>, <code>tb-rl</code> and <code>auto</code> is supported.
 <p>
 <dt> <code>-M <em>char_margin</em></code> 
 <dt> <code>-L <em>line_margin</em></code> 
@@ -389,6 +385,7 @@ Also, check out <a href="http://denis.papathanasiou.org/?p=343">a more complete 
 <hr noshade>
 <h2>Changes</h2>
 <ul>
+<li> 2010/10/17: A couple of bugfixes and a minor improvement. Thanks to standardabweichung and Alastair Irving.
 <li> 2010/09/07: A minor bugfix. Thanks to Alexander Garden.
 <li> 2010/08/29: A couple of bugfixes. Thanks to Sahan Malagi, pk, and Humberto Pereira.
 <li> 2010/07/06: Minor bugfixes. Thanks to Federico Brega.
