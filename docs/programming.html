@@ -16,10 +16,44 @@ blockquote { background: #eeeeee; }
 This document explains how to use PDFMiner as a library 
 from other applications.
 <ul>
+<li> <a href="#overview">Overview</a>
 <li> <a href="#basic">Basic Usage</a>
 <li> <a href="#layout">Layout Analysis</a>
 <li> <a href="#toc">TOC Extraction</a>
 </ul>
+
+<a name="overview">
+<hr noshade>
+<h2>Overview</h2>
+<p>
+<strong>PDF is evil.</strong>
+Because a PDF file is normally big and has a complex structure,
+parsing a PDF as a whole is time-and-memory
+consuming. Furthermore, not every part is needed for most PDF
+processing. Therefore, PDFMiner takes a strategy of lazy parsing,
+which is to parse the stuff only when it's necessary. To parse PDF
+files, you need at least two classes: <code>PDFParser</code>
+and <code>PDFDocument</code>.  These objects work together.
+<code>PDFParser</code> fetches (or parses) data from a PDF,
+and <code>PDFDocument</code> stores it. You'll also need
+<code>PDFPageInterpreter</code> to process the page contents
+and <code>PDFDevice</code> to translate it to whatever you need.
+
+<p>
+PDF documents are more like graphics format, rather than text
+format.  The contents in PDF are just a bunch of procedures that
+tell how to render the stuff on a display or paper.  In most
+cases, it presents no logical structure such as sentences or
+paragraphs.  So PDFMiner attempts to reconstruct some of them by
+performing layout analysis. Ugly, I know. Again, PDF is evil.
+
+<p>
+Figure 1 shows the relationship between these classes:
+
+<div align=center>
+<img src="objrel.png"><br>
+<small>Figure 1. Relationships between PDFMiner classes</small>
+</div>
 
 <a name="basic">
 <hr noshade>
@@ -57,25 +91,11 @@ for page in doc.get_pages():
     interpreter.process_page(page)
 </pre></blockquote>
 
-<p>
-In PDFMiner, there are several Python classes involved in parsing a PDF file,
-as shown in Figure 1.
-
-<div align=center>
-<img src="objrel.png"><br>
-<small>Figure 1. Relationships between PDFMiner objects</small>
-</div>
-
 <a name="layout">
 <hr noshade>
 <h2>Accessing Layout Objects</h2>
 <p>
-PDF documents are more like graphics, rather than text documents.
-In most cases, it presents no logical structure such as sentences or paragraphs.
-PDFMiner attempts to reconstruct some of them by performing
-basic layout analysis.
-<p>
-Here is a typical way to do it:
+Here is a typical way to use the layout analysis function:
 <blockquote><pre>
 from pdfminer.layout import LAParams
 from pdfminer.converter import PDFPageAggregator
@@ -172,11 +192,12 @@ for (level,title,dest,a,se) in outlines:
 </pre></blockquote>
 
 <p>
-In some PDF documents, destinations are referred to as page numbers.
-In other PDF documents, destinations are referred to as page numbers plus
-the location within the page. Since PDF does not provide a way to
-point to graphical objects in a page, normally these in-page destinations
-are specified by physical coordinates.
+Some PDF documents use page numbers as destinations, while others
+use page numbers and the physical location within the page. Since
+PDF does not have a logical strucutre, and it does not provide a
+way to refer to any in-page object from the outside, there's no
+way to tell exactly which part of text these destinations are
+refering to.
 
 <hr noshade>
 <address>Yusuke Shinyama</address>
