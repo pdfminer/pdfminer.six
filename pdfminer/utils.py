@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from sys import maxint as INF
 from struct import pack, unpack
 
 
@@ -27,6 +28,17 @@ def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
 
 ##  Utility functions
 ##
+
+# get_bound
+def get_bound(pts):
+    '''Compute a minimal rectangle that covers all the points.'''
+    (x0, y0, x1, y1) = (INF, INF, -INF, -INF)
+    for (x,y) in pts:
+        x0 = min(x0, x)
+        y0 = min(y0, y)
+        x1 = max(x1, x)
+        y1 = max(y1, y)
+    return (x0,y0,x1,y1)
 
 # pick
 def pick(seq, func, maxobj=None):

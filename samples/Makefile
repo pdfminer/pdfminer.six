@@ -48,6 +48,9 @@ XMLS_NONFREE= \
 	nonfree/naacl06-shinyama.xml \
 	nonfree/nlp2004slides.xml
 
+all:
+	$(MAKE) test CMP=cmp
+
 test: htmls texts xmls
 
 clean:

@@ -121,7 +121,7 @@ class FileCMap(CMap):
         return '<CMap: %s>' % self.attrs.get('CMapName')
 
     def is_vertical(self):
-        return self.attrs.get('WMode', 0)
+        return self.attrs.get('WMode', 0) != 0
 
     def set_attr(self, k, v):
         self.attrs[k] = v

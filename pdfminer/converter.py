@@ -170,11 +170,11 @@ class TextConverter(PDFConverter):
 
     def receive_layout(self, ltpage):
         def render(item):
-            if isinstance(item, LTText):
-                self.write(item.text)
-            elif isinstance(item, LTContainer):
+            if isinstance(item, LTContainer):
                 for child in item:
                     render(child)
+            elif isinstance(item, LTText):
+                self.write(item.get_text())
             if isinstance(item, LTTextBox):
                 self.write('\n')
         if self.showpageno:
@@ -231,20 +231,21 @@ class HTMLConverter(PDFConverter):
             elif isinstance(item, LTChar):
                 self.write_text(item.text, item.x0, item.y1, item.get_size())
                 if self.debug:
-                    self.write_rect('red', 1, item.x0, item.y1, item.width, item.height)
+                    self.write_rect('green', 1, item.x0, item.y1, item.width, item.height)
             elif isinstance(item, LTPolygon):
                 self.write_rect('black', 1, item.x0, item.y1, item.width, item.height)
             elif isinstance(item, LTTextLine):
+                self.write_rect('magenta', 1, item.x0, item.y1, item.width, item.height)
                 for child in item:
                     render(child)
             elif isinstance(item, LTTextBox):
-                self.write_rect('blue', 1, item.x0, item.y1, item.width, item.height)
+                self.write_rect('cyan', 1, item.x0, item.y1, item.width, item.height)
                 for child in item:
                     render(child)
                 if self.debug:
                     self.write_text(str(item.index+1), item.x0, item.y1, 20)
             elif isinstance(item, LTFigure):
-                self.write_rect('green', 1, item.x0, item.y1, item.width, item.height)
+                self.write_rect('yellow', 1, item.x0, item.y1, item.width, item.height)
                 for child in item:
                     render(child)
             elif isinstance(item, LTImage):
