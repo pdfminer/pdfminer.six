@@ -113,24 +113,28 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
     doc.set_parser(parser)
     doc.initialize(password)
     pages = dict( (page.pageid, pageno) for (pageno,page) in enumerate(doc.get_pages()) )
+    def resolve_dest(dest):
+        if isinstance(dest, str):
+            dest = resolve1(doc.get_dest(dest))
+        elif isinstance(dest, PSLiteral):
+            dest = resolve1(doc.get_dest(dest.name))
+        if isinstance(dest, dict):
+            dest = dest['D']
+        return dest
     try:
         outlines = doc.get_outlines()
         outfp.write('<outlines>\n')
         for (level,title,dest,a,se) in outlines:
             pageno = None
             if dest:
-                dest = resolve1(doc.lookup_name('Dests', dest))
-                if isinstance(dest, dict):
-                    dest = dest['D']
-                    pageno = pages[dest[0].objid]
+                dest = resolve_dest(dest)
+                pageno = pages[dest[0].objid]
             elif a:
                 action = a.resolve()
                 if isinstance(action, dict):
                     subtype = action.get('S')
                     if subtype and repr(subtype) == '/GoTo' and action.get('D'):
-                        dest = action['D']
-                        if isinstance(dest, str):
-                            dest = resolve1(doc.lookup_name('Dests', dest))
+                        dest = resolve_dest(action['D'])
                         pageno = pages[dest[0].objid]
             s = e(title).encode('utf-8', 'xmlcharrefreplace')
             outfp.write('<outline level="%r" title="%s">\n' % (level, s))
