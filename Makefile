@@ -25,10 +25,12 @@ pack: distclean MANIFEST
 	$(PYTHON) setup.py sdist
 register: distclean MANIFEST
 	$(PYTHON) setup.py sdist upload register
+MANIFEST:
+	$(GIT) ls-tree --name-only -r HEAD > MANIFEST
 
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
 publish:
-	$(CP) docs/*.html $(WEBDIR)
+	$(CP) docs/*.html docs/*.png $(WEBDIR)
 
 CONV_CMAP=$(PYTHON) tools/conv_cmap.py
 CMAPSRC=cmaprsrc
@@ -50,6 +52,3 @@ test: cmap
 	cd samples && $(MAKE) test CMP=cmp
 test_clean:
 	-cd samples && $(MAKE) clean
-
-MANIFEST:
-	$(GIT) ls-tree --name-only -r HEAD > MANIFEST
