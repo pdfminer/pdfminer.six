@@ -360,7 +360,7 @@ class TrueTypeFont(object):
         # create unicode map
         unicode_map = FileUnicodeMap()
         for (char,gid) in char2gid.iteritems():
-            unicode_map.add_cid2code(gid, char)
+            unicode_map.add_cid2unichr(gid, char)
         return unicode_map
 
 
