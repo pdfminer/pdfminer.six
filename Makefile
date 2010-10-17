@@ -30,7 +30,7 @@ MANIFEST:
 
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
 publish:
-	$(CP) docs/*.html docs/*.png $(WEBDIR)
+	$(CP) docs/*.html docs/*.png docs/*.css $(WEBDIR)
 
 CONV_CMAP=$(PYTHON) tools/conv_cmap.py
 CMAPSRC=cmaprsrc
