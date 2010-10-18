@@ -599,6 +599,7 @@ class LTAnalyzer(LTContainer):
                     (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
                     (obj1.width*obj1.height + obj2.width*obj2.height))
         textboxes = textboxes[:]
+        # XXX this is slow when there're many textboxes.
         while 2 <= len(textboxes):
             mindist = INF
             minpair = None
