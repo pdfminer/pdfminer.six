@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import sys
 from utils import mult_matrix, translate_matrix
 from utils import enc, bbox2str

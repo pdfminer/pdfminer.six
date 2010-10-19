@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import sys
 from pdfminer.pdfparser import PDFDocument, PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf

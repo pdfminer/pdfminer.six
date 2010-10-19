@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import re
 from sys import stderr
 from struct import pack, unpack

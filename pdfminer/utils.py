@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 from sys import maxint as INF
 from struct import pack, unpack
 

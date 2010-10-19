@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import sys
 from utils import apply_matrix_pt, get_bound, INF
 from utils import bsearch, bbox2str, matrix2str

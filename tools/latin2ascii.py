@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 #  latin2ascii.py - converts latin1 characters into ascii.
 #

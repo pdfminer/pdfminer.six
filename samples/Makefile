@@ -3,7 +3,8 @@
 RM=rm -f
 #CMP=cmp
 CMP=:
-PYTHON=python
+PYTHON=python2
+
 PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -Dx -p1
 
 HTMLS=$(HTMLS_FREE) $(HTMLS_NONFREE)

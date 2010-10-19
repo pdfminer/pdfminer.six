@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python2 -O
 #
 # pdf2html.cgi - Gateway script for converting PDF into HTML.
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import sys, os.path
 from pdfdevice import PDFDevice, PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
