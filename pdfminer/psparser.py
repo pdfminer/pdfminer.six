@@ -434,13 +434,12 @@ class PSBaseParser(object):
 
     def _parse_wopen(self, s, i):
         c = s[i]
-        if c.isspace() or HEX.match(c):
-            self._parse1 = self._parse_hexstring
-            return i
         if c == '<':
             self._add_token(KEYWORD_DICT_BEGIN)
+            self._parse1 = self._parse_main
             i += 1
-        self._parse1 = self._parse_main
+        else:
+            self._parse1 = self._parse_hexstring
         return i
 
     def _parse_wclose(self, s, i):
@@ -614,7 +613,7 @@ begin end
 baa)
 (foo\
 baa)
-<20> < 40 4020 >
+<> <20> < 40 4020 >
 <abcd00
 12345>
 func/a/b{(c)do*}def
@@ -629,12 +628,12 @@ func/a/b{(c)do*}def
       (65, 1.234), (71, 'abc'), (77, ''), (80, 'abc ( def ) ghi'),
       (98, 'def \x00 4ghi'), (118, 'bach\\slask'), (132, 'foo\nbaa'),
       (143, 'this % is not a comment.'), (170, 'foo\nbaa'), (180, 'foobaa'),
-      (191, ' '), (196, '@@ '), (208, '\xab\xcd\x00\x124\x05'),
-      (223, KWD('func')), (227, LIT('a')), (229, LIT('b')),
-      (231, KWD('{')), (232, 'c'), (235, KWD('do*')), (238, KWD('}')),
-      (239, KWD('def')), (243, KWD('[')), (245, 1), (247, 'z'), (251, KWD('!')),
-      (253, KWD(']')), (255, KWD('<<')), (258, LIT('foo')), (263, 'bar'),
-      (269, KWD('>>'))
+      (191, ''), (194, ' '), (199, '@@ '), (211, '\xab\xcd\x00\x124\x05'),
+      (226, KWD('func')), (230, LIT('a')), (232, LIT('b')),
+      (234, KWD('{')), (235, 'c'), (238, KWD('do*')), (241, KWD('}')),
+      (242, KWD('def')), (246, KWD('[')), (248, 1), (250, 'z'), (254, KWD('!')),
+      (256, KWD(']')), (258, KWD('<<')), (261, LIT('foo')), (266, 'bar'),
+      (272, KWD('>>'))
       ]
 
     OBJS = [
@@ -643,9 +642,9 @@ func/a/b{(c)do*}def
       (65, 1.234), (71, 'abc'), (77, ''), (80, 'abc ( def ) ghi'),
       (98, 'def \x00 4ghi'), (118, 'bach\\slask'), (132, 'foo\nbaa'),
       (143, 'this % is not a comment.'), (170, 'foo\nbaa'), (180, 'foobaa'),
-      (191, ' '), (196, '@@ '), (208, '\xab\xcd\x00\x124\x05'),
-      (227, LIT('a')), (229, LIT('b')), (231, ['c']), (243, [1, 'z']),
-      (255, {'foo': 'bar'}),
+      (191, ''), (194, ' '), (199, '@@ '), (211, '\xab\xcd\x00\x124\x05'),
+      (230, LIT('a')), (232, LIT('b')), (234, ['c']), (246, [1, 'z']),
+      (258, {'foo': 'bar'}),
       ]
 
     def get_tokens(self, s):
