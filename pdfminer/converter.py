@@ -27,28 +27,26 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         (x0,y0) = apply_matrix_pt(ctm, (x0,y0))
         (x1,y1) = apply_matrix_pt(ctm, (x1,y1))
         mediabox = (0, 0, abs(x0-x1), abs(y0-y1))
-        self.cur_item = LTPage(self.pageno, mediabox)
+        self.cur_item = LTPage(self.pageno, mediabox, laparams=self.laparams)
         return
 
     def end_page(self, page):
         assert not self.stack
         assert isinstance(self.cur_item, LTPage)
-        self.cur_item.fixate()
-        self.cur_item.analyze(self.laparams)
+        self.cur_item.finish()
         self.pageno += 1
         self.receive_layout(self.cur_item)
         return
 
     def begin_figure(self, name, bbox, matrix):
         self.stack.append(self.cur_item)
-        self.cur_item = LTFigure(name, bbox, mult_matrix(matrix, self.ctm))
+        self.cur_item = LTFigure(name, bbox, mult_matrix(matrix, self.ctm), laparams=self.laparams)
         return
 
     def end_figure(self, _):
         fig = self.cur_item
         assert isinstance(self.cur_item, LTFigure)
-        self.cur_item.fixate()
-        self.cur_item.analyze(self.laparams)
+        self.cur_item.finish()
         self.cur_item = self.stack.pop()
         self.cur_item.add(fig)
         return
@@ -175,7 +173,7 @@ class TextConverter(PDFConverter):
                 for child in item:
                     render(child)
             elif isinstance(item, LTText):
-                self.write(item.get_text())
+                self.write(item.text)
             if isinstance(item, LTTextBox):
                 self.write('\n')
         if self.showpageno:
@@ -190,17 +188,17 @@ class TextConverter(PDFConverter):
 class HTMLConverter(PDFConverter):
 
     RECT_COLORS = {
-        'char': 'green',
-        'figure': 'yellow',
-        'textline': 'magenta',
-        'polygon': 'black',
+        #'char': 'green',
+        #'figure': 'yellow',
+        #'textline': 'magenta',
         'textbox': 'cyan',
         'textgroup': 'red',
+        'polygon': 'black',
         'page': 'gray',
         }
     TEXT_COLORS = {
+        'textbox': 'blue',
         'char': 'black',
-        'textbox': 'black',
         }
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
@@ -275,7 +273,7 @@ class HTMLConverter(PDFConverter):
                                       item.width*self.scale, item.height*self.scale))
             return
         render(ltpage)
-        if self.debug and ltpage.layout:
+        if ltpage.layout:
             def show_layout(item):
                 if isinstance(item, LTTextGroup):
                     self.write_rect('textgroup', 1, item.x0, item.y1, item.width, item.height)

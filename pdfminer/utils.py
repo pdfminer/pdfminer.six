@@ -182,6 +182,54 @@ class ObjIdRange(object):
         return self.nobjs
 
 
+##  Plane
+##
+##  A data structure for objects placed on a plane.
+##  Can efficiently find objects in a certain rectangular area.
+##  It maintains two parallel lists of objects, each of
+##  which is sorted by its x or y coordinate.
+##
+class Plane(object):
+
+    def __init__(self, objs):
+        self._idxs = {}
+        self._xobjs = []
+        self._yobjs = []
+        return
+
+    def __repr__(self):
+        return ('<Plane objs=%r>' % list(self))
+
+    def __iter__(self):
+        return self._idxs.iterkeys()
+
+    # add(obj): place an object in a certain area.
+    def add(self, obj):
+        self._idxs[obj] = len(self._idxs)
+        self._xobjs.append((obj.x0, obj))
+        self._xobjs.append((obj.x1, obj))
+        self._yobjs.append((obj.y0, obj))
+        self._yobjs.append((obj.y1, obj))
+        return
+
+    # finish()
+    def finish(self):
+        self._xobjs.sort()
+        self._yobjs.sort()
+        return
+
+    # find(): finds objects that are in a certain area.
+    def find(self, (x0,y0,x1,y1)):
+        i0 = bsearch(self._xobjs, x0)[0]
+        i1 = bsearch(self._xobjs, x1)[1]
+        xobjs = set( obj for (_,obj) in self._xobjs[i0:i1] )
+        i0 = bsearch(self._yobjs, y0)[0]
+        i1 = bsearch(self._yobjs, y1)[1]
+        yobjs = set( obj for (_,obj) in self._yobjs[i0:i1] )
+        xobjs.intersection_update(yobjs)
+        return sorted(xobjs, key=lambda obj: self._idxs[obj])
+
+
 # create_bmp
 def create_bmp(data, bits, width, height):
     info = pack('<IiiHHIIIIII', 40, width, height, 1, bits, 0, len(data), 0, 0, 0, 0)
