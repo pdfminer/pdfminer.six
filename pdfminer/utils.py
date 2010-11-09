@@ -1,4 +1,7 @@
 #!/usr/bin/env python2
+"""
+Miscellaneous Routines.
+"""
 from sys import maxint as INF
 from struct import pack, unpack
 
@@ -8,7 +11,7 @@ from struct import pack, unpack
 MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
 
 def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
-    '''Multiplies two matrices.'''
+    '''Returns the multiplication of two matrices.'''
     return (a0*a1+c0*b1,    b0*a1+d0*b1,
             a0*c1+c0*d1,    b0*c1+d0*d1,
             a0*e1+c0*f1+e0, b0*e1+d0*f1+f0)
