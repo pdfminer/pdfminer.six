@@ -189,6 +189,20 @@ class TextConverter(PDFConverter):
 ##
 class HTMLConverter(PDFConverter):
 
+    RECT_COLORS = {
+        'char': 'green',
+        'figure': 'yellow',
+        'textline': 'magenta',
+        'polygon': 'black',
+        'textbox': 'cyan',
+        'textgroup': 'red',
+        'page': 'gray',
+        }
+    TEXT_COLORS = {
+        'char': 'black',
+        'textbox': 'black',
+        }
+
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
                  scale=1, showpageno=True, pagepad=50, outdir=None):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
@@ -204,25 +218,29 @@ class HTMLConverter(PDFConverter):
         return
 
     def write_rect(self, color, width, x, y, w, h):
-        self.outfp.write('<span style="position:absolute; border: %s %dpx solid; '
-                         'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' %
-                         (color, width,
-                          x*self.scale, (self.yoffset-y)*self.scale,
-                          w*self.scale, h*self.scale))
+        color = self.RECT_COLORS.get(color)
+        if color is not None:
+            self.outfp.write('<span style="position:absolute; border: %s %dpx solid; '
+                             'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' %
+                             (color, width,
+                              x*self.scale, (self.yoffset-y)*self.scale,
+                              w*self.scale, h*self.scale))
         return
 
-    def write_text(self, text, x, y, size):
-        self.outfp.write('<span style="position:absolute; left:%dpx; top:%dpx; font-size:%dpx;">' %
-                         (x*self.scale, (self.yoffset-y)*self.scale, size*self.scale))
-        self.write(text)
-        self.outfp.write('</span>\n')
+    def write_text(self, color, text, x, y, size):
+        color = self.TEXT_COLORS.get(color)
+        if color is not None:
+            self.outfp.write('<span style="position:absolute; color:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
+                             (color, x*self.scale, (self.yoffset-y)*self.scale, size*self.scale))
+            self.write(text)
+            self.outfp.write('</span>\n')
         return
 
     def receive_layout(self, ltpage):
         def render(item):
             if isinstance(item, LTPage):
                 self.yoffset += item.y1
-                self.write_rect('gray', 1, item.x0, item.y1, item.width, item.height)
+                self.write_rect('page', 1, item.x0, item.y1, item.width, item.height)
                 if self.showpageno:
                     self.outfp.write('<div style="position:absolute; top:%dpx;">' %
                                      ((self.yoffset-item.y1)*self.scale))
@@ -230,23 +248,21 @@ class HTMLConverter(PDFConverter):
                 for child in item:
                     render(child)
             elif isinstance(item, LTChar):
-                self.write_text(item.text, item.x0, item.y1, item.get_size())
-                if self.debug:
-                    self.write_rect('green', 1, item.x0, item.y1, item.width, item.height)
+                self.write_rect('char', 1, item.x0, item.y1, item.width, item.height)
+                self.write_text('char', item.text, item.x0, item.y1, item.size)
             elif isinstance(item, LTPolygon):
-                self.write_rect('black', 1, item.x0, item.y1, item.width, item.height)
+                self.write_rect('polygon', 1, item.x0, item.y1, item.width, item.height)
             elif isinstance(item, LTTextLine):
-                self.write_rect('magenta', 1, item.x0, item.y1, item.width, item.height)
+                self.write_rect('textline', 1, item.x0, item.y1, item.width, item.height)
                 for child in item:
                     render(child)
             elif isinstance(item, LTTextBox):
-                self.write_rect('cyan', 1, item.x0, item.y1, item.width, item.height)
+                self.write_rect('textbox', 1, item.x0, item.y1, item.width, item.height)
                 for child in item:
                     render(child)
-                if self.debug:
-                    self.write_text(str(item.index+1), item.x0, item.y1, 20)
+                self.write_text('textbox', str(item.index+1), item.x0, item.y1, 20)
             elif isinstance(item, LTFigure):
-                self.write_rect('yellow', 1, item.x0, item.y1, item.width, item.height)
+                self.write_rect('figure', 1, item.x0, item.y1, item.width, item.height)
                 for child in item:
                     render(child)
             elif isinstance(item, LTImage):
@@ -262,7 +278,7 @@ class HTMLConverter(PDFConverter):
         if self.debug and ltpage.layout:
             def show_layout(item):
                 if isinstance(item, LTTextGroup):
-                    self.write_rect('red', 1, item.x0, item.y1, item.width, item.height)
+                    self.write_rect('textgroup', 1, item.x0, item.y1, item.width, item.height)
                     for child in item:
                         show_layout(child)
                 return
@@ -326,7 +342,7 @@ class XMLConverter(PDFConverter):
                 self.outfp.write('</textbox>\n')
             elif isinstance(item, LTChar):
                 self.outfp.write('<text font="%s" bbox="%s" size="%.3f">' %
-                                 (enc(item.font.fontname), bbox2str(item.bbox), item.get_size()))
+                                 (enc(item.font.fontname), bbox2str(item.bbox), item.size))
                 self.write(item.text)
                 self.outfp.write('</text>\n')
             elif isinstance(item, LTText):

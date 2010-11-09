@@ -225,6 +225,10 @@ class LTChar(LTItem, LTText):
         bbox = (apply_matrix_pt(self.matrix, bll) +
                 apply_matrix_pt(self.matrix, bur))
         LTItem.__init__(self, bbox)
+        if self.font.is_vertical():
+            self.size = self.width
+        else:
+            self.size = self.height
         return
 
     def __repr__(self):
@@ -235,9 +239,6 @@ class LTChar(LTItem, LTText):
                      self.adv, self.get_text()))
         else:
             return '<char %r>' % self.text
-
-    def get_size(self):
-        return max(self.width, self.height)
 
     def is_compatible(self, obj):
         return True
