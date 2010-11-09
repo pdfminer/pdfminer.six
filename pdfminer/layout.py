@@ -587,7 +587,9 @@ class LTLayoutContainer(LTContainer):
             boxes.remove(obj1)
             boxes.remove(obj2)
             if (isinstance(obj1, LTTextBoxVertical) or
-                isinstance(obj1, LTTextGroupTBRL)):
+                isinstance(obj2, LTTextBoxVertical) or 
+                isinstance(obj1, LTTextGroupTBRL) or
+                isinstance(obj2, LTTextGroupTBRL)):
                 group = LTTextGroupTBRL([obj1, obj2])
             else:
                 group = LTTextGroupLRTB([obj1, obj2])
