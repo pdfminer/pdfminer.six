@@ -91,9 +91,21 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
     def render_char(self, matrix, font, fontsize, scaling, rise, cid):
-        item = LTChar(matrix, font, fontsize, scaling, rise, cid)
+        try:
+            text = font.to_unichr(cid)
+            assert isinstance(text, unicode), text
+        except PDFUnicodeNotDefined:
+            text = self.handle_undefined_char(font, cid)
+        textwidth = font.char_width(cid)
+        textdisp = font.char_disp(cid)
+        item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp)
         self.cur_item.add(item)
         return item.adv
+
+    def handle_undefined_char(self, font, cid):
+        if self.debug:
+            print >>sys.stderr, 'undefined: %r, %r' % (font, cid)
+        return '?'
 
     def receive_layout(self, ltpage):
         return
@@ -124,10 +136,6 @@ class PDFConverter(PDFLayoutAnalyzer):
         PDFLayoutAnalyzer.__init__(self, rsrcmgr, pageno=pageno, laparams=laparams)
         self.outfp = outfp
         self.codec = codec
-        return
-
-    def write(self, text):
-        self.outfp.write(enc(text, self.codec))
         return
 
     def write_image(self, image):
@@ -163,7 +171,7 @@ class TextConverter(PDFConverter):
         self.showpageno = showpageno
         return
 
-    def write(self, text):
+    def write_text(self, text):
         self.outfp.write(text.encode(self.codec, 'ignore'))
         return
 
@@ -173,13 +181,13 @@ class TextConverter(PDFConverter):
                 for child in item:
                     render(child)
             elif isinstance(item, LTText):
-                self.write(item.text)
+                self.write_text(item.text)
             if isinstance(item, LTTextBox):
-                self.write('\n')
+                self.write_text('\n')
         if self.showpageno:
-            self.write('Page %s\n' % ltpage.pageid)
+            self.write_text('Page %s\n' % ltpage.pageid)
         render(ltpage)
-        self.write('\f')
+        self.write_text('\f')
         return
 
 
@@ -191,92 +199,152 @@ class HTMLConverter(PDFConverter):
         #'char': 'green',
         #'figure': 'yellow',
         #'textline': 'magenta',
-        'textbox': 'cyan',
-        'textgroup': 'red',
+        #'textbox': 'cyan',
+        #'textgroup': 'red',
         'polygon': 'black',
         'page': 'gray',
         }
     TEXT_COLORS = {
-        'textbox': 'blue',
+        #'textbox': 'blue',
         'char': 'black',
         }
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
-                 scale=1, showpageno=True, pagepad=50, outdir=None):
+                 scale=1, exact=False, showpageno=True, pagepad=50, outdir=None):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
+        self.exact = exact
         self.showpageno = showpageno
         self.pagepad = pagepad
         self.outdir = outdir
         self.scale = scale
-        self.outfp.write('<html><head>\n')
-        self.outfp.write('<meta http-equiv="Content-Type" content="text/html; charset=%s">\n' %
-                         self.codec)
-        self.outfp.write('</head><body>\n')
+        self.fontscale = 0.7
+        self.write('<html><head>\n')
+        self.write('<meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % self.codec)
+        self.write('</head><body>\n')
         self.yoffset = self.pagepad
+        self._font = None
+        self._fontstack = []
         return
 
-    def write_rect(self, color, width, x, y, w, h):
+    def write(self, text):
+        self.outfp.write(text)
+        return
+
+    def write_text(self, text):
+        self.write(enc(text, self.codec))
+        return
+
+    def place_rect(self, color, borderwidth, x, y, w, h):
         color = self.RECT_COLORS.get(color)
         if color is not None:
-            self.outfp.write('<span style="position:absolute; border: %s %dpx solid; '
-                             'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' %
-                             (color, width,
-                              x*self.scale, (self.yoffset-y)*self.scale,
-                              w*self.scale, h*self.scale))
+            self.write('<span style="position:absolute; border: %s %dpx solid; '
+                       'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' %
+                       (color, borderwidth,
+                        x*self.scale, (self.yoffset-y)*self.scale,
+                        w*self.scale, h*self.scale))
         return
 
-    def write_text(self, color, text, x, y, size):
+    def place_image(self, item, borderwidth, x, y, w, h):
+        if self.outdir is not None:
+            name = self.write_image(item)
+            self.write('<img src="%s" border="%d" style="position:absolute; left:%dpx; top:%dpx;" '
+                       'width="%d" height="%d" />\n' %
+                       (enc(name), borderwidth,
+                        x*self.scale, (self.yoffset-y)*self.scale,
+                        w*self.scale, h*self.scale))
+        return
+
+    def place_text(self, color, text, x, y, size):
         color = self.TEXT_COLORS.get(color)
         if color is not None:
-            self.outfp.write('<span style="position:absolute; color:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
-                             (color, x*self.scale, (self.yoffset-y)*self.scale, size*self.scale))
-            self.write(text)
-            self.outfp.write('</span>\n')
+            self.write('<span style="position:absolute; color:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
+                       (color, x*self.scale, (self.yoffset-y)*self.scale, size*self.scale))
+            self.write_text(text)
+            self.write('</span>\n')
+        return
+
+    def begin_textbox(self, color, borderwidth, x, y, w, h, writing_mode):
+        self._fontstack.append(self._font)
+        self._font = None
+        self.write('<div style="position:absolute; border: %s %dpx solid; writing-mode:%s; '
+                   'left:%dpx; top:%dpx; width:%dpx; height:%dpx;">' %
+                   (color, borderwidth, writing_mode,
+                    x*self.scale, (self.yoffset-y)*self.scale,
+                    w*self.scale, h*self.scale))
+        return
+    
+    def put_text(self, text, fontname, fontsize):
+        font = (fontname, fontsize)
+        if font != self._font:
+            if self._font is not None:
+                self.write('</span>')
+            self.write('<span style="font-size:%dpx">' %
+                       (fontsize * self.scale * self.fontscale))
+            self._font = font
+        self.write_text(text)
+        return 
+
+    def end_textbox(self, color):
+        if self._font is not None:
+            self.write('</span>')
+        self._font = self._fontstack.pop()
+        self.write('</div>')
         return
 
     def receive_layout(self, ltpage):
         def render(item):
             if isinstance(item, LTPage):
                 self.yoffset += item.y1
-                self.write_rect('page', 1, item.x0, item.y1, item.width, item.height)
+                self.place_rect('page', 1, item.x0, item.y1, item.width, item.height)
                 if self.showpageno:
-                    self.outfp.write('<div style="position:absolute; top:%dpx;">' %
-                                     ((self.yoffset-item.y1)*self.scale))
-                    self.outfp.write('<a name="%s">Page %s</a></div>\n' % (item.pageid, item.pageid))
+                    self.write('<div style="position:absolute; top:%dpx;">' %
+                               ((self.yoffset-item.y1)*self.scale))
+                    self.write('<a name="%s">Page %s</a></div>\n' % (item.pageid, item.pageid))
                 for child in item:
                     render(child)
-            elif isinstance(item, LTChar):
-                self.write_rect('char', 1, item.x0, item.y1, item.width, item.height)
-                self.write_text('char', item.text, item.x0, item.y1, item.size)
             elif isinstance(item, LTPolygon):
-                self.write_rect('polygon', 1, item.x0, item.y1, item.width, item.height)
-            elif isinstance(item, LTTextLine):
-                self.write_rect('textline', 1, item.x0, item.y1, item.width, item.height)
-                for child in item:
-                    render(child)
-            elif isinstance(item, LTTextBox):
-                self.write_rect('textbox', 1, item.x0, item.y1, item.width, item.height)
-                for child in item:
-                    render(child)
-                self.write_text('textbox', str(item.index+1), item.x0, item.y1, 20)
+                self.place_rect('polygon', 1, item.x0, item.y1, item.width, item.height)
             elif isinstance(item, LTFigure):
-                self.write_rect('figure', 1, item.x0, item.y1, item.width, item.height)
+                self.place_rect('figure', 1, item.x0, item.y1, item.width, item.height)
                 for child in item:
                     render(child)
             elif isinstance(item, LTImage):
-                if self.outdir:
-                    name = self.write_image(item)
-                    self.outfp.write('<img src="%s" style="position:absolute; left:%dpx; top:%dpx;" '
-                                     'width="%d" height="%d" />\n' %
-                                     (enc(name),
-                                      item.x0*self.scale, (self.yoffset-item.y1)*self.scale,
-                                      item.width*self.scale, item.height*self.scale))
+                self.place_image(item, 1, item.x0, item.y1, item.width, item.height)
+            else:
+                if self.exact:
+                    if isinstance(item, LTTextLine):
+                        self.place_rect('textline', 1, item.x0, item.y1, item.width, item.height)
+                        for child in item:
+                            render(child)
+                    elif isinstance(item, LTTextBox):
+                        self.place_rect('textbox', 1, item.x0, item.y1, item.width, item.height)
+                        self.place_text('textbox', str(item.index+1), item.x0, item.y1, 20)
+                        for child in item:
+                            render(child)
+                    elif isinstance(item, LTChar):
+                        self.place_rect('char', 1, item.x0, item.y1, item.width, item.height)
+                        self.place_text('char', item.text, item.x0, item.y1, item.size)
+                else:
+                    if isinstance(item, LTTextLine):
+                        for child in item:
+                            render(child)
+                        self.write('<br>')
+                    elif isinstance(item, LTTextBox):
+                        self.begin_textbox('textbox', 1, item.x0, item.y1, item.width, item.height,
+                                           item.get_writing_mode())
+                        for child in item:
+                            render(child)
+                        self.end_textbox('textbox')
+                    elif isinstance(item, LTChar):
+                        self.put_text(item.text, item.fontname, item.size)
+                    elif isinstance(item, LTText):
+                        self.write_text(item.text)
             return
         render(ltpage)
         if ltpage.layout:
             def show_layout(item):
                 if isinstance(item, LTTextGroup):
-                    self.write_rect('textgroup', 1, item.x0, item.y1, item.width, item.height)
+                    self.place_rect('textgroup', 1, item.x0, item.y1, item.width, item.height)
                     for child in item:
                         show_layout(child)
                 return
@@ -285,9 +353,9 @@ class HTMLConverter(PDFConverter):
         return
 
     def close(self):
-        self.outfp.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' %
-                         ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(1,self.pageno)))
-        self.outfp.write('</body></html>\n')
+        self.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' %
+                   ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(1,self.pageno)))
+        self.write('</body></html>\n')
         return
 
 
@@ -300,6 +368,10 @@ class XMLConverter(PDFConverter):
         self.outdir = outdir
         self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % codec)
         self.outfp.write('<pages>\n')
+        return
+
+    def write_text(self, text):
+        self.outfp.write(enc(text, self.codec))
         return
 
     def receive_layout(self, ltpage):
@@ -341,7 +413,7 @@ class XMLConverter(PDFConverter):
             elif isinstance(item, LTChar):
                 self.outfp.write('<text font="%s" bbox="%s" size="%.3f">' %
                                  (enc(item.font.fontname), bbox2str(item.bbox), item.size))
-                self.write(item.text)
+                self.write_text(item.text)
                 self.outfp.write('</text>\n')
             elif isinstance(item, LTText):
                 self.outfp.write('<text>%s</text>\n' % item.text)

@@ -183,22 +183,16 @@ class LTChar(LTItem, LTText):
 
     debug = 0
 
-    def __init__(self, matrix, font, fontsize, scaling, rise, cid):
-        self.matrix = matrix
-        self.font = font
-        self.fontsize = fontsize
-        self.adv = font.char_width(cid) * fontsize * scaling
-        try:
-            text = font.to_unichr(cid)
-            assert isinstance(text, unicode), text
-        except PDFUnicodeNotDefined:
-            text = '?'
+    def __init__(self, matrix, font, fontsize, scaling, rise, text, textwidth, textdisp):
         LTText.__init__(self, text)
+        self.matrix = matrix
+        self.fontname = font.fontname
+        self.adv = textwidth * fontsize * scaling
         # compute the boundary rectangle.
-        if self.font.is_vertical():
+        if font.is_vertical():
             # vertical
             width = font.get_width() * fontsize
-            (vx,vy) = font.char_disp(cid)
+            (vx,vy) = textdisp
             if vx is None:
                 vx = width/2
             else:
@@ -224,7 +218,7 @@ class LTChar(LTItem, LTText):
         if y1 < y0:
             (y0,y1) = (y1,y0)
         LTItem.__init__(self, (x0,y0,x1,y1))
-        if self.font.is_vertical():
+        if font.is_vertical():
             self.size = self.width
         else:
             self.size = self.height
@@ -232,9 +226,9 @@ class LTChar(LTItem, LTText):
 
     def __repr__(self):
         if self.debug:
-            return ('<%s %s matrix=%s font=%r fontsize=%.1f adv=%s text=%r>' %
+            return ('<%s %s matrix=%s font=%r adv=%s text=%r>' %
                     (self.__class__.__name__, bbox2str(self.bbox), 
-                     matrix2str(self.matrix), self.font, self.fontsize,
+                     matrix2str(self.matrix), self.fontname, 
                      self.adv, self.text))
         else:
             return '<char %r>' % self.text
@@ -378,11 +372,17 @@ class LTTextBoxHorizontal(LTTextBox):
         self._objs = csort(self._objs, key=lambda obj: -obj.y1)
         return LTTextBox.finish(self)
 
+    def get_writing_mode(self):
+        return 'lr-tb'
+
 class LTTextBoxVertical(LTTextBox):
 
     def finish(self):
         self._objs = csort(self._objs, key=lambda obj: -obj.x1)
         return LTTextBox.finish(self)
+
+    def get_writing_mode(self):
+        return 'tb-rl'
 
 
 ##  LTTextGroup
