@@ -54,11 +54,6 @@ class PDFDevice(object):
 ##
 class PDFTextDevice(PDFDevice):
 
-    def handle_undefined_char(self, cidcoding, cid):
-        if self.debug:
-            print >>sys.stderr, 'undefined: %r, %r' % (cidcoding, cid)
-        return '?'
-
     def render_string(self, textstate, seq):
         matrix = mult_matrix(textstate.matrix, self.ctm)
         font = textstate.font
