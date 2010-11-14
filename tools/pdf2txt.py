@@ -12,11 +12,11 @@ def main(argv):
     import getopt
     def usage():
         print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output] '
-               '[-n] [-A] [-D writing_mode] [-M char_margin] [-L line_margin] [-W word_margin] '
+               '[-n] [-A] [-M char_margin] [-L line_margin] [-W word_margin] [-Y layout_mode] '
                '[-O output_dir] [-t text|html|xml|tag] [-c codec] [-s scale] file ...' % argv[0])
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:nAD:M:L:W:O:t:c:s:')
+        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:nAM:L:W:Y:O:t:c:s:')
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
@@ -30,6 +30,7 @@ def main(argv):
     outfile = None
     outtype = None
     outdir = None
+    layoutmode = 'normal'
     codec = 'utf-8'
     pageno = 1
     scale = 1
@@ -43,10 +44,10 @@ def main(argv):
         elif k == '-o': outfile = v
         elif k == '-n': laparams = None
         elif k == '-A': laparams.all_texts = True
-        elif k == '-D': laparams.writing_mode = v
         elif k == '-M': laparams.char_margin = float(v)
         elif k == '-L': laparams.line_margin = float(v)
         elif k == '-W': laparams.word_margin = float(v)
+        elif k == '-Y': layoutmode = v
         elif k == '-O': outdir = v
         elif k == '-t': outtype = v
         elif k == '-c': codec = v
@@ -78,7 +79,8 @@ def main(argv):
     elif outtype == 'xml':
         device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams, outdir=outdir)
     elif outtype == 'html':
-        device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale, laparams=laparams, outdir=outdir)
+        device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
+                               layoutmode=layoutmode, laparams=laparams, outdir=outdir)
     elif outtype == 'tag':
         device = TagExtractor(rsrcmgr, outfp, codec=codec)
     else:

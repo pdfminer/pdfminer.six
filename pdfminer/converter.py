@@ -209,25 +209,36 @@ class HTMLConverter(PDFConverter):
         'char': 'black',
         }
 
-    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
-                 scale=1, exact=False, showpageno=True, pagepad=50, outdir=None):
+    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None, 
+                 scale=1, fontscale=0.7, layoutmode='normal', showpageno=True, pagemargin=50,
+                 outdir=None):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
-        self.exact = exact
-        self.showpageno = showpageno
-        self.pagepad = pagepad
-        self.outdir = outdir
         self.scale = scale
-        self.fontscale = 0.7
-        self.write('<html><head>\n')
-        self.write('<meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % self.codec)
-        self.write('</head><body>\n')
-        self.yoffset = self.pagepad
+        self.fontscale = fontscale
+        self.layoutmode = layoutmode
+        self.showpageno = showpageno
+        self.pagemargin = pagemargin
+        self.outdir = outdir
+        self.yoffset = self.pagemargin
         self._font = None
         self._fontstack = []
+        self.write_header()
         return
 
     def write(self, text):
         self.outfp.write(text)
+        return
+
+    def write_header(self):
+        self.write('<html><head>\n')
+        self.write('<meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % self.codec)
+        self.write('</head><body>\n')
+        return
+
+    def write_footer(self):
+        self.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' %
+                   ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(1,self.pageno)))
+        self.write('</body></html>\n')
         return
 
     def write_text(self, text):
@@ -258,7 +269,7 @@ class HTMLConverter(PDFConverter):
         color = self.TEXT_COLORS.get(color)
         if color is not None:
             self.write('<span style="position:absolute; color:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
-                       (color, x*self.scale, (self.yoffset-y)*self.scale, size*self.scale))
+                       (color, x*self.scale, (self.yoffset-y)*self.scale, size*self.scale*self.fontscale))
             self.write_text(text)
             self.write('</span>\n')
         return
@@ -282,7 +293,11 @@ class HTMLConverter(PDFConverter):
                        (fontname, fontsize * self.scale * self.fontscale))
             self._font = font
         self.write_text(text)
-        return 
+        return
+
+    def put_newline(self):
+        self.write('<br>')
+        return
 
     def end_textbox(self, color):
         if self._font is not None:
@@ -311,7 +326,7 @@ class HTMLConverter(PDFConverter):
             elif isinstance(item, LTImage):
                 self.place_image(item, 1, item.x0, item.y1, item.width, item.height)
             else:
-                if self.exact:
+                if self.layoutmode == 'exact':
                     if isinstance(item, LTTextLine):
                         self.place_rect('textline', 1, item.x0, item.y1, item.width, item.height)
                         for child in item:
@@ -328,7 +343,8 @@ class HTMLConverter(PDFConverter):
                     if isinstance(item, LTTextLine):
                         for child in item:
                             render(child)
-                        self.write('<br>')
+                        if self.layoutmode != 'loose':
+                            self.put_newline()
                     elif isinstance(item, LTTextBox):
                         self.begin_textbox('textbox', 1, item.x0, item.y1, item.width, item.height,
                                            item.get_writing_mode())
@@ -349,13 +365,11 @@ class HTMLConverter(PDFConverter):
                         show_layout(child)
                 return
             show_layout(ltpage.layout)
-        self.yoffset += self.pagepad
+        self.yoffset += self.pagemargin
         return
 
     def close(self):
-        self.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' %
-                   ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(1,self.pageno)))
-        self.write('</body></html>\n')
+        self.write_footer()
         return
 
 
@@ -366,10 +380,18 @@ class XMLConverter(PDFConverter):
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None, outdir=None):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.outdir = outdir
+        self.write_header()
+        return
+
+    def write_header(self):
         self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % codec)
         self.outfp.write('<pages>\n')
         return
 
+    def write_footer(self):
+        self.outfp.write('</pages>\n')
+        return
+    
     def write_text(self, text):
         self.outfp.write(enc(text, self.codec))
         return
@@ -445,5 +467,5 @@ class XMLConverter(PDFConverter):
         return
 
     def close(self):
-        self.outfp.write('</pages>\n')
+        self.write_footer()
         return

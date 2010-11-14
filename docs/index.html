@@ -9,7 +9,7 @@
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Oct 17 09:25:27 UTC 2010
+Last Modified: Sun Nov 14 15:03:59 UTC 2010
 <!-- hhmts end -->
 </div>
 
@@ -264,6 +264,14 @@ are M = 1.0, L = 0.3, and W = 0.2, respectively.
 <dt> <code>-A</code> 
 <dd> Forces to perform layout analysis for all the text strings, 
 including texts contained in figures.
+<p>
+<dt> <code>-Y <em>layout_mode</em></code> 
+<dd> Specifies how the page layout should be preserved. (Currently only applies to HTML format.)
+<ul>
+<li> <code>exact</code> : preserve the exact location of each individual character (a large and messy HTML).
+<li> <code>normal</code> : preserve the location and line breaks in each text block. (Default)
+<li> <code>loose</code> : preserve the overall location of each text block.
+</ul>
 <p>
 <dt> <code>-s <em>scale</em></code> 
 <dd> Specifies the output scale. Can be used in HTML format only.
