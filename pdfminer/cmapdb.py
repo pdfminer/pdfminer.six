@@ -71,6 +71,18 @@ class CMap(object):
                 d = self.code2cid
         return
 
+    def dump(self, out=sys.stdout, code2cid=None, code=None):
+        if code2cid is None:
+            code2cid = self.code2cid
+            code = ()
+        for (k,v) in sorted(code2cid.iteritems()):
+            c = code+(k,)
+            if isinstance(v, int):
+                out.write('code %r = cid %d\n' % (c,v))
+            else:
+                self.dump(out=out, code2cid=v, code=c)
+        return
+    
 
 ##  IdentityCMap
 ##
@@ -106,6 +118,11 @@ class UnicodeMap(object):
         if self.debug:
             print >>sys.stderr, 'get_unichr: %r, %r' % (self, cid)
         return self.cid2unichr[cid]
+
+    def dump(self, out=sys.stdout):
+        for (k,v) in sorted(self.cid2unichr.iteritems()):
+            out.write('cid %d = unicode %r\n' % (k,v))
+        return
 
 
 ##  FileCMap
@@ -394,8 +411,10 @@ def main(argv):
     for fname in args:
         fp = file(fname, 'rb')
         cmap = FileUnicodeMap()
+        #cmap = FileCMap()
         CMapParser(cmap, fp).run()
         fp.close()
+        cmap.dump()
     return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))
