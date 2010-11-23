@@ -399,6 +399,8 @@ class TrueTypeFont(object):
                     else:
                         for c in xrange(sc, ec+1):
                             char2gid[c] = (c + idd) & 0xffff
+            else:
+                assert 0
         # create unicode map
         unicode_map = FileUnicodeMap()
         for (char,gid) in char2gid.iteritems():
@@ -668,7 +670,7 @@ class PDFCIDFont(PDFFont):
 def main(argv):
     for fname in argv[1:]:
         fp = file(fname, 'rb')
-        CFFFont(fp)
+        font = TrueTypeFont(fname, fp)
         fp.close()
     return
 

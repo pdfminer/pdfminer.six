@@ -105,7 +105,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
     def handle_undefined_char(self, font, cid):
         if self.debug:
             print >>sys.stderr, 'undefined: %r, %r' % (font, cid)
-        return '?'
+        return '(cid:%d)' % cid
 
     def receive_layout(self, ltpage):
         return
