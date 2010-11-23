@@ -808,7 +808,8 @@ class PDFPageInterpreter(object):
 ##
 class PDFTextExtractionNotAllowed(PDFInterpreterError): pass
 
-def process_pdf(rsrcmgr, device, fp, pagenos=None, maxpages=0, password=''):
+def process_pdf(rsrcmgr, device, fp, pagenos=None, maxpages=0, password='',
+                check_extractable=True):
     # Create a PDF parser object associated with the file object.
     parser = PDFParser(fp)
     # Create a PDF document object that stores the document structure.
@@ -820,7 +821,7 @@ def process_pdf(rsrcmgr, device, fp, pagenos=None, maxpages=0, password=''):
     # (If no password is set, give an empty string.)
     doc.initialize(password)
     # Check if the document allows text extraction. If not, abort.
-    if not doc.is_extractable:
+    if check_extractable and not doc.is_extractable:
         raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fp)
     # Create a PDF interpreter object.
     interpreter = PDFPageInterpreter(rsrcmgr, device)

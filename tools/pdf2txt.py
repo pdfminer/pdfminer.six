@@ -87,7 +87,8 @@ def main(argv):
         return usage()
     for fname in args:
         fp = file(fname, 'rb')
-        process_pdf(rsrcmgr, device, fp, pagenos, maxpages=maxpages, password=password)
+        process_pdf(rsrcmgr, device, fp, pagenos, maxpages=maxpages, password=password,
+                    check_extractable=True)
         fp.close()
     device.close()
     outfp.close()
