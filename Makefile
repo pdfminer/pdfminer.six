@@ -21,7 +21,7 @@ clean:
 
 distclean: clean test_clean cmap_clean
 
-pack: distclean MANIFEST
+sdist: distclean MANIFEST
 	$(PYTHON) setup.py sdist
 register: distclean MANIFEST
 	$(PYTHON) setup.py sdist upload register
