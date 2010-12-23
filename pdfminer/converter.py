@@ -384,7 +384,7 @@ class XMLConverter(PDFConverter):
         return
 
     def write_header(self):
-        self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % codec)
+        self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % self.codec)
         self.outfp.write('<pages>\n')
         return
 
