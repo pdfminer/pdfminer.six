@@ -5,7 +5,7 @@ RM=rm -f
 CMP=:
 PYTHON=python2
 
-PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -Dx -p1
+PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -p1
 
 HTMLS=$(HTMLS_FREE) $(HTMLS_NONFREE)
 HTMLS_FREE= \
@@ -49,8 +49,7 @@ XMLS_NONFREE= \
 	nonfree/naacl06-shinyama.xml \
 	nonfree/nlp2004slides.xml
 
-all:
-	$(MAKE) test CMP=cmp
+all: test
 
 test: htmls texts xmls
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -O
+#!/usr/bin/python -O
 #
 # pdf2html.cgi - Gateway script for converting PDF into HTML.
 #
@@ -42,7 +42,7 @@ def url(base, **kw):
 ##  convert
 ##
 class FileSizeExceeded(ValueError): pass
-def convert(outfp, infp, path, codec='utf-8',
+def convert(infp, outfp, path, codec='utf-8',
             maxpages=0, maxfilesize=0, pagenos=None,
             html=True):
     # save the input file.
@@ -76,22 +76,22 @@ def convert(outfp, infp, path, codec='utf-8',
 class WebApp(object):
 
     TITLE = 'pdf2html demo'
-    APPPATH = '/'        # absolute URL path to this application. 
-    MAXFILESIZE = 5000000              # set to zero if unlimited.
+    MAXFILESIZE = 10000000             # set to zero if unlimited.
     MAXPAGES = 10                      # set to zero if unlimited.
 
-    def __init__(self, infp=sys.stdin, outfp=sys.stdout, codec='utf-8'):
+    def __init__(self, infp=sys.stdin, outfp=sys.stdout, environ=os.environ,
+                 codec='utf-8', apppath='/'):
+        self.infp = infp
         self.outfp = outfp
         self.codec = codec
-        self.remote_addr = os.environ.get('REMOTE_ADDR')
-        self.path_info = os.environ.get('PATH_INFO')
-        self.method = os.environ.get('REQUEST_METHOD', 'GET').upper()
-        self.server = os.environ.get('SERVER_SOFTWARE', '')
-        self.logpath = os.environ.get('LOG_PATH', './var/log')
-        self.tmpdir = os.environ.get('TEMP', './var/')
+        self.apppath = apppath
+        self.remote_addr = environ.get('REMOTE_ADDR')
+        self.path_info = environ.get('PATH_INFO')
+        self.method = environ.get('REQUEST_METHOD', 'GET').upper()
+        self.server = environ.get('SERVER_SOFTWARE', '')
+        self.tmpdir = environ.get('TEMP', './var/')
         self.content_type = 'text/html; charset=%s' % codec
-        self.cur_time = time.time()
-        self.form = cgi.FieldStorage(infp)
+        self.logger = logging.getLogger()
         return
 
     def put(self, *args):
@@ -130,7 +130,7 @@ class WebApp(object):
         self.put(
           '<html><head><title>%s</title></head><body>\n' % q(self.TITLE),
           '<h1>%s</h1><hr>\n' % q(self.TITLE),
-          '<form method="POST" action="%s" enctype="multipart/form-data">\n' % q(self.APPPATH),
+          '<form method="POST" action="%s" enctype="multipart/form-data">\n' % q(self.apppath),
           '<p>Upload PDF File: <input name="f" type="file" value="">\n',
           '&nbsp; Page numbers (comma-separated):\n',
           '<input name="p" type="text" size="10" value="">\n',
@@ -145,49 +145,54 @@ class WebApp(object):
           )
         return
 
-    def run(self, argv):
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(levelname)s %(message)s',
-                            filename=self.logpath, filemode='a')
-        if self.path_info != self.APPPATH:
+    def setup(self):
+        if not os.path.isdir(self.tmpdir):
+            self.logger.error('no tmpdir')
+            status = 304
+        elif self.path_info != self.apppath:
+            status = 404
+        else:
+            status = 200
+        self._status = status
+        return status
+
+    def run(self):
+        form = cgi.FieldStorage(self.infp)
+        if self._status != 200:
             self.http_404()
             return
-        if not os.path.isdir(self.tmpdir):
-            logging.error('no tmpdir')
-            self.bummer('error')
-            return
         if (self.method != 'POST' or 
-            'c' not in self.form or
-            'f' not in self.form):
+            'c' not in form or
+            'f' not in form):
             self.coverpage()
             return
-        item = self.form['f']
+        item = form['f']
         if not (item.file and item.filename):
             self.coverpage()
             return
-        cmd = self.form.getvalue('c')
+        cmd = form.getvalue('c')
         html = (cmd == 'Convert to HTML')
         pagenos = []
-        if 'p' in self.form:
-            for m in re.finditer(r'\d+', self.form.getvalue('p')):
+        if 'p' in form:
+            for m in re.finditer(r'\d+', form.getvalue('p')):
                 try:
                     pagenos.append(int(m.group(0)))
                 except ValueError:
                     pass
-        logging.info('received: host=%s, name=%r, pagenos=%r' %
-                     (self.remote_addr, item.filename, pagenos))
+        self.logger.info('received: host=%s, name=%r, pagenos=%r' %
+                         (self.remote_addr, item.filename, pagenos))
         h = abs(hash((random.random(), self.remote_addr, item.filename)))
-        tmppath = os.path.join(self.tmpdir, '%08x%08x.pdf' % (self.cur_time, h))
+        tmppath = os.path.join(self.tmpdir, '%08x%08x.pdf' % (time.time(), h))
         try:
             if not html:
                 self.content_type = 'text/plain; charset=%s' % self.codec
             self.http_200()
             try:
-                convert(sys.stdout, item.file, tmppath, pagenos=pagenos, codec=self.codec,
+                convert(item.file, sys.stdout, tmppath, pagenos=pagenos, codec=self.codec,
                         maxpages=self.MAXPAGES, maxfilesize=self.MAXFILESIZE, html=html)
             except Exception, e:
                 self.put('<p>Sorry, an error has occured: %s' % q(repr(e)))
-                logging.error('convert: %r: path=%r: %s' % (e, tmppath, traceback.format_exc()))
+                self.logger.error('convert: %r: path=%r: %s' % (e, tmppath, traceback.format_exc()))
         finally:
             try:
                 os.remove(tmppath)
@@ -197,4 +202,7 @@ class WebApp(object):
 
 
 # main
-if __name__ == '__main__': sys.exit(WebApp().run(sys.argv))
+if __name__ == '__main__':
+    app = WebApp()
+    app.setup()
+    sys.exit(app.run())
