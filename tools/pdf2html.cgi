@@ -93,7 +93,6 @@ class WebApp(object):
         self.tmpdir = self.environ.get('TEMP', './var/')
         self.content_type = 'text/html; charset=%s' % codec
         self.logger = logging.getLogger()
-        logging.basicConfig(level=10,stream=sys.stderr)
         return
 
     def put(self, *args):
@@ -166,16 +165,16 @@ class WebApp(object):
             self.response_200()
             self.coverpage()
             return
-        item = self.form['f']
+        item = form['f']
         if not (item.file and item.filename):
             self.response_200()
             self.coverpage()
             return
-        cmd = self.form.getvalue('c')
+        cmd = form.getvalue('c')
         html = (cmd == 'Convert to HTML')
         pagenos = []
-        if 'p' in self.form:
-            for m in re.finditer(r'\d+', self.form.getvalue('p')):
+        if 'p' in form:
+            for m in re.finditer(r'\d+', form.getvalue('p')):
                 try:
                     pagenos.append(int(m.group(0)))
                 except ValueError:
