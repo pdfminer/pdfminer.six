@@ -434,7 +434,7 @@ class XMLConverter(PDFConverter):
                 self.outfp.write('</textbox>\n')
             elif isinstance(item, LTChar):
                 self.outfp.write('<text font="%s" bbox="%s" size="%.3f">' %
-                                 (enc(item.font.fontname), bbox2str(item.bbox), item.size))
+                                 (enc(item.fontname), bbox2str(item.bbox), item.size))
                 self.write_text(item.text)
                 self.outfp.write('</text>\n')
             elif isinstance(item, LTText):
