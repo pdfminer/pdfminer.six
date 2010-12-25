@@ -5,4 +5,4 @@ RM=rm -f
 all:
 
 clean:
-	-$(RM) *.pyc *.pyo
+	-$(RM) *.pyc *.pyo *.cgic *.cgio

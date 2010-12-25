@@ -77,21 +77,23 @@ class WebApp(object):
 
     TITLE = 'pdf2html demo'
     MAXFILESIZE = 10000000             # set to zero if unlimited.
-    MAXPAGES = 10                      # set to zero if unlimited.
+    MAXPAGES = 100                     # set to zero if unlimited.
 
     def __init__(self, infp=sys.stdin, outfp=sys.stdout, environ=os.environ,
                  codec='utf-8', apppath='/'):
         self.infp = infp
         self.outfp = outfp
+        self.environ = environ
         self.codec = codec
         self.apppath = apppath
-        self.remote_addr = environ.get('REMOTE_ADDR')
-        self.path_info = environ.get('PATH_INFO')
-        self.method = environ.get('REQUEST_METHOD', 'GET').upper()
-        self.server = environ.get('SERVER_SOFTWARE', '')
-        self.tmpdir = environ.get('TEMP', './var/')
+        self.remote_addr = self.environ.get('REMOTE_ADDR')
+        self.path_info = self.environ.get('PATH_INFO')
+        self.method = self.environ.get('REQUEST_METHOD', 'GET').upper()
+        self.server = self.environ.get('SERVER_SOFTWARE', '')
+        self.tmpdir = self.environ.get('TEMP', './var/')
         self.content_type = 'text/html; charset=%s' % codec
         self.logger = logging.getLogger()
+        logging.basicConfig(level=10,stream=sys.stderr)
         return
 
     def put(self, *args):
@@ -102,7 +104,7 @@ class WebApp(object):
                 self.outfp.write(x.encode(self.codec, 'xmlcharrefreplace'))
         return
 
-    def http_200(self):
+    def response_200(self):
         if self.server.startswith('cgi-httpd'):
             # required for cgi-httpd
             self.outfp.write('HTTP/1.0 200 OK\r\n')
@@ -110,7 +112,7 @@ class WebApp(object):
         self.outfp.write('Connection: close\r\n\r\n')
         return
 
-    def http_404(self):
+    def response_404(self):
         if self.server.startswith('cgi-httpd'):
             # required for cgi-httpd
             self.outfp.write('HTTP/1.0 404 Not Found\r\n')
@@ -119,7 +121,7 @@ class WebApp(object):
         self.outfp.write('<html><body>page does not exist</body></body>\n')
         return
 
-    def http_301(self, url):
+    def response_301(self, url):
         if self.server.startswith('cgi-httpd'):
             # required for cgi-httpd
             self.outfp.write('HTTP/1.0 301 Moved\r\n')
@@ -146,53 +148,52 @@ class WebApp(object):
         return
 
     def setup(self):
+        self.run = self.response_404
+        status = 404
         if not os.path.isdir(self.tmpdir):
             self.logger.error('no tmpdir')
             status = 304
-        elif self.path_info != self.apppath:
-            status = 404
-        else:
+        elif self.path_info == self.apppath:
+            self.run = self.convert
             status = 200
-        self._status = status
         return status
 
-    def run(self):
-        form = cgi.FieldStorage(self.infp)
-        if self._status != 200:
-            self.http_404()
-            return
+    def convert(self):
+        self.form = cgi.FieldStorage(fp=self.infp, environ=self.environ)
         if (self.method != 'POST' or 
-            'c' not in form or
-            'f' not in form):
+            'c' not in self.form or
+            'f' not in self.form):
+            self.response_200()
             self.coverpage()
             return
-        item = form['f']
+        item = self.form['f']
         if not (item.file and item.filename):
+            self.response_200()
             self.coverpage()
             return
-        cmd = form.getvalue('c')
+        cmd = self.form.getvalue('c')
         html = (cmd == 'Convert to HTML')
         pagenos = []
-        if 'p' in form:
-            for m in re.finditer(r'\d+', form.getvalue('p')):
+        if 'p' in self.form:
+            for m in re.finditer(r'\d+', self.form.getvalue('p')):
                 try:
                     pagenos.append(int(m.group(0)))
                 except ValueError:
                     pass
-        self.logger.info('received: host=%s, name=%r, pagenos=%r' %
-                         (self.remote_addr, item.filename, pagenos))
         h = abs(hash((random.random(), self.remote_addr, item.filename)))
         tmppath = os.path.join(self.tmpdir, '%08x%08x.pdf' % (time.time(), h))
+        self.logger.info('received: host=%s, name=%r, pagenos=%r, tmppath=%r' %
+                         (self.remote_addr, item.filename, pagenos, tmppath))
         try:
             if not html:
                 self.content_type = 'text/plain; charset=%s' % self.codec
-            self.http_200()
+            self.response_200()
             try:
-                convert(item.file, sys.stdout, tmppath, pagenos=pagenos, codec=self.codec,
+                convert(item.file, self.outfp, tmppath, pagenos=pagenos, codec=self.codec,
                         maxpages=self.MAXPAGES, maxfilesize=self.MAXFILESIZE, html=html)
             except Exception, e:
                 self.put('<p>Sorry, an error has occured: %s' % q(repr(e)))
-                self.logger.error('convert: %r: path=%r: %s' % (e, tmppath, traceback.format_exc()))
+                self.logger.error('convert: %r: path=%r: %s' % (e, traceback.format_exc()))
         finally:
             try:
                 os.remove(tmppath)
