@@ -1,63 +1,63 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <pages>
 <page id="1" bbox="0.000,0.000,595.000,842.000" rotate="0">
-<textbox id="0" bbox="392.500,787.804,457.500,800.144">
-<textline bbox="392.500,787.804,457.500,800.144">
-<text font="Ryumin-Light" bbox="392.500,787.804,402.500,800.144" size="12.340">第</text>
-<text> </text>
-<text font="GMALPM+DFHSMincho-W3G014" bbox="405.000,789.064,415.000,798.234" size="10.000">›</text>
-<text font="GMALPM+DFHSMincho-W3G014" bbox="415.000,789.064,425.000,798.234" size="10.000">Ÿ</text>
-<text font="GMALPM+DFHSMincho-W3G014" bbox="425.000,789.064,435.000,798.234" size="10.000">˜</text>
-<text font="GMALPM+DFHSMincho-W3G014" bbox="435.000,789.064,445.000,798.234" size="10.000"></text>
-<text> </text>
-<text font="Ryumin-Light" bbox="447.500,787.804,457.500,800.144" size="12.340">号</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="1" bbox="527.500,789.064,537.500,798.234">
-<textline bbox="527.500,789.064,537.500,798.234">
-<text font="GMALPM+DFHSMincho-W3G014" bbox="527.500,789.064,537.500,798.234" size="10.000">›</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="2" bbox="267.500,787.572,279.500,802.380">
-<textline bbox="267.500,787.572,279.500,802.380">
-<text font="Ryumin-Light" bbox="267.500,787.572,279.500,802.380" size="14.808">官</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="3" bbox="315.500,787.572,327.500,802.380">
-<textline bbox="315.500,787.572,327.500,802.380">
-<text font="Ryumin-Light" bbox="315.500,787.572,327.500,802.380" size="14.808">報</text>
-<text>
-</text>
-</textline>
-</textbox>
-<textbox id="4" bbox="87.500,787.804,242.500,800.144">
+<textbox id="0" bbox="87.500,787.804,242.500,800.144">
 <textline bbox="87.500,787.804,242.500,800.144">
 <text font="Ryumin-Light" bbox="87.500,787.804,97.500,800.144" size="12.340">平</text>
 <text font="Ryumin-Light" bbox="97.500,787.804,107.500,800.144" size="12.340">成</text>
 <text> </text>
-<text font="GMALPM+DFHSMincho-W3G014" bbox="110.000,789.064,120.000,798.234" size="10.000">™</text>
-<text font="GMALPM+DFHSMincho-W3G014" bbox="120.000,789.064,130.000,798.234" size="10.000">—</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="110.000,789.064,120.000,798.234" size="9.170">™</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="120.000,789.064,130.000,798.234" size="9.170">—</text>
 <text> </text>
 <text font="Ryumin-Light" bbox="132.500,787.804,142.500,800.144" size="12.340">年</text>
 <text> </text>
-<text font="GMALPM+DFHSMincho-W3G014" bbox="145.000,789.064,155.000,798.234" size="10.000">›</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="145.000,789.064,155.000,798.234" size="9.170">›</text>
 <text> </text>
 <text font="Ryumin-Light" bbox="157.500,787.804,167.500,800.144" size="12.340">月</text>
 <text> </text>
-<text font="GMALPM+DFHSMincho-W3G014" bbox="170.000,789.064,180.000,798.234" size="10.000">™</text>
-<text font="GMALPM+DFHSMincho-W3G014" bbox="180.000,789.064,190.000,798.234" size="10.000">œ</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="170.000,789.064,180.000,798.234" size="9.170">™</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="180.000,789.064,190.000,798.234" size="9.170">œ</text>
 <text> </text>
 <text font="Ryumin-Light" bbox="192.500,787.804,202.500,800.144" size="12.340">日</text>
 <text> </text>
 <text font="Ryumin-Light" bbox="212.500,787.804,222.500,800.144" size="12.340">金</text>
 <text font="Ryumin-Light" bbox="222.500,787.804,232.500,800.144" size="12.340">曜</text>
 <text font="Ryumin-Light" bbox="232.500,787.804,242.500,800.144" size="12.340">日</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="1" bbox="267.500,787.572,279.500,802.380">
+<textline bbox="267.500,787.572,279.500,802.380">
+<text font="Ryumin-Light" bbox="267.500,787.572,279.500,802.380" size="14.808">官</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="2" bbox="315.500,787.572,327.500,802.380">
+<textline bbox="315.500,787.572,327.500,802.380">
+<text font="Ryumin-Light" bbox="315.500,787.572,327.500,802.380" size="14.808">報</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="3" bbox="392.500,787.804,457.500,800.144">
+<textline bbox="392.500,787.804,457.500,800.144">
+<text font="Ryumin-Light" bbox="392.500,787.804,402.500,800.144" size="12.340">第</text>
+<text> </text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="405.000,789.064,415.000,798.234" size="9.170">›</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="415.000,789.064,425.000,798.234" size="9.170">Ÿ</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="425.000,789.064,435.000,798.234" size="9.170">˜</text>
+<text font="GMALPM+DFHSMincho-W3G014" bbox="435.000,789.064,445.000,798.234" size="9.170"></text>
+<text> </text>
+<text font="Ryumin-Light" bbox="447.500,787.804,457.500,800.144" size="12.340">号</text>
+<text>
+</text>
+</textline>
+</textbox>
+<textbox id="4" bbox="527.500,789.064,537.500,798.234">
+<textline bbox="527.500,789.064,537.500,798.234">
+<text font="GMALPM+DFHSMincho-W3G014" bbox="527.500,789.064,537.500,798.234" size="9.170">›</text>
 <text>
 </text>
 </textline>
@@ -3136,16 +3136,16 @@
 <layout>
 <textgroup bbox="45.212,52.036,549.776,802.380">
 <textgroup bbox="87.500,787.572,537.500,802.380">
-<textgroup bbox="392.500,787.804,537.500,800.144">
-<textbox id="0" bbox="392.500,787.804,457.500,800.144" />
-<textbox id="1" bbox="527.500,789.064,537.500,798.234" />
-</textgroup>
 <textgroup bbox="87.500,787.572,327.500,802.380">
+<textbox id="0" bbox="87.500,787.804,242.500,800.144" />
 <textgroup bbox="267.500,787.572,327.500,802.380">
-<textbox id="2" bbox="267.500,787.572,279.500,802.380" />
-<textbox id="3" bbox="315.500,787.572,327.500,802.380" />
+<textbox id="1" bbox="267.500,787.572,279.500,802.380" />
+<textbox id="2" bbox="315.500,787.572,327.500,802.380" />
 </textgroup>
-<textbox id="4" bbox="87.500,787.804,242.500,800.144" />
+</textgroup>
+<textgroup bbox="392.500,787.804,537.500,800.144">
+<textbox id="3" bbox="392.500,787.804,457.500,800.144" />
+<textbox id="4" bbox="527.500,789.064,537.500,798.234" />
 </textgroup>
 </textgroup>
 <textgroup bbox="45.212,52.036,549.776,781.960">
