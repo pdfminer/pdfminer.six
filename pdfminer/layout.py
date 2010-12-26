@@ -28,12 +28,14 @@ class LAParams(object):
                  char_margin=2.0,
                  line_margin=0.5,
                  word_margin=0.1,
+                 boxes_flow=0,
                  all_texts=False):
         self.writing_mode = writing_mode
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin
         self.word_margin = word_margin
+        self.boxes_flow = boxes_flow
         self.all_texts = all_texts
         return
 
@@ -399,14 +401,18 @@ class LTTextGroupLRTB(LTTextGroup):
     
     def analyze(self, laparams):
         # reorder the objects from top-left to bottom-right.
-        self._objs = csort(self._objs, key=lambda obj: obj.x0+obj.x1-(obj.y0+obj.y1))
+        self._objs = csort(self._objs, key=lambda obj:
+                           (1-laparams.boxes_flow)*(obj.x0+obj.x1) -
+                           (1+laparams.boxes_flow)*(obj.y0+obj.y1))
         return LTTextGroup.analyze(self, laparams)
 
 class LTTextGroupTBRL(LTTextGroup):
     
     def analyze(self, laparams):
         # reorder the objects from top-right to bottom-left.
-        self._objs = csort(self._objs, key=lambda obj: -(obj.x0+obj.x1)-(obj.y0+obj.y1))
+        self._objs = csort(self._objs, key=lambda obj:
+                           -(1+laparams.boxes_flow)*(obj.x0+obj.x1)
+                           -(1-laparams.boxes_flow)*(obj.y0+obj.y1))
         return LTTextGroup.analyze(self, laparams)
 
 
