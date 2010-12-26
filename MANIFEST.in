@@ -1,3 +1,4 @@
+include Makefile
 include *.txt
 include *.py
 graft cmaprsrc
