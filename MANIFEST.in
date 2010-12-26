@@ -1,0 +1,7 @@
+include *.txt
+include *.py
+graft cmaprsrc
+graft docs
+graft pdfminer
+graft samples
+graft tools

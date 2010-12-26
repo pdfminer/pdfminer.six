@@ -21,12 +21,10 @@ clean:
 
 distclean: clean test_clean cmap_clean
 
-sdist: distclean MANIFEST
+sdist: distclean MANIFEST.in
 	$(PYTHON) setup.py sdist
-register: distclean MANIFEST
+register: distclean MANIFEST.in
 	$(PYTHON) setup.py sdist upload register
-MANIFEST:
-	$(GIT) ls-tree --name-only -r HEAD > MANIFEST
 
 WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
 publish:
