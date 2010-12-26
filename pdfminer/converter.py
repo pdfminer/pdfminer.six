@@ -27,26 +27,28 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         (x0,y0) = apply_matrix_pt(ctm, (x0,y0))
         (x1,y1) = apply_matrix_pt(ctm, (x1,y1))
         mediabox = (0, 0, abs(x0-x1), abs(y0-y1))
-        self.cur_item = LTPage(self.pageno, mediabox, laparams=self.laparams)
+        self.cur_item = LTPage(self.pageno, mediabox)
         return
 
     def end_page(self, page):
         assert not self.stack
         assert isinstance(self.cur_item, LTPage)
-        self.cur_item.finish()
+        if self.laparams is not None:
+            self.cur_item.analyze(self.laparams)
         self.pageno += 1
         self.receive_layout(self.cur_item)
         return
 
     def begin_figure(self, name, bbox, matrix):
         self.stack.append(self.cur_item)
-        self.cur_item = LTFigure(name, bbox, mult_matrix(matrix, self.ctm), laparams=self.laparams)
+        self.cur_item = LTFigure(name, bbox, mult_matrix(matrix, self.ctm))
         return
 
     def end_figure(self, _):
         fig = self.cur_item
         assert isinstance(self.cur_item, LTFigure)
-        self.cur_item.finish()
+        if self.laparams is not None:
+            self.cur_item.analyze(self.laparams)
         self.cur_item = self.stack.pop()
         self.cur_item.add(fig)
         return
