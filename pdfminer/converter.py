@@ -257,6 +257,10 @@ class HTMLConverter(PDFConverter):
                         w*self.scale, h*self.scale))
         return
 
+    def place_border(self, color, borderwidth, item):
+        self.place_rect(color, borderwidth, item.x0, item.y1, item.width, item.height)
+        return
+
     def place_image(self, item, borderwidth, x, y, w, h):
         if self.outdir is not None:
             name = self.write_image(item)
@@ -309,20 +313,28 @@ class HTMLConverter(PDFConverter):
         return
 
     def receive_layout(self, ltpage):
+        def show_layout(item):
+            if isinstance(item, LTTextGroup):
+                self.place_border('textgroup', 1, item)
+                for child in item:
+                    show_layout(child)
+            return
         def render(item):
             if isinstance(item, LTPage):
                 self.yoffset += item.y1
-                self.place_rect('page', 1, item.x0, item.y1, item.width, item.height)
+                self.place_border('page', 1, item)
                 if self.showpageno:
                     self.write('<div style="position:absolute; top:%dpx;">' %
                                ((self.yoffset-item.y1)*self.scale))
                     self.write('<a name="%s">Page %s</a></div>\n' % (item.pageid, item.pageid))
                 for child in item:
                     render(child)
+                if item.layout:
+                    show_layout(item.layout)
             elif isinstance(item, LTPolygon):
-                self.place_rect('polygon', 1, item.x0, item.y1, item.width, item.height)
+                self.place_border('polygon', 1, item)
             elif isinstance(item, LTFigure):
-                self.place_rect('figure', 1, item.x0, item.y1, item.width, item.height)
+                self.place_border('figure', 1, item)
                 for child in item:
                     render(child)
             elif isinstance(item, LTImage):
@@ -330,16 +342,16 @@ class HTMLConverter(PDFConverter):
             else:
                 if self.layoutmode == 'exact':
                     if isinstance(item, LTTextLine):
-                        self.place_rect('textline', 1, item.x0, item.y1, item.width, item.height)
+                        self.place_border('textline', 1, item)
                         for child in item:
                             render(child)
                     elif isinstance(item, LTTextBox):
-                        self.place_rect('textbox', 1, item.x0, item.y1, item.width, item.height)
+                        self.place_border('textbox', 1, item)
                         self.place_text('textbox', str(item.index+1), item.x0, item.y1, 20)
                         for child in item:
                             render(child)
                     elif isinstance(item, LTChar):
-                        self.place_rect('char', 1, item.x0, item.y1, item.width, item.height)
+                        self.place_border('char', 1, item)
                         self.place_text('char', item.text, item.x0, item.y1, item.size)
                 else:
                     if isinstance(item, LTTextLine):
@@ -359,14 +371,6 @@ class HTMLConverter(PDFConverter):
                         self.write_text(item.text)
             return
         render(ltpage)
-        if ltpage.layout:
-            def show_layout(item):
-                if isinstance(item, LTTextGroup):
-                    self.place_rect('textgroup', 1, item.x0, item.y1, item.width, item.height)
-                    for child in item:
-                        show_layout(child)
-                return
-            show_layout(ltpage.layout)
         self.yoffset += self.pagemargin
         return
 
@@ -399,12 +403,26 @@ class XMLConverter(PDFConverter):
         return
 
     def receive_layout(self, ltpage):
+        def show_layout(item):
+            if isinstance(item, LTTextBox):
+                self.outfp.write('<textbox id="%d" bbox="%s" />\n' %
+                                 (item.index, bbox2str(item.bbox)))
+            elif isinstance(item, LTTextGroup):
+                self.outfp.write('<textgroup bbox="%s">\n' % bbox2str(item.bbox))
+                for child in item:
+                    show_layout(child)
+                self.outfp.write('</textgroup>\n')
+            return
         def render(item):
             if isinstance(item, LTPage):
                 self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
                                  (item.pageid, bbox2str(item.bbox), item.rotate))
                 for child in item:
                     render(child)
+                if item.layout:
+                    self.outfp.write('<layout>\n')
+                    show_layout(item.layout)
+                    self.outfp.write('</layout>\n')
                 self.outfp.write('</page>\n')
             elif isinstance(item, LTLine):
                 self.outfp.write('<line linewidth="%d" bbox="%s" />\n' %
@@ -430,7 +448,8 @@ class XMLConverter(PDFConverter):
                 wmode = ''
                 if isinstance(item, LTTextBoxVertical):
                     wmode = ' wmode="vertical"'
-                self.outfp.write('<textbox id="%d" bbox="%s"%s>\n' % (item.index, bbox2str(item.bbox), wmode))
+                self.outfp.write('<textbox id="%d" bbox="%s"%s>\n' %
+                                 (item.index, bbox2str(item.bbox), wmode))
                 for child in item:
                     render(child)
                 self.outfp.write('</textbox>\n')
@@ -452,20 +471,7 @@ class XMLConverter(PDFConverter):
             else:
                 assert 0, item
             return
-        def show_layout(item):
-            if isinstance(item, LTTextBox):
-                self.outfp.write('<textbox id="%d" bbox="%s" />\n' % (item.index, bbox2str(item.bbox)))
-            elif isinstance(item, LTTextGroup):
-                self.outfp.write('<textgroup bbox="%s">\n' % bbox2str(item.bbox))
-                for child in item:
-                    show_layout(child)
-                self.outfp.write('</textgroup>\n')
-            return
         render(ltpage)
-        if ltpage.layout:
-            self.outfp.write('<layout>\n')
-            show_layout(ltpage.layout)
-            self.outfp.write('</layout>\n')
         return
 
     def close(self):
