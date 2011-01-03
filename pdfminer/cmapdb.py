@@ -240,7 +240,8 @@ class CMapDB(object):
         filename = '%s.pickle.gz' % name
         if klass.debug:
             print >>sys.stderr, 'loading:', name
-        for directory in os.path.dirname(cmap.__file__), '/usr/share/pdfminer/':
+        default_path = os.environ.get('CMAP_PATH', '/usr/share/pdfminer/')
+        for directory in (os.path.dirname(cmap.__file__), default_path):
             path = os.path.join(directory, filename)
             if os.path.exists(path):
                 gzfile = gzip.open(path)
