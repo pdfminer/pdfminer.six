@@ -266,10 +266,11 @@ class CFFFont(object):
         def __iter__(self):
             return iter( self[i] for i in xrange(len(self)) )
 
-    def __init__(self, fp0):
-        self.fp = fp0
+    def __init__(self, name, fp):
+        self.name = name
+        self.fp = fp
         # Header
-        (_major,_minor,hdrsize,self.offsize) = unpack('BBBB', self.fp.read(4))
+        (_major,_minor,hdrsize,offsize) = unpack('BBBB', self.fp.read(4))
         self.fp.read(hdrsize-4)
         # Name INDEX
         self.name_index = self.INDEX(self.fp)
@@ -281,9 +282,9 @@ class CFFFont(object):
         self.subr_index = self.INDEX(self.fp)
         # Top DICT DATA
         self.top_dict = getdict(self.dict_index[0])
-        (charset_pos,) = self.top_dict.get(15, 0)
-        (encoding_pos,) = self.top_dict.get(16, 0)
-        (charstring_pos,) = self.top_dict.get(17, 0)
+        (charset_pos,) = self.top_dict.get(15, [0])
+        (encoding_pos,) = self.top_dict.get(16, [0])
+        (charstring_pos,) = self.top_dict.get(17, [0])
         # CharStrings
         self.fp.seek(charstring_pos)
         self.charstring = self.INDEX(self.fp)
@@ -299,9 +300,18 @@ class CFFFont(object):
             for (code,gid) in enumerate(unpack('B'*n, self.fp.read(n))):
                 self.code2gid[code] = gid
                 self.gid2code[gid] = code
-        else:
+        elif format == '\x01':
             # Format 1
-            assert 0
+            (n,) = unpack('B', self.fp.read(1))
+            code = 0
+            for i in xrange(n):
+                (first,nleft) = unpack('BB', self.fp.read(2))
+                for gid in xrange(first,first+nleft+1):
+                    self.code2gid[code] = gid
+                    self.gid2code[gid] = code
+                    code += 1
+        else:
+            raise ValueError('unsupported encoding format: %r' % format)
         # Charsets
         self.name2gid = {}
         self.gid2name = {}
@@ -315,9 +325,22 @@ class CFFFont(object):
                 name = self.getstr(sid)
                 self.name2gid[name] = gid
                 self.gid2name[gid] = name
-        else:
+        elif format == '\x01':
             # Format 1
+            (n,) = unpack('B', self.fp.read(1))
+            sid = 0
+            for i in xrange(n):
+                (first,nleft) = unpack('BB', self.fp.read(2))
+                for gid in xrange(first,first+nleft+1):
+                    name = self.getstr(sid)
+                    self.name2gid[name] = gid
+                    self.gid2name[gid] = name
+                    sid += 1
+        elif format == '\x02':
+            # Format 2
             assert 0
+        else:
+            raise ValueError('unsupported charset format: %r' % format)
         #print self.code2gid
         #print self.name2gid
         #assert 0
@@ -339,7 +362,7 @@ class TrueTypeFont(object):
         self.name = name
         self.fp = fp
         self.tables = {}
-        fonttype = fp.read(4)
+        self.fonttype = fp.read(4)
         (ntables, _1, _2, _3) = unpack('>HHHH', fp.read(8))
         for _ in xrange(ntables):
             (name, tsum, offset, length) = unpack('>4sLLL', fp.read(16))
@@ -670,7 +693,9 @@ class PDFCIDFont(PDFFont):
 def main(argv):
     for fname in argv[1:]:
         fp = file(fname, 'rb')
-        font = TrueTypeFont(fname, fp)
+        #font = TrueTypeFont(fname, fp)
+        font = CFFFont(fname, fp)
+        print font
         fp.close()
     return
 
