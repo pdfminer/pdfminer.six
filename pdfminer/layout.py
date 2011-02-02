@@ -23,19 +23,19 @@ def csort(objs, key):
 class LAParams(object):
 
     def __init__(self,
-                 writing_mode='lr-tb',
                  line_overlap=0.5,
                  char_margin=2.0,
                  line_margin=0.5,
                  word_margin=0.1,
                  boxes_flow=0,
+                 detect_vertical=False,
                  all_texts=False):
-        self.writing_mode = writing_mode
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin
         self.word_margin = word_margin
         self.boxes_flow = boxes_flow
+        self.detect_vertical = detect_vertical
         self.all_texts = all_texts
         return
 
@@ -480,7 +480,8 @@ class LTLayoutContainer(LTContainer):
                     #          |<--->|
                     #        (char_margin)
                     k |= 1
-                if (obj0.is_compatible(obj1) and obj0.is_hoverlap(obj1) and 
+                if (laparams.detect_vertical and
+                    obj0.is_compatible(obj1) and obj0.is_hoverlap(obj1) and 
                     min(obj0.width, obj1.width) * laparams.line_overlap < obj0.hoverlap(obj1) and
                     obj0.vdistance(obj1) < max(obj0.height, obj1.height) * laparams.char_margin):
                     # obj0 and obj1 is vertically aligned:

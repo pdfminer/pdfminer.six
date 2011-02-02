@@ -12,11 +12,11 @@ def main(argv):
     import getopt
     def usage():
         print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output] '
-               '[-n] [-A] [-M char_margin] [-L line_margin] [-W word_margin] [-F boxes_flow] '
+               '[-n] [-A] [-V] [-M char_margin] [-L line_margin] [-W word_margin] [-F boxes_flow] '
                '[-Y layout_mode] [-O output_dir] [-t text|html|xml|tag] [-c codec] [-s scale] file ...' % argv[0])
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:nAM:L:W:F:Y:O:t:c:s:')
+        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:nAVM:L:W:F:Y:O:t:c:s:')
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
@@ -44,6 +44,7 @@ def main(argv):
         elif k == '-o': outfile = v
         elif k == '-n': laparams = None
         elif k == '-A': laparams.all_texts = True
+        elif k == '-V': laparams.detect_vertical = True
         elif k == '-M': laparams.char_margin = float(v)
         elif k == '-L': laparams.line_margin = float(v)
         elif k == '-W': laparams.word_margin = float(v)
