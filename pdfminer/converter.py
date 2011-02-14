@@ -17,9 +17,9 @@ class PDFLayoutAnalyzer(PDFTextDevice):
 
     def __init__(self, rsrcmgr, pageno=1, laparams=None):
         PDFTextDevice.__init__(self, rsrcmgr)
-        self.laparams = laparams
         self.pageno = pageno
-        self.stack = []
+        self.laparams = laparams
+        self._stack = []
         return
 
     def begin_page(self, page, ctm):
@@ -31,7 +31,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
     def end_page(self, page):
-        assert not self.stack
+        assert not self._stack
         assert isinstance(self.cur_item, LTPage)
         if self.laparams is not None:
             self.cur_item.analyze(self.laparams)
@@ -40,7 +40,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
     def begin_figure(self, name, bbox, matrix):
-        self.stack.append(self.cur_item)
+        self._stack.append(self.cur_item)
         self.cur_item = LTFigure(name, bbox, mult_matrix(matrix, self.ctm))
         return
 
@@ -49,7 +49,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         assert isinstance(self.cur_item, LTFigure)
         if self.laparams is not None:
             self.cur_item.analyze(self.laparams)
-        self.cur_item = self.stack.pop()
+        self.cur_item = self._stack.pop()
         self.cur_item.add(fig)
         return
 
@@ -222,6 +222,8 @@ class HTMLConverter(PDFConverter):
         self.pagemargin = pagemargin
         self.outdir = outdir
         self.yoffset = self.pagemargin
+        self.rect_colors = self.RECT_COLORS
+        self.text_colors = self.TEXT_COLORS
         self._font = None
         self._fontstack = []
         self.write_header()
@@ -248,7 +250,7 @@ class HTMLConverter(PDFConverter):
         return
 
     def place_rect(self, color, borderwidth, x, y, w, h):
-        color = self.RECT_COLORS.get(color)
+        color = self.rect_colors.get(color)
         if color is not None:
             self.write('<span style="position:absolute; border: %s %dpx solid; '
                        'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' %
@@ -272,7 +274,7 @@ class HTMLConverter(PDFConverter):
         return
 
     def place_text(self, color, text, x, y, size):
-        color = self.TEXT_COLORS.get(color)
+        color = self.text_colors.get(color)
         if color is not None:
             self.write('<span style="position:absolute; color:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
                        (color, x*self.scale, (self.yoffset-y)*self.scale, size*self.scale*self.fontscale))

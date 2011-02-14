@@ -191,10 +191,14 @@ class ObjIdRange(object):
 ##
 class Plane(object):
 
-    def __init__(self, objs):
+    def __init__(self, objs=None):
         self._idxs = {}
         self._xobjs = []
         self._yobjs = []
+        if objs is not None:
+            for obj in objs:
+                self.add(obj)
+                self.finish()
         return
 
     def __repr__(self):

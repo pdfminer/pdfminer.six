@@ -119,12 +119,13 @@ class PDFTextDevice(PDFDevice):
 ##
 class TagExtractor(PDFDevice):
 
-    def __init__(self, rsrcmgr, outfp, codec='utf-8'):
+    def __init__(self, rsrcmgr, outfp, codec='utf-8', debug=0):
         PDFDevice.__init__(self, rsrcmgr)
         self.outfp = outfp
         self.codec = codec
+        self.debug = debug
         self.pageno = 0
-        self.stack = []
+        self._stack = []
         return
 
     def render_string(self, textstate, seq):
@@ -158,16 +159,16 @@ class TagExtractor(PDFDevice):
             s = ''.join( ' %s="%s"' % (enc(k), enc(str(v))) for (k,v)
                          in sorted(props.iteritems()) )
         self.outfp.write('<%s%s>' % (enc(tag.name), s))
-        self.stack.append(tag)
+        self._stack.append(tag)
         return
 
     def end_tag(self):
-        assert self.stack
-        tag = self.stack.pop(-1)
+        assert self._stack
+        tag = self._stack.pop(-1)
         self.outfp.write('</%s>' % enc(tag.name))
         return
 
     def do_tag(self, tag, props=None):
         self.begin_tag(tag, props)
-        self.stack.pop(-1)
+        self._stack.pop(-1)
         return
