@@ -27,7 +27,7 @@ class LAParams(object):
                  char_margin=2.0,
                  line_margin=0.5,
                  word_margin=0.1,
-                 boxes_flow=0,
+                 boxes_flow=0.5,
                  detect_vertical=False,
                  all_texts=False):
         self.line_overlap = line_overlap
@@ -528,9 +528,6 @@ class LTLayoutContainer(LTContainer):
 
     def get_textboxes(self, laparams, lines):
         plane = Plane(lines)
-        for line in lines:
-            plane.add(line)
-        plane.finish()
         boxes = {}
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
@@ -556,35 +553,40 @@ class LTLayoutContainer(LTContainer):
         return
 
     def group_textboxes(self, laparams, boxes):
-        def dist(obj1, obj2):
+        def dist((x0,y0,x1,y1), obj1, obj2):
             """A distance function between two TextBoxes.
             
             Consider the bounding rectangle for obj1 and obj2.
             Return its area less the areas of obj1 and obj2, 
             shown as 'www' below. This value may be negative.
-            +------+..........+
-            | obj1 |wwwwwwwwww:
-            +------+www+------+
-            :wwwwwwwwww| obj2 |
-            +..........+------+
+                    +------+..........+ (x1,y1)
+                    | obj1 |wwwwwwwwww:
+                    +------+www+------+
+                    :wwwwwwwwww| obj2 |
+            (x0,y0) +..........+------+
             """
-            return ((max(obj1.x1,obj2.x1) - min(obj1.x0,obj2.x0)) * 
-                    (max(obj1.y1,obj2.y1) - min(obj1.y0,obj2.y0)) -
-                    (obj1.width*obj1.height + obj2.width*obj2.height))
+            return ((x1-x0)*(y1-y0) - obj1.width*obj1.height - obj2.width*obj2.height)
         boxes = boxes[:]
         # XXX this is slow when there're many textboxes.
         while 2 <= len(boxes):
             mindist = INF
             minpair = None
+            plane = Plane(boxes)
             boxes = csort(boxes, key=lambda obj: obj.width*obj.height)
             for i in xrange(len(boxes)):
                 for j in xrange(i+1, len(boxes)):
                     (obj1, obj2) = (boxes[i], boxes[j])
-                    d = dist(obj1, obj2)
-                    if d < mindist:
-                        mindist = d
-                        minpair = (obj1, obj2)
-            assert minpair
+                    b = (min(obj1.x0,obj2.x0), min(obj1.y0,obj2.y0),
+                         max(obj1.x1,obj2.x1), max(obj1.y1,obj2.y1))
+                    others = set(plane.find(b)).difference((obj1,obj2))
+                    d = dist(b, obj1, obj2)
+                    # disregard if there's any other object in between.
+                    if 0 < d and others:
+                        d *= 2
+                    if mindist <= d: continue
+                    mindist = d
+                    minpair = (obj1, obj2)
+            assert minpair is not None, boxes
             (obj1, obj2) = minpair
             boxes.remove(obj1)
             boxes.remove(obj2)
