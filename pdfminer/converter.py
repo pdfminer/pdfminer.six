@@ -199,21 +199,24 @@ class HTMLConverter(PDFConverter):
 
     RECT_COLORS = {
         #'char': 'green',
-        #'figure': 'yellow',
-        #'textline': 'magenta',
-        #'textbox': 'cyan',
-        #'textgroup': 'red',
+        'figure': 'yellow',
+        'textline': 'magenta',
+        'textbox': 'cyan',
+        'textgroup': 'red',
         'polygon': 'black',
         'page': 'gray',
         }
+    
     TEXT_COLORS = {
-        #'textbox': 'blue',
+        'textbox': 'blue',
         'char': 'black',
         }
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None, 
-                 scale=1, fontscale=0.7, layoutmode='normal', showpageno=True, pagemargin=50,
-                 outdir=None):
+                 scale=1, fontscale=0.7, layoutmode='normal', showpageno=True,
+                 pagemargin=50, outdir=None,
+                 rect_colors={'polygon':'black', 'page':'gray'},
+                 text_colors={'char':'black'}):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.scale = scale
         self.fontscale = fontscale
@@ -221,9 +224,12 @@ class HTMLConverter(PDFConverter):
         self.showpageno = showpageno
         self.pagemargin = pagemargin
         self.outdir = outdir
-        self.yoffset = self.pagemargin
-        self.rect_colors = self.RECT_COLORS
-        self.text_colors = self.TEXT_COLORS
+        self.rect_colors = rect_colors
+        self.text_colors = text_colors
+        if self.debug:
+            self.rect_colors.update(self.RECT_COLORS)
+            self.text_colors.update(self.TEXT_COLORS)
+        self._yoffset = self.pagemargin
         self._font = None
         self._fontstack = []
         self.write_header()
@@ -255,7 +261,7 @@ class HTMLConverter(PDFConverter):
             self.write('<span style="position:absolute; border: %s %dpx solid; '
                        'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' %
                        (color, borderwidth,
-                        x*self.scale, (self.yoffset-y)*self.scale,
+                        x*self.scale, (self._yoffset-y)*self.scale,
                         w*self.scale, h*self.scale))
         return
 
@@ -269,7 +275,7 @@ class HTMLConverter(PDFConverter):
             self.write('<img src="%s" border="%d" style="position:absolute; left:%dpx; top:%dpx;" '
                        'width="%d" height="%d" />\n' %
                        (enc(name), borderwidth,
-                        x*self.scale, (self.yoffset-y)*self.scale,
+                        x*self.scale, (self._yoffset-y)*self.scale,
                         w*self.scale, h*self.scale))
         return
 
@@ -277,7 +283,7 @@ class HTMLConverter(PDFConverter):
         color = self.text_colors.get(color)
         if color is not None:
             self.write('<span style="position:absolute; color:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
-                       (color, x*self.scale, (self.yoffset-y)*self.scale, size*self.scale*self.fontscale))
+                       (color, x*self.scale, (self._yoffset-y)*self.scale, size*self.scale*self.fontscale))
             self.write_text(text)
             self.write('</span>\n')
         return
@@ -288,7 +294,7 @@ class HTMLConverter(PDFConverter):
         self.write('<div style="position:absolute; border: %s %dpx solid; writing-mode:%s; '
                    'left:%dpx; top:%dpx; width:%dpx; height:%dpx;">' %
                    (color, borderwidth, writing_mode,
-                    x*self.scale, (self.yoffset-y)*self.scale,
+                    x*self.scale, (self._yoffset-y)*self.scale,
                     w*self.scale, h*self.scale))
         return
     
@@ -323,11 +329,11 @@ class HTMLConverter(PDFConverter):
             return
         def render(item):
             if isinstance(item, LTPage):
-                self.yoffset += item.y1
+                self._yoffset += item.y1
                 self.place_border('page', 1, item)
                 if self.showpageno:
                     self.write('<div style="position:absolute; top:%dpx;">' %
-                               ((self.yoffset-item.y1)*self.scale))
+                               ((self._yoffset-item.y1)*self.scale))
                     self.write('<a name="%s">Page %s</a></div>\n' % (item.pageid, item.pageid))
                 for child in item:
                     render(child)
@@ -373,7 +379,7 @@ class HTMLConverter(PDFConverter):
                         self.write_text(item.text)
             return
         render(ltpage)
-        self.yoffset += self.pagemargin
+        self._yoffset += self.pagemargin
         return
 
     def close(self):
