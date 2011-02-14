@@ -402,7 +402,7 @@ class LTTextGroupLRTB(LTTextGroup):
     def analyze(self, laparams):
         # reorder the objects from top-left to bottom-right.
         self._objs = csort(self._objs, key=lambda obj:
-                           (1-laparams.boxes_flow)*(obj.x0+obj.x1) -
+                           (1-laparams.boxes_flow)*(obj.x0) -
                            (1+laparams.boxes_flow)*(obj.y0+obj.y1))
         return LTTextGroup.analyze(self, laparams)
 
@@ -412,7 +412,7 @@ class LTTextGroupTBRL(LTTextGroup):
         # reorder the objects from top-right to bottom-left.
         self._objs = csort(self._objs, key=lambda obj:
                            -(1+laparams.boxes_flow)*(obj.x0+obj.x1)
-                           -(1-laparams.boxes_flow)*(obj.y0+obj.y1))
+                           -(1-laparams.boxes_flow)*(obj.y1))
         return LTTextGroup.analyze(self, laparams)
 
 
