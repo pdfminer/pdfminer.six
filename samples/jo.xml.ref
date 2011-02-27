@@ -1169,20 +1169,20 @@
 </text>
 </textline>
 </textbox>
-</page>
 <layout>
 <textgroup bbox="74.836,46.684,727.149,556.917">
-<textgroup bbox="168.846,277.813,727.149,556.917">
 <textgroup bbox="715.703,277.813,727.149,547.331">
 <textbox id="0" bbox="715.703,518.573,727.149,547.331" />
 <textbox id="1" bbox="715.703,277.813,727.149,287.399" />
 </textgroup>
+<textgroup bbox="74.836,46.684,671.450,556.917">
 <textbox id="2" bbox="168.846,346.025,671.450,556.917" />
-</textgroup>
 <textgroup bbox="74.836,46.684,638.212,287.399">
 <textbox id="3" bbox="101.735,95.679,638.212,287.399" />
 <textbox id="4" bbox="74.836,46.684,86.282,190.474" />
 </textgroup>
 </textgroup>
+</textgroup>
 </layout>
+</page>
 </pages>

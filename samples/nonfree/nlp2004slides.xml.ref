@@ -110,11 +110,11 @@
 <figure name="Im1" bbox="25.000,23.000,66.000,63.000">
 <image width="41" height="40" />
 </figure>
-</page>
 <layout>
 <textgroup bbox="62.000,62.640,734.000,523.160">
 <textbox id="0" bbox="62.000,365.240,734.000,523.160" />
 <textbox id="1" bbox="263.532,62.640,732.000,275.120" />
 </textgroup>
 </layout>
+</page>
 </pages>

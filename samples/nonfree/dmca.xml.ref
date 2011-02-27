@@ -2178,7 +2178,6 @@
 <figure name="im1" bbox="285.360,636.480,329.760,678.720">
 <image width="44" height="42" />
 </figure>
-</page>
 <layout>
 <textgroup bbox="72.000,78.240,504.108,728.163">
 <textbox id="0" bbox="138.240,695.179,473.675,728.163" />
@@ -2227,4 +2226,5 @@
 </textgroup>
 </textgroup>
 </layout>
+</page>
 </pages>

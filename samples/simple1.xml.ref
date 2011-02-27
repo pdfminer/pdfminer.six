@@ -111,7 +111,6 @@
 </text>
 </textline>
 </textbox>
-</page>
 <layout>
 <textgroup bbox="100.000,395.032,424.008,722.776">
 <textgroup bbox="100.000,595.032,324.008,722.776">
@@ -136,4 +135,5 @@
 </textgroup>
 </textgroup>
 </layout>
+</page>
 </pages>

@@ -47,6 +47,6 @@ $(CMAPDST)/to-unicode-Adobe-Korea1.pickle.gz:
 	$(CONV_CMAP) $(CMAPDST) Adobe-Korea1 $(CMAPSRC)/cid2code_Adobe_Korea1.txt cp949 euc-kr
 
 test: cmap
-	cd samples && $(MAKE) test CMP=cmp
+	cd samples && $(MAKE) test
 test_clean:
 	-cd samples && $(MAKE) clean

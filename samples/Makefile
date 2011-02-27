@@ -1,11 +1,10 @@
 # GNUMakefile for test
 
 RM=rm -f
-#CMP=cmp
 CMP=:
 PYTHON=python2
 
-PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -p1
+PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -p1 -V
 
 HTMLS=$(HTMLS_FREE) $(HTMLS_NONFREE)
 HTMLS_FREE= \
@@ -49,9 +48,10 @@ XMLS_NONFREE= \
 	nonfree/naacl06-shinyama.xml \
 	nonfree/nlp2004slides.xml
 
-all: test
+all: htmls texts xmls
 
-test: htmls texts xmls
+test:
+	$(MAKE) all CMP=cmp
 
 clean:
 	-$(RM) $(HTMLS)

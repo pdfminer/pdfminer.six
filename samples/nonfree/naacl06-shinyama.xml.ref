@@ -3707,7 +3707,6 @@
 </text>
 </textline>
 </textbox>
-</page>
 <layout>
 <textgroup bbox="72.000,119.636,540.091,766.727">
 <textgroup bbox="79.612,648.504,532.338,766.727">
@@ -3735,4 +3734,5 @@
 </textgroup>
 </textgroup>
 </layout>
+</page>
 </pages>
