@@ -51,20 +51,21 @@ class PDFObjRef(PDFObject):
 
 # resolve
 def resolve1(x):
-    '''
-    Resolve an object. If this is an array or dictionary,
-    it may still contains some indirect objects inside.
-    '''
+    """Resolves an object.
+
+    If this is an array or dictionary, it may still contains
+    some indirect objects inside.
+    """
     while isinstance(x, PDFObjRef):
         x = x.resolve()
     return x
 
 def resolve_all(x):
-    '''
-    Recursively resolve X and all the internals.
+    """Recursively resolves the given object and all the internals.
+    
     Make sure there is no indirect reference within the nested object.
     This procedure might be slow.
-    '''
+    """
     while isinstance(x, PDFObjRef):
         x = x.resolve()
     if isinstance(x, list):
@@ -75,9 +76,8 @@ def resolve_all(x):
     return x
 
 def decipher_all(decipher, objid, genno, x):
-    '''
-    Recursively decipher X.
-    '''
+    """Recursively deciphers the given object.
+    """
     if isinstance(x, str):
         return decipher(objid, genno, x)
     if isinstance(x, list):

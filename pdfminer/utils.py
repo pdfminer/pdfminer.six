@@ -11,21 +11,21 @@ from struct import pack, unpack
 MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
 
 def mult_matrix((a1,b1,c1,d1,e1,f1), (a0,b0,c0,d0,e0,f0)):
-    '''Returns the multiplication of two matrices.'''
+    """Returns the multiplication of two matrices."""
     return (a0*a1+c0*b1,    b0*a1+d0*b1,
             a0*c1+c0*d1,    b0*c1+d0*d1,
             a0*e1+c0*f1+e0, b0*e1+d0*f1+f0)
 
 def translate_matrix((a,b,c,d,e,f), (x,y)):
-    '''Translates a matrix by (x,y).'''
+    """Translates a matrix by (x,y)."""
     return (a,b,c,d,x*a+y*c+e,x*b+y*d+f)
 
 def apply_matrix_pt((a,b,c,d,e,f), (x,y)):
-    '''Applies a matrix to a point.'''
+    """Applies a matrix to a point."""
     return (a*x+c*y+e, b*x+d*y+f)
 
 def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
-    '''Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))'''
+    """Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))"""
     return (a*p+c*q, b*p+d*q)
 
 
@@ -34,7 +34,7 @@ def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
 
 # uniq
 def uniq(objs):
-    '''Eliminates duplicated elements.'''
+    """Eliminates duplicated elements."""
     done = set()
     for obj in objs:
         if obj in done: continue
@@ -44,19 +44,19 @@ def uniq(objs):
 
 # csort
 def csort(objs, key):
-    '''Order-preserving sorting function.'''
+    """Order-preserving sorting function."""
     idxs = dict( (obj,i) for (i,obj) in enumerate(objs) )
     return sorted(objs, key=lambda obj:(key(obj), idxs[obj]))
 
 # drange
 def drange(v0, v1, d):
-    '''Returns a discrete range.'''
+    """Returns a discrete range."""
     assert v0 < v1
     return xrange(int(v0)/d, int(v1+d-1)/d)
 
 # get_bound
 def get_bound(pts):
-    '''Compute a minimal rectangle that covers all the points.'''
+    """Compute a minimal rectangle that covers all the points."""
     (x0, y0, x1, y1) = (INF, INF, -INF, -INF)
     for (x,y) in pts:
         x0 = min(x0, x)
@@ -67,7 +67,7 @@ def get_bound(pts):
 
 # pick
 def pick(seq, func, maxobj=None):
-    '''Picks the object obj where func(obj) has the highest value.'''
+    """Picks the object obj where func(obj) has the highest value."""
     maxscore = None
     for obj in seq:
         score = func(obj)
@@ -77,7 +77,7 @@ def pick(seq, func, maxobj=None):
 
 # choplist
 def choplist(n, seq):
-    '''Groups every n elements of the list.'''
+    """Groups every n elements of the list."""
     r = []
     for x in seq:
         r.append(x)
@@ -88,7 +88,7 @@ def choplist(n, seq):
 
 # nunpack
 def nunpack(s, default=0):
-    '''Unpacks 1 to 4 byte integers (big endian).'''
+    """Unpacks 1 to 4 byte integers (big endian)."""
     l = len(s)
     if not l:
         return default
@@ -139,7 +139,7 @@ PDFDocEncoding = ''.join( unichr(x) for x in (
   0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff,
 ))
 def decode_text(s):
-    '''Decodes a PDFDocEncoding string to Unicode.'''
+    """Decodes a PDFDocEncoding string to Unicode."""
     if s.startswith('\xfe\xff'):
         return unicode(s[2:], 'utf-16be', 'ignore')
     else:
@@ -147,7 +147,7 @@ def decode_text(s):
 
 # enc
 def enc(x, codec='ascii'):
-    '''Encodes a string for SGML/XML/HTML'''
+    """Encodes a string for SGML/XML/HTML"""
     x = x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
     return x.encode(codec, 'xmlcharrefreplace')
 

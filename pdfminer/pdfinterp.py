@@ -124,11 +124,12 @@ class PDFGraphicState(object):
 ##
 class PDFResourceManager(object):
 
-    '''
+    """Repository of shared resources.
+    
     ResourceManager facilitates reuse of shared resources
     such as fonts and images so that large objects are not
     allocated multiple times.
-    '''
+    """
     debug = 0
 
     def __init__(self):

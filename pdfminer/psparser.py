@@ -140,9 +140,8 @@ OCT_STRING = re.compile(r'[0-7]')
 ESC_STRING = { 'b':8, 't':9, 'n':10, 'f':12, 'r':13, '(':40, ')':41, '\\':92 }
 class PSBaseParser(object):
 
-    '''
-    Most basic PostScript parser that performs only tokenization.
-    '''
+    """Most basic PostScript parser that performs only tokenization.
+    """
     BUFSIZ = 4096
 
     debug = 0
@@ -175,9 +174,8 @@ class PSBaseParser(object):
         return
 
     def seek(self, pos):
-        '''
-        Seeks the parser to the given position.
-        '''
+        """Seeks the parser to the given position.
+        """
         if 2 <= self.debug:
             print >>stderr, 'seek: %r' % pos
         self.fp.seek(pos)
@@ -203,9 +201,8 @@ class PSBaseParser(object):
         return
 
     def nextline(self):
-        '''
-        Fetches a next line that ends either with \\r or \\n.
-        '''
+        """Fetches a next line that ends either with \\r or \\n.
+        """
         linebuf = ''
         linepos = self.bufpos + self.charpos
         eol = False
@@ -234,10 +231,10 @@ class PSBaseParser(object):
         return (linepos, linebuf)
 
     def revreadlines(self):
-        '''
-        Fetches a next line backword. This is used to locate
-        the trailers at the end of a file.
-        '''
+        """Fetches a next line backword.
+
+        This is used to locate the trailers at the end of a file.
+        """
         self.fp.seek(0, 2)
         pos = self.fp.tell()
         buf = ''
@@ -534,11 +531,11 @@ class PSStackParser(PSBaseParser):
         return
 
     def nextobject(self):
-        '''
-        Yields a list of objects: keywords, literals, strings,
-        numbers, arrays and dictionaries. Arrays and dictionaries
-        are represented as Python sequence and dictionaries.
-        '''
+        """Yields a list of objects.
+
+        Returns keywords, literals, strings, numbers, arrays and dictionaries.
+        Arrays and dictionaries are represented as Python lists and dictionaries.
+        """
         while not self.results:
             (pos, token) = self.nexttoken()
             #print (pos,token), (self.curtype, self.curstack)

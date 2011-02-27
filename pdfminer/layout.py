@@ -2,7 +2,6 @@
 import sys
 from utils import apply_matrix_pt, get_bound, INF
 from utils import bbox2str, matrix2str, uniq, csort, Plane
-from pdffont import PDFUnicodeNotDefined
 
 
 ##  LAParams
