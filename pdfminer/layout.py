@@ -1,21 +1,8 @@
 #!/usr/bin/env python2
 import sys
 from utils import apply_matrix_pt, get_bound, INF
-from utils import bsearch, bbox2str, matrix2str, Plane
+from utils import bbox2str, matrix2str, uniq, csort, Plane
 from pdffont import PDFUnicodeNotDefined
-
-
-def uniq(objs):
-    done = set()
-    for obj in objs:
-        if obj in done: continue
-        done.add(obj)
-        yield obj
-    return
-
-def csort(objs, key):
-    idxs = dict( (obj,i) for (i,obj) in enumerate(objs) )
-    return sorted(objs, key=lambda obj:(key(obj), idxs[obj]))
 
 
 ##  LAParams
@@ -567,9 +554,9 @@ class LTLayoutContainer(LTContainer):
             """
             return ((x1-x0)*(y1-y0) - obj1.width*obj1.height - obj2.width*obj2.height)
         boxes = boxes[:]
-        # XXX this is slow when there're many textboxes.
+        # XXX this is very slow when there're many textboxes.
         while 2 <= len(boxes):
-            mindist = INF
+            mindist = (INF,0)
             minpair = None
             plane = Plane(boxes)
             boxes = csort(boxes, key=lambda obj: obj.width*obj.height)
@@ -582,7 +569,9 @@ class LTLayoutContainer(LTContainer):
                     d = dist(b, obj1, obj2)
                     # disregard if there's any other object in between.
                     if 0 < d and others:
-                        d *= 2
+                        d = (1,d)
+                    else:
+                        d = (0,d)
                     if mindist <= d: continue
                     mindist = d
                     minpair = (obj1, obj2)

@@ -32,6 +32,28 @@ def apply_matrix_norm((a,b,c,d,e,f), (p,q)):
 ##  Utility functions
 ##
 
+# uniq
+def uniq(objs):
+    '''Eliminates duplicated elements.'''
+    done = set()
+    for obj in objs:
+        if obj in done: continue
+        done.add(obj)
+        yield obj
+    return
+
+# csort
+def csort(objs, key):
+    '''Order-preserving sorting function.'''
+    idxs = dict( (obj,i) for (i,obj) in enumerate(objs) )
+    return sorted(objs, key=lambda obj:(key(obj), idxs[obj]))
+
+# drange
+def drange(v0, v1, d):
+    '''Returns a discrete range.'''
+    assert v0 < v1
+    return xrange(int(v0)/d, int(v1+d-1)/d)
+
 # get_bound
 def get_bound(pts):
     '''Compute a minimal rectangle that covers all the points.'''
@@ -52,28 +74,6 @@ def pick(seq, func, maxobj=None):
         if maxscore is None or maxscore < score:
             (maxscore,maxobj) = (score,obj)
     return maxobj
-
-# bsearch
-def bsearch(objs, v0):
-    '''Tries to find the closest value to v0.'''
-    nb_objs = len(objs)
-    i0 = 0
-    i1 = nb_objs
-    while i0 < i1:
-        i = (i0+i1)/2
-        (v, obj) = objs[i]
-        if v0 == v:
-            (i0,i1) = (i,i+1)
-            while 0 < i0 and objs[i0-1][0] == v0:
-                i0 -= 1
-            while i1 < nb_objs-1 and objs[i1][0] == v0:
-                i1 += 1
-            break
-        elif v0 < v:
-            i1 = i
-        else:
-            i0 = i+1
-    return (i0,i1)
 
 # choplist
 def choplist(n, seq):
@@ -191,47 +191,46 @@ class ObjIdRange(object):
 ##
 class Plane(object):
 
-    def __init__(self, objs=None):
-        self._idxs = {}
-        self._xobjs = []
-        self._yobjs = []
+    def __init__(self, objs=None, gridsize=50):
+        self._objs = {}
+        self.gridsize = gridsize
         if objs is not None:
             for obj in objs:
                 self.add(obj)
-                self.finish()
         return
 
     def __repr__(self):
         return ('<Plane objs=%r>' % list(self))
 
-    def __iter__(self):
-        return self._idxs.iterkeys()
-
+    def _getrange(self, (x0,y0,x1,y1)):
+        for y in drange(y0, y1, self.gridsize):
+            for x in drange(x0, x1, self.gridsize):
+                yield (x,y)
+        return
+    
     # add(obj): place an object in a certain area.
     def add(self, obj):
-        self._idxs[obj] = len(self._idxs)
-        self._xobjs.append((obj.x0, obj))
-        self._xobjs.append((obj.x1, obj))
-        self._yobjs.append((obj.y0, obj))
-        self._yobjs.append((obj.y1, obj))
-        return
-
-    # finish()
-    def finish(self):
-        self._xobjs.sort()
-        self._yobjs.sort()
+        for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
+            if k not in self._objs:
+                r = []
+                self._objs[k] = r
+            else:
+                r = self._objs[k]
+            r.append(obj)
         return
 
     # find(): finds objects that are in a certain area.
     def find(self, (x0,y0,x1,y1)):
-        i0 = bsearch(self._xobjs, x0)[0]
-        i1 = bsearch(self._xobjs, x1)[1]
-        xobjs = set( obj for (_,obj) in self._xobjs[i0:i1] )
-        i0 = bsearch(self._yobjs, y0)[0]
-        i1 = bsearch(self._yobjs, y1)[1]
-        yobjs = set( obj for (_,obj) in self._yobjs[i0:i1] )
-        xobjs.intersection_update(yobjs)
-        return sorted(xobjs, key=lambda obj: self._idxs[obj])
+        r = set()
+        for k in self._getrange((x0,y0,x1,y1)):
+            if k not in self._objs: continue
+            for obj in self._objs[k]:
+                if obj in r: continue
+                r.add(obj)
+                if (obj.x1 <= x0 or x1 <= obj.x0 or
+                    obj.y1 <= y0 or y1 <= obj.y0): continue
+                yield obj
+        return
 
 
 # create_bmp
@@ -239,5 +238,6 @@ def create_bmp(data, bits, width, height):
     info = pack('<IiiHHIIIIII', 40, width, height, 1, bits, 0, len(data), 0, 0, 0, 0)
     assert len(info) == 40, len(info)
     header = pack('<ccIHHI', 'B', 'M', 14+40+len(data), 0, 0, 14+40)
+    assert len(header) == 14, len(header)
     # XXX re-rasterize every line
     return header+info+data
