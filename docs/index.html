@@ -9,7 +9,7 @@
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Mon Feb 14 13:31:54 UTC 2011
+Last Modified: Sun Feb 27 10:51:18 UTC 2011
 <!-- hhmts end -->
 </div>
 
@@ -184,7 +184,7 @@ Not all characters in a PDF can be safely converted to Unicode.
 $ <strong>pdf2txt.py -o output.html samples/naacl06-shinyama.pdf</strong>
 (extract text as an HTML file whose filename is output.html)
 
-$ <strong>pdf2txt.py -c euc-jp -o output.html samples/jo.pdf</strong>
+$ <strong>pdf2txt.py -V -c euc-jp -o output.html samples/jo.pdf</strong>
 (extract a Japanese HTML file in vertical writing, CMap is required)
 
 $ <strong>pdf2txt.py -P mypassword -o output.txt secret.pdf</strong>
@@ -270,6 +270,9 @@ are M = 1.0, L = 0.3, and W = 0.2, respectively.
 <dd> Forces to perform layout analysis for all the text strings, 
 including texts contained in figures.
 <p>
+<dt> <code>-V</code> 
+<dd> Allows vertical writing detection.
+<p>
 <dt> <code>-Y <em>layout_mode</em></code> 
 <dd> Specifies how the page layout should be preserved. (Currently only applies to HTML format.)
 <ul>
@@ -354,6 +357,7 @@ no stream header is displayed for the ease of saving it to a file.
 
 <h2><a name="changes">Changes</a></h2>
 <ul>
+<li> 2010/02/27: Bugfixes and layout analysis improvements. Thanks to fujimoto.report.
 <li> 2010/12/26: A couple of bugfixes and minor improvements. Thanks to Kevin Brubeck Unhammer and Daniel Gerber.
 <li> 2010/10/17: A couple of bugfixes and minor improvements. Thanks to standardabweichung and Alastair Irving.
 <li> 2010/09/07: A minor bugfix. Thanks to Alexander Garden.
