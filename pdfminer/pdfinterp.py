@@ -263,7 +263,7 @@ class PDFContentParser(PSStackParser):
                     data += self.buf[self.charpos:]
                     self.charpos = len(self.buf)
         data = data[:-(len(target)+1)] # strip the last part
-        data = re.sub(r'(\x0d\x0a|[\x0d\x0a])', '', data)
+        data = re.sub(r'(\x0d\x0a|[\x0d\x0a])$', '', data)
         return (pos, data)
 
     def flush(self):
