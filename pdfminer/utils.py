@@ -48,6 +48,18 @@ def csort(objs, key):
     idxs = dict( (obj,i) for (i,obj) in enumerate(objs) )
     return sorted(objs, key=lambda obj:(key(obj), idxs[obj]))
 
+# fsplit
+def fsplit(pred, objs):
+    """Split a list into two classes according to the predicate."""
+    t = []
+    f = []
+    for obj in objs:
+        if pred(obj):
+            t.append(obj)
+        else:
+            f.append(obj)
+    return (t,f)
+
 # drange
 def drange(v0, v1, d):
     """Returns a discrete range."""

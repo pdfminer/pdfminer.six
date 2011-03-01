@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 import sys
-from utils import apply_matrix_pt, get_bound, INF
-from utils import bbox2str, matrix2str, uniq, csort, Plane
+from utils import INF, Plane, get_bound, uniq, csort, fsplit
+from utils import bbox2str, matrix2str, apply_matrix_pt
 
 
 ##  LAParams
@@ -51,6 +51,9 @@ class LTItem(object):
         self.height = y1-y0
         self.bbox = (x0, y0, x1, y1)
         return
+
+    def is_empty(self):
+        return self.width <= 0 or self.height <= 0
         
     def is_hoverlap(self, obj):
         assert isinstance(obj, LTItem)
@@ -414,10 +417,11 @@ class LTLayoutContainer(LTContainer):
     def analyze(self, laparams):
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
-        (textobjs, otherobjs) = self.get_textobjs(self._objs)
+        (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self._objs)
         if not textobjs: return
         textlines = list(self.get_textlines(laparams, textobjs))
         assert len(textobjs) <= sum( len(line._objs) for line in textlines )
+        (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
         textboxes = list(self.get_textboxes(laparams, textlines))
         assert len(textlines) == sum( len(box._objs) for box in textboxes )
         top = self.group_textboxes(laparams, textboxes)
@@ -431,20 +435,9 @@ class LTLayoutContainer(LTContainer):
             return i
         assign_index(top, 0)
         textboxes.sort(key=lambda box:box.index)
-        self._objs = textboxes + otherobjs
+        self._objs = textboxes + otherobjs + empties
         self.layout = top
         return self
-
-    def get_textobjs(self, objs):
-        """Split all the objects in the page into text-related objects and others."""
-        textobjs = []
-        otherobjs = []
-        for obj in objs:
-            if isinstance(obj, LTChar):
-                textobjs.append(obj)
-            else:
-                otherobjs.append(obj)
-        return (textobjs, otherobjs)
 
     def get_textlines(self, laparams, objs):
         obj0 = None
