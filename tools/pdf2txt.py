@@ -11,12 +11,12 @@ from pdfminer.layout import LAParams
 def main(argv):
     import getopt
     def usage():
-        print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output] '
+        print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output] [-C] '
                '[-n] [-A] [-V] [-M char_margin] [-L line_margin] [-W word_margin] [-F boxes_flow] '
                '[-Y layout_mode] [-O output_dir] [-t text|html|xml|tag] [-c codec] [-s scale] file ...' % argv[0])
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:nAVM:L:W:F:Y:O:t:c:s:')
+        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:CnAVM:L:W:F:Y:O:t:c:s:')
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
@@ -34,6 +34,7 @@ def main(argv):
     codec = 'utf-8'
     pageno = 1
     scale = 1
+    caching = True
     showpageno = True
     laparams = LAParams()
     for (k, v) in opts:
@@ -42,6 +43,7 @@ def main(argv):
         elif k == '-m': maxpages = int(v)
         elif k == '-P': password = v
         elif k == '-o': outfile = v
+        elif k == '-C': caching = False
         elif k == '-n': laparams = None
         elif k == '-A': laparams.all_texts = True
         elif k == '-V': laparams.detect_vertical = True
@@ -62,7 +64,7 @@ def main(argv):
     PDFPageInterpreter.debug = debug
     PDFDevice.debug = debug
     #
-    rsrcmgr = PDFResourceManager()
+    rsrcmgr = PDFResourceManager(caching=caching)
     if not outtype:
         outtype = 'text'
         if outfile:
@@ -90,7 +92,7 @@ def main(argv):
     for fname in args:
         fp = file(fname, 'rb')
         process_pdf(rsrcmgr, device, fp, pagenos, maxpages=maxpages, password=password,
-                    check_extractable=True)
+                    caching=caching, check_extractable=True)
         fp.close()
     device.close()
     outfp.close()

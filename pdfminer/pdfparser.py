@@ -296,15 +296,16 @@ class PDFDocument(object):
 
     debug = 0
 
-    def __init__(self):
+    def __init__(self, caching=True):
+        self.caching = caching
         self.xrefs = []
-        self.objs = {}
-        self.parsed_objs = {}
         self.info = []
         self.catalog = None
         self.encryption = None
         self.decipher = None
         self._parser = None
+        self._cached_objs = {}
+        self._parsed_objs = {}
         return
 
     def set_parser(self, parser):
@@ -408,9 +409,9 @@ class PDFDocument(object):
             raise PDFException('PDFDocument is not initialized')
         if 2 <= self.debug:
             print >>sys.stderr, 'getobj: objid=%r' % (objid)
-        if objid in self.objs:
+        if objid in self._cached_objs:
             genno = 0
-            obj = self.objs[objid]
+            obj = self._cached_objs[objid]
         else:
             for xref in self.xrefs:
                 try:
@@ -434,8 +435,8 @@ class PDFDocument(object):
                     if STRICT:
                         raise PDFSyntaxError('N is not defined: %r' % stream)
                     n = 0
-                if strmid in self.parsed_objs:
-                    objs = self.parsed_objs[strmid]
+                if strmid in self._parsed_objs:
+                    objs = self._parsed_objs[strmid]
                 else:
                     parser = PDFStreamParser(stream.get_data())
                     parser.set_document(self)
@@ -446,7 +447,8 @@ class PDFDocument(object):
                             objs.append(obj)
                     except PSEOF:
                         pass
-                    self.parsed_objs[strmid] = objs
+                    if self.caching:
+                        self._parsed_objs[strmid] = objs
                 genno = 0
                 i = n*2+index
                 try:
@@ -481,7 +483,8 @@ class PDFDocument(object):
                     return None
             if 2 <= self.debug:
                 print >>sys.stderr, 'register: objid=%r: %r' % (objid, obj)
-            self.objs[objid] = obj
+            if self.caching:
+                self._cached_objs[objid] = obj
         if self.decipher:
             obj = decipher_all(self.decipher, objid, genno, obj)
         return obj

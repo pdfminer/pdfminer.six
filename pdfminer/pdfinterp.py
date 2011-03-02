@@ -131,8 +131,9 @@ class PDFResourceManager(object):
     """
     debug = 0
 
-    def __init__(self):
-        self.fonts = {}
+    def __init__(self, caching=True):
+        self.caching = caching
+        self._cached_fonts = {}
         return
 
     def get_procset(self, procs):
@@ -154,8 +155,8 @@ class PDFResourceManager(object):
             return CMap()
 
     def get_font(self, objid, spec):
-        if objid and objid in self.fonts:
-            font = self.fonts[objid]
+        if objid and objid in self._cached_fonts:
+            font = self._cached_fonts[objid]
         else:
             if 2 <= self.debug:
                 print >>sys.stderr, 'get_font: create: objid=%r, spec=%r' % (objid, spec)
@@ -194,8 +195,8 @@ class PDFResourceManager(object):
                 if STRICT:
                     raise PDFFontError('Invalid Font spec: %r' % spec)
                 font = PDFType1Font(self, spec) # this is so wrong!
-            if objid:
-                self.fonts[objid] = font
+            if objid and self.caching:
+                self._cached_fonts[objid] = font
         return font
 
 
@@ -809,11 +810,11 @@ class PDFPageInterpreter(object):
 class PDFTextExtractionNotAllowed(PDFInterpreterError): pass
 
 def process_pdf(rsrcmgr, device, fp, pagenos=None, maxpages=0, password='',
-                check_extractable=True):
+                caching=True, check_extractable=True):
     # Create a PDF parser object associated with the file object.
     parser = PDFParser(fp)
     # Create a PDF document object that stores the document structure.
-    doc = PDFDocument()
+    doc = PDFDocument(caching=caching)
     # Connect the parser and document objects.
     parser.set_document(doc)
     doc.set_parser(parser)
