@@ -2,7 +2,6 @@
 import sys
 import re
 import struct
-from sys import stderr
 try:
     import hashlib as md5
 except ImportError:
@@ -96,7 +95,7 @@ class PDFXRef(PDFBaseXRef):
                 if use != 'n': continue
                 self.offsets[objid] = (int(genno), long(pos))
         if 1 <= debug:
-            print >>stderr, 'xref objects:', self.offsets
+            print >>sys.stderr, 'xref objects:', self.offsets
         self.load_trailer(parser)
         return
 
@@ -126,7 +125,7 @@ class PDFXRef(PDFBaseXRef):
                 parser.seek(pos)
                 self.load_trailer(parser)
                 if 1 <= debug:
-                    print >>stderr, 'trailer: %r' % self.get_trailer()
+                    print >>sys.stderr, 'trailer: %r' % self.get_trailer()
                 break
             m = self.PDFOBJ_CUE.match(line)
             if not m: continue
@@ -180,7 +179,7 @@ class PDFXRefStream(PDFBaseXRef):
         self.entlen = self.fl1+self.fl2+self.fl3
         self.trailer = stream.attrs
         if 1 <= debug:
-            print >>stderr, ('xref stream: objid=%s, fields=%d,%d,%d' %
+            print >>sys.stderr, ('xref stream: objid=%s, fields=%d,%d,%d' %
                              (', '.join(map(repr, self.objid_ranges)),
                               self.fl1, self.fl2, self.fl3))
         return
@@ -408,7 +407,7 @@ class PDFDocument(object):
         if not self.xrefs:
             raise PDFException('PDFDocument is not initialized')
         if 2 <= self.debug:
-            print >>stderr, 'getobj: objid=%r' % (objid)
+            print >>sys.stderr, 'getobj: objid=%r' % (objid)
         if objid in self.objs:
             genno = 0
             obj = self.objs[objid]
@@ -481,7 +480,7 @@ class PDFDocument(object):
                 except PSEOF:
                     return None
             if 2 <= self.debug:
-                print >>stderr, 'register: objid=%r: %r' % (objid, obj)
+                print >>sys.stderr, 'register: objid=%r: %r' % (objid, obj)
             self.objs[objid] = obj
         if self.decipher:
             obj = decipher_all(self.decipher, objid, genno, obj)
@@ -503,13 +502,13 @@ class PDFDocument(object):
                     tree[k] = v
             if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
                 if 1 <= self.debug:
-                    print >>stderr, 'Pages: Kids=%r' % tree['Kids']
+                    print >>sys.stderr, 'Pages: Kids=%r' % tree['Kids']
                 for c in list_value(tree['Kids']):
                     for x in search(c, tree):
                         yield x
             elif tree.get('Type') is LITERAL_PAGE:
                 if 1 <= self.debug:
-                    print >>stderr, 'Page: %r' % tree
+                    print >>sys.stderr, 'Page: %r' % tree
                 yield (objid, tree)
         if 'Pages' not in self.catalog: return
         for (pageid,tree) in search(self.catalog['Pages'], self.catalog):
@@ -672,7 +671,7 @@ class PDFParser(PSStackParser):
             self.seek(pos+objlen)
             # XXX limit objlen not to exceed object boundary
             if 2 <= self.debug:
-                print >>stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
+                print >>sys.stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
                       (pos, objlen, dic, data[:10])
             obj = PDFStream(dic, data, self.doc.decipher)
             self.push((pos, obj))
@@ -690,14 +689,14 @@ class PDFParser(PSStackParser):
         for line in self.revreadlines():
             line = line.strip()
             if 2 <= self.debug:
-                print >>stderr, 'find_xref: %r' % line
+                print >>sys.stderr, 'find_xref: %r' % line
             if line == 'startxref': break
             if line:
                 prev = line
         else:
             raise PDFNoValidXRef('Unexpected EOF')
         if 1 <= self.debug:
-            print >>stderr, 'xref found: pos=%r' % prev
+            print >>sys.stderr, 'xref found: pos=%r' % prev
         return long(prev)
 
     # read xref table
@@ -710,7 +709,7 @@ class PDFParser(PSStackParser):
         except PSEOF:
             raise PDFNoValidXRef('Unexpected EOF')
         if 2 <= self.debug:
-            print >>stderr, 'read_xref_from: start=%d, token=%r' % (start, token)
+            print >>sys.stderr, 'read_xref_from: start=%d, token=%r' % (start, token)
         if isinstance(token, int):
             # XRefStream: PDF-1.5
             self.seek(pos)
@@ -725,7 +724,7 @@ class PDFParser(PSStackParser):
         xrefs.append(xref)
         trailer = xref.get_trailer()
         if 1 <= self.debug:
-            print >>stderr, 'trailer: %r' % trailer
+            print >>sys.stderr, 'trailer: %r' % trailer
         if 'XRefStm' in trailer:
             pos = int_value(trailer['XRefStm'])
             self.read_xref_from(pos, xrefs)
@@ -745,7 +744,7 @@ class PDFParser(PSStackParser):
         except PDFNoValidXRef:
             # fallback
             if 1 <= self.debug:
-                print >>stderr, 'no xref, fallback'
+                print >>sys.stderr, 'no xref, fallback'
             self.fallback = True
             xref = PDFXRef()
             xref.load_fallback(self)

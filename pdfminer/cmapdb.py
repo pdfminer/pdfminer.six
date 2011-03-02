@@ -18,7 +18,7 @@ import os.path
 import gzip
 import cPickle as pickle
 import cmap
-from struct import pack, unpack
+import struct
 from psparser import PSStackParser
 from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF
 from psparser import PSLiteral, PSKeyword
@@ -98,7 +98,7 @@ class IdentityCMap(object):
     def decode(self, code):
         n = len(code)/2
         if n:
-            return unpack('>%dH' % n, code)
+            return struct.unpack('>%dH' % n, code)
         else:
             return ()
         
@@ -348,7 +348,7 @@ class CMapParser(PSStackParser):
                 vlen = len(svar)
                 #assert s1 <= e1
                 for i in xrange(e1-s1+1):
-                    x = sprefix+pack('>L',s1+i)[-vlen:]
+                    x = sprefix+struct.pack('>L',s1+i)[-vlen:]
                     self.cmap.add_code2cid(x, cid+i)
             return
 
@@ -382,7 +382,7 @@ class CMapParser(PSStackParser):
                     prefix = code[:-4]
                     vlen = len(var)
                     for i in xrange(e1-s1+1):
-                        x = prefix+pack('>L',base+i)[-vlen:]
+                        x = prefix+struct.pack('>L',base+i)[-vlen:]
                         self.cmap.add_cid2unichr(s1+i, x)
             return
 

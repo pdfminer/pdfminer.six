@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
+import sys
 import re
-from sys import stderr
-from struct import pack, unpack
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -159,7 +158,7 @@ class PDFResourceManager(object):
             font = self.fonts[objid]
         else:
             if 2 <= self.debug:
-                print >>stderr, 'get_font: create: objid=%r, spec=%r' % (objid, spec)
+                print >>sys.stderr, 'get_font: create: objid=%r, spec=%r' % (objid, spec)
             if STRICT:
                 if spec['Type'] is not LITERAL_FONT:
                     raise PDFFontError('Type is not /Font')
@@ -329,7 +328,7 @@ class PDFPageInterpreter(object):
                 return PREDEFINED_COLORSPACE[name]
         for (k,v) in dict_value(resources).iteritems():
             if 2 <= self.debug:
-                print >>stderr, 'Resource: %r: %r' % (k,v)
+                print >>sys.stderr, 'Resource: %r: %r' % (k,v)
             if k == 'Font':
                 for (fontid,spec) in dict_value(v).iteritems():
                     objid = None
@@ -649,7 +648,7 @@ class PDFPageInterpreter(object):
         (a,b,c,d,e,f) = self.textstate.matrix
         self.textstate.matrix = (a,b,c,d,tx*a+ty*c+e,tx*b+ty*d+f)
         self.textstate.linematrix = (0, 0)
-        #print >>stderr, 'Td(%r,%r): %r' % (tx,ty,self.textstate)
+        #print >>sys.stderr, 'Td(%r,%r): %r' % (tx,ty,self.textstate)
         return
     # text-move
     def do_TD(self, tx, ty):
@@ -657,7 +656,7 @@ class PDFPageInterpreter(object):
         self.textstate.matrix = (a,b,c,d,tx*a+ty*c+e,tx*b+ty*d+f)
         self.textstate.leading = ty
         self.textstate.linematrix = (0, 0)
-        #print >>stderr, 'TD(%r,%r): %r' % (tx,ty,self.textstate)
+        #print >>sys.stderr, 'TD(%r,%r): %r' % (tx,ty,self.textstate)
         return
     # textmatrix
     def do_Tm(self, a,b,c,d,e,f):
@@ -673,7 +672,7 @@ class PDFPageInterpreter(object):
 
     # show-pos
     def do_TJ(self, seq):
-        #print >>stderr, 'TJ(%r): %r' % (seq,self.textstate)
+        #print >>sys.stderr, 'TJ(%r): %r' % (seq,self.textstate)
         if self.textstate.font is None:
             if STRICT:
                 raise PDFInterpreterError('No font specified!')
@@ -719,7 +718,7 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
             return
         if 1 <= self.debug:
-            print >>stderr, 'Processing xobj: %r' % xobj
+            print >>sys.stderr, 'Processing xobj: %r' % xobj
         subtype = xobj.get('Subtype')
         if subtype is LITERAL_FORM and 'BBox' in xobj:
             interpreter = self.dup()
@@ -743,7 +742,7 @@ class PDFPageInterpreter(object):
 
     def process_page(self, page):
         if 1 <= self.debug:
-            print >>stderr, 'Processing page: %r' % page
+            print >>sys.stderr, 'Processing page: %r' % page
         (x0,y0,x1,y1) = page.mediabox
         if page.rotate == 90:
             ctm = (0,-1,1,0, -y0,x1)
@@ -763,7 +762,7 @@ class PDFPageInterpreter(object):
     #   This method may be called recursively.
     def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY):
         if 1 <= self.debug:
-            print >>stderr, ('render_contents: resources=%r, streams=%r, ctm=%r' %
+            print >>sys.stderr, ('render_contents: resources=%r, streams=%r, ctm=%r' %
                              (resources, streams, ctm))
         self.init_resources(resources)
         self.init_state(ctm)
@@ -790,12 +789,12 @@ class PDFPageInterpreter(object):
                     if nargs:
                         args = self.pop(nargs)
                         if 2 <= self.debug:
-                            print >>stderr, 'exec: %s %r' % (name, args)
+                            print >>sys.stderr, 'exec: %s %r' % (name, args)
                         if len(args) == nargs:
                             func(*args)
                     else:
                         if 2 <= self.debug:
-                            print >>stderr, 'exec: %s' % (name)
+                            print >>sys.stderr, 'exec: %s' % (name)
                         func()
                 else:
                     if STRICT:

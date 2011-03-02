@@ -1,12 +1,12 @@
 #!/usr/bin/env python2
 import sys
+import struct
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
 from cmapdb import CMapDB, CMapParser, FileUnicodeMap, CMap
 from encodingdb import EncodingDB, name2unicode
-from struct import pack, unpack
 from psparser import PSStackParser
 from psparser import PSSyntaxError, PSEOF
 from psparser import LIT, KWD, STRICT
@@ -154,7 +154,7 @@ def getdict(data):
                 if b0 == 28:
                     value = b1<<8 | b2
                 else:
-                    value = b1<<24 | b2<<16 | unpack('>H', fp.read(2))[0]
+                    value = b1<<24 | b2<<16 | struct.unpack('>H', fp.read(2))[0]
         stack.append(value)
     return d
 
@@ -246,7 +246,7 @@ class CFFFont(object):
         def __init__(self, fp):
             self.fp = fp
             self.offsets = []
-            (count, offsize) = unpack('>HB', self.fp.read(3))
+            (count, offsize) = struct.unpack('>HB', self.fp.read(3))
             for i in xrange(count+1):
                 self.offsets.append(nunpack(self.fp.read(offsize)))
             self.base = self.fp.tell()-1
@@ -270,7 +270,7 @@ class CFFFont(object):
         self.name = name
         self.fp = fp
         # Header
-        (_major,_minor,hdrsize,offsize) = unpack('BBBB', self.fp.read(4))
+        (_major,_minor,hdrsize,offsize) = struct.unpack('BBBB', self.fp.read(4))
         self.fp.read(hdrsize-4)
         # Name INDEX
         self.name_index = self.INDEX(self.fp)
@@ -296,16 +296,16 @@ class CFFFont(object):
         format = self.fp.read(1)
         if format == '\x00':
             # Format 0
-            (n,) = unpack('B', self.fp.read(1))
-            for (code,gid) in enumerate(unpack('B'*n, self.fp.read(n))):
+            (n,) = struct.unpack('B', self.fp.read(1))
+            for (code,gid) in enumerate(struct.unpack('B'*n, self.fp.read(n))):
                 self.code2gid[code] = gid
                 self.gid2code[gid] = code
         elif format == '\x01':
             # Format 1
-            (n,) = unpack('B', self.fp.read(1))
+            (n,) = struct.unpack('B', self.fp.read(1))
             code = 0
             for i in xrange(n):
-                (first,nleft) = unpack('BB', self.fp.read(2))
+                (first,nleft) = struct.unpack('BB', self.fp.read(2))
                 for gid in xrange(first,first+nleft+1):
                     self.code2gid[code] = gid
                     self.gid2code[gid] = code
@@ -320,17 +320,17 @@ class CFFFont(object):
         if format == '\x00':
             # Format 0
             n = self.nglyphs-1
-            for (gid,sid) in enumerate(unpack('>'+'H'*n, self.fp.read(2*n))):
+            for (gid,sid) in enumerate(struct.unpack('>'+'H'*n, self.fp.read(2*n))):
                 gid += 1
                 name = self.getstr(sid)
                 self.name2gid[name] = gid
                 self.gid2name[gid] = name
         elif format == '\x01':
             # Format 1
-            (n,) = unpack('B', self.fp.read(1))
+            (n,) = struct.unpack('B', self.fp.read(1))
             sid = 0
             for i in xrange(n):
-                (first,nleft) = unpack('BB', self.fp.read(2))
+                (first,nleft) = struct.unpack('BB', self.fp.read(2))
                 for gid in xrange(first,first+nleft+1):
                     name = self.getstr(sid)
                     self.name2gid[name] = gid
@@ -363,9 +363,9 @@ class TrueTypeFont(object):
         self.fp = fp
         self.tables = {}
         self.fonttype = fp.read(4)
-        (ntables, _1, _2, _3) = unpack('>HHHH', fp.read(8))
+        (ntables, _1, _2, _3) = struct.unpack('>HHHH', fp.read(8))
         for _ in xrange(ntables):
-            (name, tsum, offset, length) = unpack('>4sLLL', fp.read(16))
+            (name, tsum, offset, length) = struct.unpack('>4sLLL', fp.read(16))
             self.tables[name] = (offset, length)
         return
 
@@ -375,50 +375,50 @@ class TrueTypeFont(object):
         (base_offset, length) = self.tables['cmap']
         fp = self.fp
         fp.seek(base_offset)
-        (version, nsubtables) = unpack('>HH', fp.read(4))
+        (version, nsubtables) = struct.unpack('>HH', fp.read(4))
         subtables = []
         for i in xrange(nsubtables):
-            subtables.append(unpack('>HHL', fp.read(8)))
+            subtables.append(struct.unpack('>HHL', fp.read(8)))
         char2gid = {}
         # Only supports subtable type 0, 2 and 4.
         for (_1, _2, st_offset) in subtables:
             fp.seek(base_offset+st_offset)
-            (fmttype, fmtlen, fmtlang) = unpack('>HHH', fp.read(6))
+            (fmttype, fmtlen, fmtlang) = struct.unpack('>HHH', fp.read(6))
             if fmttype == 0:
-                char2gid.update(enumerate(unpack('>256B', fp.read(256))))
+                char2gid.update(enumerate(struct.unpack('>256B', fp.read(256))))
             elif fmttype == 2:
-                subheaderkeys = unpack('>256H', fp.read(512))
+                subheaderkeys = struct.unpack('>256H', fp.read(512))
                 firstbytes = [0]*8192
                 for (i,k) in enumerate(subheaderkeys):
                     firstbytes[k/8] = i
                 nhdrs = max(subheaderkeys)/8 + 1
                 hdrs = []
                 for i in xrange(nhdrs):
-                    (firstcode,entcount,delta,offset) = unpack('>HHhH', fp.read(8))
+                    (firstcode,entcount,delta,offset) = struct.unpack('>HHhH', fp.read(8))
                     hdrs.append((i,firstcode,entcount,delta,fp.tell()-2+offset))
                 for (i,firstcode,entcount,delta,pos) in hdrs:
                     if not entcount: continue
                     first = firstcode + (firstbytes[i] << 8)
                     fp.seek(pos)
                     for c in xrange(entcount):
-                        gid = unpack('>H', fp.read(2))
+                        gid = struct.unpack('>H', fp.read(2))
                         if gid:
                             gid += delta
                         char2gid[first+c] = gid
             elif fmttype == 4:
-                (segcount, _1, _2, _3) = unpack('>HHHH', fp.read(8))
+                (segcount, _1, _2, _3) = struct.unpack('>HHHH', fp.read(8))
                 segcount /= 2
-                ecs = unpack('>%dH' % segcount, fp.read(2*segcount))
+                ecs = struct.unpack('>%dH' % segcount, fp.read(2*segcount))
                 fp.read(2)
-                scs = unpack('>%dH' % segcount, fp.read(2*segcount))
-                idds = unpack('>%dh' % segcount, fp.read(2*segcount))
+                scs = struct.unpack('>%dH' % segcount, fp.read(2*segcount))
+                idds = struct.unpack('>%dh' % segcount, fp.read(2*segcount))
                 pos = fp.tell()
-                idrs = unpack('>%dH' % segcount, fp.read(2*segcount))
+                idrs = struct.unpack('>%dH' % segcount, fp.read(2*segcount))
                 for (ec,sc,idd,idr) in zip(ecs, scs, idds, idrs):
                     if idr:
                         fp.seek(pos+idr)
                         for c in xrange(sc, ec+1):
-                            char2gid[c] = (unpack('>H', fp.read(2))[0] + idd) & 0xffff
+                            char2gid[c] = (struct.unpack('>H', fp.read(2))[0] + idd) & 0xffff
                     else:
                         for c in xrange(sc, ec+1):
                             char2gid[c] = (c + idd) & 0xffff

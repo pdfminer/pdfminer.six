@@ -11,7 +11,7 @@ by Philip J. Erdelsky:
 """
 
 import sys
-from struct import pack, unpack
+import struct
 
 def KEYLENGTH(keybits): return (keybits)/8
 def RKLENGTH(keybits): return (keybits)/8+28
@@ -694,14 +694,14 @@ rcon = [
   # 128-bit blocks, Rijndael never uses more than 10 rcon values
   ]
 
-if len(pack('L',0)) == 4:
+if len(struct.pack('L',0)) == 4:
     # 32bit
-    def GETU32(x): return unpack('>L', x)[0]
-    def PUTU32(x): return pack('>L', x)
+    def GETU32(x): return struct.unpack('>L', x)[0]
+    def PUTU32(x): return struct.pack('>L', x)
 else:
     # 64bit
-    def GETU32(x): return unpack('>I', x)[0]
-    def PUTU32(x): return pack('>I', x)
+    def GETU32(x): return struct.unpack('>I', x)[0]
+    def PUTU32(x): return struct.pack('>I', x)
 
 # Expand the cipher key into the encryption key schedule.
 #

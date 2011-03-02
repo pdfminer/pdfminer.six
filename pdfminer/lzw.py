@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 import sys
-from sys import stderr
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -84,8 +83,8 @@ class LZWDecoder(object):
             x = self.feed(code)
             yield x
             if self.debug:
-                print >>stderr, ('nbits=%d, code=%d, output=%r, table=%r' %
-                                 (self.nbits, code, x, self.table[258:]))
+                print >>sys.stderr, ('nbits=%d, code=%d, output=%r, table=%r' %
+                                     (self.nbits, code, x, self.table[258:]))
         return
 
 # lzwdecode
