@@ -48,12 +48,12 @@ Python PDF parser and analyzer
 <p>
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting 
-and analyzing text data. PDFMiner allows to obtain
-the exact location of texts in a page, as well as 
+and analyzing text data. PDFMiner allows one to obtain
+the exact location of text in a page, as well as 
 other information such as fonts or lines.
 It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
-PDF parser that can be used for other purposes instead of text analysis.
+PDF parser that can be used for other purposes than text analysis.
 
 <p>
 <h3>Features</h3>
@@ -167,9 +167,9 @@ PDFMiner comes with two handy tools:
 <h3><a name="pdf2txt">pdf2txt.py</a></h3>
 <p>
 <code>pdf2txt.py</code> extracts text contents from a PDF file.
-It extracts all the texts that are to be rendered programmatically,
-ie. text represented as ASCII or Unicode strings.
-It cannot recognize texts drawn as images that would require optical character recognition.
+It extracts all the text that are to be rendered programmatically,
+i.e. text represented as ASCII or Unicode strings.
+It cannot recognize text drawn as images that would require optical character recognition.
 It also extracts the corresponding locations, font names, font sizes, writing
 direction (horizontal or vertical) for each text portion.
 You need to provide a password for protected PDF documents when its access is restricted.
@@ -199,8 +199,8 @@ By default, it prints the extracted contents to stdout in text format.
 <p>
 <dt> <code>-p <em>pageno[,pageno,...]</em></code> 
 <dd> Specifies the comma-separated list of the page numbers to be extracted. 
-Page numbers are starting from one.
-By default, it extracts texts from all the pages.
+Page numbers start at one.
+By default, it extracts text from all the pages.
 <p>
 <dt> <code>-c <em>codec</em></code> 
 <dd> Specifies the output codec.
@@ -210,7 +210,7 @@ By default, it extracts texts from all the pages.
 <ul>
 <li> <code>text</code> : TEXT format. (Default)
 <li> <code>html</code> : HTML format. Not recommended for extraction purposes because the markup is messy.
-<li> <code>xml</code> : XML format. Provides the most information available.
+<li> <code>xml</code> : XML format. Provides the most information.
 <li> <code>tag</code> : "Tagged PDF" format. A tagged PDF has its own contents annotated with
 HTML-like tags. pdf2txt tries to extract its content streams rather than inferring its text locations.
 Tags used here are defined in the PDF specification (See &sect;10.7 "<em>Tagged PDF</em>").
@@ -224,14 +224,14 @@ Currently only JPEG images are supported.
 <dt> <code>-L <em>line_margin</em></code> 
 <dt> <code>-W <em>word_margin</em></code> 
 <dd> These are the parameters used for layout analysis.
-In an actual PDF file, texts might be split into several chunks
+In an actual PDF file, text portions might be split into several chunks
 in the middle of its running, depending on the authoring software.
 Therefore, text extraction needs to splice text chunks.
 In the figure below, two text chunks whose distance is closer than
 the <em>char_margin</em> (shown as <em><font color="red">M</font></em>) is considered
 continuous and get grouped into one. Also, two lines whose distance is closer than
 the <em>line_margin</em> (<em><font color="blue">L</font></em>) is grouped
-as a text box, which is a rectangular area that contains a "cluster" of texts.
+as a text box, which is a rectangular area that contains a "cluster" of text portions.
 Furthermore, it may be required to insert blank characters (spaces) as necessary
 if the distance between two words is greater than the <em>word_margin</em> 
 (<em><font color="green">W</font></em>), as a blank between words might not be
@@ -272,7 +272,7 @@ This will reduce the memory consumption but also slows down the process.
 <p>
 <dt> <code>-A</code> 
 <dd> Forces to perform layout analysis for all the text strings, 
-including texts contained in figures.
+including text contained in figures.
 <p>
 <dt> <code>-V</code> 
 <dd> Allows vertical writing detection.
@@ -333,7 +333,7 @@ Comma-separated IDs, or multiple <code>-i</code> options are accepted.
 <dt> <code>-p <em>pageno,pageno, ...</em></code> 
 <dd> Specifies the page number to be extracted.
 Comma-separated page numbers, or multiple <code>-p</code> options are accepted.
-Note that page numbers start from one, not zero.
+Note that page numbers start at one, not zero.
 <p>
 <dt> <code>-r</code> (raw)
 <dt> <code>-b</code> (binary)
