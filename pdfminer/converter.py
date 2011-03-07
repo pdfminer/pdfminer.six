@@ -192,6 +192,14 @@ class TextConverter(PDFConverter):
         self.write_text('\f')
         return
 
+    # Some dummy functions to save memory/CPU when all that is wanted is text.
+    # This stops all the image and drawing ouput from being recorded and taking
+    # up RAM.
+    def render_image(self, name, stream):
+        pass
+    def paint_path(self, gstate, stroke, fill, evenodd, path):
+        pass
+
 
 ##  HTMLConverter
 ##
