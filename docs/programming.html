@@ -9,7 +9,7 @@
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Sun Oct 17 09:18:29 UTC 2010
+Last Modified: Wed Apr 20 12:57:57 UTC 2011
 <!-- hhmts end -->
 </div>
 
@@ -137,7 +137,7 @@ these objects.
 <dt> <code>LTPage</code>
 <dd> Represents an entire page. May contain child objects like
 <code>LTTextBox</code>, <code>LTFigure</code>, <code>LTImage</code>, <code>LTRect</code>, 
-<code>LTPolygon</code> and <code>LTLine</code>.
+<code>LTCurve</code> and <code>LTLine</code>.
 
 <dt> <code>LTTextBox</code>
 <dd> Represents a group of text chunks that can be contained in a rectangular area.
@@ -169,15 +169,15 @@ in JPEG or other formats, but currently PDFMiner does not
 pay much attention to graphical objects.
 
 <dt> <code>LTLine</code>
-<dd> Represents a single straight line shown in a page. 
+<dd> Represents a single straight line.
 Could be used for separating text or figures.
 
 <dt> <code>LTRect</code>
-<dd> Represents a rectangle shown in a page. 
+<dd> Represents a rectangle.
 Could be used for framing another pictures or figures.
 
-<dt> <code>LTPolygon</code>
-<dd> Represents a polygon in a page. 
+<dt> <code>LTCurve</code>
+<dd> Represents a generic bezier curve.
 </dl>
 
 <p>
