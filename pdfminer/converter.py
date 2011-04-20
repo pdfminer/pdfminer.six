@@ -69,8 +69,10 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             (_,x1,y1) = path[1]
             (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
             (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
-            self.cur_item.add(LTLine(gstate.linewidth, (x0,y0), (x1,y1)))
-        elif shape == 'mlllh':
+            if x0 == x1 or y0 == y1:
+                self.cur_item.add(LTLine(gstate.linewidth, (x0,y0), (x1,y1)))
+                return
+        if shape == 'mlllh':
             # rectangle
             (_,x0,y0) = path[0]
             (_,x1,y1) = path[1]
@@ -83,13 +85,13 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
                 (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
                 self.cur_item.add(LTRect(gstate.linewidth, (x0,y0,x2,y2)))
-        else:
-            # other polygon
-            pts = []
-            for p in path:
-                for i in xrange(1, len(p), 2):
-                    pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
-            self.cur_item.add(LTPolygon(gstate.linewidth, pts))
+                return
+        # other shapes
+        pts = []
+        for p in path:
+            for i in xrange(1, len(p), 2):
+                pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
+        self.cur_item.add(LTPolygon(gstate.linewidth, pts))
         return
 
     def render_char(self, matrix, font, fontsize, scaling, rise, cid):
