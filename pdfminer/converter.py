@@ -4,7 +4,7 @@ from pdfdevice import PDFDevice, PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
 from pdftypes import LITERALS_DCT_DECODE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
-from layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTPolygon
+from layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve
 from layout import LTFigure, LTImage, LTChar, LTTextLine
 from layout import LTTextBox, LTTextBoxVertical, LTTextGroup
 from utils import apply_matrix_pt, mult_matrix
@@ -91,7 +91,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         for p in path:
             for i in xrange(1, len(p), 2):
                 pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
-        self.cur_item.add(LTPolygon(gstate.linewidth, pts))
+        self.cur_item.add(LTCurve(gstate.linewidth, pts))
         return
 
     def render_char(self, matrix, font, fontsize, scaling, rise, cid):
@@ -213,7 +213,7 @@ class HTMLConverter(PDFConverter):
         'textline': 'magenta',
         'textbox': 'cyan',
         'textgroup': 'red',
-        'polygon': 'black',
+        'curve': 'black',
         'page': 'gray',
         }
     
@@ -225,7 +225,7 @@ class HTMLConverter(PDFConverter):
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None, 
                  scale=1, fontscale=0.7, layoutmode='normal', showpageno=True,
                  pagemargin=50, outdir=None,
-                 rect_colors={'polygon':'black', 'page':'gray'},
+                 rect_colors={'curve':'black', 'page':'gray'},
                  text_colors={'char':'black'}):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.scale = scale
@@ -349,8 +349,8 @@ class HTMLConverter(PDFConverter):
                     render(child)
                 if item.layout:
                     show_layout(item.layout)
-            elif isinstance(item, LTPolygon):
-                self.place_border('polygon', 1, item)
+            elif isinstance(item, LTCurve):
+                self.place_border('curve', 1, item)
             elif isinstance(item, LTFigure):
                 self.place_border('figure', 1, item)
                 for child in item:
@@ -448,8 +448,8 @@ class XMLConverter(PDFConverter):
             elif isinstance(item, LTRect):
                 self.outfp.write('<rect linewidth="%d" bbox="%s" />\n' %
                                  (item.linewidth, bbox2str(item.bbox)))
-            elif isinstance(item, LTPolygon):
-                self.outfp.write('<polygon linewidth="%d" bbox="%s" pts="%s"/>\n' %
+            elif isinstance(item, LTCurve):
+                self.outfp.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
                                  (item.linewidth, bbox2str(item.bbox), item.get_pts()))
             elif isinstance(item, LTFigure):
                 self.outfp.write('<figure name="%s" bbox="%s">\n' %

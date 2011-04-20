@@ -92,9 +92,9 @@ class LTItem(object):
             return 0
 
 
-##  LTPolygon
+##  LTCurve
 ##
-class LTPolygon(LTItem):
+class LTCurve(LTItem):
 
     def __init__(self, linewidth, pts):
         self.pts = pts
@@ -108,19 +108,19 @@ class LTPolygon(LTItem):
 
 ##  LTLine
 ##
-class LTLine(LTPolygon):
+class LTLine(LTCurve):
 
     def __init__(self, linewidth, p0, p1):
-        LTPolygon.__init__(self, linewidth, [p0, p1])
+        LTCurve.__init__(self, linewidth, [p0, p1])
         return
 
 
 ##  LTRect
 ##
-class LTRect(LTPolygon):
+class LTRect(LTCurve):
 
     def __init__(self, linewidth, (x0,y0,x1,y1)):
-        LTPolygon.__init__(self, linewidth, [(x0,y0), (x1,y0), (x1,y1), (x0,y1)])
+        LTCurve.__init__(self, linewidth, [(x0,y0), (x1,y0), (x1,y1), (x0,y1)])
         return
 
 
