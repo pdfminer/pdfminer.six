@@ -57,8 +57,8 @@ def main(argv):
         elif k == '-c': codec = v
         elif k == '-s': scale = float(v)
     #
-    #PDFDocument.debug = debug
-    #PDFParser.debug = debug
+    PDFDocument.debug = debug
+    PDFParser.debug = debug
     CMapDB.debug = debug
     PDFResourceManager.debug = debug
     PDFPageInterpreter.debug = debug
