@@ -220,7 +220,7 @@ class Plane(object):
                 yield (x,y)
         return
     
-    # add(obj): place an object in a certain area.
+    # add(obj): place an object.
     def add(self, obj):
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
             if k not in self._objs:
@@ -229,6 +229,15 @@ class Plane(object):
             else:
                 r = self._objs[k]
             r.append(obj)
+        return
+
+    # remove(obj): displace an object.
+    def remove(self, obj):
+        for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
+            try:
+                self._objs[k].remove(obj)
+            except (KeyError, ValueError):
+                pass
         return
 
     # find(): finds objects that are in a certain area.

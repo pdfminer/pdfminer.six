@@ -546,11 +546,11 @@ class LTLayoutContainer(LTContainer):
             """
             return ((x1-x0)*(y1-y0) - obj1.width*obj1.height - obj2.width*obj2.height)
         boxes = boxes[:]
+        plane = Plane(boxes)
         # XXX this is very slow when there're many textboxes.
         while 2 <= len(boxes):
             mindist = (INF,0)
             minpair = None
-            plane = Plane(boxes)
             boxes = csort(boxes, key=lambda obj: obj.width*obj.height)
             for i in xrange(len(boxes)):
                 for j in xrange(i+1, len(boxes)):
@@ -571,6 +571,8 @@ class LTLayoutContainer(LTContainer):
             (obj1, obj2) = minpair
             boxes.remove(obj1)
             boxes.remove(obj2)
+            plane.remove(obj1)
+            plane.remove(obj2)
             if (isinstance(obj1, LTTextBoxVertical) or
                 isinstance(obj2, LTTextBoxVertical) or 
                 isinstance(obj1, LTTextGroupTBRL) or
@@ -578,7 +580,9 @@ class LTLayoutContainer(LTContainer):
                 group = LTTextGroupTBRL([obj1, obj2])
             else:
                 group = LTTextGroupLRTB([obj1, obj2])
-            boxes.append(group.analyze(laparams))
+            group.analyze(laparams)
+            boxes.append(group)
+            plane.add(group)
         assert len(boxes) == 1
         return boxes.pop()
     
