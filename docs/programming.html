@@ -9,7 +9,7 @@
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Wed Apr 20 12:57:57 UTC 2011
+Last Modified: Sat May 14 16:36:12 UTC 2011
 <!-- hhmts end -->
 </div>
 
@@ -144,17 +144,19 @@ these objects.
 Note that this box is created by geometric analysis and does not necessarily
 represents a logical boundary of the text. 
 It contains a list of <code>LTTextLine</code> objects.
+<code>get_text()</code> method returns the text content.
 
 <dt> <code>LTTextLine</code>
 <dd> Contains a list of <code>LTChar</code> objects that represent
 a single text line. The characters are aligned either horizontaly
 or vertically, depending on the text's writing mode.
+<code>get_text()</code> method returns the text content.
 
 <dt> <code>LTChar</code>
-<dt> <code>LTText</code>
-<dd> These objects represent an actual letter in the text as a Unicode string.
+<dt> <code>LTAnon</code>
+<dd> Represent an actual letter in the text as a Unicode string.
 Note that, while a <code>LTChar</code> object has actual boundaries,
-<code>LTText</code> objects does not, as these are "virtual" characters,
+<code>LTAnon</code> objects does not, as these are "virtual" characters,
 inserted by a layout analyzer according to the relationship between two characters
 (e.g. a space).
 
