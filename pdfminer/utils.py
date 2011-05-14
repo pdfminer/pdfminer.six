@@ -43,10 +43,10 @@ def uniq(objs):
     return
 
 # csort
-def csort(objs, key):
+def csort(objs, key=lambda x:x):
     """Order-preserving sorting function."""
     idxs = dict( (obj,i) for (i,obj) in enumerate(objs) )
-    return sorted(objs, key=lambda obj:(key(obj), idxs[obj]))
+    return sorted(objs, key=lambda obj: (key(obj), idxs[obj]))
 
 # fsplit
 def fsplit(pred, objs):
@@ -204,7 +204,7 @@ class ObjIdRange(object):
 class Plane(object):
 
     def __init__(self, objs=None, gridsize=50):
-        self._objs = set()
+        self._objs = []
         self._grid = {}
         self.gridsize = gridsize
         if objs is not None:
@@ -239,7 +239,7 @@ class Plane(object):
             else:
                 r = self._grid[k]
             r.append(obj)
-        self._objs.add(obj)
+        self._objs.append(obj)
         return
 
     # remove(obj): displace an object.
@@ -254,7 +254,6 @@ class Plane(object):
 
     # find(): finds objects that are in a certain area.
     def find(self, (x0,y0,x1,y1)):
-        r = set()
         done = set()
         for k in self._getrange((x0,y0,x1,y1)):
             if k not in self._grid: continue
@@ -263,8 +262,8 @@ class Plane(object):
                 done.add(obj)
                 if (obj.x1 <= x0 or x1 <= obj.x0 or
                     obj.y1 <= y0 or y1 <= obj.y0): continue
-                r.add(obj)
-        return r
+                yield obj
+        return
 
 
 # create_bmp

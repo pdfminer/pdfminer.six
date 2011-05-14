@@ -459,30 +459,6 @@ class LTLayoutContainer(LTContainer):
         self.groups = None
         return
         
-    def analyze(self, laparams):
-        # textobjs is a list of LTChar objects, i.e.
-        # it has all the individual characters in the page.
-        (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self._objs)
-        for obj in otherobjs:
-            obj.analyze(laparams)
-        if not textobjs: return
-        textlines = list(self.get_textlines(laparams, textobjs))
-        assert len(textobjs) <= sum( len(line._objs) for line in textlines )
-        (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
-        for obj in empties:
-            obj.analyze(laparams)
-        textboxes = list(self.get_textboxes(laparams, textlines))
-        assert len(textlines) == sum( len(box._objs) for box in textboxes )
-        groups = self.group_textboxes(laparams, textboxes)
-        assigner = IndexAssigner()
-        for group in groups:
-            group.analyze(laparams)
-            assigner.run(group)
-        textboxes.sort(key=lambda box:box.index)
-        self._objs = textboxes + otherobjs + empties
-        self.groups = groups
-        return
-
     def get_textlines(self, laparams, objs):
         obj0 = None
         line = None
@@ -593,6 +569,15 @@ class LTLayoutContainer(LTContainer):
             x1 = max(obj1.x1,obj2.x1)
             y1 = max(obj1.y1,obj2.y1)
             return ((x1-x0)*(y1-y0) - obj1.width*obj1.height - obj2.width*obj2.height)
+        def isany(obj1, obj2):
+            """Check if there's any other object between obj1 and obj2.
+            """
+            x0 = min(obj1.x0,obj2.x0)
+            y0 = min(obj1.y0,obj2.y0)
+            x1 = max(obj1.x1,obj2.x1)
+            y1 = max(obj1.y1,obj2.y1)
+            objs = set(plane.find((x0,y0,x1,y1)))
+            return objs.difference((obj1,obj2))
         # XXX this still takes O(n^2)  :(
         dists = []
         for i in xrange(len(boxes)):
@@ -604,11 +589,7 @@ class LTLayoutContainer(LTContainer):
         plane = Plane(boxes)
         while dists:
             (c,d,obj1,obj2) = dists.pop(0)
-            x0 = min(obj1.x0,obj2.x0)
-            y0 = min(obj1.y0,obj2.y0)
-            x1 = max(obj1.x1,obj2.x1)
-            y1 = max(obj1.y1,obj2.y1)
-            if c == 0 and plane.find((x0,y0,x1,y1)).difference((obj1,obj2)):
+            if c == 0 and isany(obj1, obj2):
                 dists.append((1,d,obj1,obj2))
                 continue
             if (isinstance(obj1, LTTextBoxVertical) or
@@ -620,7 +601,8 @@ class LTLayoutContainer(LTContainer):
                 group = LTTextGroupLRTB([obj1,obj2])
             plane.remove(obj1)
             plane.remove(obj2)
-            dists = [ (c,d,o1,o2) for (c,d,o1,o2) in dists if o1 not in (obj1,obj2) and o2 not in (obj1,obj2) ]
+            dists = [ (c,d,o1,o2) for (c,d,o1,o2) in dists
+                      if o1 in plane and o2 in plane ]
             for other in plane:
                 dists.append((0, dist(group,other), group, other))
             dists.sort()
@@ -628,6 +610,30 @@ class LTLayoutContainer(LTContainer):
         assert len(plane) == 1
         return list(plane)
     
+    def analyze(self, laparams):
+        # textobjs is a list of LTChar objects, i.e.
+        # it has all the individual characters in the page.
+        (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self._objs)
+        for obj in otherobjs:
+            obj.analyze(laparams)
+        if not textobjs: return
+        textlines = list(self.get_textlines(laparams, textobjs))
+        assert len(textobjs) <= sum( len(line._objs) for line in textlines )
+        (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
+        for obj in empties:
+            obj.analyze(laparams)
+        textboxes = list(self.get_textboxes(laparams, textlines))
+        assert len(textlines) == sum( len(box._objs) for box in textboxes )
+        groups = self.group_textboxes(laparams, textboxes)
+        assigner = IndexAssigner()
+        for group in groups:
+            group.analyze(laparams)
+            assigner.run(group)
+        textboxes.sort(key=lambda box:box.index)
+        self._objs = textboxes + otherobjs + empties
+        self.groups = groups
+        return
+
 
 ##  LTFigure
 ##
