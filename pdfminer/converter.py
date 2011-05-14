@@ -183,7 +183,7 @@ class TextConverter(PDFConverter):
                 for child in item:
                     render(child)
             elif isinstance(item, LTText):
-                self.write_text(item.text)
+                self.write_text(item.get_text())
             if isinstance(item, LTTextBox):
                 self.write_text('\n')
         if self.showpageno:
@@ -368,7 +368,7 @@ class HTMLConverter(PDFConverter):
                             render(child)
                     elif isinstance(item, LTChar):
                         self.place_border('char', 1, item)
-                        self.place_text('char', item.text, item.x0, item.y1, item.size)
+                        self.place_text('char', item.get_text(), item.x0, item.y1, item.size)
                 else:
                     if isinstance(item, LTTextLine):
                         for child in item:
@@ -382,9 +382,9 @@ class HTMLConverter(PDFConverter):
                             render(child)
                         self.end_textbox('textbox')
                     elif isinstance(item, LTChar):
-                        self.put_text(item.text, item.fontname, item.size)
+                        self.put_text(item.get_text(), item.fontname, item.size)
                     elif isinstance(item, LTText):
-                        self.write_text(item.text)
+                        self.write_text(item.get_text())
             return
         render(ltpage)
         self._yoffset += self.pagemargin
@@ -472,10 +472,10 @@ class XMLConverter(PDFConverter):
             elif isinstance(item, LTChar):
                 self.outfp.write('<text font="%s" bbox="%s" size="%.3f">' %
                                  (enc(item.fontname), bbox2str(item.bbox), item.size))
-                self.write_text(item.text)
+                self.write_text(item.get_text())
                 self.outfp.write('</text>\n')
             elif isinstance(item, LTText):
-                self.outfp.write('<text>%s</text>\n' % item.text)
+                self.outfp.write('<text>%s</text>\n' % item.get_text())
             elif isinstance(item, LTImage):
                 if self.outdir:
                     name = self.write_image(item)
