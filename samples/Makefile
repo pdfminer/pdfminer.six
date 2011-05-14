@@ -65,13 +65,13 @@ xmls: $(XMLS)
 .SUFFIXES: .pdf .html .xml .txt
 
 .pdf.html:
-	$(PDF2TXT) -t html $< > $@
+	$(PDF2TXT) -t html -o $@ $<
 	$(CMP) $@ $@.ref
 
 .pdf.xml:
-	$(PDF2TXT) -t xml $< > $@
+	$(PDF2TXT) -t xml -o $@ $<
 	$(CMP) $@ $@.ref
 
 .pdf.txt:
-	$(PDF2TXT) -t text $< > $@
+	$(PDF2TXT) -t text -o $@ $<
 	$(CMP) $@ $@.ref

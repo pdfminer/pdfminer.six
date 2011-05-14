@@ -58,14 +58,14 @@
 </textbox>
 <layout>
 <textgroup bbox="0.000,215.032,344.016,769.552">
-<textgroup bbox="194.688,215.032,344.016,705.760">
 <textgroup bbox="241.344,215.032,344.016,266.776">
 <textbox id="0" bbox="281.352,239.032,344.016,266.776" />
 <textbox id="1" bbox="241.344,215.032,281.352,242.776" />
 </textgroup>
+<textgroup bbox="0.000,215.032,242.688,769.552">
 <textbox id="2" bbox="194.688,215.032,242.688,705.760" />
-</textgroup>
 <textbox id="3" bbox="0.000,690.064,218.688,769.552" />
+</textgroup>
 </textgroup>
 </layout>
 </page>
