@@ -47,8 +47,6 @@ class PDFLayoutAnalyzer(PDFTextDevice):
     def end_figure(self, _):
         fig = self.cur_item
         assert isinstance(self.cur_item, LTFigure)
-        if self.laparams is not None:
-            self.cur_item.analyze(self.laparams)
         self.cur_item = self._stack.pop()
         self.cur_item.add(fig)
         return
