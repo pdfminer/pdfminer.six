@@ -91,6 +91,10 @@ class LTItem(object):
         else:
             return 0
 
+    def analyze(self, laparams):
+        """Perform the layout analysis."""
+        return
+
 
 ##  LTCurve
 ##
@@ -165,7 +169,8 @@ class LTText(object):
 ##
 class LTAnon(LTText):
 
-    pass
+    def analyze(self, laparams):
+        return
 
 
 ##  LTChar
@@ -253,6 +258,11 @@ class LTContainer(LTItem):
             self.add(obj)
         return
 
+    def analyze(self, laparams):
+        for obj in self._objs:
+            obj.analyze(laparams)
+        return
+    
 
 ##  LTExpandableContainer
 ##
@@ -267,10 +277,6 @@ class LTExpandableContainer(LTContainer):
         self.set_bbox((min(self.x0, obj.x0), min(self.y0, obj.y0),
                        max(self.x1, obj.x1), max(self.y1, obj.y1)))
         return
-
-    def analyze(self, laparams):
-        """Perform the layout analysis."""
-        return self
 
 
 ##  LTTextLine
@@ -287,9 +293,10 @@ class LTTextLine(LTExpandableContainer, LTText):
                 (self.__class__.__name__, bbox2str(self.bbox), self.text))
 
     def analyze(self, laparams):
+        LTExpandableContainer.analyze(self, laparams)
         LTContainer.add(self, LTAnon('\n'))
         self.text = ''.join( obj.text for obj in self if isinstance(obj, LTText) )
-        return LTExpandableContainer.analyze(self, laparams)
+        return
 
     def find_neighbors(self, plane, ratio):
         raise NotImplementedError
@@ -347,22 +354,25 @@ class LTTextBox(LTExpandableContainer):
     def __init__(self):
         LTExpandableContainer.__init__(self)
         self.index = None
+        self.text = None
         return
 
     def __repr__(self):
-        return ('<%s(%s) %s %r...>' %
+        return ('<%s(%s) %s %r>' %
                 (self.__class__.__name__, self.index,
-                 bbox2str(self.bbox), self.text[:20]))
+                 bbox2str(self.bbox), self.text))
 
     def analyze(self, laparams):
+        LTExpandableContainer.analyze(self, laparams)
         self.text = ''.join( obj.text for obj in self if isinstance(obj, LTTextLine) )
-        return LTExpandableContainer.analyze(self, laparams)
+        return
 
 class LTTextBoxHorizontal(LTTextBox):
     
     def analyze(self, laparams):
+        LTTextBox.analyze(self, laparams)
         self._objs = csort(self._objs, key=lambda obj: -obj.y1)
-        return LTTextBox.analyze(self, laparams)
+        return
 
     def get_writing_mode(self):
         return 'lr-tb'
@@ -370,8 +380,9 @@ class LTTextBoxHorizontal(LTTextBox):
 class LTTextBoxVertical(LTTextBox):
 
     def analyze(self, laparams):
+        LTTextBox.analyze(self, laparams)
         self._objs = csort(self._objs, key=lambda obj: -obj.x1)
-        return LTTextBox.analyze(self, laparams)
+        return
 
     def get_writing_mode(self):
         return 'tb-rl'
@@ -389,20 +400,22 @@ class LTTextGroup(LTExpandableContainer):
 class LTTextGroupLRTB(LTTextGroup):
     
     def analyze(self, laparams):
+        LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-left to bottom-right.
         self._objs = csort(self._objs, key=lambda obj:
                            (1-laparams.boxes_flow)*(obj.x0) -
                            (1+laparams.boxes_flow)*(obj.y0+obj.y1))
-        return LTTextGroup.analyze(self, laparams)
+        return
 
 class LTTextGroupTBRL(LTTextGroup):
     
     def analyze(self, laparams):
+        LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-right to bottom-left.
         self._objs = csort(self._objs, key=lambda obj:
                            -(1+laparams.boxes_flow)*(obj.x0+obj.x1)
                            -(1-laparams.boxes_flow)*(obj.y1))
-        return LTTextGroup.analyze(self, laparams)
+        return
 
 
 ##  LTLayoutContainer
@@ -418,13 +431,18 @@ class LTLayoutContainer(LTContainer):
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
         (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self._objs)
+        for obj in otherobjs:
+            obj.analyze(laparams)
         if not textobjs: return
         textlines = list(self.get_textlines(laparams, textobjs))
         assert len(textobjs) <= sum( len(line._objs) for line in textlines )
         (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
+        for obj in empties:
+            obj.analyze(laparams)
         textboxes = list(self.get_textboxes(laparams, textlines))
         assert len(textlines) == sum( len(box._objs) for box in textboxes )
         top = self.group_textboxes(laparams, textboxes)
+        top.analyze(laparams)
         def assign_index(obj, i):
             if isinstance(obj, LTTextBox):
                 obj.index = i
@@ -437,7 +455,7 @@ class LTLayoutContainer(LTContainer):
         textboxes.sort(key=lambda box:box.index)
         self._objs = textboxes + otherobjs + empties
         self.layout = top
-        return self
+        return
 
     def get_textlines(self, laparams, objs):
         obj0 = None
@@ -482,7 +500,7 @@ class LTLayoutContainer(LTContainer):
                      (k & 2 and isinstance(line, LTTextLineVertical)) ):
                     line.add(obj1)
                 elif line is not None:
-                    yield line.analyze(laparams)
+                    yield line
                     line = None
                 else:
                     if k == 2:
@@ -496,13 +514,13 @@ class LTLayoutContainer(LTContainer):
                     else:
                         line = LTTextLineHorizontal(laparams.word_margin)
                         line.add(obj0)
-                        yield line.analyze(laparams)
+                        yield line
                         line = None
             obj0 = obj1
         if line is None:
             line = LTTextLineHorizontal(laparams.word_margin)
             line.add(obj0)
-        yield line.analyze(laparams)
+        yield line
         return
 
     def get_textboxes(self, laparams, lines):
@@ -528,11 +546,11 @@ class LTLayoutContainer(LTContainer):
             box = boxes[line]
             if box in done: continue
             done.add(box)
-            yield box.analyze(laparams)
+            yield box
         return
 
     def group_textboxes(self, laparams, boxes):
-        def dist((x0,y0,x1,y1), obj1, obj2):
+        def dist(obj1, obj2):
             """A distance function between two TextBoxes.
             
             Consider the bounding rectangle for obj1 and obj2.
@@ -544,47 +562,45 @@ class LTLayoutContainer(LTContainer):
                     :wwwwwwwwww| obj2 |
             (x0,y0) +..........+------+
             """
+            x0 = min(obj1.x0,obj2.x0)
+            y0 = min(obj1.y0,obj2.y0)
+            x1 = max(obj1.x1,obj2.x1)
+            y1 = max(obj1.y1,obj2.y1)
             return ((x1-x0)*(y1-y0) - obj1.width*obj1.height - obj2.width*obj2.height)
-        boxes = boxes[:]
+        # XXX this still takes O(n^2)  :(
+        dists = []
+        for i in xrange(len(boxes)):
+            obj1 = boxes[i]
+            for j in xrange(i+1, len(boxes)):
+                obj2 = boxes[j]
+                dists.append((0, dist(obj1, obj2), obj1, obj2))
+        dists.sort()
         plane = Plane(boxes)
-        # XXX this is very slow when there're many textboxes.
-        while 2 <= len(boxes):
-            mindist = (INF,0)
-            minpair = None
-            boxes = csort(boxes, key=lambda obj: obj.width*obj.height)
-            for i in xrange(len(boxes)):
-                for j in xrange(i+1, len(boxes)):
-                    (obj1, obj2) = (boxes[i], boxes[j])
-                    b = (min(obj1.x0,obj2.x0), min(obj1.y0,obj2.y0),
-                         max(obj1.x1,obj2.x1), max(obj1.y1,obj2.y1))
-                    others = set(plane.find(b)).difference((obj1,obj2))
-                    d = dist(b, obj1, obj2)
-                    # disregard if there's any other object in between.
-                    if 0 < d and others:
-                        d = (1,d)
-                    else:
-                        d = (0,d)
-                    if mindist <= d: continue
-                    mindist = d
-                    minpair = (obj1, obj2)
-            assert minpair is not None, boxes
-            (obj1, obj2) = minpair
-            boxes.remove(obj1)
-            boxes.remove(obj2)
+        while dists:
+            (c,d,obj1,obj2) = dists.pop(0)
+            x0 = min(obj1.x0,obj2.x0)
+            y0 = min(obj1.y0,obj2.y0)
+            x1 = max(obj1.x1,obj2.x1)
+            y1 = max(obj1.y1,obj2.y1)
+            if c == 0 and plane.find((x0,y0,x1,y1)).difference((obj1,obj2)):
+                dists.append((1,d,obj1,obj2))
+                continue
+            if (isinstance(obj1, LTTextBoxVertical) or
+                isinstance(obj1, LTTextGroupTBRL) or
+                isinstance(obj2, LTTextBoxVertical) or
+                isinstance(obj2, LTTextGroupTBRL)):
+                group = LTTextGroupTBRL([obj1,obj2])
+            else:
+                group = LTTextGroupLRTB([obj1,obj2])
             plane.remove(obj1)
             plane.remove(obj2)
-            if (isinstance(obj1, LTTextBoxVertical) or
-                isinstance(obj2, LTTextBoxVertical) or 
-                isinstance(obj1, LTTextGroupTBRL) or
-                isinstance(obj2, LTTextGroupTBRL)):
-                group = LTTextGroupTBRL([obj1, obj2])
-            else:
-                group = LTTextGroupLRTB([obj1, obj2])
-            group.analyze(laparams)
-            boxes.append(group)
+            dists = [ (c,d,o1,o2) for (c,d,o1,o2) in dists if o1 not in (obj1,obj2) and o2 not in (obj1,obj2) ]
+            for other in plane:
+                dists.append((0, dist(group,other), group, other))
+            dists.sort()
             plane.add(group)
-        assert len(boxes) == 1
-        return boxes.pop()
+        assert len(plane) == 1
+        return list(plane)[0]
     
 
 ##  LTFigure
@@ -607,7 +623,8 @@ class LTFigure(LTLayoutContainer):
 
     def analyze(self, laparams):
         if not laparams.all_texts: return
-        return LTLayoutContainer.analyze(self, laparams)
+        LTLayoutContainer.analyze(self, laparams)
+        return 
 
 
 ##  LTPage
