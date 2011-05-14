@@ -329,11 +329,11 @@ class HTMLConverter(PDFConverter):
         return
 
     def receive_layout(self, ltpage):
-        def show_layout(item):
+        def show_group(item):
             if isinstance(item, LTTextGroup):
                 self.place_border('textgroup', 1, item)
                 for child in item:
-                    show_layout(child)
+                    show_group(child)
             return
         def render(item):
             if isinstance(item, LTPage):
@@ -345,8 +345,9 @@ class HTMLConverter(PDFConverter):
                     self.write('<a name="%s">Page %s</a></div>\n' % (item.pageid, item.pageid))
                 for child in item:
                     render(child)
-                if item.layout:
-                    show_layout(item.layout)
+                if item.groups is not None:
+                    for group in item.groups:
+                        show_group(group)
             elif isinstance(item, LTCurve):
                 self.place_border('curve', 1, item)
             elif isinstance(item, LTFigure):
@@ -419,14 +420,14 @@ class XMLConverter(PDFConverter):
         return
 
     def receive_layout(self, ltpage):
-        def show_layout(item):
+        def show_group(item):
             if isinstance(item, LTTextBox):
                 self.outfp.write('<textbox id="%d" bbox="%s" />\n' %
                                  (item.index, bbox2str(item.bbox)))
             elif isinstance(item, LTTextGroup):
                 self.outfp.write('<textgroup bbox="%s">\n' % bbox2str(item.bbox))
                 for child in item:
-                    show_layout(child)
+                    show_group(child)
                 self.outfp.write('</textgroup>\n')
             return
         def render(item):
@@ -435,9 +436,10 @@ class XMLConverter(PDFConverter):
                                  (item.pageid, bbox2str(item.bbox), item.rotate))
                 for child in item:
                     render(child)
-                if item.layout:
+                if item.groups is not None:
                     self.outfp.write('<layout>\n')
-                    show_layout(item.layout)
+                    for group in item.groups:
+                        show_group(group)
                     self.outfp.write('</layout>\n')
                 self.outfp.write('</page>\n')
             elif isinstance(item, LTLine):

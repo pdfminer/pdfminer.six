@@ -4,6 +4,24 @@ from utils import INF, Plane, get_bound, uniq, csort, fsplit
 from utils import bbox2str, matrix2str, apply_matrix_pt
 
 
+##  IndexAssigner
+##
+class IndexAssigner(object):
+
+    def __init__(self, index=0):
+        self.index = index
+        return
+
+    def run(self, obj):
+        if isinstance(obj, LTTextBox):
+            obj.index = self.index
+            self.index += 1
+        elif isinstance(obj, LTTextGroup):
+            for x in obj:
+                self.run(obj)
+        return
+
+
 ##  LAParams
 ##
 class LAParams(object):
@@ -438,7 +456,7 @@ class LTLayoutContainer(LTContainer):
 
     def __init__(self, bbox):
         LTContainer.__init__(self, bbox)
-        self.layout = None
+        self.groups = None
         return
         
     def analyze(self, laparams):
@@ -455,20 +473,14 @@ class LTLayoutContainer(LTContainer):
             obj.analyze(laparams)
         textboxes = list(self.get_textboxes(laparams, textlines))
         assert len(textlines) == sum( len(box._objs) for box in textboxes )
-        top = self.group_textboxes(laparams, textboxes)
-        top.analyze(laparams)
-        def assign_index(obj, i):
-            if isinstance(obj, LTTextBox):
-                obj.index = i
-                i += 1
-            elif isinstance(obj, LTTextGroup):
-                for x in obj:
-                    i = assign_index(x, i)
-            return i
-        assign_index(top, 0)
+        groups = self.group_textboxes(laparams, textboxes)
+        assigner = IndexAssigner()
+        for group in groups:
+            group.analyze(laparams)
+            assigner.run(group)
         textboxes.sort(key=lambda box:box.index)
         self._objs = textboxes + otherobjs + empties
-        self.layout = top
+        self.groups = groups
         return
 
     def get_textlines(self, laparams, objs):
@@ -614,7 +626,7 @@ class LTLayoutContainer(LTContainer):
             dists.sort()
             plane.add(group)
         assert len(plane) == 1
-        return list(plane)[0]
+        return list(plane)
     
 
 ##  LTFigure
