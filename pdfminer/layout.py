@@ -18,7 +18,7 @@ class IndexAssigner(object):
             self.index += 1
         elif isinstance(obj, LTTextGroup):
             for x in obj:
-                self.run(obj)
+                self.run(x)
         return
 
 
