@@ -6,6 +6,41 @@ import struct
 from sys import maxint as INF
 
 
+##  PNG Predictor
+##
+def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
+    if bitspercomponent != 8:
+        # unsupported
+        raise ValueError(bitspercomponent)
+    nbytes = colors*columns*bitspercomponent/8
+    i = 0
+    buf = ''
+    line0 = '\x00' * columns
+    while i < len(data):
+        pred = data[i]
+        i += 1
+        line1 = data[i:i+nbytes]
+        i += nbytes
+        if pred == '\x00':
+            # PNG none
+            buf += line1
+        elif pred == '\x01':
+            # PNG sub
+            b = 0
+            for c in line1:
+                b += ord(c) 
+                buf += chr(b & 255)
+        elif pred == '\x02':
+            # PNG up
+            for (a,b) in zip(line0,line1):
+                buf += chr((ord(a)+ord(b)) & 255)
+        else:
+            # unsupported
+            raise ValueError(pred)
+        line0 = line1
+    return buf
+
+
 ##  Matrix operations
 ##
 MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)

@@ -6,6 +6,7 @@ from ascii85 import ascii85decode, asciihexdecode
 from runlength import rldecode
 from psparser import PSException, PSObject
 from psparser import LIT, KWD, STRICT
+from utils import apply_png_predictor
 
 LITERAL_CRYPT = LIT('Crypt')
 
@@ -231,22 +232,19 @@ class PDFStream(PDFObject):
                 raise PDFNotImplementedError('Unsupported filter: %r' % f)
             # apply predictors
             params = self.get_any(('DP', 'DecodeParms', 'FDecodeParms'), {})
-            if 'Predictor' in params and 'Columns' in params:
+            if 'Predictor' in params:
                 pred = int_value(params['Predictor'])
-                columns = int_value(params['Columns'])
-                if pred:
-                    if pred != 12:
-                        raise PDFNotImplementedError('Unsupported predictor: %r' % pred)
-                    buf = ''
-                    ent0 = '\x00' * columns
-                    for i in xrange(0, len(data), columns+1):
-                        pred = data[i]
-                        ent1 = data[i+1:i+1+columns]
-                        if pred == '\x02':
-                            ent1 = ''.join( chr((ord(a)+ord(b)) & 255) for (a,b) in zip(ent0,ent1) )
-                        buf += ent1
-                        ent0 = ent1
-                    data = buf
+                if pred == 1:
+                    # no predictor
+                    pass
+                elif 10 <= pred:
+                    # PNG predictor
+                    colors = int_value(params.get('Colors', 1))
+                    columns = int_value(params.get('Columns', 1))
+                    bitspercomponent = int_value(params.get('BitsPerComponent', 8))
+                    data = apply_png_predictor(pred, colors, columns, bitspercomponent, data)
+                else:
+                    raise PDFNotImplementedError('Unsupported predictor: %r' % pred)
         self.data = data
         self.rawdata = None
         return
