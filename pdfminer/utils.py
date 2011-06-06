@@ -25,15 +25,22 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
             # PNG none
             buf += line1
         elif pred == '\x01':
-            # PNG sub
-            b = 0
-            for c in line1:
-                b += ord(c) 
-                buf += chr(b & 255)
+            # PNG sub (UNTESTED)
+            c = 0
+            for b in line1:
+                c = (c+ord(b)) & 255
+                buf += chr(c)
         elif pred == '\x02':
             # PNG up
             for (a,b) in zip(line0,line1):
-                buf += chr((ord(a)+ord(b)) & 255)
+                c = (ord(a)+ord(b)) & 255
+                buf += chr(c)
+        elif pred == '\x03':
+            # PNG average (UNTESTED)
+            c = 0
+            for (a,b) in zip(line0,line1):
+                c = ((c+ord(a)+ord(b))/2) & 255
+                buf += chr(c)
         else:
             # unsupported
             raise ValueError(pred)
