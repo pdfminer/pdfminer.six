@@ -146,10 +146,10 @@ class PDFConverter(PDFLayoutAnalyzer):
         if len(filters) == 1 and filters[0] in LITERALS_DCT_DECODE:
             ext = '.jpg'
             data = stream.get_rawdata()
-        elif stream.colorspace is LITERAL_DEVICE_RGB:
+        elif image.colorspace is LITERAL_DEVICE_RGB:
             ext = '.bmp'
             data = create_bmp(stream.get_data(), stream.bits*3, image.width, image.height)
-        elif stream.colorspace is LITERAL_DEVICE_GRAY:
+        elif image.colorspace is LITERAL_DEVICE_GRAY:
             ext = '.bmp'
             data = create_bmp(stream.get_data(), stream.bits, image.width, image.height)
         else:
