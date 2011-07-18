@@ -329,6 +329,8 @@ class CCITTG4Parser(BitParser):
             except self.ByteSkip:
                 self._accept = self._parse_mode
                 self._state = self.MODE
+            except self.EOFB:
+                break
         return
 
     def _parse_mode(self, mode):
@@ -394,7 +396,7 @@ class CCITTG4Parser(BitParser):
 
     def _get_bits(self):
         return ''.join( str(b) for b in self._curline[:self._curpos] )
-    
+
     def _get_refline(self, i):
         if i < 0:
             return '[]'+''.join( str(b) for b in self._refline )
@@ -667,6 +669,43 @@ class TestCCITTG4Parser(unittest.TestCase):
         return
 
 
+##  CCITTFaxDecoder
+##
+class CCITTFaxDecoder(CCITTG4Parser):
+    
+    def __init__(self, width, bytealign=False, reversed=False):
+        CCITTG4Parser.__init__(self, width, bytealign=bytealign)
+        self.reversed = reversed
+        self._buf = ''
+        return
+    
+    def close(self):
+        return self._buf
+    
+    def output_line(self, y, bits):
+        bytes = array.array('B', [0]*((len(bits)+7)/8))
+        if self.reversed:
+            bits = [ not b for b in bits ]
+        for (i,b) in enumerate(bits):
+            if b:
+                bytes[i/8] += (128,64,32,16,8,4,2,1)[i%8]
+        self._buf += bytes.tostring()
+        return
+
+
+def ccittfaxdecode(data, params):
+    K = params.get('K')
+    cols = params.get('Columns')
+    bytealign = params.get('EncodedByteAlign')
+    reversed = params.get('BlackIs1')
+    if K == -1:
+        parser = CCITTFaxDecoder(cols, bytealign=bytealign, reversed=reversed)
+    else:
+        raise ValueError(K)
+    parser.feedbytes(data)
+    return parser.close()
+    
+    
 # test
 def main(argv):
     import pygame
@@ -691,10 +730,7 @@ def main(argv):
         fp = file(path,'rb')
         (_,_,k,w,h,_) = path.split('.')
         parser = Parser(int(w))
-        try:
-            parser.feedbytes(fp.read())
-        except parser.EOFB:
-            pass
+        parser.feedbytes(fp.read())
         parser.close()
         fp.close()
     return

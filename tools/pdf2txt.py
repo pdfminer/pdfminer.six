@@ -6,6 +6,7 @@ from pdfminer.pdfdevice import PDFDevice, TagExtractor
 from pdfminer.converter import XMLConverter, HTMLConverter, TextConverter
 from pdfminer.cmapdb import CMapDB
 from pdfminer.layout import LAParams
+from pdfminer.image import ImageWriter
 
 # main
 def main(argv):
@@ -29,7 +30,7 @@ def main(argv):
     # output option
     outfile = None
     outtype = None
-    outdir = None
+    imagewriter = None
     layoutmode = 'normal'
     codec = 'utf-8'
     pageno = 1
@@ -52,7 +53,7 @@ def main(argv):
         elif k == '-W': laparams.word_margin = float(v)
         elif k == '-F': laparams.boxes_flow = float(v)
         elif k == '-Y': layoutmode = v
-        elif k == '-O': outdir = v
+        elif k == '-O': imagewriter = ImageWriter(v)
         elif k == '-t': outtype = v
         elif k == '-c': codec = v
         elif k == '-s': scale = float(v)
@@ -81,10 +82,12 @@ def main(argv):
     if outtype == 'text':
         device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
     elif outtype == 'xml':
-        device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams, outdir=outdir)
+        device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+                              imagewriter=imagewriter)
     elif outtype == 'html':
         device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
-                               layoutmode=layoutmode, laparams=laparams, outdir=outdir)
+                               layoutmode=layoutmode, laparams=laparams,
+                               imagewriter=imagewriter)
     elif outtype == 'tag':
         device = TagExtractor(rsrcmgr, outfp, codec=codec)
     else:

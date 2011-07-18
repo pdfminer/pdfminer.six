@@ -1,14 +1,12 @@
 #!/usr/bin/env python2
-import sys, os.path
+import sys
 from pdfdevice import PDFDevice, PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
-from pdftypes import LITERALS_DCT_DECODE
-from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
 from layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve
 from layout import LTFigure, LTImage, LTChar, LTTextLine
 from layout import LTTextBox, LTTextBoxVertical, LTTextGroup
 from utils import apply_matrix_pt, mult_matrix
-from utils import enc, bbox2str, create_bmp
+from utils import enc, bbox2str
 
 
 ##  PDFLayoutAnalyzer
@@ -139,28 +137,6 @@ class PDFConverter(PDFLayoutAnalyzer):
         self.outfp = outfp
         self.codec = codec
         return
-
-    def write_image(self, image):
-        stream = image.stream
-        filters = stream.get_filters()
-        if len(filters) == 1 and filters[0] in LITERALS_DCT_DECODE:
-            ext = '.jpg'
-            data = stream.get_rawdata()
-        elif image.colorspace is LITERAL_DEVICE_RGB:
-            ext = '.bmp'
-            data = create_bmp(stream.get_data(), stream.bits*3, image.width, image.height)
-        elif image.colorspace is LITERAL_DEVICE_GRAY:
-            ext = '.bmp'
-            data = create_bmp(stream.get_data(), stream.bits, image.width, image.height)
-        else:
-            ext = '.img'
-            data = stream.get_data()
-        name = image.name+ext
-        path = os.path.join(self.outdir, name)
-        fp = file(path, 'wb')
-        fp.write(data)
-        fp.close()
-        return name
     
 
 ##  TextConverter
@@ -222,7 +198,7 @@ class HTMLConverter(PDFConverter):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None, 
                  scale=1, fontscale=0.7, layoutmode='normal', showpageno=True,
-                 pagemargin=50, outdir=None,
+                 pagemargin=50, imagewriter=None,
                  rect_colors={'curve':'black', 'page':'gray'},
                  text_colors={'char':'black'}):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
@@ -231,7 +207,7 @@ class HTMLConverter(PDFConverter):
         self.layoutmode = layoutmode
         self.showpageno = showpageno
         self.pagemargin = pagemargin
-        self.outdir = outdir
+        self.imagewriter = imagewriter
         self.rect_colors = rect_colors
         self.text_colors = text_colors
         if self.debug:
@@ -278,8 +254,8 @@ class HTMLConverter(PDFConverter):
         return
 
     def place_image(self, item, borderwidth, x, y, w, h):
-        if self.outdir is not None:
-            name = self.write_image(item)
+        if self.imagewriter is not None:
+            name = self.imagewriter.export_image(item)
             self.write('<img src="%s" border="%d" style="position:absolute; left:%dpx; top:%dpx;" '
                        'width="%d" height="%d" />\n' %
                        (enc(name), borderwidth,
@@ -400,9 +376,10 @@ class HTMLConverter(PDFConverter):
 ##
 class XMLConverter(PDFConverter):
 
-    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None, outdir=None):
+    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1,
+                 laparams=None, imagewriter=None):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
-        self.outdir = outdir
+        self.imagewriter = imagewriter
         self.write_header()
         return
 
@@ -479,8 +456,8 @@ class XMLConverter(PDFConverter):
             elif isinstance(item, LTText):
                 self.outfp.write('<text>%s</text>\n' % item.get_text())
             elif isinstance(item, LTImage):
-                if self.outdir:
-                    name = self.write_image(item)
+                if self.imagewriter is not None:
+                    name = self.imagewriter.export_image(item)
                     self.outfp.write('<image src="%s" width="%d" height="%d" />\n' %
                                      (enc(name), item.width, item.height))
                 else:

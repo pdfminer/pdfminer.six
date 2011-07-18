@@ -306,13 +306,3 @@ class Plane(object):
                     obj.y1 <= y0 or y1 <= obj.y0): continue
                 yield obj
         return
-
-
-# create_bmp
-def create_bmp(data, bits, width, height):
-    info = struct.pack('<IiiHHIIIIII', 40, width, height, 1, bits, 0, len(data), 0, 0, 0, 0)
-    assert len(info) == 40, len(info)
-    header = struct.pack('<ccIHHI', 'B', 'M', 14+40+len(data), 0, 0, 14+40)
-    assert len(header) == 14, len(header)
-    # XXX re-rasterize every line
-    return header+info+data

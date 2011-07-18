@@ -4,6 +4,7 @@ import zlib
 from lzw import lzwdecode
 from ascii85 import ascii85decode, asciihexdecode
 from runlength import rldecode
+from ccitt import ccittfaxdecode
 from psparser import PSException, PSObject
 from psparser import LIT, KWD, STRICT
 from utils import apply_png_predictor
@@ -206,6 +207,7 @@ class PDFStream(PDFObject):
             self.rawdata = None
             return
         for f in filters:
+            params = self.get_any(('DP', 'DecodeParms', 'FDecodeParms'), {})
             if f in LITERALS_FLATE_DECODE:
                 # will get errors if the document is encrypted.
                 try:
@@ -223,15 +225,13 @@ class PDFStream(PDFObject):
             elif f in LITERALS_RUNLENGTH_DECODE:
                 data = rldecode(data)
             elif f in LITERALS_CCITTFAX_DECODE:
-                #data = ccittfaxdecode(data)
-                raise PDFNotImplementedError('Unsupported filter: %r' % f)
+                data = ccittfaxdecode(data, params)
             elif f == LITERAL_CRYPT:
                 # not yet..
                 raise PDFNotImplementedError('/Crypt filter is unsupported')
             else:
                 raise PDFNotImplementedError('Unsupported filter: %r' % f)
             # apply predictors
-            params = self.get_any(('DP', 'DecodeParms', 'FDecodeParms'), {})
             if 'Predictor' in params:
                 pred = int_value(params['Predictor'])
                 if pred == 1:
