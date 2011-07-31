@@ -489,7 +489,13 @@ class PDFFont(object):
         return h * self.vscale
 
     def char_width(self, cid):
-        return self.widths.get(cid, self.default_width) * self.hscale
+        try:
+            return self.widths[cid] * self.hscale
+        except KeyError:
+            try:
+                return self.widths[self.to_unichr(cid)] * self.hscale
+            except (KeyError, PDFUnicodeNotDefined):
+                return self.default_width * self.hscale
 
     def char_disp(self, cid):
         return 0
