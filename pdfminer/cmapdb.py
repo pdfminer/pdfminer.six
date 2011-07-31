@@ -17,7 +17,6 @@ import os
 import os.path
 import gzip
 import cPickle as pickle
-import cmap
 import struct
 from psparser import PSStackParser
 from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF
@@ -240,8 +239,11 @@ class CMapDB(object):
         filename = '%s.pickle.gz' % name
         if klass.debug:
             print >>sys.stderr, 'loading:', name
-        default_path = os.environ.get('CMAP_PATH', '/usr/share/pdfminer/')
-        for directory in (os.path.dirname(cmap.__file__), default_path):
+        cmap_paths = (
+            os.environ.get('CMAP_PATH', '/usr/share/pdfminer/'),
+            os.path.join(os.path.dirname(__file__), 'cmap'),
+            )
+        for directory in cmap_paths:
             path = os.path.join(directory, filename)
             if os.path.exists(path):
                 gzfile = gzip.open(path)

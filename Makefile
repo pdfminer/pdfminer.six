@@ -7,6 +7,7 @@ PYTHON=python2
 GIT=git
 RM=rm -f
 CP=cp -f
+MKDIR=mkdir
 
 all:
 
@@ -36,14 +37,16 @@ CMAPDST=pdfminer/cmap
 cmap: $(CMAPDST)/to-unicode-Adobe-CNS1.pickle.gz $(CMAPDST)/to-unicode-Adobe-GB1.pickle.gz \
 	$(CMAPDST)/to-unicode-Adobe-Japan1.pickle.gz $(CMAPDST)/to-unicode-Adobe-Korea1.pickle.gz
 cmap_clean:
-	cd $(CMAPDST) && make cmap_clean
-$(CMAPDST)/to-unicode-Adobe-CNS1.pickle.gz:
+	-$(RM) -r $(CMAPDST)
+$(CMAPDST):
+	$(MKDIR) $(CMAPDST)
+$(CMAPDST)/to-unicode-Adobe-CNS1.pickle.gz: $(CMAPDST)
 	$(CONV_CMAP) $(CMAPDST) Adobe-CNS1 $(CMAPSRC)/cid2code_Adobe_CNS1.txt cp950 big5
-$(CMAPDST)/to-unicode-Adobe-GB1.pickle.gz:
+$(CMAPDST)/to-unicode-Adobe-GB1.pickle.gz: $(CMAPDST)
 	$(CONV_CMAP) $(CMAPDST) Adobe-GB1 $(CMAPSRC)/cid2code_Adobe_GB1.txt cp936 gb2312
-$(CMAPDST)/to-unicode-Adobe-Japan1.pickle.gz:
+$(CMAPDST)/to-unicode-Adobe-Japan1.pickle.gz: $(CMAPDST)
 	$(CONV_CMAP) $(CMAPDST) Adobe-Japan1 $(CMAPSRC)/cid2code_Adobe_Japan1.txt cp932 euc-jp
-$(CMAPDST)/to-unicode-Adobe-Korea1.pickle.gz:
+$(CMAPDST)/to-unicode-Adobe-Korea1.pickle.gz: $(CMAPDST)
 	$(CONV_CMAP) $(CMAPDST) Adobe-Korea1 $(CMAPSRC)/cid2code_Adobe_Korea1.txt cp949 euc-kr
 
 test: cmap
