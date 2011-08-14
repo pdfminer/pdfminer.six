@@ -356,9 +356,13 @@ class LTTextLineHorizontal(LTTextLine):
         return
 
     def find_neighbors(self, plane, ratio):
-        h = ratio*self.height
-        objs = plane.find((self.x0, self.y0-h, self.x1, self.y1+h))
-        return [ obj for obj in objs if isinstance(obj, LTTextLineHorizontal) ]
+        d = ratio*self.height
+        objs = plane.find((self.x0, self.y0-d, self.x1, self.y1+d))
+        return [ obj for obj in objs
+                 if (isinstance(obj, LTTextLineHorizontal) and
+                     abs(obj.height-self.height) < d and
+                     (abs(obj.x0-self.x0) < d or
+                      abs(obj.x1-self.x1) < d)) ]
     
 class LTTextLineVertical(LTTextLine):
 
@@ -377,9 +381,13 @@ class LTTextLineVertical(LTTextLine):
         return
         
     def find_neighbors(self, plane, ratio):
-        w = ratio*self.width
-        objs = plane.find((self.x0-w, self.y0, self.x1+w, self.y1))
-        return [ obj for obj in objs if isinstance(obj, LTTextLineVertical) ]
+        d = ratio*self.width
+        objs = plane.find((self.x0-d, self.y0, self.x1+d, self.y1))
+        return [ obj for obj in objs
+                 if (isinstance(obj, LTTextLineVertical) and
+                     abs(obj.width-self.width) < d and
+                     (abs(obj.y0-self.y0) < d or
+                      abs(obj.y1-self.y1) < d)) ]                     
     
 
 ##  LTTextBox
@@ -391,7 +399,7 @@ class LTTextBox(LTTextContainer):
 
     def __init__(self):
         LTTextContainer.__init__(self)
-        self.index = None
+        self.index = -1
         return
 
     def __repr__(self):
@@ -624,14 +632,13 @@ class LTLayoutContainer(LTContainer):
             obj.analyze(laparams)
         textboxes = list(self.get_textboxes(laparams, textlines))
         assert len(textlines) == sum( len(box._objs) for box in textboxes )
-        groups = self.group_textboxes(laparams, textboxes)
+        self.groups = self.group_textboxes(laparams, textboxes)
         assigner = IndexAssigner()
-        for group in groups:
+        for group in self.groups:
             group.analyze(laparams)
             assigner.run(group)
         textboxes.sort(key=lambda box:box.index)
         self._objs = textboxes + otherobjs + empties
-        self.groups = groups
         return
 
 
