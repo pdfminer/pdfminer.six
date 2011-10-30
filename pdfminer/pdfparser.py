@@ -454,7 +454,10 @@ class PDFDocument(object):
                 try:
                     obj = objs[i]
                 except IndexError:
-                    raise PDFSyntaxError('Invalid object number: objid=%r' % (objid))
+                    if STRICT:
+                        raise PDFSyntaxError('Invalid object number: objid=%r' % (objid))
+                    # return None for an invalid object number
+                    return None
                 if isinstance(obj, PDFStream):
                     obj.set_objid(objid, 0)
             else:
