@@ -326,7 +326,7 @@ class PDFPageInterpreter(object):
             elif name == 'DeviceN' and isinstance(spec, list) and 2 <= len(spec):
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
-                return PREDEFINED_COLORSPACE[name]
+                return PREDEFINED_COLORSPACE.get(name)
         for (k,v) in dict_value(resources).iteritems():
             if 2 <= self.debug:
                 print >>sys.stderr, 'Resource: %r: %r' % (k,v)
