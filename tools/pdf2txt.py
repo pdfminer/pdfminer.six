@@ -80,7 +80,8 @@ def main(argv):
     else:
         outfp = sys.stdout
     if outtype == 'text':
-        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
+        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+                               imagewriter=imagewriter)
     elif outtype == 'xml':
         device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
                               imagewriter=imagewriter)

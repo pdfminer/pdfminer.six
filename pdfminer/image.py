@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 import sys
 import struct
-import os.path
+import os, os.path
 from pdftypes import LITERALS_DCT_DECODE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
 
@@ -54,6 +54,8 @@ class ImageWriter(object):
 
     def __init__(self, outdir):
         self.outdir = outdir
+        if not os.path.exists(self.outdir):
+            os.makedirs(self.outdir)
         return
 
     def export_image(self, image):

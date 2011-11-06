@@ -144,9 +144,10 @@ class PDFConverter(PDFLayoutAnalyzer):
 class TextConverter(PDFConverter):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
-                 showpageno=False):
+                 showpageno=False, imagewriter=None):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.showpageno = showpageno
+        self.imagewriter = imagewriter
         return
 
     def write_text(self, text):
@@ -162,19 +163,25 @@ class TextConverter(PDFConverter):
                 self.write_text(item.get_text())
             if isinstance(item, LTTextBox):
                 self.write_text('\n')
+            elif isinstance(item, LTImage):
+                if self.imagewriter is not None:
+                    self.imagewriter.export_image(item)
         if self.showpageno:
             self.write_text('Page %s\n' % ltpage.pageid)
         render(ltpage)
         self.write_text('\f')
         return
 
-    # Some dummy functions to save memory/CPU when all that is wanted is text.
-    # This stops all the image and drawing ouput from being recorded and taking
-    # up RAM.
+    # Some dummy functions to save memory/CPU when all that is wanted
+    # is text.  This stops all the image and drawing ouput from being
+    # recorded and taking up RAM.
     def render_image(self, name, stream):
-        pass
+        if self.imagewriter is None: return
+        PDFConverter.render_image(self, name, stream)
+        return
+    
     def paint_path(self, gstate, stroke, fill, evenodd, path):
-        pass
+        return
 
 
 ##  HTMLConverter
