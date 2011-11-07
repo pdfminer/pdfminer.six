@@ -27,17 +27,21 @@ class BMPWriter(object):
             raise ValueError(bits)
         self.linesize = align32((self.width*self.bits+7)/8)
         self.datasize = self.linesize * self.height
-        info = struct.pack('<IiiHHIIIIII', 40, self.width, self.height, 1, self.bits, 0, self.datasize, 0, 0, 0, 0)
+        headersize = 14+40+ncols*4
+        info = struct.pack('<IiiHHIIIIII', 40, self.width, self.height, 1, self.bits, 0, self.datasize, 0, 0, ncols, 0)
         assert len(info) == 40, len(info)
-        header = struct.pack('<ccIHHI', 'B', 'M', 14+40+self.datasize, 0, 0, 14+40)
+        header = struct.pack('<ccIHHI', 'B', 'M', headersize+self.datasize, 0, 0, headersize)
         assert len(header) == 14, len(header)
         self.fp.write(header)
         self.fp.write(info)
         if ncols == 2:
-            self.fp.write('\x00\x00\x00\xff\xff\xff')
+            # B&W color table
+            for i in (0,255):
+                self.fp.write(struct.pack('BBBx', i,i,i))
         elif ncols == 256:
+            # grayscale color table
             for i in xrange(256):
-                self.fp.write(struct.pack('bbb', i,i,i))
+                self.fp.write(struct.pack('BBBx', i,i,i))
         self.pos0 = self.fp.tell()
         self.pos1 = self.pos0 + self.datasize
         return
