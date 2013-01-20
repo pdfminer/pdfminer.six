@@ -6,7 +6,7 @@
 #  options:
 #    -i objid : object id
 #
-import sys, re
+import sys, os, re
 from pdfminer.psparser import PSKeyword, PSLiteral
 from pdfminer.pdfparser import PDFDocument, PDFParser, PDFNoOutlines
 from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
@@ -152,6 +152,46 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
     fp.close()
     return
 
+# extractembedded
+def extractembedded(outfp, fname, objids, pagenos, password='',
+                dumpall=False, codec=None):
+    doc = PDFDocument()
+    fp = file(fname, 'rb')
+    parser = PDFParser(fp)
+    parser.set_document(doc)
+    doc.set_parser(parser)
+    doc.initialize(password)
+
+    cwd = os.path.normpath(os.getcwd()) + '/'
+    for xref in doc.xrefs:
+        for objid in xref.get_objids():
+            obj = doc.getobj(objid)
+            if isinstance(obj, dict):
+                objtype = obj.get('Type', '')
+                if isinstance(objtype, PSLiteral) and objtype.name == 'Filespec':
+                    filename = obj['UF'] or obj['F']
+                    fileref = obj['EF']['F']
+                    fileobj = doc.getobj(fileref.objid)
+                    if not isinstance(fileobj, PDFStream):
+                        raise Exception("unable to process PDF: reference for %s is not a PDFStream" % (filename))
+                    if not isinstance(fileobj['Type'], PSLiteral) or not fileobj['Type'].name == 'EmbeddedFile':
+                        raise Exception("unable to process PDF: reference for %s is not an EmbeddedFile" % (filename))
+
+                    print "extracting", filename
+                    absfilename = os.path.normpath(os.path.abspath(filename))
+                    if not absfilename.startswith(cwd):
+                        raise Exception("filename %s is trying to escape to parent directories.." % (filename))
+
+                    dirname = os.path.dirname(absfilename)
+                    if not os.path.isdir(dirname):
+                        os.makedirs(dirname)
+
+                    # don't overwrite anything
+                    fd = os.open(absfilename, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+                    f = os.fdopen(fd, 'wb')
+                    f.write(fileobj.get_data())
+                    f.close()
+
 # dumppdf
 def dumppdf(outfp, fname, objids, pagenos, password='',
             dumpall=False, codec=None):
@@ -188,10 +228,10 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
 def main(argv):
     import getopt
     def usage():
-        print 'usage: %s [-d] [-a] [-p pageid] [-P password] [-r|-b|-t] [-T] [-i objid] file ...' % argv[0]
+        print 'usage: %s [-d] [-a] [-p pageid] [-P password] [-r|-b|-t] [-T] [-E directory] [-i objid] file ...' % argv[0]
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dap:P:rbtTi:')
+        (opts, args) = getopt.getopt(argv[1:], 'dap:P:rbtTE:i:')
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
@@ -203,6 +243,7 @@ def main(argv):
     dumpall = False
     proc = dumppdf
     outfp = sys.stdout
+    extractdir = None
     for (k, v) in opts:
         if k == '-d': debug += 1
         elif k == '-i': objids.extend( int(x) for x in v.split(',') )
@@ -213,10 +254,15 @@ def main(argv):
         elif k == '-b': codec = 'binary'
         elif k == '-t': codec = 'text'
         elif k == '-T': proc = dumpoutline
+        elif k == '-E': extractdir = v
         elif k == '-o': outfp = file(v, 'wb')
     #
     PDFDocument.debug = debug
     PDFParser.debug = debug
+    #
+    if extractdir:
+        proc = extractembedded
+        os.chdir(extractdir)
     #
     for fname in args:
         proc(outfp, fname, objids, pagenos, password=password,
