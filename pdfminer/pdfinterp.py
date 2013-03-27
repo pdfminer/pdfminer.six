@@ -220,7 +220,7 @@ class PDFContentParser(PSStackParser):
             data = strm.get_data()
             if isinstance(data, bytes):
                 data = data.decode('latin-1')
-            self.fp = io.StringIO(data)
+            self.fp = StringIO(data)
         return
 
     def seek(self, pos):
