@@ -4,8 +4,6 @@ import logging
 import sys
 import struct
 import os, os.path
-from PIL import Image
-from PIL import ImageChops
 from pdftypes import LITERALS_DCT_DECODE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
 
@@ -83,6 +81,8 @@ class ImageWriter(object):
         if ext == '.jpg':
             raw_data = stream.get_rawdata()
             if LITERAL_DEVICE_CMYK in image.colorspace:
+                from PIL import Image
+                from PIL import ImageChops
                 ifp = cStringIO.StringIO(raw_data)
                 i = Image.open(ifp) 
                 i = ImageChops.invert(i)
