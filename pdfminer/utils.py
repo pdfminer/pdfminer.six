@@ -246,7 +246,7 @@ class ObjIdRange(object):
 class Plane(object):
 
     def __init__(self, objs=None, gridsize=50):
-        self._objs = []
+        self._objs = set()
         self._grid = {}
         self.gridsize = gridsize
         if objs is not None:
@@ -281,7 +281,7 @@ class Plane(object):
             else:
                 r = self._grid[k]
             r.append(obj)
-        self._objs.append(obj)
+        self._objs.add(obj)
         return
 
     # remove(obj): displace an object.
