@@ -553,10 +553,10 @@ class PDFDocument(object):
             if 'Limits' in d:
                 (k1,k2) = list_value(d['Limits'])
                 if key < k1 or k2 < key: return None
-                if 'Names' in d:
-                    objs = list_value(d['Names'])
-                    names = dict(choplist(2, objs))
-                    return names[key]
+            if 'Names' in d:
+                objs = list_value(d['Names'])
+                names = dict(choplist(2, objs))
+                return names[key]
             if 'Kids' in d:
                 for c in list_value(d['Kids']):
                     v = lookup(dict_value(c))
