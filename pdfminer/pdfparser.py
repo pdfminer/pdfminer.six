@@ -505,12 +505,6 @@ class PDFDocument(object):
             obj = decipher_all(self.decipher, objid, genno, obj)
         return obj
 
-    def get_objects(self):
-        for xref in self.xrefs:
-            for objid in xref.get_objids():
-                yield self.getobj(objid)
-        return
-
     INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
     def get_pages(self):
         if not self.xrefs:
@@ -535,14 +529,21 @@ class PDFDocument(object):
                 if 1 <= self.debug:
                     print >>sys.stderr, 'Page: %r' % tree
                 yield (objid, tree)
-        if 'Pages' in self.catalog:
-            for (pageid,tree) in search(self.catalog['Pages'], self.catalog):
-                yield PDFPage(self, pageid, tree)
-        else:
+        try:
+            if 'Pages' in self.catalog:
+                for (objid,tree) in search(self.catalog['Pages'], self.catalog):
+                    yield PDFPage(self, objid, tree)
+                return
+        except PDFObjectNotFound:
             # fallback when /Pages is missing.
-            for obj in self.get_objects():
-                if isinstance(obj, dict) and obj.get('Type') is LITERAL_PAGES:
-                    yield PDFPage(self, pageid, obj)
+            for xref in self.xrefs:
+                for objid in xref.get_objids():
+                    try:
+                        obj = self.getobj(objid)
+                        if isinstance(obj, dict) and obj.get('Type') is LITERAL_PAGE:
+                            yield PDFPage(self, objid, obj)
+                    except PDFObjectNotFound:
+                        pass
         return
 
     def get_outlines(self):
