@@ -556,10 +556,12 @@ class LTLayoutContainer(LTContainer):
             box = boxes[line]
             if box in done: continue
             done.add(box)
-            yield box
+            if not box.is_empty():
+                yield box
         return
 
     def group_textboxes(self, laparams, boxes):
+        assert boxes
         def dist(obj1, obj2):
             """A distance function between two TextBoxes.
             
@@ -632,12 +634,13 @@ class LTLayoutContainer(LTContainer):
             obj.analyze(laparams)
         textboxes = list(self.get_textboxes(laparams, textlines))
         assert len(textlines) == sum( len(box._objs) for box in textboxes )
-        self.groups = self.group_textboxes(laparams, textboxes)
-        assigner = IndexAssigner()
-        for group in self.groups:
-            group.analyze(laparams)
-            assigner.run(group)
-        textboxes.sort(key=lambda box:box.index)
+        if textboxes:
+            self.groups = self.group_textboxes(laparams, textboxes)
+            assigner = IndexAssigner()
+            for group in self.groups:
+                group.analyze(laparams)
+                assigner.run(group)
+            textboxes.sort(key=lambda box:box.index)
         self._objs = textboxes + otherobjs + empties
         return
 
