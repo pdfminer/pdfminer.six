@@ -9,6 +9,7 @@
 import sys, re
 from pdfminer.psparser import PSKeyword, PSLiteral
 from pdfminer.pdfparser import PDFDocument, PDFParser, PDFNoOutlines
+from pdfminer.pdfparser import PDFObjectNotFound
 from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
 
 
@@ -97,8 +98,8 @@ def dumpallobjs(out, doc, codec=None):
                 out.write('<object id="%d">\n' % objid)
                 dumpxml(out, obj, codec=codec)
                 out.write('\n</object>\n\n')
-            except:
-                raise
+            except PDFObjectNotFound, e:
+                print >>sys.stderr, 'not found: %r' % e
     dumptrailers(out, doc)
     out.write('</pdf>')
     return

@@ -31,6 +31,7 @@ class PDFNoValidXRef(PDFSyntaxError): pass
 class PDFNoOutlines(PDFException): pass
 class PDFDestinationNotFound(PDFException): pass
 class PDFEncryptionError(PDFException): pass
+class PDFObjectNotFound(PDFException): pass
 class PDFPasswordIncorrect(PDFEncryptionError): pass
 
 # some predefined literals and keywords.
@@ -63,6 +64,9 @@ class PDFXRef(PDFBaseXRef):
         self.offsets = {}
         self.trailer = {}
         return
+
+    def __repr__(self):
+        return '<PDFXRef: offsets=%r>' % (self.offsets.keys())
 
     def load(self, parser, debug=0):
         while 1:
@@ -308,27 +312,41 @@ class PDFDocument(object):
         self._parsed_objs = {}
         return
 
-    def set_parser(self, parser):
+    def set_parser(self, parser, fallback=True):
         "Set the document to use a given PDFParser object."
         if self._parser: return
         self._parser = parser
         # Retrieve the information of each header that was appended
         # (maybe multiple times) at the end of the document.
-        self.xrefs = parser.read_xref()
+        try:
+            self.xrefs = parser.read_xref()
+        except PDFNoValidXRef:
+            fallback = True
+        if fallback:
+            self.xrefs.extend(parser.read_xref(fallback=True))
         for xref in self.xrefs:
             trailer = xref.get_trailer()
             if not trailer: continue
             # If there's an encryption info, remember it.
             if 'Encrypt' in trailer:
                 #assert not self.encryption
-                self.encryption = (list_value(trailer['ID']),
-                                   dict_value(trailer['Encrypt']))
+                try:
+                    self.encryption = (list_value(trailer['ID']),
+                                       dict_value(trailer['Encrypt']))
+                except PDFObjectNotFound, e:
+                    pass
             if 'Info' in trailer:
-                self.info.append(dict_value(trailer['Info']))
+                try:
+                    self.info.append(dict_value(trailer['Info']))
+                except PDFObjectNotFound, e:
+                    pass
             if 'Root' in trailer:
-                #  Every PDF file must have exactly one /Root dictionary.
-                self.catalog = dict_value(trailer['Root'])
-                break
+                # Every PDF file must have exactly one /Root dictionary.
+                try:
+                    self.catalog = dict_value(trailer['Root'])
+                    break
+                except PDFObjectNotFound, e:
+                    pass
         else:
             raise PDFSyntaxError('No /Root object! - Is this really a PDF?')
         if self.catalog.get('Type') is not LITERAL_CATALOG:
@@ -404,6 +422,7 @@ class PDFDocument(object):
         return Arcfour(key).process(data)
 
     KEYWORD_OBJ = KWD('obj')
+    # can raise PDFObjectNotFound
     def getobj(self, objid):
         if not self.xrefs:
             raise PDFException('PDFDocument is not initialized')
@@ -420,10 +439,7 @@ class PDFDocument(object):
                 except KeyError:
                     pass
             else:
-                if STRICT:
-                    raise PDFSyntaxError('Cannot locate objid=%r' % objid)
-                # return null for a nonexistent reference.
-                return None
+                raise PDFObjectNotFound(objid)
             if strmid:
                 stream = stream_value(self.getobj(strmid))
                 if stream.get('Type') is not LITERAL_OBJSTM:
@@ -454,36 +470,33 @@ class PDFDocument(object):
                 try:
                     obj = objs[i]
                 except IndexError:
-                    if STRICT:
-                        raise PDFSyntaxError('Invalid object number: objid=%r' % (objid))
-                    # return None for an invalid object number
-                    return None
+                    raise PDFObjectNotFound(objid)
                 if isinstance(obj, PDFStream):
                     obj.set_objid(objid, 0)
             else:
                 self._parser.seek(index)
-                (_,objid1) = self._parser.nexttoken() # objid
-                (_,genno) = self._parser.nexttoken() # genno
-                (_,kwd) = self._parser.nexttoken()
-                # #### hack around malformed pdf files
-                #assert objid1 == objid, (objid, objid1)
-                if objid1 != objid:
-                    x = []
-                    while kwd is not self.KEYWORD_OBJ:
-                        (_,kwd) = self._parser.nexttoken()
-                        x.append(kwd)
-                    if x:
-                        objid1 = x[-2]
-                        genno = x[-1]
-                # #### end hack around malformed pdf files
-                if kwd is not self.KEYWORD_OBJ:
-                    raise PDFSyntaxError('Invalid object spec: offset=%r' % index)
                 try:
+                    (_,objid1) = self._parser.nexttoken() # objid
+                    (_,genno) = self._parser.nexttoken() # genno
+                    (_,kwd) = self._parser.nexttoken()
+                    # #### hack around malformed pdf files
+                    #assert objid1 == objid, (objid, objid1)
+                    if objid1 != objid:
+                        x = []
+                        while kwd is not self.KEYWORD_OBJ:
+                            (_,kwd) = self._parser.nexttoken()
+                            x.append(kwd)
+                        if x:
+                            objid1 = x[-2]
+                            genno = x[-1]
+                    # #### end hack around malformed pdf files
+                    if kwd is not self.KEYWORD_OBJ:
+                        raise PDFSyntaxError('Invalid object spec: offset=%r' % index)
                     (_,obj) = self._parser.nextobject()
                     if isinstance(obj, PDFStream):
                         obj.set_objid(objid, genno)
                 except PSEOF:
-                    return None
+                    raise PDFObjectNotFound(objid)
             if 2 <= self.debug:
                 print >>sys.stderr, 'register: objid=%r: %r' % (objid, obj)
             if self.caching:
@@ -491,6 +504,12 @@ class PDFDocument(object):
         if self.decipher:
             obj = decipher_all(self.decipher, objid, genno, obj)
         return obj
+
+    def get_objects(self):
+        for xref in self.xrefs:
+            for objid in xref.get_objids():
+                yield self.getobj(objid)
+        return
 
     INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
     def get_pages(self):
@@ -516,9 +535,14 @@ class PDFDocument(object):
                 if 1 <= self.debug:
                     print >>sys.stderr, 'Page: %r' % tree
                 yield (objid, tree)
-        if 'Pages' not in self.catalog: return
-        for (pageid,tree) in search(self.catalog['Pages'], self.catalog):
-            yield PDFPage(self, pageid, tree)
+        if 'Pages' in self.catalog:
+            for (pageid,tree) in search(self.catalog['Pages'], self.catalog):
+                yield PDFPage(self, pageid, tree)
+        else:
+            # fallback when /Pages is missing.
+            for obj in self.get_objects():
+                if isinstance(obj, dict) and obj.get('Type') is LITERAL_PAGES:
+                    yield PDFPage(self, pageid, obj)
         return
 
     def get_outlines(self):
@@ -592,6 +616,7 @@ class PDFParser(PSStackParser):
     Typical usage:
       parser = PDFParser(fp)
       parser.read_xref()
+      parser.read_xref(fallback=True) # optional
       parser.set_document(doc)
       parser.seek(offset)
       parser.nextobject()
@@ -741,20 +766,17 @@ class PDFParser(PSStackParser):
         return
 
     # read xref tables and trailers
-    def read_xref(self):
+    def read_xref(self, fallback=False):
         """Reads all the XRefs in the PDF file and returns them."""
         xrefs = []
-        try:
-            pos = self.find_xref()
-            self.read_xref_from(pos, xrefs)
-        except PDFNoValidXRef:
-            # fallback
-            if 1 <= self.debug:
-                print >>sys.stderr, 'no xref, fallback'
-            self.fallback = True
+        self.fallback = fallback
+        if self.fallback:
             xref = PDFXRef()
             xref.load_fallback(self)
             xrefs.append(xref)
+        else:
+            pos = self.find_xref()
+            self.read_xref_from(pos, xrefs)
         return xrefs
 
 
