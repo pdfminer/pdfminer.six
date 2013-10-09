@@ -15,7 +15,7 @@ from psparser import PSSyntaxError, PSEOF
 from psparser import literal_name
 from psparser import LIT, KWD, STRICT
 from pdftypes import PDFException, PDFTypeError, PDFNotImplementedError
-from pdftypes import PDFStream, PDFObjRef
+from pdftypes import PDFObjectNotFound, PDFStream, PDFObjRef
 from pdftypes import resolve1, decipher_all
 from pdftypes import int_value, float_value, num_value
 from pdftypes import str_value, list_value, dict_value, stream_value
@@ -31,7 +31,6 @@ class PDFNoValidXRef(PDFSyntaxError): pass
 class PDFNoOutlines(PDFException): pass
 class PDFDestinationNotFound(PDFException): pass
 class PDFEncryptionError(PDFException): pass
-class PDFObjectNotFound(PDFException): pass
 class PDFPasswordIncorrect(PDFEncryptionError): pass
 
 # some predefined literals and keywords.
@@ -330,23 +329,14 @@ class PDFDocument(object):
             # If there's an encryption info, remember it.
             if 'Encrypt' in trailer:
                 #assert not self.encryption
-                try:
-                    self.encryption = (list_value(trailer['ID']),
-                                       dict_value(trailer['Encrypt']))
-                except PDFObjectNotFound, e:
-                    pass
+                self.encryption = (list_value(trailer['ID']),
+                                   dict_value(trailer['Encrypt']))
             if 'Info' in trailer:
-                try:
-                    self.info.append(dict_value(trailer['Info']))
-                except PDFObjectNotFound, e:
-                    pass
+                self.info.append(dict_value(trailer['Info']))
             if 'Root' in trailer:
                 # Every PDF file must have exactly one /Root dictionary.
-                try:
-                    self.catalog = dict_value(trailer['Root'])
-                    break
-                except PDFObjectNotFound, e:
-                    pass
+                self.catalog = dict_value(trailer['Root'])
+                break
         else:
             raise PDFSyntaxError('No /Root object! - Is this really a PDF?')
         if self.catalog.get('Type') is not LITERAL_CATALOG:
@@ -529,12 +519,12 @@ class PDFDocument(object):
                 if 1 <= self.debug:
                     print >>sys.stderr, 'Page: %r' % tree
                 yield (objid, tree)
-        try:
-            if 'Pages' in self.catalog:
-                for (objid,tree) in search(self.catalog['Pages'], self.catalog):
-                    yield PDFPage(self, objid, tree)
-                return
-        except PDFObjectNotFound:
+        pages = False
+        if 'Pages' in self.catalog:
+            for (objid,tree) in search(self.catalog['Pages'], self.catalog):
+                yield PDFPage(self, objid, tree)
+                pages = True
+        if not pages:
             # fallback when /Pages is missing.
             for xref in self.xrefs:
                 for objid in xref.get_objids():

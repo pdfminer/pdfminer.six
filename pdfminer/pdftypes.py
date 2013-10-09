@@ -28,7 +28,8 @@ class PDFObject(PSObject): pass
 class PDFException(PSException): pass
 class PDFTypeError(PDFException): pass
 class PDFValueError(PDFException): pass
-class PDFNotImplementedError(PSException): pass
+class PDFObjectNotFound(PDFException): pass
+class PDFNotImplementedError(PDFException): pass
 
 
 ##  PDFObjRef
@@ -47,34 +48,37 @@ class PDFObjRef(PDFObject):
     def __repr__(self):
         return '<PDFObjRef:%d>' % (self.objid)
 
-    def resolve(self):
-        return self.doc.getobj(self.objid)
+    def resolve(self, default=None):
+        try:
+            return self.doc.getobj(self.objid)
+        except PDFObjectNotFound:
+            return default
 
 
 # resolve
-def resolve1(x):
+def resolve1(x, default=None):
     """Resolves an object.
 
     If this is an array or dictionary, it may still contains
     some indirect objects inside.
     """
     while isinstance(x, PDFObjRef):
-        x = x.resolve()
+        x = x.resolve(default=default)
     return x
 
-def resolve_all(x):
+def resolve_all(x, default=None):
     """Recursively resolves the given object and all the internals.
     
     Make sure there is no indirect reference within the nested object.
     This procedure might be slow.
     """
     while isinstance(x, PDFObjRef):
-        x = x.resolve()
+        x = x.resolve(default=default)
     if isinstance(x, list):
-        x = [ resolve_all(v) for v in x ]
+        x = [ resolve_all(v, default=default) for v in x ]
     elif isinstance(x, dict):
         for (k,v) in x.iteritems():
-            x[k] = resolve_all(v)
+            x[k] = resolve_all(v, default=default)
     return x
 
 def decipher_all(decipher, objid, genno, x):

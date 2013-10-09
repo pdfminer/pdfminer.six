@@ -9,7 +9,7 @@
 import sys, re
 from pdfminer.psparser import PSKeyword, PSLiteral
 from pdfminer.pdfparser import PDFDocument, PDFParser, PDFNoOutlines
-from pdfminer.pdfparser import PDFObjectNotFound
+from pdfminer.pdftypes import PDFObjectNotFound
 from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
 
 

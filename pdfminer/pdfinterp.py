@@ -18,7 +18,7 @@ from pdffont import PDFFontError
 from pdffont import PDFType1Font, PDFTrueTypeFont, PDFType3Font
 from pdffont import PDFCIDFont
 from pdfparser import PDFDocument, PDFParser
-from pdfparser import PDFPasswordIncorrect, PDFObjectNotFound
+from pdfparser import PDFPasswordIncorrect
 from pdfcolor import PDFColorSpace
 from pdfcolor import PREDEFINED_COLORSPACE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
@@ -335,10 +335,7 @@ class PDFPageInterpreter(object):
                     objid = None
                     if isinstance(spec, PDFObjRef):
                         objid = spec.objid
-                    try:
-                        spec = dict_value(spec)
-                    except PDFObjectNotFound:
-                        spec = {}
+                    spec = dict_value(spec)
                     self.fontmap[fontid] = self.rsrcmgr.get_font(objid, spec)
             elif k == 'ColorSpace':
                 for (csid,spec) in dict_value(v).iteritems():
@@ -634,6 +631,7 @@ class PDFPageInterpreter(object):
         except KeyError:
             if STRICT:
                 raise PDFInterpreterError('Undefined Font id: %r' % fontid)
+            self.textstate.font = self.rsrcmgr.get_font(None, {})
         self.textstate.fontsize = fontsize
         return
     # setrendering
