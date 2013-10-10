@@ -24,6 +24,7 @@ from pdfcolor import PDFColorSpace
 from pdfcolor import PREDEFINED_COLORSPACE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
 from pdfcolor import LITERAL_DEVICE_CMYK
+from pdfpage import PDFPage
 from utils import choplist
 from utils import mult_matrix, MATRIX_IDENTITY
 
@@ -824,7 +825,7 @@ def process_pdf(rsrcmgr, device, fp, pagenos=None, maxpages=0, password='',
     # Create a PDF interpreter object.
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     # Process each page contained in the document.
-    for (pageno,page) in enumerate(doc.get_pages()):
+    for (pageno,page) in enumerate(PDFPage.create_pages(doc)):
         if pagenos and (pageno not in pagenos): continue
         interpreter.process_page(page)
         if maxpages and maxpages <= pageno+1: break

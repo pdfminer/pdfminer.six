@@ -12,6 +12,7 @@ from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines
 from pdfminer.pdftypes import PDFObjectNotFound
 from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
+from pdfminer.pdfpage import PDFPage
 
 
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
@@ -112,7 +113,8 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
     parser = PDFParser(fp)
     doc = PDFDocument(parser)
     doc.initialize(password)
-    pages = dict( (page.pageid, pageno) for (pageno,page) in enumerate(doc.get_pages()) )
+    pages = dict( (page.pageid, pageno) for (pageno,page)
+                  in enumerate(PDFPage.create_pages(doc)) )
     def resolve_dest(dest):
         if isinstance(dest, str):
             dest = resolve1(doc.get_dest(dest))
@@ -164,7 +166,7 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
             obj = doc.getobj(objid)
             dumpxml(outfp, obj, codec=codec)
     if pagenos:
-        for (pageno,page) in enumerate(doc.get_pages()):
+        for (pageno,page) in enumerate(PDFPage.create_pages(doc)):
             if pageno in pagenos:
                 if codec:
                     for obj in page.contents:
