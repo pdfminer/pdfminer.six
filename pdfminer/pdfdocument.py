@@ -112,8 +112,26 @@ class PDFXRef(PDFBaseXRef):
         self.trailer.update(dict_value(dic))
         return
 
+    def get_trailer(self):
+        return self.trailer
+
+    def get_objids(self):
+        return self.offsets.iterkeys()
+
+    def get_pos(self, objid):
+        try:
+            (genno, pos) = self.offsets[objid]
+        except KeyError:
+            raise
+        return (None, pos)
+
+
+##  PDFXRefFallback
+##
+class PDFXRefFallback(PDFXRef):
+
     PDFOBJ_CUE = re.compile(r'^(\d+)\s+(\d+)\s+obj\b')
-    def load_fallback(self, parser, debug=0):
+    def load(self, parser, debug=0):
         parser.seek(0)
         while 1:
             try:
@@ -131,19 +149,6 @@ class PDFXRef(PDFBaseXRef):
             (objid, genno) = m.groups()
             self.offsets[int(objid)] = (0, pos)
         return
-
-    def get_trailer(self):
-        return self.trailer
-
-    def get_objids(self):
-        return self.offsets.iterkeys()
-
-    def get_pos(self, objid):
-        try:
-            (genno, pos) = self.offsets[objid]
-        except KeyError:
-            raise
-        return (None, pos)
 
 
 ##  PDFXRefStream
@@ -641,8 +646,8 @@ class PDFDocument(object):
         xrefs = []
         parser.fallback = fallback
         if parser.fallback:
-            xref = PDFXRef()
-            xref.load_fallback(parser)
+            xref = PDFXRefFallback()
+            xref.load(parser)
             xrefs.append(xref)
         else:
             pos = self.find_xref(parser)
