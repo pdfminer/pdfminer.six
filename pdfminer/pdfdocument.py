@@ -47,6 +47,9 @@ class PDFBaseXRef(object):
     def get_objids(self):
         return []
 
+    # Must return
+    #     (strmid, index, genno)
+    #  or (None, pos, genno)
     def get_pos(self, objid):
         raise KeyError(objid)
 
@@ -92,7 +95,7 @@ class PDFXRef(PDFBaseXRef):
                     raise PDFNoValidXRef('Invalid XRef format: %r, line=%r' % (parser, line))
                 (pos, genno, use) = f
                 if use != 'n': continue
-                self.offsets[objid] = (int(genno), long(pos))
+                self.offsets[objid] = (None, long(pos), int(genno))
         if 1 <= debug:
             print >>sys.stderr, 'xref objects:', self.offsets
         self.load_trailer(parser)
@@ -120,10 +123,9 @@ class PDFXRef(PDFBaseXRef):
 
     def get_pos(self, objid):
         try:
-            (genno, pos) = self.offsets[objid]
+            return self.offsets[objid]
         except KeyError:
             raise
-        return (None, pos)
 
 
 ##  PDFXRefFallback
@@ -147,7 +149,7 @@ class PDFXRefFallback(PDFXRef):
             m = self.PDFOBJ_CUE.match(line)
             if not m: continue
             (objid, genno) = m.groups()
-            self.offsets[int(objid)] = (0, pos)
+            self.offsets[int(objid)] = (None, pos, int(genno))
         return
 
 
@@ -163,7 +165,7 @@ class PDFXRefStream(PDFBaseXRef):
         return
 
     def __repr__(self):
-        return '<PDFXRefStream: fields=%d,%d,%d>' % (self.fl1, self.fl2, self.fl3)
+        return '<PDFXRefStream: ranges=%r>' % (self.ranges)
 
     def load(self, parser, debug=0):
         (_,objid) = parser.nexttoken() # ignored
@@ -208,16 +210,15 @@ class PDFXRefStream(PDFBaseXRef):
         offset = self.entlen * index
         ent = self.data[offset:offset+self.entlen]
         f1 = nunpack(ent[:self.fl1], 1)
+        f2 = nunpack(ent[self.fl1:self.fl1+self.fl2])
+        f3 = nunpack(ent[self.fl1+self.fl2:])
         if f1 == 1:
-            pos = nunpack(ent[self.fl1:self.fl1+self.fl2])
-            genno = nunpack(ent[self.fl1+self.fl2:])
-            return (None, pos)
+            return (None, f2, f3)
         elif f1 == 2:
-            objid = nunpack(ent[self.fl1:self.fl1+self.fl2])
-            index = nunpack(ent[self.fl1+self.fl2:])
-            return (objid, index)
-        # this is a free object
-        raise KeyError(objid)
+            return (f2, f3, 0)
+        else:
+            # this is a free object
+            raise KeyError(objid)
 
 
 ##  PDFPage
@@ -409,7 +410,50 @@ class PDFDocument(object):
         key = hash.digest()[:min(len(key),16)]
         return Arcfour(key).process(data)
 
+    def _getobj_objstm(self, stream, index, objid):
+        if stream.get('Type') is not LITERAL_OBJSTM:
+            if STRICT:
+                raise PDFSyntaxError('Not a stream object: %r' % stream)
+        try:
+            n = stream['N']
+        except KeyError:
+            if STRICT:
+                raise PDFSyntaxError('N is not defined: %r' % stream)
+            n = 0
+        if stream.objid in self._parsed_objs:
+            objs = self._parsed_objs[stream.objid]
+        else:
+            parser = PDFStreamParser(stream.get_data())
+            parser.set_document(self)
+            objs = []
+            try:
+                while 1:
+                    (_,obj) = parser.nextobject()
+                    objs.append(obj)
+            except PSEOF:
+                pass
+            if self.caching:
+                self._parsed_objs[stream.objid] = objs
+        i = n*2+index
+        try:
+            obj = objs[i]
+        except IndexError:
+            raise PDFSyntaxError('index too big: %r' % index)
+        return obj
+
     KEYWORD_OBJ = KWD('obj')
+    def _getobj_parse(self, pos, objid):
+        self._parser.seek(pos)
+        (_,objid1) = self._parser.nexttoken() # objid
+        if objid1 != objid:
+            raise PDFSyntaxError('objid mismatch: %r=%r' % (objid1, objid))
+        (_,genno) = self._parser.nexttoken() # genno
+        (_,kwd) = self._parser.nexttoken()
+        if kwd is not self.KEYWORD_OBJ:
+            raise PDFSyntaxError('Invalid object spec: offset=%r' % pos)
+        (_,obj) = self._parser.nextobject()
+        return obj
+        
     # can raise PDFObjectNotFound
     def getobj(self, objid):
         if not self.xrefs:
@@ -417,78 +461,30 @@ class PDFDocument(object):
         if 2 <= self.debug:
             print >>sys.stderr, 'getobj: objid=%r' % (objid)
         if objid in self._cached_objs:
-            genno = 0
-            obj = self._cached_objs[objid]
+            (obj, genno) = self._cached_objs[objid]
         else:
             for xref in self.xrefs:
                 try:
-                    (strmid, index) = xref.get_pos(objid)
-                    break
+                    (strmid, index, genno) = xref.get_pos(objid)
                 except KeyError:
-                    pass
-            else:
-                raise PDFObjectNotFound(objid)
-            if strmid:
-                stream = stream_value(self.getobj(strmid))
-                if stream.get('Type') is not LITERAL_OBJSTM:
-                    if STRICT:
-                        raise PDFSyntaxError('Not a stream object: %r' % stream)
+                    continue
                 try:
-                    n = stream['N']
-                except KeyError:
-                    if STRICT:
-                        raise PDFSyntaxError('N is not defined: %r' % stream)
-                    n = 0
-                if strmid in self._parsed_objs:
-                    objs = self._parsed_objs[strmid]
-                else:
-                    parser = PDFStreamParser(stream.get_data())
-                    parser.set_document(self)
-                    objs = []
-                    try:
-                        while 1:
-                            (_,obj) = parser.nextobject()
-                            objs.append(obj)
-                    except PSEOF:
-                        pass
-                    if self.caching:
-                        self._parsed_objs[strmid] = objs
-                genno = 0
-                i = n*2+index
-                try:
-                    obj = objs[i]
-                except IndexError:
-                    raise PDFObjectNotFound(objid)
-                if isinstance(obj, PDFStream):
-                    obj.set_objid(objid, 0)
-            else:
-                self._parser.seek(index)
-                try:
-                    (_,objid1) = self._parser.nexttoken() # objid
-                    (_,genno) = self._parser.nexttoken() # genno
-                    (_,kwd) = self._parser.nexttoken()
-                    # #### hack around malformed pdf files
-                    #assert objid1 == objid, (objid, objid1)
-                    if objid1 != objid:
-                        x = []
-                        while kwd is not self.KEYWORD_OBJ:
-                            (_,kwd) = self._parser.nexttoken()
-                            x.append(kwd)
-                        if x:
-                            objid1 = x[-2]
-                            genno = x[-1]
-                    # #### end hack around malformed pdf files
-                    if kwd is not self.KEYWORD_OBJ:
-                        raise PDFSyntaxError('Invalid object spec: offset=%r' % index)
-                    (_,obj) = self._parser.nextobject()
+                    if strmid is not None:
+                        stream = stream_value(self.getobj(strmid))
+                        obj = self._getobj_objstm(stream, index, objid)
+                    else:
+                        obj = self._getobj_parse(index, objid)
                     if isinstance(obj, PDFStream):
                         obj.set_objid(objid, genno)
-                except PSEOF:
-                    raise PDFObjectNotFound(objid)
+                    break
+                except (PSEOF, PDFSyntaxError):
+                    continue
+            else:
+                raise PDFObjectNotFound(objid)
             if 2 <= self.debug:
                 print >>sys.stderr, 'register: objid=%r: %r' % (objid, obj)
             if self.caching:
-                self._cached_objs[objid] = obj
+                self._cached_objs[objid] = (obj, genno)
         if self.decipher:
             obj = decipher_all(self.decipher, objid, genno, obj)
         return obj
