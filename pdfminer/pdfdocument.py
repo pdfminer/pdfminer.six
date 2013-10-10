@@ -130,6 +130,9 @@ class PDFXRef(PDFBaseXRef):
 ##
 class PDFXRefFallback(PDFXRef):
 
+    def __repr__(self):
+        return '<PDFXRefFallback: offsets=%r>' % (self.offsets.keys())
+
     PDFOBJ_CUE = re.compile(r'^(\d+)\s+(\d+)\s+obj\b')
     def load(self, parser, debug=0):
         parser.seek(0)
@@ -151,6 +154,7 @@ class PDFXRefFallback(PDFXRef):
             genno = int(genno)
             self.offsets[objid] = (None, pos, genno)
             # expand ObjStm.
+            parser.seek(pos)
             (_,obj) = parser.nextobject()
             if isinstance(obj, PDFStream) and obj.get('Type') is LITERAL_OBJSTM:
                 stream = stream_value(obj)
@@ -196,7 +200,7 @@ class PDFXRefStream(PDFBaseXRef):
         if not isinstance(stream, PDFStream) or stream['Type'] is not LITERAL_XREF:
             raise PDFNoValidXRef('Invalid PDF stream spec.')
         size = stream['Size']
-        index_array = stream.get('Index', (0,size))
+        index_array = stream.get('Index', (1,size))
         if len(index_array) % 2 != 0:
             raise PDFSyntaxError('Invalid index number')
         self.ranges.extend(choplist(2, index_array))
@@ -424,6 +428,7 @@ class PDFDocument(object):
         
     # can raise PDFObjectNotFound
     def getobj(self, objid):
+        assert objid != 0
         if not self.xrefs:
             raise PDFException('PDFDocument is not initialized')
         if 2 <= self.debug:
