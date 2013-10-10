@@ -814,10 +814,7 @@ def process_pdf(rsrcmgr, device, fp, pagenos=None, maxpages=0, password='',
     # Create a PDF parser object associated with the file object.
     parser = PDFParser(fp)
     # Create a PDF document object that stores the document structure.
-    doc = PDFDocument(caching=caching)
-    # Connect the parser and document objects.
-    parser.set_document(doc)
-    doc.set_parser(parser)
+    doc = PDFDocument(parser, caching=caching)
     # Supply the document password for initialization.
     # (If no password is set, give an empty string.)
     doc.initialize(password)

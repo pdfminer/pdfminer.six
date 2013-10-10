@@ -108,11 +108,9 @@ def dumpallobjs(out, doc, codec=None):
 # dumpoutline
 def dumpoutline(outfp, fname, objids, pagenos, password='',
                 dumpall=False, codec=None):
-    doc = PDFDocument()
     fp = file(fname, 'rb')
     parser = PDFParser(fp)
-    parser.set_document(doc)
-    doc.set_parser(parser)
+    doc = PDFDocument(parser)
     doc.initialize(password)
     pages = dict( (page.pageid, pageno) for (pageno,page) in enumerate(doc.get_pages()) )
     def resolve_dest(dest):
@@ -157,11 +155,9 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
 # dumppdf
 def dumppdf(outfp, fname, objids, pagenos, password='',
             dumpall=False, codec=None):
-    doc = PDFDocument()
     fp = file(fname, 'rb')
     parser = PDFParser(fp)
-    parser.set_document(doc)
-    doc.set_parser(parser)
+    doc = PDFDocument(parser)
     doc.initialize(password)
     if objids:
         for objid in objids:

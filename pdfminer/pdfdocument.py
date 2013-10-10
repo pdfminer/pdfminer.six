@@ -283,8 +283,7 @@ class PDFDocument(object):
     dynamically import the data as processing goes.
 
     Typical usage:
-      doc = PDFDocument()
-      doc.set_parser(parser)
+      doc = PDFDocument(parser)
       doc.initialize(password)
       obj = doc.getobj(objid)
     
@@ -292,7 +291,8 @@ class PDFDocument(object):
 
     debug = 0
 
-    def __init__(self, caching=True):
+    def __init__(self, parser, caching=True, fallback=True):
+        "Set the document to use a given PDFParser object."
         self.caching = caching
         self.xrefs = []
         self.info = []
@@ -302,12 +302,8 @@ class PDFDocument(object):
         self._parser = None
         self._cached_objs = {}
         self._parsed_objs = {}
-        return
-
-    def set_parser(self, parser, fallback=True):
-        "Set the document to use a given PDFParser object."
-        if self._parser: return
         self._parser = parser
+        self._parser.set_document(self)
         # Retrieve the information of each header that was appended
         # (maybe multiple times) at the end of the document.
         try:
