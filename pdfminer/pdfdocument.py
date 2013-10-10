@@ -54,7 +54,7 @@ class PDFBaseXRef(object):
 ##  PDFXRef
 ##
 class PDFXRef(PDFBaseXRef):
-    
+
     def __init__(self):
         self.offsets = {}
         self.trailer = {}
@@ -312,11 +312,15 @@ class PDFDocument(object):
         # Retrieve the information of each header that was appended
         # (maybe multiple times) at the end of the document.
         try:
-            self.xrefs = self.read_xref(parser)
+            pos = self.find_xref(parser)
+            self.read_xref_from(parser, pos, self.xrefs)
         except PDFNoValidXRef:
             fallback = True
         if fallback:
-            self.xrefs.extend(self.read_xref(parser, fallback=True))
+            parser.fallback = True
+            xref = PDFXRefFallback()
+            xref.load(parser)
+            self.xrefs.append(xref)
         for xref in self.xrefs:
             trailer = xref.get_trailer()
             if not trailer: continue
@@ -639,17 +643,3 @@ class PDFDocument(object):
             pos = int_value(trailer['Prev'])
             self.read_xref_from(parser, pos, xrefs)
         return
-
-    # read xref tables and trailers
-    def read_xref(self, parser, fallback=False):
-        """Reads all the XRefs in the PDF file and returns them."""
-        xrefs = []
-        parser.fallback = fallback
-        if parser.fallback:
-            xref = PDFXRefFallback()
-            xref.load(parser)
-            xrefs.append(xref)
-        else:
-            pos = self.find_xref(parser)
-            self.read_xref_from(parser, pos, xrefs)
-        return xrefs
