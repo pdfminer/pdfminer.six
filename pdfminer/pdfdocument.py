@@ -18,7 +18,7 @@ from pdfparser import PDFSyntaxError
 from pdfparser import PDFStreamParser
 from arcfour import Arcfour
 from utils import choplist, nunpack
-from utils import decode_text, ObjIdRange
+from utils import decode_text
 
 
 ##  Exceptions
@@ -154,7 +154,7 @@ class PDFXRefStream(PDFBaseXRef):
         self.data = None
         self.entlen = None
         self.fl1 = self.fl2 = self.fl3 = None
-        self.objid_ranges = []
+        self.ranges = []
         return
 
     def __repr__(self):
@@ -171,15 +171,14 @@ class PDFXRefStream(PDFBaseXRef):
         index_array = stream.get('Index', (0,size))
         if len(index_array) % 2 != 0:
             raise PDFSyntaxError('Invalid index number')
-        self.objid_ranges.extend( ObjIdRange(start, nobjs) 
-                                  for (start,nobjs) in choplist(2, index_array) )
+        self.ranges.extend(choplist(2, index_array))
         (self.fl1, self.fl2, self.fl3) = stream['W']
         self.data = stream.get_data()
         self.entlen = self.fl1+self.fl2+self.fl3
         self.trailer = stream.attrs
         if 1 <= debug:
             print >>sys.stderr, ('xref stream: objid=%s, fields=%d,%d,%d' %
-                             (', '.join(map(repr, self.objid_ranges)),
+                             (', '.join(map(repr, self.ranges)),
                               self.fl1, self.fl2, self.fl3))
         return
 
@@ -187,24 +186,22 @@ class PDFXRefStream(PDFBaseXRef):
         return self.trailer
 
     def get_objids(self):
-        for objid_range in self.objid_ranges:
-            for x in xrange(objid_range.get_start_id(), objid_range.get_end_id()+1):
-                yield x
+        for (start,nobjs) in self.ranges:
+            for i in xrange(nobjs):
+                yield start+i
         return
 
     def get_pos(self, objid):
-        offset = 0
-        found = False
-        for objid_range in self.objid_ranges:
-            if objid >= objid_range.get_start_id() and objid <= objid_range.get_end_id():
-                offset += objid - objid_range.get_start_id()
-                found = True
-                break
+        index = 0
+        for (start,nobjs) in self.ranges:
+            if start <= objid and objid < start+nobjs:
+                index += objid - start
             else:
-                offset += objid_range.get_nobjs()
-        if not found: raise KeyError(objid)
-        i = self.entlen * offset
-        ent = self.data[i:i+self.entlen]
+                index += nobjs
+        else:
+            raise KeyError(objid)
+        offset = self.entlen * index
+        ent = self.data[offset:offset+self.entlen]
         f1 = nunpack(ent[:self.fl1], 1)
         if f1 == 1:
             pos = nunpack(ent[self.fl1:self.fl1+self.fl2])

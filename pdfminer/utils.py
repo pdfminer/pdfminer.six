@@ -212,30 +212,6 @@ def matrix2str((a,b,c,d,e,f)):
     return '[%.2f,%.2f,%.2f,%.2f, (%.2f,%.2f)]' % (a,b,c,d,e,f)
 
 
-##  ObjIdRange
-##
-class ObjIdRange(object):
-
-    "A utility class to represent a range of object IDs."
-    
-    def __init__(self, start, nobjs):
-        self.start = start
-        self.nobjs = nobjs
-        return
-
-    def __repr__(self):
-        return '<ObjIdRange: %d-%d>' % (self.get_start_id(), self.get_end_id())
-
-    def get_start_id(self):
-        return self.start
-
-    def get_end_id(self):
-        return self.start + self.nobjs - 1
-
-    def get_nobjs(self):
-        return self.nobjs
-
-
 ##  Plane
 ##
 ##  A set-like data structure for objects placed on a plane.
