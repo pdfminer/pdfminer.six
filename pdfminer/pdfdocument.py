@@ -149,7 +149,30 @@ class PDFXRefFallback(PDFXRef):
             m = self.PDFOBJ_CUE.match(line)
             if not m: continue
             (objid, genno) = m.groups()
-            self.offsets[int(objid)] = (None, pos, int(genno))
+            objid = int(objid)
+            genno = int(genno)
+            self.offsets[objid] = (None, pos, genno)
+            # expand ObjStm.
+            (_,obj) = parser.nextobject()
+            if isinstance(obj, PDFStream) and obj.get('Type') is LITERAL_OBJSTM:
+                stream = stream_value(obj)
+                try:
+                    n = stream['N']
+                except KeyError:
+                    if STRICT:
+                        raise PDFSyntaxError('N is not defined: %r' % stream)
+                    n = 0
+                parser1 = PDFStreamParser(stream.get_data())
+                objs = []
+                try:
+                    while 1:
+                        (_,obj) = parser1.nextobject()
+                        objs.append(obj)
+                except PSEOF:
+                    pass
+                for index in xrange(n):
+                    objid1 = objs[index*2]
+                    self.offsets[objid1] = (objid, index, 0)
         return
 
 
@@ -411,6 +434,20 @@ class PDFDocument(object):
         return Arcfour(key).process(data)
 
     def _getobj_objstm(self, stream, index, objid):
+        if stream.objid in self._parsed_objs:
+            (objs,n) = self._parsed_objs[stream.objid]
+        else:
+            (objs,n) = self._get_objects(stream)
+            if self.caching:
+                self._parsed_objs[stream.objid] = (objs,n)
+        i = n*2+index
+        try:
+            obj = objs[i]
+        except IndexError:
+            raise PDFSyntaxError('index too big: %r' % index)
+        return obj
+
+    def _get_objects(self, stream):
         if stream.get('Type') is not LITERAL_OBJSTM:
             if STRICT:
                 raise PDFSyntaxError('Not a stream object: %r' % stream)
@@ -420,26 +457,16 @@ class PDFDocument(object):
             if STRICT:
                 raise PDFSyntaxError('N is not defined: %r' % stream)
             n = 0
-        if stream.objid in self._parsed_objs:
-            objs = self._parsed_objs[stream.objid]
-        else:
-            parser = PDFStreamParser(stream.get_data())
-            parser.set_document(self)
-            objs = []
-            try:
-                while 1:
-                    (_,obj) = parser.nextobject()
-                    objs.append(obj)
-            except PSEOF:
-                pass
-            if self.caching:
-                self._parsed_objs[stream.objid] = objs
-        i = n*2+index
+        parser = PDFStreamParser(stream.get_data())
+        parser.set_document(self)
+        objs = []
         try:
-            obj = objs[i]
-        except IndexError:
-            raise PDFSyntaxError('index too big: %r' % index)
-        return obj
+            while 1:
+                (_,obj) = parser.nextobject()
+                objs.append(obj)
+        except PSEOF:
+            pass
+        return (objs, n)
 
     KEYWORD_OBJ = KWD('obj')
     def _getobj_parse(self, pos, objid):
