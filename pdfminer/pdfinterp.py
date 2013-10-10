@@ -17,8 +17,9 @@ from pdftypes import str_value, list_value, dict_value, stream_value
 from pdffont import PDFFontError
 from pdffont import PDFType1Font, PDFTrueTypeFont, PDFType3Font
 from pdffont import PDFCIDFont
-from pdfparser import PDFDocument, PDFParser
-from pdfparser import PDFPasswordIncorrect
+from pdfparser import PDFParser
+from pdfdocument import PDFDocument
+from pdfdocument import PDFPasswordIncorrect
 from pdfcolor import PDFColorSpace
 from pdfcolor import PREDEFINED_COLORSPACE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB

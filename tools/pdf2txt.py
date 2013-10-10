@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 import sys
-from pdfminer.pdfparser import PDFDocument, PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
 from pdfminer.pdfdevice import PDFDevice, TagExtractor
 from pdfminer.converter import XMLConverter, HTMLConverter, TextConverter
