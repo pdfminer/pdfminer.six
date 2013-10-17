@@ -1,7 +1,5 @@
 #!/usr/bin/env python2
 import sys
-import os.path
-import gzip
 import cPickle as pickle
 
 
@@ -9,159 +7,189 @@ import cPickle as pickle
 ##
 class CMapConverter(object):
 
-    def __init__(self, check_codecs=[]):
-        self.check_codecs = check_codecs
+    def __init__(self, enc2codec={}):
+        self.enc2codec = enc2codec
         self.code2cid = {} # {'cmapname': ...}
         self.is_vertical = {}
         self.cid2unichr_h = {} # {cid: unichr}
         self.cid2unichr_v = {} # {cid: unichr}
         return
 
+    def get_encs(self):
+        return self.code2cid.keys()
+
+    def get_maps(self, enc):
+        if enc.endswith('-H'):
+            (hmapenc, vmapenc) = (enc, None)
+        elif enc == 'H':
+            (hmapenc, vmapenc) = ('H', 'V')
+        else:
+            (hmapenc, vmapenc) = (enc+'-H', enc+'-V')
+        if hmapenc in self.code2cid:
+            hmap = self.code2cid[hmapenc]
+        else:
+            hmap = {}
+            self.code2cid[hmapenc] = hmap
+        vmap = None
+        if vmapenc:
+            self.is_vertical[vmapenc] = True
+            if vmapenc in self.code2cid:
+                vmap = self.code2cid[vmapenc]
+            else:
+                vmap = {}
+                self.code2cid[vmapenc] = vmap
+        return (hmap, vmap)
+
     def load(self, fp):
-        names = []
+        encs = None
         for line in fp:
             (line,_,_) = line.strip().partition('#')
             if not line: continue
             values = line.split('\t')
-            if not names:
-                names = values
+            if encs is None:
+                encs = values
                 continue
-            d = dict( (k,v) for (k,v) in zip(names, values) if v != '*' )
-            cid = int(d['CID'])
-            for (key,value) in d.iteritems():
-                if key == 'CID': continue
-                self._register(cid, key, value)
-        return
-
-    def get_canonicals(self, name):
-        if name.endswith('-H'):
-            return (name, None)
-        elif name == 'H':
-            return ('H', 'V')
-        else:
-            return (name+'-H', name+'-V')
-
-    def get_unichr(self, codes):
-        # determine the "most popular" candidate.
-        d = {}
-        for code in codes:
-            char = unicode(code, 'utf-8')
-            if char not in d:
-                d[char] = 0
-            for codec in self.check_codecs:
+            
+            def put(dmap, code, cid, force=False):
+                for b in code[:-1]:
+                    b = ord(b)
+                    if b in dmap:
+                        dmap = dmap[b]
+                    else:
+                        d = {}
+                        dmap[b] = d
+                        dmap = d
+                b = ord(code[-1])
+                if force or ((b not in dmap) or dmap[b] == cid):
+                    dmap[b] = cid
+                return
+            
+            def add(unimap, enc, code):
                 try:
-                    char.encode(codec, 'strict')
-                    d[char] += 1
+                    codec = self.enc2codec[enc]
+                    c = code.decode(codec, 'strict')
+                    if len(c) == 1:
+                        if c not in unimap:
+                            unimap[c] = 0
+                        unimap[c] += 1
+                except KeyError:
+                    pass
                 except UnicodeError:
                     pass
-        chars = sorted(d.keys(), key=lambda char:d[char], reverse=True)
-        return chars[0]
+                return
+                
+            def pick(unimap):
+                chars = unimap.items()
+                chars.sort(key=(lambda (c,n):(n,-ord(c))), reverse=True)
+                (c,_) = chars[0]
+                return c
+                
+            cid = None
+            unimap_h = {}
+            unimap_v = {}
+            for (enc,value) in zip(encs, values):
+                if enc == 'CID':
+                    cid = int(value)
+                    continue
+                assert cid is not None
+                if value == '*':
+                    continue
 
-    def _register(self, cid, key, value):
-        def put(dmap, code, cid, force=False):
-            for b in code[:-1]:
-                b = ord(b)
-                if b in dmap:
-                    dmap = dmap[b]
-                else:
-                    d = {}
-                    dmap[b] = d
-                    dmap = d
-            b = ord(code[-1])
-            if force or ((b not in dmap) or dmap[b] == cid):
-                dmap[b] = cid
-            return
-
-        (hmapname, vmapname) = self.get_canonicals(key)
-        if hmapname in self.code2cid:
-            hmap = self.code2cid[hmapname]
-        else:
-            hmap = {}
-            self.code2cid[hmapname] = hmap
-        vmap = None
-        if vmapname:
-            self.is_vertical[vmapname] = True
-            if vmapname in self.code2cid:
-                vmap = self.code2cid[vmapname]
-            else:
-                vmap = {}
-                self.code2cid[vmapname] = vmap
-        
-        hcodes = []
-        vcodes = []
-        for code in value.split(','):
-            vertical = code.endswith('v')
-            if vertical:
-                code = code[:-1]
-            try:
-                code = code.decode('hex')
-            except:
-                code = chr(int(code, 16))
-            if vertical:
-                vcodes.append(code)
-            else:
-                hcodes.append(code)
-        
-        if vcodes:
-            assert vmap is not None
-            for code in vcodes:
-                put(vmap, code, cid, True)
-            for code in hcodes:
-                put(hmap, code, cid, True)
-            if key.endswith('-UTF8'):
-                if hcodes:
-                    self.cid2unichr_h[cid] = self.get_unichr(hcodes)
+                # hcodes, vcodes: encoded bytes for each writing mode.
+                hcodes = []
+                vcodes = []
+                for code in value.split(','):
+                    vertical = code.endswith('v')
+                    if vertical:
+                        code = code[:-1]
+                    try:
+                        code = code.decode('hex')
+                    except:
+                        code = chr(int(code, 16))
+                    if vertical:
+                        vcodes.append(code)
+                        add(unimap_v, enc, code)
+                    else:
+                        hcodes.append(code)
+                        add(unimap_h, enc, code)
+                # add cid to each map.
+                (hmap, vmap) = self.get_maps(enc)
                 if vcodes:
-                    self.cid2unichr_v[cid] = self.get_unichr(vcodes)
-        else:
-            for code in hcodes:
-                put(hmap, code, cid)
-                put(vmap, code, cid)
-            if key.endswith('-UTF8') and hcodes:
-                code = self.get_unichr(hcodes)
-                if cid not in self.cid2unichr_h:
-                    self.cid2unichr_h[cid] = code
-                if cid not in self.cid2unichr_v:
-                    self.cid2unichr_v[cid] = code
+                    assert vmap is not None
+                    for code in vcodes:
+                        put(vmap, code, cid, True)
+                    for code in hcodes:
+                        put(hmap, code, cid, True)
+                else:
+                    for code in hcodes:
+                        put(hmap, code, cid)
+                        put(vmap, code, cid)
+
+            # Determine the "most popular" candidate.
+            if unimap_h:
+                self.cid2unichr_h[cid] = pick(unimap_h)
+                self.cid2unichr_v[cid] = pick(unimap_v or unimap_h)
+        return
+
+    def dump_cmap(self, fp, enc):
+        data = dict(
+            IS_VERTICAL=self.is_vertical.get(enc, False),
+            CODE2CID=self.code2cid.get(enc),
+        )
+        fp.write(pickle.dumps(data))
+        return
+        
+    def dump_unicodemap(self, fp):
+        data = dict(
+            CID2UNICHR_H=self.cid2unichr_h,
+            CID2UNICHR_V=self.cid2unichr_v,
+        )
+        fp.write(pickle.dumps(data))
         return
 
 # main
 def main(argv):
-
-    def usage():
-        print 'usage: %s output_dir regname cid2code.txt codecs ...' % argv[0]
-        return 100
+    import getopt
+    import gzip
+    import os.path
     
-    args = argv[1:]
-    if len(args) < 3: return usage()
-    (outdir, regname, src) = args[:3]
-    check_codecs = args[3:]
+    def usage():
+        print 'usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]' % argv[0]
+        return 100
+    try:
+        (opts, args) = getopt.getopt(argv[1:], 'c:')
+    except getopt.GetoptError:
+        return usage()
+    enc2codec = {}
+    for (k, v) in opts:
+        if k == '-c':
+            (enc,_,codec) = v.partition('=')
+            enc2codec[enc] = codec
+    if not args: return usage()
+    outdir = args.pop(0)
+    if not args: return usage()
+    regname = args.pop(0)
 
-    print >>sys.stderr, 'reading %r...' % src
-    converter = CMapConverter(check_codecs)
-    fp = file(src)
-    converter.load(fp)
-    fp.close()
+    converter = CMapConverter(enc2codec)
+    for path in args:
+        print >>sys.stderr, 'reading: %r...' % path
+        fp = file(path)
+        converter.load(fp)
+        fp.close()
 
-    for (name, cmap) in converter.code2cid.iteritems():
-        fname = '%s.pickle.gz' % name
-        print >>sys.stderr, 'writing %r...' % fname
-        fp = gzip.open(os.path.join(outdir, fname), 'wb')
-        data = dict(
-            IS_VERTICAL=converter.is_vertical.get(name, False),
-            CODE2CID=cmap,
-        )
-        fp.write(pickle.dumps(data))
+    for enc in converter.get_encs():
+        fname = '%s.pickle.gz' % enc
+        path = os.path.join(outdir, fname)
+        print >>sys.stderr, 'writing: %r...' % path
+        fp = gzip.open(path, 'wb')
+        converter.dump_cmap(fp, enc)
         fp.close()
 
     fname = 'to-unicode-%s.pickle.gz' % regname
-    print >>sys.stderr, 'writing %r...' % fname
-    fp = gzip.open(os.path.join(outdir, fname), 'wb')
-    data = dict(
-        CID2UNICHR_H=converter.cid2unichr_h,
-        CID2UNICHR_V=converter.cid2unichr_v,
-    )
-    fp.write(pickle.dumps(data))
+    path = os.path.join(outdir, fname)
+    print >>sys.stderr, 'writing: %r...' % path
+    fp = gzip.open(path, 'wb')
+    converter.dump_unicodemap(fp)
     fp.close()
     return
 
