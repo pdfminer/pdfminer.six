@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import sys
 from psparser import LIT, KWD, STRICT
 from pdftypes import PDFObjectNotFound

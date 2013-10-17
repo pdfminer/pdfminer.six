@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 from distutils.core import setup
 from pdfminer import __version__
 
