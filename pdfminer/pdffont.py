@@ -641,7 +641,7 @@ class PDFCIDFont(PDFFont):
             strm = stream_value(spec['ToUnicode'])
             self.unicode_map = FileUnicodeMap()
             CMapParser(self.unicode_map, StringIO(strm.get_data())).run()
-        elif self.cidcoding == 'Adobe-Identity':
+        elif self.cidcoding in ('Adobe-Identity', 'Adobe-UCS'):
             if ttf:
                 try:
                     self.unicode_map = ttf.create_unicode_map()
