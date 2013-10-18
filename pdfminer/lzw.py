@@ -50,12 +50,12 @@ class LZWDecoder(object):
         return v
 
     def feed(self, code):
-        x = b''
+        x = ''
         if code == 256:
-            self.table = [bytes([i]) for i in range(256)] # 0-255
+            self.table = [ chr(c) for c in xrange(256) ] # 0-255
             self.table.append(None) # 256
             self.table.append(None) # 257
-            self.prevbuf = b''
+            self.prevbuf = ''
             self.nbits = 9
         elif code == 257:
             pass
@@ -69,7 +69,7 @@ class LZWDecoder(object):
                 self.table.append(self.prevbuf+self.prevbuf[:1])
                 x = self.table[code]
             else:
-                raise CorruptDataError()
+                raise CorruptDataError
             l = len(self.table)
             if l == 511:
                 self.nbits = 10
@@ -86,7 +86,6 @@ class LZWDecoder(object):
                 code = self.readbits(self.nbits)
             except EOFError:
                 break
-            x = self.feed(code)
             try:
                 x = self.feed(code)
             except CorruptDataError:

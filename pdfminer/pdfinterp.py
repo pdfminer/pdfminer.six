@@ -219,10 +219,7 @@ class PDFContentParser(PSStackParser):
                 self.istream += 1
             else:
                 raise PSEOF('Unexpected EOF, file truncated?')
-            data = strm.get_data()
-            if isinstance(data, bytes):
-                data = data.decode('latin-1')
-            self.fp = StringIO(data)
+            self.fp = StringIO(strm.get_data())
         return
 
     def seek(self, pos):
