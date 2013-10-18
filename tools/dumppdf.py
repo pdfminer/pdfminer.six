@@ -6,11 +6,11 @@
 #  options:
 #    -i objid : object id
 #
-import sys, os, re
-from pdfminer.psparser import PSKeyword, PSLiteral
+import sys, os.path, re
+from pdfminer.psparser import PSKeyword, PSLiteral, LIT
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines
-from pdfminer.pdftypes import PDFObjectNotFound
+from pdfminer.pdftypes import PDFObjectNotFound, PDFValueError
 from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
 from pdfminer.pdfpage import PDFPage
 
@@ -108,7 +108,7 @@ def dumpallobjs(out, doc, codec=None):
 
 # dumpoutline
 def dumpoutline(outfp, fname, objids, pagenos, password='',
-                dumpall=False, codec=None):
+                dumpall=False, codec=None, extractdir=None):
     fp = file(fname, 'rb')
     parser = PDFParser(fp)
     doc = PDFDocument(parser)
@@ -155,48 +155,46 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
     return
 
 # extractembedded
+LITERAL_FILESPEC = LIT('Filespec')
+LITERAL_EMBEDDEDFILE = LIT('EmbeddedFile')
 def extractembedded(outfp, fname, objids, pagenos, password='',
-                dumpall=False, codec=None):
-    doc = PDFDocument()
+                    dumpall=False, codec=None, extractdir=None):
+    def extract1(obj):
+        filename = os.path.basename(obj['UF'] or obj['F'])
+        fileref = obj['EF']['F']
+        fileobj = doc.getobj(fileref.objid)
+        if not isinstance(fileobj, PDFStream):
+            raise PDFValueError(
+                'unable to process PDF: reference for %r is not a PDFStream' %
+                (filename))
+        if fileobj.get('Type') is not LITERAL_EMBEDDEDFILE:
+            raise PDFValueError(
+                'unable to process PDF: reference for %r is not an EmbeddedFile' %
+                (filename))
+        path = os.path.join(extractdir, filename)
+        if os.path.exists(path):
+            raise IOError('file exists: %r' % path)
+        print >>sys.stderr, 'extracting: %r' % path
+        out = file(path, 'wb')
+        out.write(fileobj.get_data())
+        out.close()
+        return
+    
     fp = file(fname, 'rb')
     parser = PDFParser(fp)
-    parser.set_document(doc)
-    doc.set_parser(parser)
+    doc = PDFDocument(parser)
     doc.initialize(password)
 
-    cwd = os.path.normpath(os.getcwd()) + '/'
     for xref in doc.xrefs:
         for objid in xref.get_objids():
             obj = doc.getobj(objid)
-            if isinstance(obj, dict):
-                objtype = obj.get('Type', '')
-                if isinstance(objtype, PSLiteral) and objtype.name == 'Filespec':
-                    filename = obj['UF'] or obj['F']
-                    fileref = obj['EF']['F']
-                    fileobj = doc.getobj(fileref.objid)
-                    if not isinstance(fileobj, PDFStream):
-                        raise Exception("unable to process PDF: reference for %s is not a PDFStream" % (filename))
-                    if not isinstance(fileobj['Type'], PSLiteral) or not fileobj['Type'].name == 'EmbeddedFile':
-                        raise Exception("unable to process PDF: reference for %s is not an EmbeddedFile" % (filename))
-
-                    print "extracting", filename
-                    absfilename = os.path.normpath(os.path.abspath(filename))
-                    if not absfilename.startswith(cwd):
-                        raise Exception("filename %s is trying to escape to parent directories.." % (filename))
-
-                    dirname = os.path.dirname(absfilename)
-                    if not os.path.isdir(dirname):
-                        os.makedirs(dirname)
-
-                    # don't overwrite anything
-                    fd = os.open(absfilename, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
-                    f = os.fdopen(fd, 'wb')
-                    f.write(fileobj.get_data())
-                    f.close()
+            if isinstance(obj, dict) and obj.get('Type') is LITERAL_FILESPEC:
+                extract1(obj)
+    return
 
 # dumppdf
 def dumppdf(outfp, fname, objids, pagenos, password='',
-            dumpall=False, codec=None):
+            dumpall=False, codec=None, extractdir=None):
     fp = file(fname, 'rb')
     parser = PDFParser(fp)
     doc = PDFDocument(parser)
@@ -246,6 +244,7 @@ def main(argv):
     extractdir = None
     for (k, v) in opts:
         if k == '-d': debug += 1
+        elif k == '-o': outfp = file(v, 'wb')
         elif k == '-i': objids.extend( int(x) for x in v.split(',') )
         elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
         elif k == '-P': password = v
@@ -254,19 +253,16 @@ def main(argv):
         elif k == '-b': codec = 'binary'
         elif k == '-t': codec = 'text'
         elif k == '-T': proc = dumpoutline
-        elif k == '-E': extractdir = v
-        elif k == '-o': outfp = file(v, 'wb')
+        elif k == '-E':
+            extractdir = v
+            proc = extractembedded
     #
     PDFDocument.debug = debug
     PDFParser.debug = debug
     #
-    if extractdir:
-        proc = extractembedded
-        os.chdir(extractdir)
-    #
     for fname in args:
         proc(outfp, fname, objids, pagenos, password=password,
-             dumpall=dumpall, codec=codec)
+             dumpall=dumpall, codec=codec, extractdir=extractdir)
     return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))
