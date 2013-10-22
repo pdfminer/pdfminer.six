@@ -24,7 +24,6 @@ from pdfcolor import PDFColorSpace
 from pdfcolor import PREDEFINED_COLORSPACE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
 from pdfcolor import LITERAL_DEVICE_CMYK
-from pdfpage import PDFPage
 from utils import choplist
 from utils import mult_matrix, MATRIX_IDENTITY
 
@@ -804,29 +803,3 @@ class PDFPageInterpreter(object):
             else:
                 self.push(obj)
         return
-
-
-##  process_pdf
-##
-class PDFTextExtractionNotAllowed(PDFInterpreterError): pass
-
-def process_pdf(rsrcmgr, device, fp, pagenos=None, maxpages=0, password='',
-                caching=True, check_extractable=True):
-    # Create a PDF parser object associated with the file object.
-    parser = PDFParser(fp)
-    # Create a PDF document object that stores the document structure.
-    doc = PDFDocument(parser, caching=caching)
-    # Supply the document password for initialization.
-    # (If no password is set, give an empty string.)
-    doc.initialize(password)
-    # Check if the document allows text extraction. If not, abort.
-    if check_extractable and not doc.is_extractable:
-        raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fp)
-    # Create a PDF interpreter object.
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    # Process each page contained in the document.
-    for (pageno,page) in enumerate(PDFPage.create_pages(doc)):
-        if pagenos and (pageno not in pagenos): continue
-        interpreter.process_page(page)
-        if maxpages and maxpages <= pageno+1: break
-    return
