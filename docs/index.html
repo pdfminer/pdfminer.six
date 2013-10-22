@@ -9,7 +9,7 @@
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Tue Oct 22 10:00:03 UTC 2013
+Last Modified: Tue Oct 22 10:05:22 UTC 2013
 <!-- hhmts end -->
 </div>
 
@@ -152,10 +152,11 @@ writing 'CNS1_H.py'...
 On Windows machines which don't have <code>make</code> command, 
 paste the following commands on a command line prompt:
 <blockquote><pre>
-<strong>python tools\conv_cmap.py pdfminer\cmap Adobe-CNS1 cmaprsrc\cid2code_Adobe_CNS1.txt cp950 big5</strong>
-<strong>python tools\conv_cmap.py pdfminer\cmap Adobe-GB1 cmaprsrc\cid2code_Adobe_GB1.txt cp936 gb2312</strong>
-<strong>python tools\conv_cmap.py pdfminer\cmap Adobe-Japan1 cmaprsrc\cid2code_Adobe_Japan1.txt cp932 euc-jp</strong>
-<strong>python tools\conv_cmap.py pdfminer\cmap Adobe-Korea1 cmaprsrc\cid2code_Adobe_Korea1.txt cp949 euc-kr</strong>
+<strong>mkdir pdfminer\cmap</strong>
+<strong>python tools\conv_cmap.py -c B5=cp950 -c UniCNS-UTF8=utf-8 pdfminer\cmap Adobe-CNS1 cmaprsrc\cid2code_Adobe_CNS1.txt</strong>
+<strong>python tools\conv_cmap.py -c GBK-EUC=cp936 -c UniGB-UTF8=utf-8 pdfminer\cmap Adobe-GB1 cmaprsrc\cid2code_Adobe_GB1.txt</strong>
+<strong>python tools\conv_cmap.py -c RKSJ=cp932 -c EUC=euc-jp -c UniJIS-UTF8=utf-8 pdfminer\cmap Adobe-Japan1 cmaprsrc\cid2code_Adobe_Japan1.txt</strong>
+<strong>python tools\conv_cmap.py -c KSC-EUC=euc-kr -c KSC-Johab=johab -c KSCms-UHC=cp949 -c UniKS-UTF8=utf-8 pdfminer\cmap Adobe-Korea1 cmaprsrc\cid2code_Adobe_Korea1.txt</strong>
 <strong>python setup.py install</strong>
 </pre></blockquote>
 
