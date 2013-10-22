@@ -27,7 +27,7 @@ sdist: distclean MANIFEST.in
 register: distclean MANIFEST.in
 	$(PYTHON) setup.py sdist upload register
 
-WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
+WEBDIR=$$HOME/work/Site/unixuser.org/python/$(PACKAGE)
 publish:
 	$(CP) docs/*.html docs/*.png docs/*.css $(WEBDIR)
 
