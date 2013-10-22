@@ -534,7 +534,8 @@ class LTLayoutContainer(LTContainer):
         return
 
     def get_textboxes(self, laparams, lines):
-        plane = Plane(lines)
+        plane = Plane(self.bbox)
+        plane.extend(lines)
         boxes = {}
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
@@ -596,7 +597,8 @@ class LTLayoutContainer(LTContainer):
                 obj2 = boxes[j]
                 dists.append((0, dist(obj1, obj2), obj1, obj2))
         dists.sort()
-        plane = Plane(boxes)
+        plane = Plane(self.bbox)
+        plane.extend(boxes)
         while dists:
             (c,d,obj1,obj2) = dists.pop(0)
             if c == 0 and isany(obj1, obj2):

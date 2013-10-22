@@ -221,13 +221,11 @@ def matrix2str((a,b,c,d,e,f)):
 ##
 class Plane(object):
 
-    def __init__(self, objs=None, gridsize=50):
+    def __init__(self, bbox, gridsize=50):
         self._objs = set()
         self._grid = {}
         self.gridsize = gridsize
-        if objs is not None:
-            for obj in objs:
-                self.add(obj)
+        (self.x0, self.y0, self.x1, self.y1) = bbox
         return
 
     def __repr__(self):
@@ -243,9 +241,19 @@ class Plane(object):
         return obj in self._objs
 
     def _getrange(self, (x0,y0,x1,y1)):
+        x0 = max(self.x0, x0)
+        y0 = max(self.y0, y0)
+        x1 = min(self.x1, x1)
+        y1 = min(self.y1, y1)
         for y in drange(y0, y1, self.gridsize):
             for x in drange(x0, x1, self.gridsize):
                 yield (x,y)
+        return
+
+    # extend(objs)
+    def extend(self, objs):
+        for obj in objs:
+            self.add(obj)
         return
     
     # add(obj): place an object.
