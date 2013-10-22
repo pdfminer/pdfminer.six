@@ -47,6 +47,7 @@ class CMapConverter(object):
             if not line: continue
             values = line.split('\t')
             if encs is None:
+                assert values[0] == 'CID'
                 encs = values
                 continue
             
@@ -84,17 +85,13 @@ class CMapConverter(object):
                 (c,_) = chars[0]
                 return c
                 
-            cid = None
+            cid = int(values[0])
             unimap_h = {}
             unimap_v = {}
             for (enc,value) in zip(encs, values):
-                if enc == 'CID':
-                    cid = int(value)
-                    continue
-                assert cid is not None
-                if value == '*':
-                    continue
-
+                if enc == 'CID': continue
+                if value == '*': continue
+                
                 # hcodes, vcodes: encoded bytes for each writing mode.
                 hcodes = []
                 vcodes = []
@@ -124,11 +121,13 @@ class CMapConverter(object):
                     for code in hcodes:
                         put(hmap, code, cid)
                         put(vmap, code, cid)
-
+            
             # Determine the "most popular" candidate.
             if unimap_h:
                 self.cid2unichr_h[cid] = pick(unimap_h)
+            if unimap_v or unimap_h:
                 self.cid2unichr_v[cid] = pick(unimap_v or unimap_h)
+
         return
 
     def dump_cmap(self, fp, enc):
