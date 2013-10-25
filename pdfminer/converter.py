@@ -204,7 +204,7 @@ class HTMLConverter(PDFConverter):
         }
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None, 
-                 scale=1, fontscale=0.7, layoutmode='normal', showpageno=True,
+                 scale=1, fontscale=1.0, layoutmode='normal', showpageno=True,
                  pagemargin=50, imagewriter=None,
                  rect_colors={'curve':'black', 'page':'gray'},
                  text_colors={'char':'black'}):
@@ -279,7 +279,7 @@ class HTMLConverter(PDFConverter):
             self.write('</span>\n')
         return
 
-    def begin_textbox(self, color, borderwidth, x, y, w, h, writing_mode):
+    def begin_div(self, color, borderwidth, x, y, w, h, writing_mode=False):
         self._fontstack.append(self._font)
         self._font = None
         self.write('<div style="position:absolute; border: %s %dpx solid; writing-mode:%s; '
@@ -287,6 +287,13 @@ class HTMLConverter(PDFConverter):
                    (color, borderwidth, writing_mode,
                     x*self.scale, (self._yoffset-y)*self.scale,
                     w*self.scale, h*self.scale))
+        return
+
+    def end_div(self, color):
+        if self._font is not None:
+            self.write('</span>')
+        self._font = self._fontstack.pop()
+        self.write('</div>')
         return
     
     def put_text(self, text, fontname, fontsize):
@@ -302,13 +309,6 @@ class HTMLConverter(PDFConverter):
 
     def put_newline(self):
         self.write('<br>')
-        return
-
-    def end_textbox(self, color):
-        if self._font is not None:
-            self.write('</span>')
-        self._font = self._fontstack.pop()
-        self.write('</div>')
         return
 
     def receive_layout(self, ltpage):
@@ -334,9 +334,10 @@ class HTMLConverter(PDFConverter):
             elif isinstance(item, LTCurve):
                 self.place_border('curve', 1, item)
             elif isinstance(item, LTFigure):
-                self.place_border('figure', 1, item)
+                self.begin_div('figure', 1, item.x0, item.y1, item.width, item.height)
                 for child in item:
                     render(child)
+                self.end_div('figure')
             elif isinstance(item, LTImage):
                 self.place_image(item, 1, item.x0, item.y1, item.width, item.height)
             else:
@@ -360,11 +361,11 @@ class HTMLConverter(PDFConverter):
                         if self.layoutmode != 'loose':
                             self.put_newline()
                     elif isinstance(item, LTTextBox):
-                        self.begin_textbox('textbox', 1, item.x0, item.y1, item.width, item.height,
-                                           item.get_writing_mode())
+                        self.begin_div('textbox', 1, item.x0, item.y1, item.width, item.height,
+                                       item.get_writing_mode())
                         for child in item:
                             render(child)
-                        self.end_textbox('textbox')
+                        self.end_div('textbox')
                     elif isinstance(item, LTChar):
                         self.put_text(item.get_text(), item.fontname, item.size)
                     elif isinstance(item, LTText):
