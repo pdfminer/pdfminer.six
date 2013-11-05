@@ -66,8 +66,7 @@ Command Line Tools
 PDFMiner comes with two handy tools:
 pdf2txt.py and dumppdf.py.
 
-pdf2txt.py
-----------
+**pdf2txt.py**
 
 pdf2txt.py extracts text contents from a PDF file.
 It extracts all the text that are to be rendered programmatically,
@@ -80,8 +79,7 @@ You cannot extract any text from a PDF document which does not have extraction p
 
 (For details, refer to the html document.)
 
-dumppdf.py
-----------
+**dumppdf.py**
 
 dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format. 
 This program is primarily for debugging purposes,
@@ -92,6 +90,7 @@ but it's also possible to extract some meaningful contents (e.g. images).
 TODO
 ----
 
+ * Proper test cases.
  * PEP-8 and PEP-257 conformance.
  * Better documentation.
  * Crypt stream filter support.
