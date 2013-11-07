@@ -24,7 +24,7 @@ def rldecode(data):
     '1234567777777abcde'
     """
     decoded = []
-    i=0
+    i = 0
     while i < len(data):
         #print "data[%d]=:%d:" % (i,ord(data[i]))
         length = ord(data[i])

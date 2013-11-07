@@ -5,8 +5,10 @@ import os, os.path
 from pdftypes import LITERALS_DCT_DECODE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
 
+
 def align32(x):
     return ((x+3)/4)*4
+
 
 ##  BMPWriter
 ##
@@ -36,12 +38,12 @@ class BMPWriter(object):
         self.fp.write(info)
         if ncols == 2:
             # B&W color table
-            for i in (0,255):
-                self.fp.write(struct.pack('BBBx', i,i,i))
+            for i in (0, 255):
+                self.fp.write(struct.pack('BBBx', i, i, i))
         elif ncols == 256:
             # grayscale color table
             for i in xrange(256):
-                self.fp.write(struct.pack('BBBx', i,i,i))
+                self.fp.write(struct.pack('BBBx', i, i, i))
         self.pos0 = self.fp.tell()
         self.pos1 = self.pos0 + self.datasize
         return
@@ -68,7 +70,7 @@ class ImageWriter(object):
         (width, height) = image.srcsize
         if len(filters) == 1 and filters[0] in LITERALS_DCT_DECODE:
             ext = '.jpg'
-        elif (image.bits == 1 or 
+        elif (image.bits == 1 or
               image.bits == 8 and image.colorspace in (LITERAL_DEVICE_RGB, LITERAL_DEVICE_GRAY)):
             ext = '.%dx%d.bmp' % (width, height)
         else:
@@ -82,7 +84,7 @@ class ImageWriter(object):
                 from PIL import Image
                 from PIL import ImageChops
                 ifp = cStringIO.StringIO(raw_data)
-                i = Image.open(ifp) 
+                i = Image.open(ifp)
                 i = ImageChops.invert(i)
                 i = i.convert('RGB')
                 i.save(fp, 'JPEG')

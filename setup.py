@@ -7,9 +7,9 @@ setup(
     version=__version__,
     description='PDF parser and analyzer',
     long_description='''PDFMiner is a tool for extracting information from PDF documents.
-Unlike other PDF-related tools, it focuses entirely on getting 
+Unlike other PDF-related tools, it focuses entirely on getting
 and analyzing text data. PDFMiner allows to obtain
-the exact location of texts in a page, as well as 
+the exact location of texts in a page, as well as
 other information such as fonts or lines.
 It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible

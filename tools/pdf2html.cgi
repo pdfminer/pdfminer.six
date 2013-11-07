@@ -159,7 +159,7 @@ class WebApp(object):
 
     def convert(self):
         self.form = cgi.FieldStorage(fp=self.infp, environ=self.environ)
-        if (self.method != 'POST' or 
+        if (self.method != 'POST' or
             'c' not in self.form or
             'f' not in self.form):
             self.response_200()

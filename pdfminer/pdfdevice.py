@@ -27,24 +27,31 @@ class PDFDevice(object):
 
     def begin_tag(self, tag, props=None):
         return
+
     def end_tag(self):
         return
+
     def do_tag(self, tag, props=None):
         return
 
     def begin_page(self, page, ctm):
         return
+
     def end_page(self, page):
         return
+
     def begin_figure(self, name, bbox, matrix):
         return
+
     def end_figure(self, name):
         return
 
     def paint_path(self, graphicstate, stroke, fill, evenodd, path):
         return
+
     def render_image(self, name, stream):
         return
+
     def render_string(self, textstate, seq):
         return
 
@@ -73,8 +80,8 @@ class PDFTextDevice(PDFDevice):
                 seq, matrix, textstate.linematrix, font, fontsize,
                 scaling, charspace, wordspace, rise, dxscale)
         return
-    
-    def render_string_horizontal(self, seq, matrix, (x,y), 
+
+    def render_string_horizontal(self, seq, matrix, (x, y),
                                  font, fontsize, scaling, charspace, wordspace, rise, dxscale):
         needcharspace = False
         for obj in seq:
@@ -85,14 +92,14 @@ class PDFTextDevice(PDFDevice):
                 for cid in font.decode(obj):
                     if needcharspace:
                         x += charspace
-                    x += self.render_char(translate_matrix(matrix, (x,y)),
+                    x += self.render_char(translate_matrix(matrix, (x, y)),
                                           font, fontsize, scaling, rise, cid)
                     if cid == 32 and wordspace:
                         x += wordspace
                     needcharspace = True
         return (x, y)
 
-    def render_string_vertical(self, seq, matrix, (x,y), 
+    def render_string_vertical(self, seq, matrix, (x, y),
                                font, fontsize, scaling, charspace, wordspace, rise, dxscale):
         needcharspace = False
         for obj in seq:
@@ -103,7 +110,7 @@ class PDFTextDevice(PDFDevice):
                 for cid in font.decode(obj):
                     if needcharspace:
                         y += charspace
-                    y += self.render_char(translate_matrix(matrix, (x,y)), 
+                    y += self.render_char(translate_matrix(matrix, (x, y)),
                                           font, fontsize, scaling, rise, cid)
                     if cid == 32 and wordspace:
                         y += wordspace
@@ -131,7 +138,8 @@ class TagExtractor(PDFDevice):
         font = textstate.font
         text = ''
         for obj in seq:
-            if not isinstance(obj, str): continue
+            if not isinstance(obj, str):
+                continue
             chars = font.decode(obj)
             for cid in chars:
                 try:
@@ -155,8 +163,8 @@ class TagExtractor(PDFDevice):
     def begin_tag(self, tag, props=None):
         s = ''
         if isinstance(props, dict):
-            s = ''.join( ' %s="%s"' % (enc(k), enc(str(v))) for (k,v)
-                         in sorted(props.iteritems()) )
+            s = ''.join(' %s="%s"' % (enc(k), enc(str(v))) for (k, v)
+                        in sorted(props.iteritems()))
         self.outfp.write('<%s%s>' % (enc(tag.name), s))
         self._stack.append(tag)
         return

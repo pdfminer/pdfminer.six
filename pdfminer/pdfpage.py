@@ -39,7 +39,7 @@ class PDFPage(object):
 
     def __init__(self, doc, pageid, attrs):
         """Initialize a page object.
-        
+
         doc: a PDFDocument object.
         pageid: any Python object that can uniquely identify the page.
         attrs: a dictionary of page attributes.
@@ -62,7 +62,7 @@ class PDFPage(object):
         else:
             contents = []
         if not isinstance(contents, list):
-            contents = [ contents ]
+            contents = [contents]
         self.contents = contents
         return
 
@@ -70,6 +70,7 @@ class PDFPage(object):
         return '<PDFPage: Resources=%r, MediaBox=%r>' % (self.resources, self.mediabox)
 
     INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
+
     @classmethod
     def create_pages(klass, document, debug=0):
         def search(obj, parent):
@@ -79,7 +80,7 @@ class PDFPage(object):
             else:
                 objid = obj.objid
                 tree = dict_value(obj).copy()
-            for (k,v) in parent.iteritems():
+            for (k, v) in parent.iteritems():
                 if k in klass.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
             if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
@@ -94,7 +95,7 @@ class PDFPage(object):
                 yield (objid, tree)
         pages = False
         if 'Pages' in document.catalog:
-            for (objid,tree) in search(document.catalog['Pages'], document.catalog):
+            for (objid, tree) in search(document.catalog['Pages'], document.catalog):
                 yield klass(document, objid, tree)
                 pages = True
         if not pages:
@@ -109,7 +110,8 @@ class PDFPage(object):
                         pass
         return
 
-    class PDFTextExtractionNotAllowed(PDFEncryptionError): pass
+    class PDFTextExtractionNotAllowed(PDFEncryptionError):
+        pass
 
     @classmethod
     def get_pages(klass, fp,
@@ -126,8 +128,10 @@ class PDFPage(object):
         if check_extractable and not doc.is_extractable:
             raise klass.PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fp)
         # Process each page contained in the document.
-        for (pageno,page) in enumerate(klass.create_pages(doc)):
-            if pagenos and (pageno not in pagenos): continue
+        for (pageno, page) in enumerate(klass.create_pages(doc)):
+            if pagenos and (pageno not in pagenos):
+                continue
             yield page
-            if maxpages and maxpages <= pageno+1: break
+            if maxpages and maxpages <= pageno+1:
+                break
         return

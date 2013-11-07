@@ -29,7 +29,7 @@ class BitParser(object):
         for i in xrange(len(bits)):
             if 0 < i:
                 if p[b] is None:
-                    p[b] = [None,None]
+                    p[b] = [None, None]
                 p = p[b]
             if bits[i] == '1':
                 b = 1
@@ -41,7 +41,7 @@ class BitParser(object):
     def feedbytes(self, data):
         for c in data:
             b = ord(c)
-            for m in (128,64,32,16,8,4,2,1):
+            for m in (128, 64, 32, 16, 8, 4, 2, 1):
                 self._parse_bit(b & m)
         return
 
@@ -62,7 +62,7 @@ class BitParser(object):
 ##
 class CCITTG4Parser(BitParser):
 
-    MODE = [None,None]
+    MODE = [None, None]
     BitParser.add(MODE, 0,   '1')
     BitParser.add(MODE, +1,  '011')
     BitParser.add(MODE, -1,  '010')
@@ -82,7 +82,7 @@ class CCITTG4Parser(BitParser):
     BitParser.add(MODE, 'x7', '0000001110')
     BitParser.add(MODE, 'e', '000000000001000000000001')
 
-    WHITE = [None,None]
+    WHITE = [None, None]
     BitParser.add(WHITE, 0   , '00110101')
     BitParser.add(WHITE, 1   , '000111')
     BitParser.add(WHITE, 2   , '0111')
@@ -188,7 +188,7 @@ class CCITTG4Parser(BitParser):
     BitParser.add(WHITE, 2496, '000000011110')
     BitParser.add(WHITE, 2560, '000000011111')
 
-    BLACK = [None,None]
+    BLACK = [None, None]
     BitParser.add(BLACK, 0   , '0000110111')
     BitParser.add(BLACK, 1   , '010')
     BitParser.add(BLACK, 2   , '11')
@@ -294,25 +294,30 @@ class CCITTG4Parser(BitParser):
     BitParser.add(BLACK, 2496, '000000011110')
     BitParser.add(BLACK, 2560, '000000011111')
 
-    UNCOMPRESSED = [None,None]
-    BitParser.add(UNCOMPRESSED, '1' , '1')
-    BitParser.add(UNCOMPRESSED, '01' , '01')
-    BitParser.add(UNCOMPRESSED, '001' , '001')
-    BitParser.add(UNCOMPRESSED, '0001' , '0001')
-    BitParser.add(UNCOMPRESSED, '00001' , '00001')
-    BitParser.add(UNCOMPRESSED, '00000' , '000001')
-    BitParser.add(UNCOMPRESSED, 'T00' , '00000011')
-    BitParser.add(UNCOMPRESSED, 'T10' , '00000010')
-    BitParser.add(UNCOMPRESSED, 'T000' , '000000011')
-    BitParser.add(UNCOMPRESSED, 'T100' , '000000010')
-    BitParser.add(UNCOMPRESSED, 'T0000' , '0000000011')
-    BitParser.add(UNCOMPRESSED, 'T1000' , '0000000010')
-    BitParser.add(UNCOMPRESSED, 'T00000' , '00000000011')
-    BitParser.add(UNCOMPRESSED, 'T10000' , '00000000010')
-    
-    class EOFB(Exception): pass
-    class InvalidData(Exception): pass
-    class ByteSkip(Exception): pass
+    UNCOMPRESSED = [None, None]
+    BitParser.add(UNCOMPRESSED, '1', '1')
+    BitParser.add(UNCOMPRESSED, '01', '01')
+    BitParser.add(UNCOMPRESSED, '001', '001')
+    BitParser.add(UNCOMPRESSED, '0001', '0001')
+    BitParser.add(UNCOMPRESSED, '00001', '00001')
+    BitParser.add(UNCOMPRESSED, '00000', '000001')
+    BitParser.add(UNCOMPRESSED, 'T00', '00000011')
+    BitParser.add(UNCOMPRESSED, 'T10', '00000010')
+    BitParser.add(UNCOMPRESSED, 'T000', '000000011')
+    BitParser.add(UNCOMPRESSED, 'T100', '000000010')
+    BitParser.add(UNCOMPRESSED, 'T0000', '0000000011')
+    BitParser.add(UNCOMPRESSED, 'T1000', '0000000010')
+    BitParser.add(UNCOMPRESSED, 'T00000', '00000000011')
+    BitParser.add(UNCOMPRESSED, 'T10000', '00000000010')
+
+    class EOFB(Exception):
+        pass
+
+    class InvalidData(Exception):
+        pass
+
+    class ByteSkip(Exception):
+        pass
 
     def __init__(self, width, bytealign=False):
         BitParser.__init__(self)
@@ -325,7 +330,7 @@ class CCITTG4Parser(BitParser):
         for c in data:
             b = ord(c)
             try:
-                for m in (128,64,32,16,8,4,2,1):
+                for m in (128, 64, 32, 16, 8, 4, 2, 1):
                     self._parse_bit(b & m)
             except self.ByteSkip:
                 self._accept = self._parse_mode
@@ -359,7 +364,8 @@ class CCITTG4Parser(BitParser):
             raise self.InvalidData(mode)
 
     def _parse_horiz1(self, n):
-        if n is None: raise self.InvalidData
+        if n is None:
+            raise self.InvalidData
         self._n1 += n
         if n < 64:
             self._n2 = 0
@@ -371,7 +377,8 @@ class CCITTG4Parser(BitParser):
             return self.BLACK
 
     def _parse_horiz2(self, n):
-        if n is None: raise self.InvalidData
+        if n is None:
+            raise self.InvalidData
         self._n2 += n
         if n < 64:
             self._color = 1-self._color
@@ -385,9 +392,10 @@ class CCITTG4Parser(BitParser):
             return self.BLACK
 
     def _parse_uncompressed(self, bits):
-        if not bits: raise self.InvalidData
+        if not bits:
+            raise self.InvalidData
         if bits.startswith('T'):
-            self._accept = self._parse_mode            
+            self._accept = self._parse_mode
             self._color = int(bits[1])
             self._do_uncompressed(bits[2:])
             return self.MODE
@@ -396,17 +404,17 @@ class CCITTG4Parser(BitParser):
             return self.UNCOMPRESSED
 
     def _get_bits(self):
-        return ''.join( str(b) for b in self._curline[:self._curpos] )
+        return ''.join(str(b) for b in self._curline[:self._curpos])
 
     def _get_refline(self, i):
         if i < 0:
-            return '[]'+''.join( str(b) for b in self._refline )
+            return '[]'+''.join(str(b) for b in self._refline)
         elif len(self._refline) <= i:
-            return ''.join( str(b) for b in self._refline )+'[]'
+            return ''.join(str(b) for b in self._refline)+'[]'
         else:
-            return (''.join( str(b) for b in self._refline[:i] )+
-                    '['+str(self._refline[i])+']'+
-                    ''.join( str(b) for b in self._refline[i+1:] ))
+            return (''.join(str(b) for b in self._refline[:i]) +
+                    '['+str(self._refline[i])+']' +
+                    ''.join(str(b) for b in self._refline[i+1:]))
 
     def reset(self):
         self._y = 0
@@ -417,16 +425,16 @@ class CCITTG4Parser(BitParser):
         return
 
     def output_line(self, y, bits):
-        print y, ''.join( str(b) for b in bits )
+        print y, ''.join(str(b) for b in bits)
         return
-    
+
     def _reset_line(self):
         self._refline = self._curline
         self._curline = array.array('b', [1]*self.width)
         self._curpos = -1
         self._color = 1
         return
-        
+
     def _flush_line(self):
         if self.width <= self._curpos:
             self.output_line(self._y, self._curline)
@@ -442,12 +450,13 @@ class CCITTG4Parser(BitParser):
         x1 = self._curpos+1
         while 1:
             if x1 == 0:
-                if (self._color == 1 and
-                    self._refline[x1] != self._color): break
+                if (self._color == 1 and self._refline[x1] != self._color):
+                    break
             elif x1 == len(self._refline):
                 break
             elif (self._refline[x1-1] == self._color and
-                  self._refline[x1] != self._color): break
+                  self._refline[x1] != self._color):
+                break
             x1 += 1
         x1 += dx
         x0 = max(0, self._curpos)
@@ -461,50 +470,54 @@ class CCITTG4Parser(BitParser):
         self._curpos = x1
         self._color = 1-self._color
         return
-    
+
     def _do_pass(self):
         #print '* pass: curpos=%r, color=%r' % (self._curpos, self._color)
         #print '  refline:', self._get_refline(self._curpos+1)
         x1 = self._curpos+1
         while 1:
             if x1 == 0:
-                if (self._color == 1 and
-                    self._refline[x1] != self._color): break
+                if (self._color == 1 and self._refline[x1] != self._color):
+                    break
             elif x1 == len(self._refline):
                 break
             elif (self._refline[x1-1] == self._color and
-                  self._refline[x1] != self._color): break
+                  self._refline[x1] != self._color):
+                break
             x1 += 1
         while 1:
             if x1 == 0:
-                if (self._color == 0 and
-                    self._refline[x1] == self._color): break
+                if (self._color == 0 and self._refline[x1] == self._color):
+                    break
             elif x1 == len(self._refline):
                 break
             elif (self._refline[x1-1] != self._color and
-                  self._refline[x1] == self._color): break
+                  self._refline[x1] == self._color):
+                break
             x1 += 1
         for x in xrange(self._curpos, x1):
             self._curline[x] = self._color
         self._curpos = x1
         return
-    
+
     def _do_horizontal(self, n1, n2):
         #print '* horizontal(%d,%d): curpos=%r, color=%r' % (n1, n2, self._curpos, self._color)
         if self._curpos < 0:
             self._curpos = 0
         x = self._curpos
         for _ in xrange(n1):
-            if len(self._curline) <= x: break
+            if len(self._curline) <= x:
+                break
             self._curline[x] = self._color
             x += 1
         for _ in xrange(n2):
-            if len(self._curline) <= x: break
+            if len(self._curline) <= x:
+                break
             self._curline[x] = 1-self._color
             x += 1
         self._curpos = x
         return
-    
+
     def _do_uncompressed(self, bits):
         #print '* uncompressed(%r): curpos=%r' % (bits, self._curpos)
         for c in bits:
@@ -513,15 +526,16 @@ class CCITTG4Parser(BitParser):
             self._flush_line()
         return
 
+import unittest
+
 
 ##  Test cases
 ##
-import unittest
 class TestCCITTG4Parser(unittest.TestCase):
 
     def get_parser(self, bits):
         parser = CCITTG4Parser(len(bits))
-        parser._curline = [ int(c) for c in bits ]
+        parser._curline = [int(c) for c in bits]
         parser._reset_line()
         return parser
 
@@ -656,7 +670,7 @@ class TestCCITTG4Parser(unittest.TestCase):
         parser._do_vertical(-1)
         parser._do_vertical(-1)
         parser._do_vertical(1)
-        parser._do_horizontal(1,1)
+        parser._do_horizontal(1, 1)
         self.assertEqual(parser._get_bits(), '011101')
         return
 
@@ -673,23 +687,23 @@ class TestCCITTG4Parser(unittest.TestCase):
 ##  CCITTFaxDecoder
 ##
 class CCITTFaxDecoder(CCITTG4Parser):
-    
+
     def __init__(self, width, bytealign=False, reversed=False):
         CCITTG4Parser.__init__(self, width, bytealign=bytealign)
         self.reversed = reversed
         self._buf = ''
         return
-    
+
     def close(self):
         return self._buf
-    
+
     def output_line(self, y, bits):
         bytes = array.array('B', [0]*((len(bits)+7)/8))
         if self.reversed:
-            bits = [ 1-b for b in bits ]
-        for (i,b) in enumerate(bits):
+            bits = [1-b for b in bits]
+        for (i, b) in enumerate(bits):
             if b:
-                bytes[i/8] += (128,64,32,16,8,4,2,1)[i%8]
+                bytes[i/8] += (128, 64, 32, 16, 8, 4, 2, 1)[i % 8]
         self._buf += bytes.tostring()
         return
 
@@ -705,35 +719,39 @@ def ccittfaxdecode(data, params):
         raise ValueError(K)
     parser.feedbytes(data)
     return parser.close()
-    
-    
+
+
 # test
 def main(argv):
     import pygame
     if not argv[1:]:
         return unittest.main()
+
     class Parser(CCITTG4Parser):
         def __init__(self, width, bytealign=False):
             CCITTG4Parser.__init__(self, width, bytealign=bytealign)
-            self.img = pygame.Surface((self.width,1000))
+            self.img = pygame.Surface((self.width, 1000))
             return
+
         def output_line(self, y, bits):
-            for (x,b) in enumerate(bits):
+            for (x, b) in enumerate(bits):
                 if b:
-                    self.img.set_at((x,y), (255,255,255))
+                    self.img.set_at((x, y), (255, 255, 255))
                 else:
-                    self.img.set_at((x,y), (0,0,0))
+                    self.img.set_at((x, y), (0, 0, 0))
             return
+
         def close(self):
             pygame.image.save(self.img, 'out.bmp')
             return
     for path in argv[1:]:
-        fp = file(path,'rb')
-        (_,_,k,w,h,_) = path.split('.')
+        fp = file(path, 'rb')
+        (_, _, k, w, h, _) = path.split('.')
         parser = Parser(int(w))
         parser.feedbytes(fp.read())
         parser.close()
         fp.close()
     return
 
-if __name__ == '__main__': sys.exit(main(sys.argv))
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))

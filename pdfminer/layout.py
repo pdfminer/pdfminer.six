@@ -81,7 +81,7 @@ class LTComponent(LTItem):
         return ('<%s %s>' %
                 (self.__class__.__name__, bbox2str(self.bbox)))
 
-    def set_bbox(self, (x0,y0,x1,y1)):
+    def set_bbox(self, (x0, y0, x1, y1)):
         self.x0 = x0
         self.y0 = y0
         self.x1 = x1
@@ -93,7 +93,7 @@ class LTComponent(LTItem):
 
     def is_empty(self):
         return self.width <= 0 or self.height <= 0
-        
+
     def is_hoverlap(self, obj):
         assert isinstance(obj, LTComponent)
         return obj.x0 <= self.x1 and self.x0 <= obj.x1
@@ -142,7 +142,7 @@ class LTCurve(LTComponent):
         return
 
     def get_pts(self):
-        return ','.join( '%.3f,%.3f' % p for p in self.pts )
+        return ','.join('%.3f,%.3f' % p for p in self.pts)
 
 
 ##  LTLine
@@ -158,8 +158,8 @@ class LTLine(LTCurve):
 ##
 class LTRect(LTCurve):
 
-    def __init__(self, linewidth, (x0,y0,x1,y1)):
-        LTCurve.__init__(self, linewidth, [(x0,y0), (x1,y0), (x1,y1), (x0,y1)])
+    def __init__(self, linewidth, (x0, y0, x1, y1)):
+        LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)])
         return
 
 
@@ -212,7 +212,7 @@ class LTChar(LTComponent, LTText):
         if font.is_vertical():
             # vertical
             width = font.get_width() * fontsize
-            (vx,vy) = textdisp
+            (vx, vy) = textdisp
             if vx is None:
                 vx = width/2
             else:
@@ -229,15 +229,15 @@ class LTChar(LTComponent, LTText):
             ty = descent + rise
             bll = (0, ty)
             bur = (self.adv, ty+height)
-        (a,b,c,d,e,f) = self.matrix
+        (a, b, c, d, e, f) = self.matrix
         self.upright = (0 < a*d*scaling and b*c <= 0)
-        (x0,y0) = apply_matrix_pt(self.matrix, bll)
-        (x1,y1) = apply_matrix_pt(self.matrix, bur)
+        (x0, y0) = apply_matrix_pt(self.matrix, bll)
+        (x1, y1) = apply_matrix_pt(self.matrix, bur)
         if x1 < x0:
-            (x0,x1) = (x1,x0)
+            (x0, x1) = (x1, x0)
         if y1 < y0:
-            (y0,y1) = (y1,y0)
-        LTComponent.__init__(self, (x0,y0,x1,y1))
+            (y0, y1) = (y1, y0)
+        LTComponent.__init__(self, (x0, y0, x1, y1))
         if font.is_vertical():
             self.size = self.width
         else:
@@ -246,7 +246,7 @@ class LTChar(LTComponent, LTText):
 
     def __repr__(self):
         return ('<%s %s matrix=%s font=%r adv=%s text=%r>' %
-                (self.__class__.__name__, bbox2str(self.bbox), 
+                (self.__class__.__name__, bbox2str(self.bbox),
                  matrix2str(self.matrix), self.fontname, self.adv,
                  self.get_text()))
 
@@ -257,7 +257,7 @@ class LTChar(LTComponent, LTText):
         """Returns True if two characters can coexist in the same line."""
         return True
 
-    
+
 ##  LTContainer
 ##
 class LTContainer(LTComponent):
@@ -286,14 +286,14 @@ class LTContainer(LTComponent):
         for obj in self._objs:
             obj.analyze(laparams)
         return
-    
+
 
 ##  LTExpandableContainer
 ##
 class LTExpandableContainer(LTContainer):
 
     def __init__(self):
-        LTContainer.__init__(self, (+INF,+INF,-INF,-INF))
+        LTContainer.__init__(self, (+INF, +INF, -INF, -INF))
         return
 
     def add(self, obj):
@@ -313,8 +313,8 @@ class LTTextContainer(LTExpandableContainer, LTText):
         return
 
     def get_text(self):
-        return ''.join( obj.get_text() for obj in self if isinstance(obj, LTText) )
-    
+        return ''.join(obj.get_text() for obj in self if isinstance(obj, LTText))
+
 
 ##  LTTextLine
 ##
@@ -338,6 +338,7 @@ class LTTextLine(LTTextContainer):
     def find_neighbors(self, plane, ratio):
         raise NotImplementedError
 
+
 class LTTextLineHorizontal(LTTextLine):
 
     def __init__(self, word_margin):
@@ -357,12 +358,13 @@ class LTTextLineHorizontal(LTTextLine):
     def find_neighbors(self, plane, ratio):
         d = ratio*self.height
         objs = plane.find((self.x0, self.y0-d, self.x1, self.y1+d))
-        return [ obj for obj in objs
-                 if (isinstance(obj, LTTextLineHorizontal) and
-                     abs(obj.height-self.height) < d and
-                     (abs(obj.x0-self.x0) < d or
-                      abs(obj.x1-self.x1) < d)) ]
-    
+        return [obj for obj in objs
+                if (isinstance(obj, LTTextLineHorizontal) and
+                    abs(obj.height-self.height) < d and
+                    (abs(obj.x0-self.x0) < d or
+                     abs(obj.x1-self.x1) < d))]
+
+
 class LTTextLineVertical(LTTextLine):
 
     def __init__(self, word_margin):
@@ -378,16 +380,16 @@ class LTTextLineVertical(LTTextLine):
         self._y0 = obj.y0
         LTTextLine.add(self, obj)
         return
-        
+
     def find_neighbors(self, plane, ratio):
         d = ratio*self.width
         objs = plane.find((self.x0-d, self.y0, self.x1+d, self.y1))
-        return [ obj for obj in objs
-                 if (isinstance(obj, LTTextLineVertical) and
-                     abs(obj.width-self.width) < d and
-                     (abs(obj.y0-self.y0) < d or
-                      abs(obj.y1-self.y1) < d)) ]                     
-    
+        return [obj for obj in objs
+                if (isinstance(obj, LTTextLineVertical) and
+                    abs(obj.width-self.width) < d and
+                    (abs(obj.y0-self.y0) < d or
+                     abs(obj.y1-self.y1) < d))]
+
 
 ##  LTTextBox
 ##
@@ -406,8 +408,9 @@ class LTTextBox(LTTextContainer):
                 (self.__class__.__name__,
                  self.index, bbox2str(self.bbox), self.get_text()))
 
+
 class LTTextBoxHorizontal(LTTextBox):
-    
+
     def analyze(self, laparams):
         LTTextBox.analyze(self, laparams)
         self._objs = csort(self._objs, key=lambda obj: -obj.y1)
@@ -415,6 +418,7 @@ class LTTextBoxHorizontal(LTTextBox):
 
     def get_writing_mode(self):
         return 'lr-tb'
+
 
 class LTTextBoxVertical(LTTextBox):
 
@@ -436,8 +440,9 @@ class LTTextGroup(LTTextContainer):
         self.extend(objs)
         return
 
+
 class LTTextGroupLRTB(LTTextGroup):
-    
+
     def analyze(self, laparams):
         LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-left to bottom-right.
@@ -446,14 +451,15 @@ class LTTextGroupLRTB(LTTextGroup):
                            (1+laparams.boxes_flow)*(obj.y0+obj.y1))
         return
 
+
 class LTTextGroupTBRL(LTTextGroup):
-    
+
     def analyze(self, laparams):
         LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-right to bottom-left.
         self._objs = csort(self._objs, key=lambda obj:
                            -(1+laparams.boxes_flow)*(obj.x0+obj.x1)
-                           -(1-laparams.boxes_flow)*(obj.y1))
+                           - (1-laparams.boxes_flow)*(obj.y1))
         return
 
 
@@ -465,14 +471,14 @@ class LTLayoutContainer(LTContainer):
         LTContainer.__init__(self, bbox)
         self.groups = None
         return
-        
+
     def get_textlines(self, laparams, objs):
         obj0 = None
         line = None
         for obj1 in objs:
             if obj0 is not None:
                 k = 0
-                if (obj0.is_compatible(obj1) and obj0.is_voverlap(obj1) and 
+                if (obj0.is_compatible(obj1) and obj0.is_voverlap(obj1) and
                     min(obj0.height, obj1.height) * laparams.line_overlap < obj0.voverlap(obj1) and
                     obj0.hdistance(obj1) < max(obj0.width, obj1.width) * laparams.char_margin):
                     # obj0 and obj1 is horizontally aligned:
@@ -487,7 +493,7 @@ class LTLayoutContainer(LTContainer):
                     #        (char_margin)
                     k |= 1
                 if (laparams.detect_vertical and
-                    obj0.is_compatible(obj1) and obj0.is_hoverlap(obj1) and 
+                    obj0.is_compatible(obj1) and obj0.is_hoverlap(obj1) and
                     min(obj0.width, obj1.width) * laparams.line_overlap < obj0.hoverlap(obj1) and
                     obj0.vdistance(obj1) < max(obj0.height, obj1.height) * laparams.char_margin):
                     # obj0 and obj1 is vertically aligned:
@@ -505,8 +511,8 @@ class LTLayoutContainer(LTContainer):
                     #     |<-->|
                     #   (line_overlap)
                     k |= 2
-                if ( (k & 1 and isinstance(line, LTTextLineHorizontal)) or
-                     (k & 2 and isinstance(line, LTTextLineVertical)) ):
+                if ((k & 1 and isinstance(line, LTTextLineHorizontal)) or
+                    (k & 2 and isinstance(line, LTTextLineVertical))):
                     line.add(obj1)
                 elif line is not None:
                     yield line
@@ -554,7 +560,8 @@ class LTLayoutContainer(LTContainer):
         done = set()
         for line in lines:
             box = boxes[line]
-            if box in done: continue
+            if box in done:
+                continue
             done.add(box)
             if not box.is_empty():
                 yield box
@@ -562,32 +569,34 @@ class LTLayoutContainer(LTContainer):
 
     def group_textboxes(self, laparams, boxes):
         assert boxes
+
         def dist(obj1, obj2):
             """A distance function between two TextBoxes.
-            
+
             Consider the bounding rectangle for obj1 and obj2.
-            Return its area less the areas of obj1 and obj2, 
+            Return its area less the areas of obj1 and obj2,
             shown as 'www' below. This value may be negative.
-                    +------+..........+ (x1,y1)
+                    +------+..........+ (x1, y1)
                     | obj1 |wwwwwwwwww:
                     +------+www+------+
                     :wwwwwwwwww| obj2 |
-            (x0,y0) +..........+------+
+            (x0, y0) +..........+------+
             """
-            x0 = min(obj1.x0,obj2.x0)
-            y0 = min(obj1.y0,obj2.y0)
-            x1 = max(obj1.x1,obj2.x1)
-            y1 = max(obj1.y1,obj2.y1)
+            x0 = min(obj1.x0, obj2.x0)
+            y0 = min(obj1.y0, obj2.y0)
+            x1 = max(obj1.x1, obj2.x1)
+            y1 = max(obj1.y1, obj2.y1)
             return ((x1-x0)*(y1-y0) - obj1.width*obj1.height - obj2.width*obj2.height)
+
         def isany(obj1, obj2):
             """Check if there's any other object between obj1 and obj2.
             """
-            x0 = min(obj1.x0,obj2.x0)
-            y0 = min(obj1.y0,obj2.y0)
-            x1 = max(obj1.x1,obj2.x1)
-            y1 = max(obj1.y1,obj2.y1)
-            objs = set(plane.find((x0,y0,x1,y1)))
-            return objs.difference((obj1,obj2))
+            x0 = min(obj1.x0, obj2.x0)
+            y0 = min(obj1.y0, obj2.y0)
+            x1 = max(obj1.x1, obj2.x1)
+            y1 = max(obj1.y1, obj2.y1)
+            objs = set(plane.find((x0, y0, x1, y1)))
+            return objs.difference((obj1, obj2))
         # XXX this still takes O(n^2)  :(
         dists = []
         for i in xrange(len(boxes)):
@@ -599,49 +608,50 @@ class LTLayoutContainer(LTContainer):
         plane = Plane(self.bbox)
         plane.extend(boxes)
         while dists:
-            (c,d,obj1,obj2) = dists.pop(0)
+            (c, d, obj1, obj2) = dists.pop(0)
             if c == 0 and isany(obj1, obj2):
-                dists.append((1,d,obj1,obj2))
+                dists.append((1, d, obj1, obj2))
                 continue
             if (isinstance(obj1, LTTextBoxVertical) or
                 isinstance(obj1, LTTextGroupTBRL) or
                 isinstance(obj2, LTTextBoxVertical) or
                 isinstance(obj2, LTTextGroupTBRL)):
-                group = LTTextGroupTBRL([obj1,obj2])
+                group = LTTextGroupTBRL([obj1, obj2])
             else:
-                group = LTTextGroupLRTB([obj1,obj2])
+                group = LTTextGroupLRTB([obj1, obj2])
             plane.remove(obj1)
             plane.remove(obj2)
             # this line is optimized -- don't change without profiling
-            dists = [ n for n in dists if n[2] in plane._objs and n[3] in plane._objs ]
+            dists = [n for n in dists if n[2] in plane._objs and n[3] in plane._objs]
             for other in plane:
-                dists.append((0, dist(group,other), group, other))
+                dists.append((0, dist(group, other), group, other))
             dists.sort()
             plane.add(group)
         assert len(plane) == 1
         return list(plane)
-    
+
     def analyze(self, laparams):
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
         (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self._objs)
         for obj in otherobjs:
             obj.analyze(laparams)
-        if not textobjs: return
+        if not textobjs:
+            return
         textlines = list(self.get_textlines(laparams, textobjs))
-        assert len(textobjs) <= sum( len(line._objs) for line in textlines )
+        assert len(textobjs) <= sum(len(line._objs) for line in textlines)
         (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
         for obj in empties:
             obj.analyze(laparams)
         textboxes = list(self.get_textboxes(laparams, textlines))
-        assert len(textlines) == sum( len(box._objs) for box in textboxes )
+        assert len(textlines) == sum(len(box._objs) for box in textboxes)
         if textboxes:
             self.groups = self.group_textboxes(laparams, textboxes)
             assigner = IndexAssigner()
             for group in self.groups:
                 group.analyze(laparams)
                 assigner.run(group)
-            textboxes.sort(key=lambda box:box.index)
+            textboxes.sort(key=lambda box: box.index)
         self._objs = textboxes + otherobjs + empties
         return
 
@@ -653,9 +663,9 @@ class LTFigure(LTLayoutContainer):
     def __init__(self, name, bbox, matrix):
         self.name = name
         self.matrix = matrix
-        (x,y,w,h) = bbox
-        bbox = get_bound( apply_matrix_pt(matrix, (p,q))
-                          for (p,q) in ((x,y), (x+w,y), (x,y+h), (x+w,y+h)) )
+        (x, y, w, h) = bbox
+        bbox = get_bound(apply_matrix_pt(matrix, (p, q))
+                         for (p, q) in ((x, y), (x+w, y), (x, y+h), (x+w, y+h)))
         LTLayoutContainer.__init__(self, bbox)
         return
 
@@ -665,9 +675,10 @@ class LTFigure(LTLayoutContainer):
                  bbox2str(self.bbox), matrix2str(self.matrix)))
 
     def analyze(self, laparams):
-        if not laparams.all_texts: return
+        if not laparams.all_texts:
+            return
         LTLayoutContainer.analyze(self, laparams)
-        return 
+        return
 
 
 ##  LTPage
