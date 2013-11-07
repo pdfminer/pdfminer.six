@@ -90,6 +90,8 @@ but it's also possible to extract some meaningful contents (e.g. images).
 TODO
 ----
 
+ * Replace STRICT variable with something better.
+ * Use logging module instead of sys.stderr.
  * Proper test cases.
  * PEP-8 and PEP-257 conformance.
  * Better documentation.
