@@ -9,6 +9,7 @@ This code is in the public domain.
 import re
 import struct
 
+
 # ascii85decode(data)
 def ascii85decode(data):
     """
@@ -35,7 +36,7 @@ def ascii85decode(data):
             n += 1
             b = b*85+(ord(c)-33)
             if n == 5:
-                out += struct.pack('>L',b)
+                out += struct.pack('>L', b)
                 n = b = 0
         elif c == 'z':
             assert n == 0
@@ -44,13 +45,15 @@ def ascii85decode(data):
             if n:
                 for _ in range(5-n):
                     b = b*85+84
-                out += struct.pack('>L',b)[:n-1]
+                out += struct.pack('>L', b)[:n-1]
             break
     return out
 
 # asciihexdecode(data)
 hex_re = re.compile(r'([a-f\d]{2})', re.IGNORECASE)
 trail_re = re.compile(r'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
+
+
 def asciihexdecode(data):
     """
     ASCIIHexDecode filter: PDFReference v1.4 section 3.3.1

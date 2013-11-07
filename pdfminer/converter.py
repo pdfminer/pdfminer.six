@@ -21,9 +21,9 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
     def begin_page(self, page, ctm):
-        (x0,y0,x1,y1) = page.mediabox
-        (x0,y0) = apply_matrix_pt(ctm, (x0,y0))
-        (x1,y1) = apply_matrix_pt(ctm, (x1,y1))
+        (x0, y0, x1, y1) = page.mediabox
+        (x0, y0) = apply_matrix_pt(ctm, (x0, y0))
+        (x1, y1) = apply_matrix_pt(ctm, (x1, y1))
         mediabox = (0, 0, abs(x0-x1), abs(y0-y1))
         self.cur_item = LTPage(self.pageno, mediabox)
         return
@@ -61,26 +61,26 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         shape = ''.join(x[0] for x in path)
         if shape == 'ml':
             # horizontal/vertical line
-            (_,x0,y0) = path[0]
-            (_,x1,y1) = path[1]
-            (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
-            (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
+            (_, x0, y0) = path[0]
+            (_, x1, y1) = path[1]
+            (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
+            (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
             if x0 == x1 or y0 == y1:
-                self.cur_item.add(LTLine(gstate.linewidth, (x0,y0), (x1,y1)))
+                self.cur_item.add(LTLine(gstate.linewidth, (x0, y0), (x1, y1)))
                 return
         if shape == 'mlllh':
             # rectangle
-            (_,x0,y0) = path[0]
-            (_,x1,y1) = path[1]
-            (_,x2,y2) = path[2]
-            (_,x3,y3) = path[3]
-            (x0,y0) = apply_matrix_pt(self.ctm, (x0,y0))
-            (x1,y1) = apply_matrix_pt(self.ctm, (x1,y1))
-            (x2,y2) = apply_matrix_pt(self.ctm, (x2,y2))
-            (x3,y3) = apply_matrix_pt(self.ctm, (x3,y3))
+            (_, x0, y0) = path[0]
+            (_, x1, y1) = path[1]
+            (_, x2, y2) = path[2]
+            (_, x3, y3) = path[3]
+            (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
+            (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
+            (x2, y2) = apply_matrix_pt(self.ctm, (x2, y2))
+            (x3, y3) = apply_matrix_pt(self.ctm, (x3, y3))
             if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
                 (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
-                self.cur_item.add(LTRect(gstate.linewidth, (x0,y0,x2,y2)))
+                self.cur_item.add(LTRect(gstate.linewidth, (x0, y0, x2, y2)))
                 return
         # other shapes
         pts = []
@@ -176,7 +176,8 @@ class TextConverter(PDFConverter):
     # is text.  This stops all the image and drawing ouput from being
     # recorded and taking up RAM.
     def render_image(self, name, stream):
-        if self.imagewriter is None: return
+        if self.imagewriter is None:
+            return
         PDFConverter.render_image(self, name, stream)
         return
 
@@ -196,18 +197,18 @@ class HTMLConverter(PDFConverter):
         'textgroup': 'red',
         'curve': 'black',
         'page': 'gray',
-        }
+    }
 
     TEXT_COLORS = {
         'textbox': 'blue',
         'char': 'black',
-        }
+    }
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
                  scale=1, fontscale=1.0, layoutmode='normal', showpageno=True,
                  pagemargin=50, imagewriter=None,
-                 rect_colors={'curve':'black', 'page':'gray'},
-                 text_colors={'char':'black'}):
+                 rect_colors={'curve': 'black', 'page': 'gray'},
+                 text_colors={'char': 'black'}):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.scale = scale
         self.fontscale = fontscale
@@ -238,7 +239,7 @@ class HTMLConverter(PDFConverter):
 
     def write_footer(self):
         self.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' %
-                   ', '.join('<a href="#%s">%s</a>' % (i,i) for i in xrange(1,self.pageno)))
+                   ', '.join('<a href="#%s">%s</a>' % (i, i) for i in xrange(1, self.pageno)))
         self.write('</body></html>\n')
         return
 
@@ -318,6 +319,7 @@ class HTMLConverter(PDFConverter):
                 for child in item:
                     show_group(child)
             return
+
         def render(item):
             if isinstance(item, LTPage):
                 self._yoffset += item.y1
@@ -415,6 +417,7 @@ class XMLConverter(PDFConverter):
                     show_group(child)
                 self.outfp.write('</textgroup>\n')
             return
+
         def render(item):
             if isinstance(item, LTPage):
                 self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %

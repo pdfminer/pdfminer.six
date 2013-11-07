@@ -7,8 +7,10 @@ import os, os.path
 from pdftypes import LITERALS_DCT_DECODE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
 
+
 def align32(x):
     return ((x+3)/4)*4
+
 
 ##  BMPWriter
 ##
@@ -38,12 +40,12 @@ class BMPWriter(object):
         self.fp.write(info)
         if ncols == 2:
             # B&W color table
-            for i in (0,255):
-                self.fp.write(struct.pack('BBBx', i,i,i))
+            for i in (0, 255):
+                self.fp.write(struct.pack('BBBx', i, i, i))
         elif ncols == 256:
             # grayscale color table
             for i in xrange(256):
-                self.fp.write(struct.pack('BBBx', i,i,i))
+                self.fp.write(struct.pack('BBBx', i, i, i))
         self.pos0 = self.fp.tell()
         self.pos1 = self.pos0 + self.datasize
         return

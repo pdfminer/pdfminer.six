@@ -15,7 +15,8 @@ from pdftypes import str_value, list_value, dict_value, stream_value
 
 ##  Exceptions
 ##
-class PDFSyntaxError(PDFException): pass
+class PDFSyntaxError(PDFException):
+    pass
 
 
 ##  PDFParser
@@ -55,6 +56,7 @@ class PDFParser(PSStackParser):
     KEYWORD_STREAM = KWD('stream')
     KEYWORD_XREF = KWD('xref')
     KEYWORD_STARTXREF = KWD('startxref')
+
     def do_keyword(self, pos, token):
         """Handles PDF-related keywords."""
 
@@ -71,7 +73,7 @@ class PDFParser(PSStackParser):
         elif token is self.KEYWORD_R:
             # reference to indirect object
             try:
-                ((_,objid), (_,genno)) = self.pop(2)
+                ((_, objid), (_, genno)) = self.pop(2)
                 (objid, genno) = (int(objid), int(genno))
                 obj = PDFObjRef(self.doc, objid, genno)
                 self.push((pos, obj))
@@ -80,7 +82,7 @@ class PDFParser(PSStackParser):
 
         elif token is self.KEYWORD_STREAM:
             # stream object
-            ((_,dic),) = self.pop(1)
+            ((_, dic),) = self.pop(1)
             dic = dict_value(dic)
             objlen = 0
             if not self.fallback:
@@ -118,7 +120,7 @@ class PDFParser(PSStackParser):
             # XXX limit objlen not to exceed object boundary
             if 2 <= self.debug:
                 print >>sys.stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
-                      (pos, objlen, dic, data[:10])
+                                    (pos, objlen, dic, data[:10])
             obj = PDFStream(dic, data, self.doc.decipher)
             self.push((pos, obj))
 
@@ -153,7 +155,7 @@ class PDFStreamParser(PDFParser):
         if token is self.KEYWORD_R:
             # reference to indirect object
             try:
-                ((_,objid), (_,genno)) = self.pop(2)
+                ((_, objid), (_, genno)) = self.pop(2)
                 (objid, genno) = (int(objid), int(genno))
                 obj = PDFObjRef(self.doc, objid, genno)
                 self.push((pos, obj))

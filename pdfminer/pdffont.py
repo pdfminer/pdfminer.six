@@ -25,13 +25,13 @@ def get_widths(seq):
         if isinstance(v, list):
             if r:
                 char1 = r[-1]
-                for (i,w) in enumerate(v):
+                for (i, w) in enumerate(v):
                     widths[char1+i] = w
                 r = []
         elif isinstance(v, int):
             r.append(v)
             if len(r) == 3:
-                (char1,char2,w) = r
+                (char1, char2, w) = r
                 for i in xrange(char1, char2+1):
                     widths[i] = w
                 r = []
@@ -40,6 +40,7 @@ def get_widths(seq):
 #assert get_widths([1,2,3]) == {1:3, 2:3}
 #assert get_widths([1,[2,3],6,[7,8]]) == {1:2,2:3, 6:7,7:8}
 
+
 def get_widths2(seq):
     widths = {}
     r = []
@@ -47,20 +48,20 @@ def get_widths2(seq):
         if isinstance(v, list):
             if r:
                 char1 = r[-1]
-                for (i,(w,vx,vy)) in enumerate(choplist(3,v)):
-                    widths[char1+i] = (w,(vx,vy))
+                for (i, (w, vx, vy)) in enumerate(choplist(3, v)):
+                    widths[char1+i] = (w, (vx, vy))
                 r = []
         elif isinstance(v, int):
             r.append(v)
             if len(r) == 5:
-                (char1,char2,w,vx,vy) = r
+                (char1, char2, w, vx, vy) = r
                 for i in xrange(char1, char2+1):
-                    widths[i] = (w,(vx,vy))
+                    widths[i] = (w, (vx, vy))
                 r = []
     return widths
 #assert get_widths2([1]) == {}
-#assert get_widths2([1,2,3,4,5]) == {1:(3,(4,5)), 2:(3,(4,5))}
-#assert get_widths2([1,[2,3,4,5],6,[7,8,9]]) == {1:(2,(3,4)), 6:(7,(8,9))}
+#assert get_widths2([1,2,3,4,5]) == {1:(3, (4,5)), 2:(3, (4,5))}
+#assert get_widths2([1,[2,3,4,5],6,[7,8,9]]) == {1:(2, (3,4)), 6:(7, (8,9))}
 
 
 ##  FontMetricsDB
@@ -94,7 +95,7 @@ class Type1FontHeaderParser(PSStackParser):
     def get_encoding(self):
         while 1:
             try:
-                (cid,name) = self.nextobject()
+                (cid, name) = self.nextobject()
             except PSEOF:
                 break
             try:
@@ -105,25 +106,28 @@ class Type1FontHeaderParser(PSStackParser):
 
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_PUT:
-            ((_,key),(_,value)) = self.pop(2)
+            ((_, key), (_, value)) = self.pop(2)
             if (isinstance(key, int) and
                 isinstance(value, PSLiteral)):
                 self.add_results((key, literal_name(value)))
         return
 
 
+NIBBLES = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'e-', None, '-')
+
+
 ##  CFFFont
 ##  (Format specified in Adobe Technical Note: #5176
 ##   "The Compact Font Format Specification")
 ##
-NIBBLES = ('0','1','2','3','4','5','6','7','8','9','.','e','e-',None,'-')
 def getdict(data):
     d = {}
     fp = StringIO(data)
     stack = []
     while 1:
         c = fp.read(1)
-        if not c: break
+        if not c:
+            break
         b0 = ord(c)
         if b0 <= 21:
             d[b0] = stack
@@ -145,18 +149,20 @@ def getdict(data):
         else:
             b1 = ord(fp.read(1))
             if 247 <= b0 and b0 <= 250:
-                value = ((b0-247)<<8)+b1+108
+                value = ((b0-247) << 8)+b1+108
             elif 251 <= b0 and b0 <= 254:
-                value = -((b0-251)<<8)-b1-108
+                value = -((b0-251) << 8)-b1-108
             else:
                 b2 = ord(fp.read(1))
-                if 128 <= b1: b1 -= 256
+                if 128 <= b1:
+                    b1 -= 256
                 if b0 == 28:
-                    value = b1<<8 | b2
+                    value = b1 << 8 | b2
                 else:
-                    value = b1<<24 | b2<<16 | struct.unpack('>H', fp.read(2))[0]
+                    value = b1 << 24 | b2 << 16 | struct.unpack('>H', fp.read(2))[0]
         stack.append(value)
     return d
+
 
 class CFFFont(object):
 
@@ -239,7 +245,7 @@ class CFFFont(object):
       'Yacutesmall', 'Thornsmall', 'Ydieresissmall', '001.000',
       '001.001', '001.002', '001.003', 'Black', 'Bold', 'Book',
       'Light', 'Medium', 'Regular', 'Roman', 'Semibold',
-      )
+    )
 
     class INDEX(object):
 
@@ -264,13 +270,13 @@ class CFFFont(object):
             return self.fp.read(self.offsets[i+1]-self.offsets[i])
 
         def __iter__(self):
-            return iter( self[i] for i in xrange(len(self)) )
+            return iter(self[i] for i in xrange(len(self)))
 
     def __init__(self, name, fp):
         self.name = name
         self.fp = fp
         # Header
-        (_major,_minor,hdrsize,offsize) = struct.unpack('BBBB', self.fp.read(4))
+        (_major, _minor, hdrsize, offsize) = struct.unpack('BBBB', self.fp.read(4))
         self.fp.read(hdrsize-4)
         # Name INDEX
         self.name_index = self.INDEX(self.fp)
@@ -297,7 +303,7 @@ class CFFFont(object):
         if format == '\x00':
             # Format 0
             (n,) = struct.unpack('B', self.fp.read(1))
-            for (code,gid) in enumerate(struct.unpack('B'*n, self.fp.read(n))):
+            for (code, gid) in enumerate(struct.unpack('B'*n, self.fp.read(n))):
                 self.code2gid[code] = gid
                 self.gid2code[gid] = code
         elif format == '\x01':
@@ -305,8 +311,8 @@ class CFFFont(object):
             (n,) = struct.unpack('B', self.fp.read(1))
             code = 0
             for i in xrange(n):
-                (first,nleft) = struct.unpack('BB', self.fp.read(2))
-                for gid in xrange(first,first+nleft+1):
+                (first, nleft) = struct.unpack('BB', self.fp.read(2))
+                for gid in xrange(first, first+nleft+1):
                     self.code2gid[code] = gid
                     self.gid2code[gid] = code
                     code += 1
@@ -320,7 +326,7 @@ class CFFFont(object):
         if format == '\x00':
             # Format 0
             n = self.nglyphs-1
-            for (gid,sid) in enumerate(struct.unpack('>'+'H'*n, self.fp.read(2*n))):
+            for (gid, sid) in enumerate(struct.unpack('>'+'H'*n, self.fp.read(2*n))):
                 gid += 1
                 name = self.getstr(sid)
                 self.name2gid[name] = gid
@@ -330,8 +336,8 @@ class CFFFont(object):
             (n,) = struct.unpack('B', self.fp.read(1))
             sid = 0
             for i in xrange(n):
-                (first,nleft) = struct.unpack('BB', self.fp.read(2))
-                for gid in xrange(first,first+nleft+1):
+                (first, nleft) = struct.unpack('BB', self.fp.read(2))
+                for gid in xrange(first, first+nleft+1):
                     name = self.getstr(sid)
                     self.name2gid[name] = gid
                     self.gid2name[gid] = name
@@ -356,7 +362,8 @@ class CFFFont(object):
 ##
 class TrueTypeFont(object):
 
-    class CMapNotFound(Exception): pass
+    class CMapNotFound(Exception):
+        pass
 
     def __init__(self, name, fp):
         self.name = name
@@ -389,15 +396,16 @@ class TrueTypeFont(object):
             elif fmttype == 2:
                 subheaderkeys = struct.unpack('>256H', fp.read(512))
                 firstbytes = [0]*8192
-                for (i,k) in enumerate(subheaderkeys):
+                for (i, k) in enumerate(subheaderkeys):
                     firstbytes[k/8] = i
                 nhdrs = max(subheaderkeys)/8 + 1
                 hdrs = []
                 for i in xrange(nhdrs):
-                    (firstcode,entcount,delta,offset) = struct.unpack('>HHhH', fp.read(8))
-                    hdrs.append((i,firstcode,entcount,delta,fp.tell()-2+offset))
-                for (i,firstcode,entcount,delta,pos) in hdrs:
-                    if not entcount: continue
+                    (firstcode, entcount, delta, offset) = struct.unpack('>HHhH', fp.read(8))
+                    hdrs.append((i, firstcode, entcount, delta, fp.tell()-2+offset))
+                for (i, firstcode, entcount, delta, pos) in hdrs:
+                    if not entcount:
+                        continue
                     first = firstcode + (firstbytes[i] << 8)
                     fp.seek(pos)
                     for c in xrange(entcount):
@@ -414,7 +422,7 @@ class TrueTypeFont(object):
                 idds = struct.unpack('>%dh' % segcount, fp.read(2*segcount))
                 pos = fp.tell()
                 idrs = struct.unpack('>%dH' % segcount, fp.read(2*segcount))
-                for (ec,sc,idd,idr) in zip(ecs, scs, idds, idrs):
+                for (ec, sc, idd, idr) in zip(ecs, scs, idds, idrs):
                     if idr:
                         fp.seek(pos+idr)
                         for c in xrange(sc, ec+1):
@@ -426,16 +434,19 @@ class TrueTypeFont(object):
                 assert 0
         # create unicode map
         unicode_map = FileUnicodeMap()
-        for (char,gid) in char2gid.iteritems():
+        for (char, gid) in char2gid.iteritems():
             unicode_map.add_cid2unichr(gid, char)
         return unicode_map
 
 
 ##  Fonts
 ##
+class PDFFontError(PDFException):
+    pass
 
-class PDFFontError(PDFException): pass
-class PDFUnicodeNotDefined(PDFFontError): pass
+
+class PDFUnicodeNotDefined(PDFFontError):
+    pass
 
 LITERAL_STANDARD_ENCODING = LIT('StandardEncoding')
 LITERAL_TYPE1C = LIT('Type1C')
@@ -456,7 +467,7 @@ class PDFFont(object):
         self.italic_angle = num_value(descriptor.get('ItalicAngle', 0))
         self.default_width = default_width or num_value(descriptor.get('MissingWidth', 0))
         self.leading = num_value(descriptor.get('Leading', 0))
-        self.bbox = list_value(descriptor.get('FontBBox', (0,0,0,0)))
+        self.bbox = list_value(descriptor.get('FontBBox', (0, 0, 0, 0)))
         self.hscale = self.vscale = .001
         return
 
@@ -474,6 +485,7 @@ class PDFFont(object):
 
     def get_ascent(self):
         return self.ascent * self.vscale
+
     def get_descent(self):
         return self.descent * self.vscale
 
@@ -482,6 +494,7 @@ class PDFFont(object):
         if w == 0:
             w = -self.default_width
         return w * self.hscale
+
     def get_height(self):
         h = self.bbox[3]-self.bbox[1]
         if h == 0:
@@ -501,7 +514,7 @@ class PDFFont(object):
         return 0
 
     def string_width(self, s):
-        return sum( self.char_width(cid) for cid in self.decode(s) )
+        return sum(self.char_width(cid) for cid in self.decode(s))
 
 
 # PDFSimpleFont
@@ -540,6 +553,7 @@ class PDFSimpleFont(PDFFont):
         except KeyError:
             raise PDFUnicodeNotDefined(None, cid)
 
+
 # PDFType1Font
 class PDFType1Font(PDFSimpleFont):
 
@@ -557,7 +571,7 @@ class PDFType1Font(PDFSimpleFont):
             firstchar = int_value(spec.get('FirstChar', 0))
             lastchar = int_value(spec.get('LastChar', 255))
             widths = list_value(spec.get('Widths', [0]*256))
-            widths = dict( (i+firstchar,w) for (i,w) in enumerate(widths) )
+            widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
         PDFSimpleFont.__init__(self, descriptor, widths, spec)
         if 'Encoding' not in spec and 'FontFile' in descriptor:
             # try to recover the missing encoding info from the font file.
@@ -571,11 +585,13 @@ class PDFType1Font(PDFSimpleFont):
     def __repr__(self):
         return '<PDFType1Font: basefont=%r>' % self.basefont
 
+
 # PDFTrueTypeFont
 class PDFTrueTypeFont(PDFType1Font):
 
     def __repr__(self):
         return '<PDFTrueTypeFont: basefont=%r>' % self.basefont
+
 
 # PDFType3Font
 class PDFType3Font(PDFSimpleFont):
@@ -584,16 +600,16 @@ class PDFType3Font(PDFSimpleFont):
         firstchar = int_value(spec.get('FirstChar', 0))
         lastchar = int_value(spec.get('LastChar', 0))
         widths = list_value(spec.get('Widths', [0]*256))
-        widths = dict( (i+firstchar,w) for (i,w) in enumerate(widths))
+        widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
         if 'FontDescriptor' in spec:
             descriptor = dict_value(spec['FontDescriptor'])
         else:
-            descriptor = {'Ascent':0, 'Descent':0,
-                          'FontBBox':spec['FontBBox']}
+            descriptor = {'Ascent': 0, 'Descent': 0,
+                          'FontBBox': spec['FontBBox']}
         PDFSimpleFont.__init__(self, descriptor, widths, spec)
         self.matrix = tuple(list_value(spec.get('FontMatrix')))
-        (_,self.descent,_,self.ascent) = self.bbox
-        (self.hscale,self.vscale) = apply_matrix_norm(self.matrix, (1,1))
+        (_, self.descent, _, self.ascent) = self.bbox
+        (self.hscale, self.vscale) = apply_matrix_norm(self.matrix, (1, 1))
         return
 
     def __repr__(self):
@@ -657,10 +673,10 @@ class PDFCIDFont(PDFFont):
         if self.vertical:
             # writing mode: vertical
             widths = get_widths2(list_value(spec.get('W2', [])))
-            self.disps = dict( (cid,(vx,vy)) for (cid,(_,(vx,vy))) in widths.iteritems() )
-            (vy,w) = spec.get('DW2', [880, -1000])
-            self.default_disp = (None,vy)
-            widths = dict( (cid,w) for (cid,(w,_)) in widths.iteritems() )
+            self.disps = dict((cid, (vx, vy)) for (cid, (_, (vx, vy))) in widths.iteritems())
+            (vy, w) = spec.get('DW2', [880, -1000])
+            self.default_disp = (None, vy)
+            widths = dict((cid, w) for (cid, (w, _)) in widths.iteritems())
             default_width = w
         else:
             # writing mode: horizontal
@@ -689,7 +705,8 @@ class PDFCIDFont(PDFFont):
 
     def to_unichr(self, cid):
         try:
-            if not self.unicode_map: raise KeyError(cid)
+            if not self.unicode_map:
+                raise KeyError(cid)
             return self.unicode_map.get_unichr(cid)
         except KeyError:
             raise PDFUnicodeNotDefined(self.cidcoding, cid)
@@ -705,4 +722,5 @@ def main(argv):
         fp.close()
     return
 
-if __name__ == '__main__': sys.exit(main(sys.argv))
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))

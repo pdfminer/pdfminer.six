@@ -34,17 +34,18 @@ class LZWDecoder(object):
                 # |-----8-bits-----|
                 # |-bpos-|-bits-|  |
                 # |      |----r----|
-                v = (v<<bits) | ((self.buff>>(r-bits)) & ((1<<bits)-1))
+                v = (v << bits) | ((self.buff >> (r-bits)) & ((1 << bits)-1))
                 self.bpos += bits
                 break
             else:
                 # |-----8-bits-----|
                 # |-bpos-|---bits----...
                 # |      |----r----|
-                v = (v<<r) | (self.buff & ((1<<r)-1))
+                v = (v << r) | (self.buff & ((1 << r)-1))
                 bits -= r
                 x = self.fp.read(1)
-                if not x: raise EOFError
+                if not x:
+                    raise EOFError
                 self.buff = ord(x)
                 self.bpos = 0
         return v
@@ -52,9 +53,9 @@ class LZWDecoder(object):
     def feed(self, code):
         x = ''
         if code == 256:
-            self.table = [ chr(c) for c in xrange(256) ] # 0-255
-            self.table.append(None) # 256
-            self.table.append(None) # 257
+            self.table = [chr(c) for c in xrange(256)]  # 0-255
+            self.table.append(None)  # 256
+            self.table.append(None)  # 257
             self.prevbuf = ''
             self.nbits = 9
         elif code == 257:
@@ -96,6 +97,7 @@ class LZWDecoder(object):
                 print >>sys.stderr, ('nbits=%d, code=%d, output=%r, table=%r' %
                                      (self.nbits, code, x, self.table[258:]))
         return
+
 
 # lzwdecode
 def lzwdecode(data):

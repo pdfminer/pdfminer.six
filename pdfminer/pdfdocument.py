@@ -23,11 +23,24 @@ from utils import decode_text
 
 ##  Exceptions
 ##
-class PDFNoValidXRef(PDFSyntaxError): pass
-class PDFNoOutlines(PDFException): pass
-class PDFDestinationNotFound(PDFException): pass
-class PDFEncryptionError(PDFException): pass
-class PDFPasswordIncorrect(PDFEncryptionError): pass
+class PDFNoValidXRef(PDFSyntaxError):
+    pass
+
+
+class PDFNoOutlines(PDFException):
+    pass
+
+
+class PDFDestinationNotFound(PDFException):
+    pass
+
+
+class PDFEncryptionError(PDFException):
+    pass
+
+
+class PDFPasswordIncorrect(PDFEncryptionError):
+    pass
 
 # some predefined literals and keywords.
 LITERAL_OBJSTM = LIT('ObjStm')
@@ -68,7 +81,8 @@ class PDFXRef(PDFBaseXRef):
         while 1:
             try:
                 (pos, line) = parser.nextline()
-                if not line.strip(): continue
+                if not line.strip():
+                    continue
             except PSEOF:
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
             if not line:
@@ -92,7 +106,8 @@ class PDFXRef(PDFBaseXRef):
                 if len(f) != 3:
                     raise PDFNoValidXRef('Invalid XRef format: %r, line=%r' % (parser, line))
                 (pos, genno, use) = f
-                if use != 'n': continue
+                if use != 'n':
+                    continue
                 self.offsets[objid] = (None, long(pos), int(genno))
         if 1 <= debug:
             print >>sys.stderr, 'xref objects:', self.offsets
@@ -100,16 +115,17 @@ class PDFXRef(PDFBaseXRef):
         return
 
     KEYWORD_TRAILER = KWD('trailer')
+
     def load_trailer(self, parser):
         try:
-            (_,kwd) = parser.nexttoken()
+            (_, kwd) = parser.nexttoken()
             assert kwd is self.KEYWORD_TRAILER
-            (_,dic) = parser.nextobject()
+            (_, dic) = parser.nextobject()
         except PSEOF:
             x = parser.pop(1)
             if not x:
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted')
-            (_,dic) = x[0]
+            (_, dic) = x[0]
         self.trailer.update(dict_value(dic))
         return
 
@@ -134,6 +150,7 @@ class PDFXRefFallback(PDFXRef):
         return '<PDFXRefFallback: offsets=%r>' % (self.offsets.keys())
 
     PDFOBJ_CUE = re.compile(r'^(\d+)\s+(\d+)\s+obj\b')
+
     def load(self, parser, debug=0):
         parser.seek(0)
         while 1:
@@ -148,14 +165,15 @@ class PDFXRefFallback(PDFXRef):
                     print >>sys.stderr, 'trailer: %r' % self.get_trailer()
                 break
             m = self.PDFOBJ_CUE.match(line)
-            if not m: continue
+            if not m:
+                continue
             (objid, genno) = m.groups()
             objid = int(objid)
             genno = int(genno)
             self.offsets[objid] = (None, pos, genno)
             # expand ObjStm.
             parser.seek(pos)
-            (_,obj) = parser.nextobject()
+            (_, obj) = parser.nextobject()
             if isinstance(obj, PDFStream) and obj.get('Type') is LITERAL_OBJSTM:
                 stream = stream_value(obj)
                 try:
@@ -168,7 +186,7 @@ class PDFXRefFallback(PDFXRef):
                 objs = []
                 try:
                     while 1:
-                        (_,obj) = parser1.nextobject()
+                        (_, obj) = parser1.nextobject()
                         objs.append(obj)
                 except PSEOF:
                     pass
@@ -193,14 +211,14 @@ class PDFXRefStream(PDFBaseXRef):
         return '<PDFXRefStream: ranges=%r>' % (self.ranges)
 
     def load(self, parser, debug=0):
-        (_,objid) = parser.nexttoken() # ignored
-        (_,genno) = parser.nexttoken() # ignored
-        (_,kwd) = parser.nexttoken()
-        (_,stream) = parser.nextobject()
+        (_, objid) = parser.nexttoken()  # ignored
+        (_, genno) = parser.nexttoken()  # ignored
+        (_, kwd) = parser.nexttoken()
+        (_, stream) = parser.nextobject()
         if not isinstance(stream, PDFStream) or stream['Type'] is not LITERAL_XREF:
             raise PDFNoValidXRef('Invalid PDF stream spec.')
         size = stream['Size']
-        index_array = stream.get('Index', (1,size))
+        index_array = stream.get('Index', (1, size))
         if len(index_array) % 2 != 0:
             raise PDFSyntaxError('Invalid index number')
         self.ranges.extend(choplist(2, index_array))
@@ -210,22 +228,22 @@ class PDFXRefStream(PDFBaseXRef):
         self.trailer = stream.attrs
         if 1 <= debug:
             print >>sys.stderr, ('xref stream: objid=%s, fields=%d,%d,%d' %
-                             (', '.join(map(repr, self.ranges)),
-                              self.fl1, self.fl2, self.fl3))
+                                 (', '.join(map(repr, self.ranges)),
+                                 self.fl1, self.fl2, self.fl3))
         return
 
     def get_trailer(self):
         return self.trailer
 
     def get_objids(self):
-        for (start,nobjs) in self.ranges:
+        for (start, nobjs) in self.ranges:
             for i in xrange(nobjs):
                 yield start+i
         return
 
     def get_pos(self, objid):
         index = 0
-        for (start,nobjs) in self.ranges:
+        for (start, nobjs) in self.ranges:
             if start <= objid and objid < start+nobjs:
                 index += objid - start
             else:
@@ -292,7 +310,8 @@ class PDFDocument(object):
             self.xrefs.append(xref)
         for xref in self.xrefs:
             trailer = xref.get_trailer()
-            if not trailer: continue
+            if not trailer:
+                continue
             # If there's an encryption info, remember it.
             if 'Encrypt' in trailer:
                 #assert not self.encryption
@@ -316,6 +335,7 @@ class PDFDocument(object):
     #   This step is mandatory even if there's no password associated
     #   with the document.
     PASSWORD_PADDING = '(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
+
     def initialize(self, password=''):
         if not self.encryption:
             self.is_printable = self.is_modifiable = self.is_extractable = True
@@ -326,9 +346,9 @@ class PDFDocument(object):
         V = int_value(param.get('V', 0))
         if not (V == 1 or V == 2):
             raise PDFEncryptionError('Unknown algorithm: param=%r' % param)
-        length = int_value(param.get('Length', 40)) # Key length (bits)
+        length = int_value(param.get('Length', 40))  # Key length (bits)
         O = str_value(param['O'])
-        R = int_value(param['R']) # Revision
+        R = int_value(param['R'])  # Revision
         if 5 <= R:
             raise PDFEncryptionError('Unknown revision: %r' % R)
         U = str_value(param['U'])
@@ -337,11 +357,11 @@ class PDFDocument(object):
         self.is_modifiable = bool(P & 8)
         self.is_extractable = bool(P & 16)
         # Algorithm 3.2
-        password = (password+self.PASSWORD_PADDING)[:32] # 1
-        hash = md5.md5(password) # 2
-        hash.update(O) # 3
-        hash.update(struct.pack('<l', P)) # 4
-        hash.update(docid[0]) # 5
+        password = (password+self.PASSWORD_PADDING)[:32]  # 1
+        hash = md5.md5(password)  # 2
+        hash.update(O)  # 3
+        hash.update(struct.pack('<l', P))  # 4
+        hash.update(docid[0])  # 5
         if 4 <= R:
             # 6
             raise PDFNotImplementedError('Revision 4 encryption is currently unsupported')
@@ -355,13 +375,13 @@ class PDFDocument(object):
             u1 = Arcfour(key).process(self.PASSWORD_PADDING)
         elif R == 3:
             # Algorithm 3.5
-            hash = md5.md5(self.PASSWORD_PADDING) # 2
-            hash.update(docid[0]) # 3
-            x = Arcfour(key).process(hash.digest()[:16]) # 4
-            for i in xrange(1,19+1):
-                k = ''.join( chr(ord(c) ^ i) for c in key )
+            hash = md5.md5(self.PASSWORD_PADDING)  # 2
+            hash.update(docid[0])  # 3
+            x = Arcfour(key).process(hash.digest()[:16])  # 4
+            for i in xrange(1, 19+1):
+                k = ''.join(chr(ord(c) ^ i) for c in key)
                 x = Arcfour(k).process(x)
-            u1 = x+x # 32bytes total
+            u1 = x+x  # 32bytes total
         if R == 2:
             is_authenticated = (u1 == U)
         else:
@@ -373,18 +393,18 @@ class PDFDocument(object):
         return
 
     def decrypt_rc4(self, objid, genno, data):
-        key = self.decrypt_key + struct.pack('<L',objid)[:3]+struct.pack('<L',genno)[:2]
+        key = self.decrypt_key + struct.pack('<L', objid)[:3]+struct.pack('<L', genno)[:2]
         hash = md5.md5(key)
-        key = hash.digest()[:min(len(key),16)]
+        key = hash.digest()[:min(len(key), 16)]
         return Arcfour(key).process(data)
 
     def _getobj_objstm(self, stream, index, objid):
         if stream.objid in self._parsed_objs:
-            (objs,n) = self._parsed_objs[stream.objid]
+            (objs, n) = self._parsed_objs[stream.objid]
         else:
-            (objs,n) = self._get_objects(stream)
+            (objs, n) = self._get_objects(stream)
             if self.caching:
-                self._parsed_objs[stream.objid] = (objs,n)
+                self._parsed_objs[stream.objid] = (objs, n)
         i = n*2+index
         try:
             obj = objs[i]
@@ -407,23 +427,24 @@ class PDFDocument(object):
         objs = []
         try:
             while 1:
-                (_,obj) = parser.nextobject()
+                (_, obj) = parser.nextobject()
                 objs.append(obj)
         except PSEOF:
             pass
         return (objs, n)
 
     KEYWORD_OBJ = KWD('obj')
+
     def _getobj_parse(self, pos, objid):
         self._parser.seek(pos)
-        (_,objid1) = self._parser.nexttoken() # objid
+        (_, objid1) = self._parser.nexttoken()  # objid
         if objid1 != objid:
             raise PDFSyntaxError('objid mismatch: %r=%r' % (objid1, objid))
-        (_,genno) = self._parser.nexttoken() # genno
-        (_,kwd) = self._parser.nexttoken()
+        (_, genno) = self._parser.nexttoken()  # genno
+        (_, kwd) = self._parser.nexttoken()
         if kwd is not self.KEYWORD_OBJ:
             raise PDFSyntaxError('Invalid object spec: offset=%r' % pos)
-        (_,obj) = self._parser.nextobject()
+        (_, obj) = self._parser.nextobject()
         return obj
 
     # can raise PDFObjectNotFound
@@ -465,6 +486,7 @@ class PDFDocument(object):
     def get_outlines(self):
         if 'Outlines' not in self.catalog:
             raise PDFNoOutlines
+
         def search(entry, level):
             entry = dict_value(entry)
             if 'Title' in entry:
@@ -487,13 +509,15 @@ class PDFDocument(object):
         try:
             names = dict_value(self.catalog['Names'])
         except (PDFTypeError, KeyError):
-            raise KeyError((cat,key))
+            raise KeyError((cat, key))
         # may raise KeyError
         d0 = dict_value(names[cat])
+
         def lookup(d):
             if 'Limits' in d:
-                (k1,k2) = list_value(d['Limits'])
-                if key < k1 or k2 < key: return None
+                (k1, k2) = list_value(d['Limits'])
+                if key < k1 or k2 < key:
+                    return None
             if 'Names' in d:
                 objs = list_value(d['Names'])
                 names = dict(choplist(2, objs))
@@ -501,8 +525,9 @@ class PDFDocument(object):
             if 'Kids' in d:
                 for c in list_value(d['Kids']):
                     v = lookup(dict_value(c))
-                    if v: return v
-            raise KeyError((cat,key))
+                    if v:
+                        return v
+            raise KeyError((cat, key))
         return lookup(d0)
 
     def get_dest(self, name):
@@ -528,7 +553,8 @@ class PDFDocument(object):
             line = line.strip()
             if 2 <= self.debug:
                 print >>sys.stderr, 'find_xref: %r' % line
-            if line == 'startxref': break
+            if line == 'startxref':
+                break
             if line:
                 prev = line
         else:
