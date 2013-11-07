@@ -5,8 +5,11 @@ Yusuke Shinyama
 Satoshi Sekine
 
 New York University
+
 715, Broadway, 7th Floor
+
 New York, NY, 10003
+
 {yusuke,sekine}@cs.nyu.edu
 
 Abstract
@@ -53,6 +56,7 @@ tem can be after months of work. Furthermore, you
 might not know if the task is even doable in the ﬁrst
 place. Knowing what kind of information is easily
 obtained in advance would help reduce this risk.
+
 An IE task can be deﬁned as ﬁnding a relation
 among several entities involved in a certain type of
 event. For example, in the MUC-6 management
@@ -66,6 +70,7 @@ are many existing works on obtaining extraction pat-
 terns for pre-deﬁned relations (Riloff, 1996; Yangar-
 ber et al., 2000; Agichtein and Gravano, 2000; Sudo
 et al., 2003).
+
 Unrestricted Relation Discovery is a technique to
 automatically discover such relations that repeatedly
 appear in a corpus and present them as a table, with
