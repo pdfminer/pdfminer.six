@@ -8,12 +8,12 @@ except ImportError:
 from cmapdb import CMapDB, CMapParser, FileUnicodeMap, CMap
 from encodingdb import EncodingDB, name2unicode
 from psparser import PSStackParser
-from psparser import PSSyntaxError, PSEOF
+from psparser import PSEOF
 from psparser import LIT, KWD, STRICT
 from psparser import PSLiteral, literal_name
 from pdftypes import PDFException, resolve1
-from pdftypes import int_value, float_value, num_value
-from pdftypes import str_value, list_value, dict_value, stream_value
+from pdftypes import int_value, num_value
+from pdftypes import list_value, dict_value, stream_value
 from fontmetrics import FONT_METRICS
 from utils import apply_matrix_norm, nunpack, choplist
 

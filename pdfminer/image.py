@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 import cStringIO
-import logging
-import sys
 import struct
 import os, os.path
 from pdftypes import LITERALS_DCT_DECODE

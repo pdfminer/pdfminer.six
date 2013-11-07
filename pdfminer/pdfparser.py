@@ -9,8 +9,8 @@ from psparser import PSSyntaxError, PSEOF
 from psparser import KWD, STRICT
 from pdftypes import PDFException
 from pdftypes import PDFStream, PDFObjRef
-from pdftypes import int_value, float_value, num_value
-from pdftypes import str_value, list_value, dict_value, stream_value
+from pdftypes import int_value
+from pdftypes import dict_value
 
 
 ##  Exceptions

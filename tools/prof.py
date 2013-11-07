@@ -2,7 +2,6 @@
 import sys
 
 def prof_main(argv):
-    import getopt
     import hotshot, hotshot.stats
     def usage():
         print 'usage: %s module.function [args ...]' % argv[0]

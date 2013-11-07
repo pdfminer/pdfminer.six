@@ -10,7 +10,6 @@ by Philip J. Erdelsky:
 
 """
 
-import sys
 import struct
 
 def KEYLENGTH(keybits): return (keybits)/8
