@@ -14,7 +14,7 @@ This is an in-house mapping table for some Latin-1 characters
 LATIN2ASCII = {
   #0x00a0: '',
   #0x00a7: '',
-  
+
   # iso-8859-1
   0x00c0: 'A`',
   0x00c1: "A'",

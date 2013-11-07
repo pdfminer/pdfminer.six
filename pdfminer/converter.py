@@ -119,7 +119,7 @@ class PDFPageAggregator(PDFLayoutAnalyzer):
         PDFLayoutAnalyzer.__init__(self, rsrcmgr, pageno=pageno, laparams=laparams)
         self.result = None
         return
-    
+
     def receive_layout(self, ltpage):
         self.result = ltpage
         return
@@ -137,7 +137,7 @@ class PDFConverter(PDFLayoutAnalyzer):
         self.outfp = outfp
         self.codec = codec
         return
-    
+
 
 ##  TextConverter
 ##
@@ -179,7 +179,7 @@ class TextConverter(PDFConverter):
         if self.imagewriter is None: return
         PDFConverter.render_image(self, name, stream)
         return
-    
+
     def paint_path(self, gstate, stroke, fill, evenodd, path):
         return
 
@@ -197,13 +197,13 @@ class HTMLConverter(PDFConverter):
         'curve': 'black',
         'page': 'gray',
         }
-    
+
     TEXT_COLORS = {
         'textbox': 'blue',
         'char': 'black',
         }
 
-    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None, 
+    def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
                  scale=1, fontscale=1.0, layoutmode='normal', showpageno=True,
                  pagemargin=50, imagewriter=None,
                  rect_colors={'curve':'black', 'page':'gray'},
@@ -295,7 +295,7 @@ class HTMLConverter(PDFConverter):
         self._font = self._fontstack.pop()
         self.write('</div>')
         return
-    
+
     def put_text(self, text, fontname, fontsize):
         font = (fontname, fontsize)
         if font != self._font:
@@ -399,7 +399,7 @@ class XMLConverter(PDFConverter):
     def write_footer(self):
         self.outfp.write('</pages>\n')
         return
-    
+
     def write_text(self, text):
         self.outfp.write(enc(text, self.codec))
         return

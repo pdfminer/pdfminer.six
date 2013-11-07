@@ -70,7 +70,7 @@ class ImageWriter(object):
         (width, height) = image.srcsize
         if len(filters) == 1 and filters[0] in LITERALS_DCT_DECODE:
             ext = '.jpg'
-        elif (image.bits == 1 or 
+        elif (image.bits == 1 or
               image.bits == 8 and image.colorspace in (LITERAL_DEVICE_RGB, LITERAL_DEVICE_GRAY)):
             ext = '.%dx%d.bmp' % (width, height)
         else:
@@ -84,7 +84,7 @@ class ImageWriter(object):
                 from PIL import Image
                 from PIL import ImageChops
                 ifp = cStringIO.StringIO(raw_data)
-                i = Image.open(ifp) 
+                i = Image.open(ifp)
                 i = ImageChops.invert(i)
                 i = i.convert('RGB')
                 i.save(fp, 'JPEG')

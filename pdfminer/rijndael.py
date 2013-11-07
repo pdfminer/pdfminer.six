@@ -1060,7 +1060,7 @@ class RijndaelEncryptor(object):
     >>> RijndaelEncryptor(key, 128).encrypt(plaintext).encode('hex')
     'd8f532538289ef7d06b506a4fd5be9c9'
     """
-    
+
     def __init__(self, key, keybits=256):
         assert len(key) == KEYLENGTH(keybits)
         (self.rk, self.nrounds) = rijndaelSetupEncrypt(key, keybits)

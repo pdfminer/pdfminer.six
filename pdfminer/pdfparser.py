@@ -35,7 +35,7 @@ class PDFParser(PSStackParser):
       parser.set_document(doc)
       parser.seek(offset)
       parser.nextobject()
-    
+
     """
 
     def __init__(self, fp):
@@ -57,10 +57,10 @@ class PDFParser(PSStackParser):
     KEYWORD_STARTXREF = KWD('startxref')
     def do_keyword(self, pos, token):
         """Handles PDF-related keywords."""
-        
+
         if token in (self.KEYWORD_XREF, self.KEYWORD_STARTXREF):
             self.add_results(*self.pop(1))
-        
+
         elif token is self.KEYWORD_ENDOBJ:
             self.add_results(*self.pop(4))
 
@@ -125,7 +125,7 @@ class PDFParser(PSStackParser):
         else:
             # others
             self.push((pos, token))
-        
+
         return
 
 

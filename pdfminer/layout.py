@@ -94,7 +94,7 @@ class LTComponent(LTItem):
 
     def is_empty(self):
         return self.width <= 0 or self.height <= 0
-        
+
     def is_hoverlap(self, obj):
         assert isinstance(obj, LTComponent)
         return obj.x0 <= self.x1 and self.x0 <= obj.x1
@@ -247,7 +247,7 @@ class LTChar(LTComponent, LTText):
 
     def __repr__(self):
         return ('<%s %s matrix=%s font=%r adv=%s text=%r>' %
-                (self.__class__.__name__, bbox2str(self.bbox), 
+                (self.__class__.__name__, bbox2str(self.bbox),
                  matrix2str(self.matrix), self.fontname, self.adv,
                  self.get_text()))
 
@@ -258,7 +258,7 @@ class LTChar(LTComponent, LTText):
         """Returns True if two characters can coexist in the same line."""
         return True
 
-    
+
 ##  LTContainer
 ##
 class LTContainer(LTComponent):
@@ -287,7 +287,7 @@ class LTContainer(LTComponent):
         for obj in self._objs:
             obj.analyze(laparams)
         return
-    
+
 
 ##  LTExpandableContainer
 ##
@@ -315,7 +315,7 @@ class LTTextContainer(LTExpandableContainer, LTText):
 
     def get_text(self):
         return ''.join( obj.get_text() for obj in self if isinstance(obj, LTText) )
-    
+
 
 ##  LTTextLine
 ##
@@ -363,7 +363,7 @@ class LTTextLineHorizontal(LTTextLine):
                      abs(obj.height-self.height) < d and
                      (abs(obj.x0-self.x0) < d or
                       abs(obj.x1-self.x1) < d)) ]
-    
+
 class LTTextLineVertical(LTTextLine):
 
     def __init__(self, word_margin):
@@ -379,7 +379,7 @@ class LTTextLineVertical(LTTextLine):
         self._y0 = obj.y0
         LTTextLine.add(self, obj)
         return
-        
+
     def find_neighbors(self, plane, ratio):
         d = ratio*self.width
         objs = plane.find((self.x0-d, self.y0, self.x1+d, self.y1))
@@ -387,8 +387,8 @@ class LTTextLineVertical(LTTextLine):
                  if (isinstance(obj, LTTextLineVertical) and
                      abs(obj.width-self.width) < d and
                      (abs(obj.y0-self.y0) < d or
-                      abs(obj.y1-self.y1) < d)) ]                     
-    
+                      abs(obj.y1-self.y1) < d)) ]
+
 
 ##  LTTextBox
 ##
@@ -408,7 +408,7 @@ class LTTextBox(LTTextContainer):
                  self.index, bbox2str(self.bbox), self.get_text()))
 
 class LTTextBoxHorizontal(LTTextBox):
-    
+
     def analyze(self, laparams):
         LTTextBox.analyze(self, laparams)
         self._objs = csort(self._objs, key=lambda obj: -obj.y1)
@@ -438,7 +438,7 @@ class LTTextGroup(LTTextContainer):
         return
 
 class LTTextGroupLRTB(LTTextGroup):
-    
+
     def analyze(self, laparams):
         LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-left to bottom-right.
@@ -448,7 +448,7 @@ class LTTextGroupLRTB(LTTextGroup):
         return
 
 class LTTextGroupTBRL(LTTextGroup):
-    
+
     def analyze(self, laparams):
         LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-right to bottom-left.
@@ -466,14 +466,14 @@ class LTLayoutContainer(LTContainer):
         LTContainer.__init__(self, bbox)
         self.groups = None
         return
-        
+
     def get_textlines(self, laparams, objs):
         obj0 = None
         line = None
         for obj1 in objs:
             if obj0 is not None:
                 k = 0
-                if (obj0.is_compatible(obj1) and obj0.is_voverlap(obj1) and 
+                if (obj0.is_compatible(obj1) and obj0.is_voverlap(obj1) and
                     min(obj0.height, obj1.height) * laparams.line_overlap < obj0.voverlap(obj1) and
                     obj0.hdistance(obj1) < max(obj0.width, obj1.width) * laparams.char_margin):
                     # obj0 and obj1 is horizontally aligned:
@@ -488,7 +488,7 @@ class LTLayoutContainer(LTContainer):
                     #        (char_margin)
                     k |= 1
                 if (laparams.detect_vertical and
-                    obj0.is_compatible(obj1) and obj0.is_hoverlap(obj1) and 
+                    obj0.is_compatible(obj1) and obj0.is_hoverlap(obj1) and
                     min(obj0.width, obj1.width) * laparams.line_overlap < obj0.hoverlap(obj1) and
                     obj0.vdistance(obj1) < max(obj0.height, obj1.height) * laparams.char_margin):
                     # obj0 and obj1 is vertically aligned:
@@ -565,9 +565,9 @@ class LTLayoutContainer(LTContainer):
         assert boxes
         def dist(obj1, obj2):
             """A distance function between two TextBoxes.
-            
+
             Consider the bounding rectangle for obj1 and obj2.
-            Return its area less the areas of obj1 and obj2, 
+            Return its area less the areas of obj1 and obj2,
             shown as 'www' below. This value may be negative.
                     +------+..........+ (x1,y1)
                     | obj1 |wwwwwwwwww:
@@ -621,7 +621,7 @@ class LTLayoutContainer(LTContainer):
             plane.add(group)
         assert len(plane) == 1
         return list(plane)
-    
+
     def analyze(self, laparams):
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
@@ -668,7 +668,7 @@ class LTFigure(LTLayoutContainer):
     def analyze(self, laparams):
         if not laparams.all_texts: return
         LTLayoutContainer.analyze(self, laparams)
-        return 
+        return
 
 
 ##  LTPage

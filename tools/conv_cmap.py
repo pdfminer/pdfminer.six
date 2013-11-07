@@ -50,7 +50,7 @@ class CMapConverter(object):
                 assert values[0] == 'CID'
                 encs = values
                 continue
-            
+
             def put(dmap, code, cid, force=False):
                 for b in code[:-1]:
                     b = ord(b)
@@ -64,7 +64,7 @@ class CMapConverter(object):
                 if force or ((b not in dmap) or dmap[b] == cid):
                     dmap[b] = cid
                 return
-            
+
             def add(unimap, enc, code):
                 try:
                     codec = self.enc2codec[enc]
@@ -78,20 +78,20 @@ class CMapConverter(object):
                 except UnicodeError:
                     pass
                 return
-                
+
             def pick(unimap):
                 chars = unimap.items()
                 chars.sort(key=(lambda (c,n):(n,-ord(c))), reverse=True)
                 (c,_) = chars[0]
                 return c
-                
+
             cid = int(values[0])
             unimap_h = {}
             unimap_v = {}
             for (enc,value) in zip(encs, values):
                 if enc == 'CID': continue
                 if value == '*': continue
-                
+
                 # hcodes, vcodes: encoded bytes for each writing mode.
                 hcodes = []
                 vcodes = []
@@ -121,7 +121,7 @@ class CMapConverter(object):
                     for code in hcodes:
                         put(hmap, code, cid)
                         put(vmap, code, cid)
-            
+
             # Determine the "most popular" candidate.
             if unimap_h:
                 self.cid2unichr_h[cid] = pick(unimap_h)
@@ -137,7 +137,7 @@ class CMapConverter(object):
         )
         fp.write(pickle.dumps(data))
         return
-        
+
     def dump_unicodemap(self, fp):
         data = dict(
             CID2UNICHR_H=self.cid2unichr_h,
@@ -151,7 +151,7 @@ def main(argv):
     import getopt
     import gzip
     import os.path
-    
+
     def usage():
         print 'usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]' % argv[0]
         return 100

@@ -125,7 +125,7 @@ class PDFGraphicState(object):
 class PDFResourceManager(object):
 
     """Repository of shared resources.
-    
+
     ResourceManager facilitates reuse of shared resources
     such as fonts and images so that large objects are not
     allocated multiple times.
@@ -725,7 +725,7 @@ class PDFPageInterpreter(object):
             interpreter = self.dup()
             bbox = list_value(xobj['BBox'])
             matrix = list_value(xobj.get('Matrix', MATRIX_IDENTITY))
-            # According to PDF reference 1.7 section 4.9.1, XObjects in 
+            # According to PDF reference 1.7 section 4.9.1, XObjects in
             # earlier PDFs (prior to v1.2) use the page's Resources entry
             # instead of having their own Resources entry.
             resources = dict_value(xobj.get('Resources')) or self.resources.copy()

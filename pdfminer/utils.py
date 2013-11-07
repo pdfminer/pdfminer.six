@@ -255,7 +255,7 @@ class Plane(object):
         for obj in objs:
             self.add(obj)
         return
-    
+
     # add(obj): place an object.
     def add(self, obj):
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):

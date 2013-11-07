@@ -260,7 +260,7 @@ class PDFDocument(object):
       doc = PDFDocument(parser)
       doc.initialize(password)
       obj = doc.getobj(objid)
-    
+
     """
 
     debug = 0
@@ -425,7 +425,7 @@ class PDFDocument(object):
             raise PDFSyntaxError('Invalid object spec: offset=%r' % pos)
         (_,obj) = self._parser.nextobject()
         return obj
-        
+
     # can raise PDFObjectNotFound
     def getobj(self, objid):
         assert objid != 0

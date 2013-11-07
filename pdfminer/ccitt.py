@@ -308,7 +308,7 @@ class CCITTG4Parser(BitParser):
     BitParser.add(UNCOMPRESSED, 'T1000' , '0000000010')
     BitParser.add(UNCOMPRESSED, 'T00000' , '00000000011')
     BitParser.add(UNCOMPRESSED, 'T10000' , '00000000010')
-    
+
     class EOFB(Exception): pass
     class InvalidData(Exception): pass
     class ByteSkip(Exception): pass
@@ -386,7 +386,7 @@ class CCITTG4Parser(BitParser):
     def _parse_uncompressed(self, bits):
         if not bits: raise self.InvalidData
         if bits.startswith('T'):
-            self._accept = self._parse_mode            
+            self._accept = self._parse_mode
             self._color = int(bits[1])
             self._do_uncompressed(bits[2:])
             return self.MODE
@@ -418,14 +418,14 @@ class CCITTG4Parser(BitParser):
     def output_line(self, y, bits):
         print y, ''.join( str(b) for b in bits )
         return
-    
+
     def _reset_line(self):
         self._refline = self._curline
         self._curline = array.array('b', [1]*self.width)
         self._curpos = -1
         self._color = 1
         return
-        
+
     def _flush_line(self):
         if self.width <= self._curpos:
             self.output_line(self._y, self._curline)
@@ -460,7 +460,7 @@ class CCITTG4Parser(BitParser):
         self._curpos = x1
         self._color = 1-self._color
         return
-    
+
     def _do_pass(self):
         #print '* pass: curpos=%r, color=%r' % (self._curpos, self._color)
         #print '  refline:', self._get_refline(self._curpos+1)
@@ -487,7 +487,7 @@ class CCITTG4Parser(BitParser):
             self._curline[x] = self._color
         self._curpos = x1
         return
-    
+
     def _do_horizontal(self, n1, n2):
         #print '* horizontal(%d,%d): curpos=%r, color=%r' % (n1, n2, self._curpos, self._color)
         if self._curpos < 0:
@@ -503,7 +503,7 @@ class CCITTG4Parser(BitParser):
             x += 1
         self._curpos = x
         return
-    
+
     def _do_uncompressed(self, bits):
         #print '* uncompressed(%r): curpos=%r' % (bits, self._curpos)
         for c in bits:
@@ -672,16 +672,16 @@ class TestCCITTG4Parser(unittest.TestCase):
 ##  CCITTFaxDecoder
 ##
 class CCITTFaxDecoder(CCITTG4Parser):
-    
+
     def __init__(self, width, bytealign=False, reversed=False):
         CCITTG4Parser.__init__(self, width, bytealign=bytealign)
         self.reversed = reversed
         self._buf = ''
         return
-    
+
     def close(self):
         return self._buf
-    
+
     def output_line(self, y, bits):
         bytes = array.array('B', [0]*((len(bits)+7)/8))
         if self.reversed:
@@ -704,8 +704,8 @@ def ccittfaxdecode(data, params):
         raise ValueError(K)
     parser.feedbytes(data)
     return parser.close()
-    
-    
+
+
 # test
 def main(argv):
     import pygame

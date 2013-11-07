@@ -16,13 +16,13 @@ def ascii85decode(data):
     letters, using 85 different types of characters (as 256**4 < 85**5).
     When the length of the original bytes is not a multiple of 4, a special
     rule is used for round up.
-    
+
     The Adobe's ASCII85 implementation is slightly different from
     its original in handling the last characters.
-    
+
     The sample string is taken from:
       http://en.wikipedia.org/w/index.php?title=Ascii85
-    
+
     >>> ascii85decode('9jqo^BlbD-BleB1DJ+*+F(f,q')
     'Man is distinguished'
     >>> ascii85decode('E,9)oF*2M7/c~>')
@@ -60,7 +60,7 @@ def asciihexdecode(data):
     EOD. Any other characters will cause an error. If the filter encounters
     the EOD marker after reading an odd number of hexadecimal digits, it
     will behave as if a 0 followed the last digit.
-    
+
     >>> asciihexdecode('61 62 2e6364   65')
     'ab.cde'
     >>> asciihexdecode('61 62 2e6364   657>')

@@ -81,7 +81,7 @@ class CMap(object):
             else:
                 self.dump(out=out, code2cid=v, code=c)
         return
-    
+
 
 ##  IdentityCMap
 ##
@@ -100,8 +100,8 @@ class IdentityCMap(object):
             return struct.unpack('>%dH' % n, code)
         else:
             return ()
-        
-            
+
+
 
 ##  UnicodeMap
 ##
@@ -162,7 +162,7 @@ class FileCMap(CMap):
 ##  FileUnicodeMap
 ##
 class FileUnicodeMap(UnicodeMap):
-    
+
     def __init__(self):
         UnicodeMap.__init__(self)
         self.attrs = {}
@@ -205,12 +205,12 @@ class PyCMap(CMap):
 
     def is_vertical(self):
         return self._is_vertical
-    
+
 
 ##  PyUnicodeMap
 ##
 class PyUnicodeMap(UnicodeMap):
-    
+
     def __init__(self, name, module, vertical):
         if vertical:
             cid2unichr = module.CID2UNICHR_V
@@ -231,7 +231,7 @@ class CMapDB(object):
     debug = 0
     _cmap_cache = {}
     _umap_cache = {}
-    
+
     class CMapNotFound(CMapError): pass
 
     @classmethod

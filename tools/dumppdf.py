@@ -25,7 +25,7 @@ def dumpxml(out, obj, codec=None):
     if obj is None:
         out.write('<null />')
         return
-    
+
     if isinstance(obj, dict):
         out.write('<dict size="%d">\n' % len(obj))
         for (k,v) in obj.iteritems():
@@ -179,7 +179,7 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
         out.write(fileobj.get_data())
         out.close()
         return
-    
+
     fp = file(fname, 'rb')
     parser = PDFParser(fp)
     doc = PDFDocument(parser)

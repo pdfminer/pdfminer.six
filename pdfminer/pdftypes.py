@@ -68,7 +68,7 @@ def resolve1(x, default=None):
 
 def resolve_all(x, default=None):
     """Recursively resolves the given object and all the internals.
-    
+
     Make sure there is no indirect reference within the nested object.
     This procedure might be slow.
     """
@@ -180,13 +180,13 @@ class PDFStream(PDFObject):
 
     def __contains__(self, name):
         return name in self.attrs
-    
+
     def __getitem__(self, name):
         return self.attrs[name]
-    
+
     def get(self, name, default=None):
         return self.attrs.get(name, default)
-    
+
     def get_any(self, names, default=None):
         for name in names:
             if name in self.attrs:

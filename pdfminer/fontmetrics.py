@@ -8,7 +8,7 @@ written with a proportional font.
 The following data were extracted from the AFM files:
 
   http://www.ctan.org/tex-archive/fonts/adobe/afm/
-  
+
 """
 
 ###  BEGIN Verbatim copy of the license part

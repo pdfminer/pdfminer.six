@@ -102,7 +102,7 @@ class Type1FontHeaderParser(PSStackParser):
             except KeyError:
                 pass
         return self._cid2unicode
-    
+
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_PUT:
             ((_,key),(_,value)) = self.pop(2)
@@ -111,7 +111,7 @@ class Type1FontHeaderParser(PSStackParser):
                 self.add_results((key, literal_name(value)))
         return
 
-    
+
 ##  CFFFont
 ##  (Format specified in Adobe Technical Note: #5176
 ##   "The Compact Font Format Specification")

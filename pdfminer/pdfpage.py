@@ -40,7 +40,7 @@ class PDFPage(object):
 
     def __init__(self, doc, pageid, attrs):
         """Initialize a page object.
-        
+
         doc: a PDFDocument object.
         pageid: any Python object that can uniquely identify the page.
         attrs: a dictionary of page attributes.

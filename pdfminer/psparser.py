@@ -32,7 +32,7 @@ class PSObject(object):
 class PSLiteral(PSObject):
 
     """A class that represents a PostScript literal.
-    
+
     Postscript literals are used as identifiers, such as
     variable names, property names and dictionary keys.
     Literals are case sensitive and denoted by a preceding
@@ -55,11 +55,11 @@ class PSLiteral(PSObject):
 class PSKeyword(PSObject):
 
     """A class that represents a PostScript keyword.
-    
+
     PostScript keywords are a dozen of predefined words.
     Commands and directives in PostScript are expressed by keywords.
     They are also used to denote the content boundaries.
-    
+
     Note: Do not create an instance of PSKeyword directly.
     Always use PSKeywordTable.intern().
     """
@@ -80,7 +80,7 @@ class PSSymbolTable(object):
 
     Interned objects can be checked its identity with "is" operator.
     """
-    
+
     def __init__(self, klass):
         self.dict = {}
         self.klass = klass
@@ -357,7 +357,7 @@ class PSBaseParser(object):
             pass
         self._parse1 = self._parse_main
         return j
-    
+
     def _parse_float(self, s, i):
         m = END_NUMBER.search(s, i)
         if not m:
@@ -493,17 +493,17 @@ class PSStackParser(PSBaseParser):
     def push(self, *objs):
         self.curstack.extend(objs)
         return
-    
+
     def pop(self, n):
         objs = self.curstack[-n:]
         self.curstack[-n:] = []
         return objs
-    
+
     def popall(self):
         objs = self.curstack
         self.curstack = []
         return objs
-    
+
     def add_results(self, *objs):
         if 2 <= self.debug:
             print >>sys.stderr, 'add_results: %r' % (objs,)
@@ -516,7 +516,7 @@ class PSStackParser(PSBaseParser):
         if 2 <= self.debug:
             print >>sys.stderr, 'start_type: pos=%r, type=%r' % (pos, type)
         return
-    
+
     def end_type(self, type):
         if self.curtype != type:
             raise PSTypeError('Type mismatch: %r != %r' % (self.curtype, type))
