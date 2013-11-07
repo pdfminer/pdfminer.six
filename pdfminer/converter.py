@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from pdfdevice import PDFDevice, PDFTextDevice
+from pdfdevice import PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
 from layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve
 from layout import LTFigure, LTImage, LTChar, LTTextLine

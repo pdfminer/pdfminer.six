@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 import sys
-from psparser import LIT, KWD, STRICT
+from psparser import LIT
 from pdftypes import PDFObjectNotFound
 from pdftypes import resolve1
-from pdftypes import int_value, float_value, num_value
-from pdftypes import str_value, list_value, dict_value, stream_value
+from pdftypes import int_value, list_value, dict_value
 from pdfparser import PDFParser
 from pdfdocument import PDFDocument
 from pdfdocument import PDFEncryptionError

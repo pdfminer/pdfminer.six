@@ -6,20 +6,16 @@ try:
 except ImportError:
     from StringIO import StringIO
 from cmapdb import CMapDB, CMap
-from psparser import PSException, PSTypeError, PSEOF
+from psparser import PSTypeError, PSEOF
 from psparser import PSKeyword, literal_name, keyword_name
 from psparser import PSStackParser
 from psparser import LIT, KWD, STRICT
 from pdftypes import PDFException, PDFStream, PDFObjRef
 from pdftypes import resolve1
-from pdftypes import int_value, float_value, num_value
-from pdftypes import str_value, list_value, dict_value, stream_value
+from pdftypes import list_value, dict_value, stream_value
 from pdffont import PDFFontError
 from pdffont import PDFType1Font, PDFTrueTypeFont, PDFType3Font
 from pdffont import PDFCIDFont
-from pdfparser import PDFParser
-from pdfdocument import PDFDocument
-from pdfdocument import PDFPasswordIncorrect
 from pdfcolor import PDFColorSpace
 from pdfcolor import PREDEFINED_COLORSPACE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB

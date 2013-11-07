@@ -12,16 +12,15 @@ More information is available on the Adobe website:
 """
 
 import sys
-import re
 import os
 import os.path
 import gzip
 import cPickle as pickle
 import struct
 from psparser import PSStackParser
-from psparser import PSException, PSSyntaxError, PSTypeError, PSEOF
-from psparser import PSLiteral, PSKeyword
-from psparser import literal_name, keyword_name
+from psparser import PSSyntaxError, PSEOF
+from psparser import PSLiteral
+from psparser import literal_name
 from encodingdb import name2unicode
 from utils import choplist, nunpack
 

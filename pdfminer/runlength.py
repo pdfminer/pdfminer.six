@@ -6,8 +6,6 @@
 #  * public domain *
 #
 
-import sys
-
 def rldecode(data):
     """
     RunLength decoder (Adobe version) implementation based on PDF Reference

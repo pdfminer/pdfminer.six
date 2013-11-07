@@ -11,8 +11,8 @@ from psparser import literal_name
 from psparser import LIT, KWD, STRICT
 from pdftypes import PDFException, PDFTypeError, PDFNotImplementedError
 from pdftypes import PDFObjectNotFound, PDFStream
-from pdftypes import resolve1, decipher_all
-from pdftypes import int_value, float_value, num_value
+from pdftypes import decipher_all
+from pdftypes import int_value
 from pdftypes import str_value, list_value, dict_value, stream_value
 from pdfparser import PDFSyntaxError
 from pdfparser import PDFStreamParser
