@@ -25,6 +25,7 @@ class BitParser(object):
     @classmethod
     def add(klass, root, v, bits):
         p = root
+        b = None
         for i in xrange(len(bits)):
             if 0 < i:
                 if p[b] is None:
