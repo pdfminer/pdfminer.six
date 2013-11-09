@@ -472,7 +472,8 @@ class LTLayoutContainer(LTContainer):
         self.groups = None
         return
 
-    def get_textlines(self, laparams, objs):
+    # group_objects: group text object to textlines.
+    def group_objects(self, laparams, objs):
         obj0 = None
         line = None
         for obj1 in objs:
@@ -538,13 +539,14 @@ class LTLayoutContainer(LTContainer):
         yield line
         return
 
-    def get_textboxes(self, laparams, lines):
+    # group_textlines: group neighboring lines to textboxes.
+    def group_textlines(self, laparams, lines):
         plane = Plane(self.bbox)
         plane.extend(lines)
         boxes = {}
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
-            assert line in neighbors, line
+            if line not in neighbors: continue
             members = []
             for obj1 in neighbors:
                 members.append(obj1)
@@ -559,6 +561,7 @@ class LTLayoutContainer(LTContainer):
                 boxes[obj] = box
         done = set()
         for line in lines:
+            if line not in boxes: continue
             box = boxes[line]
             if box in done:
                 continue
@@ -567,6 +570,7 @@ class LTLayoutContainer(LTContainer):
                 yield box
         return
 
+    # group_textboxes: group textboxes hierarchically.
     def group_textboxes(self, laparams, boxes):
         assert boxes
 
@@ -633,18 +637,16 @@ class LTLayoutContainer(LTContainer):
     def analyze(self, laparams):
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
-        (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self._objs)
+        (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self)
         for obj in otherobjs:
             obj.analyze(laparams)
         if not textobjs:
             return
-        textlines = list(self.get_textlines(laparams, textobjs))
-        assert len(textobjs) <= sum(len(line._objs) for line in textlines)
+        textlines = list(self.group_objects(laparams, textobjs))
         (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
         for obj in empties:
             obj.analyze(laparams)
-        textboxes = list(self.get_textboxes(laparams, textlines))
-        assert len(textlines) == sum(len(box._objs) for box in textboxes)
+        textboxes = list(self.group_textlines(laparams, textlines))
         if textboxes:
             self.groups = self.group_textboxes(laparams, textboxes)
             assigner = IndexAssigner()

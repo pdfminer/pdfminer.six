@@ -259,6 +259,8 @@ class Plane(object):
         return obj in self._objs
 
     def _getrange(self, (x0, y0, x1, y1)):
+        if (x1 <= self.x0 or self.x1 <= x0 or
+            y1 <= self.y0 or self.y1 <= y0): return
         x0 = max(self.x0, x0)
         y0 = max(self.y0, y0)
         x1 = min(self.x1, x1)
