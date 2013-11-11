@@ -202,7 +202,8 @@ class LTAnno(LTItem, LTText):
 ##
 class LTChar(LTComponent, LTText):
 
-    def __init__(self, matrix, font, fontsize, scaling, rise, text, textwidth, textdisp):
+    def __init__(self, matrix, font, fontsize, scaling, rise,
+                 text, textwidth, textdisp):
         LTText.__init__(self)
         self._text = text
         self.matrix = matrix
@@ -478,52 +479,57 @@ class LTLayoutContainer(LTContainer):
         line = None
         for obj1 in objs:
             if obj0 is not None:
-                k = 0
-                if (obj0.is_compatible(obj1) and obj0.is_voverlap(obj1) and
-                    min(obj0.height, obj1.height) * laparams.line_overlap < obj0.voverlap(obj1) and
-                    obj0.hdistance(obj1) < max(obj0.width, obj1.width) * laparams.char_margin):
-                    # obj0 and obj1 is horizontally aligned:
-                    #
-                    #   +------+ - - -
-                    #   | obj0 | - - +------+   -
-                    #   |      |     | obj1 |   | (line_overlap)
-                    #   +------+ - - |      |   -
-                    #          - - - +------+
-                    #
-                    #          |<--->|
-                    #        (char_margin)
-                    k |= 1
-                if (laparams.detect_vertical and
-                    obj0.is_compatible(obj1) and obj0.is_hoverlap(obj1) and
-                    min(obj0.width, obj1.width) * laparams.line_overlap < obj0.hoverlap(obj1) and
-                    obj0.vdistance(obj1) < max(obj0.height, obj1.height) * laparams.char_margin):
-                    # obj0 and obj1 is vertically aligned:
-                    #
-                    #   +------+
-                    #   | obj0 |
-                    #   |      |
-                    #   +------+ - - -
-                    #     |    |     | (char_margin)
-                    #     +------+ - -
-                    #     | obj1 |
-                    #     |      |
-                    #     +------+
-                    #
-                    #     |<-->|
-                    #   (line_overlap)
-                    k |= 2
-                if ((k & 1 and isinstance(line, LTTextLineHorizontal)) or
-                    (k & 2 and isinstance(line, LTTextLineVertical))):
+                # halign: obj0 and obj1 is horizontally aligned.
+                #
+                #   +------+ - - -
+                #   | obj0 | - - +------+   -
+                #   |      |     | obj1 |   | (line_overlap)
+                #   +------+ - - |      |   -
+                #          - - - +------+
+                #
+                #          |<--->|
+                #        (char_margin)
+                halign = (obj0.is_compatible(obj1) and
+                          obj0.is_voverlap(obj1) and
+                          (min(obj0.height, obj1.height) * laparams.line_overlap <
+                           obj0.voverlap(obj1)) and
+                          (obj0.hdistance(obj1) <
+                           max(obj0.width, obj1.width) * laparams.char_margin))
+                
+                # valign: obj0 and obj1 is vertically aligned.
+                #
+                #   +------+
+                #   | obj0 |
+                #   |      |
+                #   +------+ - - -
+                #     |    |     | (char_margin)
+                #     +------+ - -
+                #     | obj1 |
+                #     |      |
+                #     +------+
+                #
+                #     |<-->|
+                #   (line_overlap)
+                valign = (laparams.detect_vertical and
+                          obj0.is_compatible(obj1) and
+                          obj0.is_hoverlap(obj1) and
+                          (min(obj0.width, obj1.width) * laparams.line_overlap <
+                           obj0.hoverlap(obj1)) and
+                          (obj0.vdistance(obj1) <
+                           max(obj0.height, obj1.height) * laparams.char_margin))
+                
+                if ((halign and isinstance(line, LTTextLineHorizontal)) or
+                    (valign and isinstance(line, LTTextLineVertical))):
                     line.add(obj1)
                 elif line is not None:
                     yield line
                     line = None
                 else:
-                    if k == 2:
+                    if valign and not halign:
                         line = LTTextLineVertical(laparams.word_margin)
                         line.add(obj0)
                         line.add(obj1)
-                    elif k == 1:
+                    elif halign and not valign:
                         line = LTTextLineHorizontal(laparams.word_margin)
                         line.add(obj0)
                         line.add(obj1)
