@@ -186,9 +186,9 @@ class LTImage(LTComponent):
                  bbox2str(self.bbox), self.srcsize))
 
 
-##  LTAnon
+##  LTAnno
 ##
-class LTAnon(LTItem, LTText):
+class LTAnno(LTItem, LTText):
 
     def __init__(self, text):
         self._text = text
@@ -332,7 +332,7 @@ class LTTextLine(LTTextContainer):
 
     def analyze(self, laparams):
         LTTextContainer.analyze(self, laparams)
-        LTContainer.add(self, LTAnon('\n'))
+        LTContainer.add(self, LTAnno('\n'))
         return
 
     def find_neighbors(self, plane, ratio):
@@ -350,7 +350,7 @@ class LTTextLineHorizontal(LTTextLine):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
             if self._x1 < obj.x0-margin:
-                LTContainer.add(self, LTAnon(' '))
+                LTContainer.add(self, LTAnno(' '))
         self._x1 = obj.x1
         LTTextLine.add(self, obj)
         return
@@ -376,7 +376,7 @@ class LTTextLineVertical(LTTextLine):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
             if obj.y1+margin < self._y0:
-                LTContainer.add(self, LTAnon(' '))
+                LTContainer.add(self, LTAnno(' '))
         self._y0 = obj.y0
         LTTextLine.add(self, obj)
         return
