@@ -9,7 +9,7 @@
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Mon Nov 11 10:18:06 UTC 2013
+Last Modified: Wed Nov 13 05:50:56 UTC 2013
 <!-- hhmts end -->
 </div>
 
@@ -23,9 +23,9 @@ from other applications.
 <ul>
 <li> <a href="#overview">Overview</a>
 <li> <a href="#basic">Basic Usage</a>
-<li> <a href="#layout">Layout Analysis</a>
-<li> <a href="#tocextract">TOC Extraction</a>
-<li> <a href="#extend">Parser Extension</a>
+<li> <a href="#layout">Performing Layout Analysis</a>
+<li> <a href="#tocextract">Obtaining Table of Contents</a>
+<li> <a href="#extend">Extending Functionality</a>
 </ul>
 
 <h2><a name="overview">Overview</a></h2>
@@ -75,8 +75,12 @@ Figure 1 shows the relationship between the classes in PDFMiner.
 <p>
 A typical way to parse a PDF file is the following:
 <blockquote><pre>
-from pdfminer.pdfparser import PDFParser, PDFDocument
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfpage import PDFTextExtractionNotAllowed
+from pdfminer.pdfinterp import PDFResourceManager
+from pdfminer.pdfinterp import PDFPageInterpreter
 from pdfminer.pdfdevice import PDFDevice
 
 <span class="comment"># Open a PDF file.</span>
@@ -84,15 +88,12 @@ fp = open('mypdf.pdf', 'rb')
 <span class="comment"># Create a PDF parser object associated with the file object.</span>
 parser = PDFParser(fp)
 <span class="comment"># Create a PDF document object that stores the document structure.</span>
-doc = PDFDocument()
-<span class="comment"># Connect the parser and document objects.</span>
-parser.set_document(doc)
-doc.set_parser(parser)
+document = PDFDocument(parser)
 <span class="comment"># Supply the password for initialization.</span>
 <span class="comment"># (If no password is set, give an empty string.)</span>
-doc.initialize(password)
+document.initialize(password)
 <span class="comment"># Check if the document allows text extraction. If not, abort.</span>
-if not doc.is_extractable:
+if not document.is_extractable:
     raise PDFTextExtractionNotAllowed
 <span class="comment"># Create a PDF resource manager object that stores shared resources.</span>
 rsrcmgr = PDFResourceManager()
@@ -101,11 +102,11 @@ device = PDFDevice(rsrcmgr)
 <span class="comment"># Create a PDF interpreter object.</span>
 interpreter = PDFPageInterpreter(rsrcmgr, device)
 <span class="comment"># Process each page contained in the document.</span>
-for page in doc.get_pages():
+for page in PDFPage.create_pages(document):
     interpreter.process_page(page)
 </pre></blockquote>
 
-<h2><a name="layout">Accessing Layout Objects</a></h2>
+<h2><a name="layout">Performing Layout Analysis</a></h2>
 <p>
 Here is a typical way to use the layout analysis function:
 <blockquote><pre>
@@ -117,15 +118,15 @@ laparams = LAParams()
 <span class="comment"># Create a PDF page aggregator object.</span>
 device = PDFPageAggregator(rsrcmgr, laparams=laparams)
 interpreter = PDFPageInterpreter(rsrcmgr, device)
-for page in doc.get_pages():
+for page in PDFPage.create_pages(document):
     interpreter.process_page(page)
     <span class="comment"># receive the LTPage object for the page.</span>
     layout = device.get_result()
 </pre></blockquote>
 
-The layout analyzer gives a "<code>LTPage</code>" object for each page
-in the PDF document. The object contains child objects within the page,
-forming a tree-like structure. Figure 2 shows the relationship between
+A layout analyzer returns a <code>LTPage</code> object for each page
+in the PDF document. This object contains child objects within the page,
+forming a tree structure. Figure 2 shows the relationship between
 these objects.
 
 <div align=center>
@@ -179,29 +180,29 @@ Could be used for separating text or figures.
 Could be used for framing another pictures or figures.
 
 <dt> <code>LTCurve</code>
-<dd> Represents a generic bezier curve.
+<dd> Represents a generic Bezier curve.
 </dl>
 
 <p>
 Also, check out <a href="http://denis.papathanasiou.org/?p=343">a more complete example by Denis Papathanasiou</a>.
 
-<h2><a name="tocextract">TOC Extraction</a></h2>
+<h2><a name="tocextract">Obtaining Table of Contents</a></h2>
 <p>
 PDFMiner provides functions to access the document's table of contents
 ("Outlines").
 
 <blockquote><pre>
-from pdfminer.pdfparser import PDFParser, PDFDocument
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
 
+<span class="comment"># Open a PDF document.</span>
 fp = open('mypdf.pdf', 'rb')
 parser = PDFParser(fp)
-doc = PDFDocument()
-parser.set_document(doc)
-doc.set_parser(parser)
-doc.initialize(password)
+document = PDFDocument(parser)
+document.initialize(password)
 
 <span class="comment"># Get the outlines of the document.</span>
-outlines = doc.get_outlines()
+outlines = document.get_outlines()
 for (level,title,dest,a,se) in outlines:
     print (level, title)
 </pre></blockquote>
@@ -209,12 +210,12 @@ for (level,title,dest,a,se) in outlines:
 <p>
 Some PDF documents use page numbers as destinations, while others
 use page numbers and the physical location within the page. Since
-PDF does not have a logical strucutre, and it does not provide a
+PDF does not have a logical structure, and it does not provide a
 way to refer to any in-page object from the outside, there's no
 way to tell exactly which part of text these destinations are
-refering to.
+referring to.
 
-<h2><a name="extend">Parser Extension</a></h2>
+<h2><a name="extend">Extending Functionality</a></h2>
 
 <p>
 You can extend <code>PDFPageInterpreter</code> and <code>PDFDevice</code> class
