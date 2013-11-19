@@ -91,9 +91,12 @@ def dumptrailers(out, doc):
 
 # dumpallobjs
 def dumpallobjs(out, doc, codec=None):
+    visited = set()
     out.write('<pdf>')
     for xref in doc.xrefs:
         for objid in xref.get_objids():
+            if objid in visited: continue
+            visited.add(objid)
             try:
                 obj = doc.getobj(objid)
                 if obj is None: continue
