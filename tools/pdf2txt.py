@@ -14,12 +14,14 @@ from pdfminer.image import ImageWriter
 def main(argv):
     import getopt
     def usage():
-        print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output] [-C] '
-               '[-n] [-A] [-V] [-M char_margin] [-L line_margin] [-W word_margin] [-F boxes_flow] '
-               '[-Y layout_mode] [-O output_dir] [-t text|html|xml|tag] [-c codec] [-s scale] file ...' % argv[0])
+        print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output]'
+               ' [-C] [-n] [-A] [-V] [-M char_margin] [-L line_margin] [-W word_margin]'
+               ' [-F boxes_flow] [-Y layout_mode] [-O output_dir] [-R rotation]'
+               ' [-t text|html|xml|tag] [-c codec] [-s scale]'
+               ' file ...' % argv[0])
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:CnAVM:L:W:F:Y:O:t:c:s:')
+        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:CnAVM:L:W:F:Y:O:R:t:c:s:')
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
@@ -33,6 +35,7 @@ def main(argv):
     outfile = None
     outtype = None
     imagewriter = None
+    rotation = 0
     layoutmode = 'normal'
     codec = 'utf-8'
     pageno = 1
@@ -56,6 +59,7 @@ def main(argv):
         elif k == '-F': laparams.boxes_flow = float(v)
         elif k == '-Y': layoutmode = v
         elif k == '-O': imagewriter = ImageWriter(v)
+        elif k == '-R': rotation = int(v)
         elif k == '-t': outtype = v
         elif k == '-c': codec = v
         elif k == '-s': scale = float(v)
@@ -101,6 +105,7 @@ def main(argv):
         for page in PDFPage.get_pages(fp, pagenos,
                                       maxpages=maxpages, password=password,
                                       caching=caching, check_extractable=True):
+            page.rotate = (page.rotate+rotation) % 360
             interpreter.process_page(page)
         fp.close()
     device.close()
