@@ -190,6 +190,7 @@ class PDFXRefFallback(PDFXRef):
                         objs.append(obj)
                 except PSEOF:
                     pass
+                n = min(n, len(objs)/2)
                 for index in xrange(n):
                     objid1 = objs[index*2]
                     self.offsets[objid1] = (objid, index, 0)
