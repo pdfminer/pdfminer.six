@@ -12,7 +12,7 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     if bitspercomponent != 8:
         # unsupported
         raise ValueError(bitspercomponent)
-    nbytes = colors*columns*bitspercomponent/8
+    nbytes = colors*columns*bitspercomponent//8
     i = 0
     buf = ''
     line0 = '\x00' * columns
@@ -39,7 +39,7 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
             # PNG average (UNTESTED)
             c = 0
             for (a, b) in zip(line0, line1):
-                c = ((c+ord(a)+ord(b))/2) & 255
+                c = ((c+ord(a)+ord(b))//2) & 255
                 buf += chr(c)
         else:
             # unsupported
@@ -114,7 +114,7 @@ def fsplit(pred, objs):
 def drange(v0, v1, d):
     """Returns a discrete range."""
     assert v0 < v1
-    return xrange(int(v0)/d, int(v1+d)/d)
+    return xrange(int(v0)//d, int(v1+d)//d)
 
 
 # get_bound

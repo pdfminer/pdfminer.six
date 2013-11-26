@@ -215,7 +215,7 @@ class LTChar(LTComponent, LTText):
             width = font.get_width() * fontsize
             (vx, vy) = textdisp
             if vx is None:
-                vx = width/2
+                vx = width//2
             else:
                 vx = vx * fontsize * .001
             vy = (1000 - vy) * fontsize * .001

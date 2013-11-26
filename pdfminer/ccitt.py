@@ -698,12 +698,12 @@ class CCITTFaxDecoder(CCITTG4Parser):
         return self._buf
 
     def output_line(self, y, bits):
-        bytes = array.array('B', [0]*((len(bits)+7)/8))
+        bytes = array.array('B', [0]*((len(bits)+7)//8))
         if self.reversed:
             bits = [1-b for b in bits]
         for (i, b) in enumerate(bits):
             if b:
-                bytes[i/8] += (128, 64, 32, 16, 8, 4, 2, 1)[i % 8]
+                bytes[i//8] += (128, 64, 32, 16, 8, 4, 2, 1)[i % 8]
         self._buf += bytes.tostring()
         return
 

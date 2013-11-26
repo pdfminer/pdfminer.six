@@ -190,7 +190,7 @@ class PDFXRefFallback(PDFXRef):
                         objs.append(obj)
                 except PSEOF:
                     pass
-                n = min(n, len(objs)/2)
+                n = min(n, len(objs)//2)
                 for index in xrange(n):
                     objid1 = objs[index*2]
                     self.offsets[objid1] = (objid, index, 0)
@@ -369,8 +369,8 @@ class PDFDocument(object):
         if 3 <= R:
             # 8
             for _ in xrange(50):
-                hash = md5.md5(hash.digest()[:length/8])
-        key = hash.digest()[:length/8]
+                hash = md5.md5(hash.digest()[:length//8])
+        key = hash.digest()[:length//8]
         if R == 2:
             # Algorithm 3.4
             u1 = Arcfour(key).process(self.PASSWORD_PADDING)

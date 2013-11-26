@@ -7,7 +7,7 @@ from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMY
 
 
 def align32(x):
-    return ((x+3)/4)*4
+    return ((x+3)//4)*4
 
 
 ##  BMPWriter
@@ -27,7 +27,7 @@ class BMPWriter(object):
             ncols = 0
         else:
             raise ValueError(bits)
-        self.linesize = align32((self.width*self.bits+7)/8)
+        self.linesize = align32((self.width*self.bits+7)//8)
         self.datasize = self.linesize * self.height
         headersize = 14+40+ncols*4
         info = struct.pack('<IiiHHIIIIII', 40, self.width, self.height, 1, self.bits, 0, self.datasize, 0, 0, ncols, 0)
@@ -94,7 +94,7 @@ class ImageWriter(object):
             bmp = BMPWriter(fp, 1, width, height)
             data = stream.get_data()
             i = 0
-            width = (width+7)/8
+            width = (width+7)//8
             for y in xrange(height):
                 bmp.write_line(y, data[i:i+width])
                 i += width

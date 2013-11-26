@@ -14,15 +14,15 @@ import struct
 
 
 def KEYLENGTH(keybits):
-    return (keybits)/8
+    return (keybits)//8
 
 
 def RKLENGTH(keybits):
-    return (keybits)/8+28
+    return (keybits)//8+28
 
 
 def NROUNDS(keybits):
-    return (keybits)/32+6
+    return (keybits)//32+6
 
 Te0 = [
     0xc66363a5L, 0xf87c7c84L, 0xee777799L, 0xf67b7b8dL,

@@ -397,8 +397,8 @@ class TrueTypeFont(object):
                 subheaderkeys = struct.unpack('>256H', fp.read(512))
                 firstbytes = [0]*8192
                 for (i, k) in enumerate(subheaderkeys):
-                    firstbytes[k/8] = i
-                nhdrs = max(subheaderkeys)/8 + 1
+                    firstbytes[k//8] = i
+                nhdrs = max(subheaderkeys)//8 + 1
                 hdrs = []
                 for i in xrange(nhdrs):
                     (firstcode, entcount, delta, offset) = struct.unpack('>HHhH', fp.read(8))
@@ -415,7 +415,7 @@ class TrueTypeFont(object):
                         char2gid[first+c] = gid
             elif fmttype == 4:
                 (segcount, _1, _2, _3) = struct.unpack('>HHHH', fp.read(8))
-                segcount /= 2
+                segcount //= 2
                 ecs = struct.unpack('>%dH' % segcount, fp.read(2*segcount))
                 fp.read(2)
                 scs = struct.unpack('>%dH' % segcount, fp.read(2*segcount))
