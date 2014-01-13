@@ -122,7 +122,7 @@ Related Projects
 
  * <a href="http://pybrary.net/pyPdf/">pyPdf</a>
  * <a href="http://www.foolabs.com/xpdf/">xpdf</a>
- * <a href="http://www.pdfbox.org/">pdfbox</a>
+ * <a href="http://pdfbox.apache.org/">pdfbox</a>
  * <a href="http://mupdf.com/">mupdf</a>
 
 
