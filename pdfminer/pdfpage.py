@@ -7,14 +7,12 @@ from pdftypes import int_value, list_value, dict_value
 from pdfparser import PDFParser
 from pdfdocument import PDFDocument
 from pdfdocument import PDFEncryptionError
+from pdfdocument import PDFTextExtractionNotAllowed
 
 # some predefined literals and keywords.
 LITERAL_PAGE = LIT('Page')
 LITERAL_PAGES = LIT('Pages')
 
-
-class PDFTextExtractionNotAllowed(PDFEncryptionError):
-    pass
 
 ##  PDFPage
 ##

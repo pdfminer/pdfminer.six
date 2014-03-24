@@ -25,22 +25,17 @@ LITERALS_DCT_DECODE = (LIT('DCTDecode'), LIT('DCT'))
 class PDFObject(PSObject):
     pass
 
-
 class PDFException(PSException):
     pass
-
 
 class PDFTypeError(PDFException):
     pass
 
-
 class PDFValueError(PDFException):
     pass
 
-
 class PDFObjectNotFound(PDFException):
     pass
-
 
 class PDFNotImplementedError(PDFException):
     pass

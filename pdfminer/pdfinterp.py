@@ -29,7 +29,6 @@ from utils import mult_matrix, MATRIX_IDENTITY
 class PDFResourceError(PDFException):
     pass
 
-
 class PDFInterpreterError(PDFException):
     pass
 
