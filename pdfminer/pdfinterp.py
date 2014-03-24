@@ -313,7 +313,7 @@ class PDFPageInterpreter(object):
         return
 
     def dup(self):
-        return PDFPageInterpreter(self.rsrcmgr, self.device)
+        return self.__class__(self.rsrcmgr, self.device)
 
     # init_resources(resources):
     #   Prepare the fonts and XObjects listed in the Resource attribute.

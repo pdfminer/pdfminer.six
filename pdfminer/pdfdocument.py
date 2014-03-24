@@ -219,7 +219,7 @@ class PDFXRefStream(PDFBaseXRef):
         if not isinstance(stream, PDFStream) or stream['Type'] is not LITERAL_XREF:
             raise PDFNoValidXRef('Invalid PDF stream spec.')
         size = stream['Size']
-        index_array = stream.get('Index', (1, size))
+        index_array = stream.get('Index', (0, size))
         if len(index_array) % 2 != 0:
             raise PDFSyntaxError('Invalid index number')
         self.ranges.extend(choplist(2, index_array))
