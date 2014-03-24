@@ -247,6 +247,7 @@ class PDFXRefStream(PDFBaseXRef):
         for (start, nobjs) in self.ranges:
             if start <= objid and objid < start+nobjs:
                 index += objid - start
+                break
             else:
                 index += nobjs
         else:
@@ -276,15 +277,15 @@ class PDFDocument(object):
     dynamically import the data as processing goes.
 
     Typical usage:
-      doc = PDFDocument(parser)
-      doc.initialize(password)
+      doc = PDFDocument(parser, password)
       obj = doc.getobj(objid)
 
     """
 
     debug = 0
+    PASSWORD_PADDING = '(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
 
-    def __init__(self, parser, caching=True, fallback=True):
+    def __init__(self, parser, password='', caching=True, fallback=True):
         "Set the document to use a given PDFParser object."
         self.caching = caching
         self.xrefs = []
@@ -297,6 +298,7 @@ class PDFDocument(object):
         self._parsed_objs = {}
         self._parser = parser
         self._parser.set_document(self)
+        self.is_printable = self.is_modifiable = self.is_extractable = True
         # Retrieve the information of each header that was appended
         # (maybe multiple times) at the end of the document.
         try:
@@ -318,6 +320,7 @@ class PDFDocument(object):
                 #assert not self.encryption
                 self.encryption = (list_value(trailer['ID']),
                                    dict_value(trailer['Encrypt']))
+                self._initialize_password(password)
             if 'Info' in trailer:
                 self.info.append(dict_value(trailer['Info']))
             if 'Root' in trailer:
@@ -331,16 +334,9 @@ class PDFDocument(object):
                 raise PDFSyntaxError('Catalog not found!')
         return
 
-    # initialize(password='')
+    # _initialize_password(password='')
     #   Perform the initialization with a given password.
-    #   This step is mandatory even if there's no password associated
-    #   with the document.
-    PASSWORD_PADDING = '(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
-
-    def initialize(self, password=''):
-        if not self.encryption:
-            self.is_printable = self.is_modifiable = self.is_extractable = True
-            return
+    def _initialize_password(self, password=''):
         (docid, param) = self.encryption
         if literal_name(param.get('Filter')) != 'Standard':
             raise PDFEncryptionError('Unknown filter: param=%r' % param)
