@@ -9,7 +9,7 @@
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Mon Mar 24 10:19:52 UTC 2014
+Last Modified: Mon Mar 24 12:02:47 UTC 2014
 <!-- hhmts end -->
 </div>
 
@@ -374,6 +374,12 @@ no stream header is displayed for the ease of saving it to a file.
 
 <h2><a name="changes">Changes</a></h2>
 <ul>
+<li> 2014/03/24: Bugfixes and improvements for fauly PDFs.<br>
+API changes:
+ <ul>
+ <li> <code>PDFDocument.initialize()</code> method is removed and no longer needed.
+  A password is given as an argument of a PDFDocument constructor.
+ </ul>
 <li> 2013/11/13: Bugfixes and minor improvements.<br>
 As of November 2013, there were a few changes made to the PDFMiner API
 prior to October 2013. This is the result of code restructuring.  Here

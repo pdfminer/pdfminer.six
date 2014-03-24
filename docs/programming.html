@@ -9,7 +9,7 @@
 
 <div align=right class=lastmod>
 <!-- hhmts start -->
-Last Modified: Wed Nov 13 05:50:56 UTC 2013
+Last Modified: Mon Mar 24 11:49:28 UTC 2014
 <!-- hhmts end -->
 </div>
 
@@ -88,10 +88,8 @@ fp = open('mypdf.pdf', 'rb')
 <span class="comment"># Create a PDF parser object associated with the file object.</span>
 parser = PDFParser(fp)
 <span class="comment"># Create a PDF document object that stores the document structure.</span>
-document = PDFDocument(parser)
 <span class="comment"># Supply the password for initialization.</span>
-<span class="comment"># (If no password is set, give an empty string.)</span>
-document.initialize(password)
+document = PDFDocument(parser, password)
 <span class="comment"># Check if the document allows text extraction. If not, abort.</span>
 if not document.is_extractable:
     raise PDFTextExtractionNotAllowed
@@ -198,8 +196,7 @@ from pdfminer.pdfdocument import PDFDocument
 <span class="comment"># Open a PDF document.</span>
 fp = open('mypdf.pdf', 'rb')
 parser = PDFParser(fp)
-document = PDFDocument(parser)
-document.initialize(password)
+document = PDFDocument(parser, password)
 
 <span class="comment"># Get the outlines of the document.</span>
 outlines = document.get_outlines()
