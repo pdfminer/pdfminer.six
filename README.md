@@ -10,6 +10,8 @@ It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
 PDF parser that can be used for other purposes than text analysis.
 
+ * Download (PyPI): https://pypi.python.org/pypi/pdfminer/
+
 
 Features
 --------
