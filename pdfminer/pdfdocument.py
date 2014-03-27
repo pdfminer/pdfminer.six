@@ -246,7 +246,6 @@ class PDFXRefStream(PDFBaseXRef):
         for (start, nobjs) in self.ranges:
             if start <= objid and objid < start+nobjs:
                 index += objid - start
-                break
             else:
                 index += nobjs
         else:
