@@ -238,7 +238,11 @@ class PDFXRefStream(PDFBaseXRef):
     def get_objids(self):
         for (start, nobjs) in self.ranges:
             for i in xrange(nobjs):
-                yield start+i
+                offset = self.entlen * i
+                ent = self.data[offset:offset+self.entlen]
+                f1 = nunpack(ent[:self.fl1], 1)
+                if f1 == 1 or f1 == 2:
+                    yield start+i
         return
 
     def get_pos(self, objid):
