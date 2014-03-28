@@ -15,7 +15,7 @@ from pdftypes import PDFException, resolve1
 from pdftypes import int_value, num_value
 from pdftypes import list_value, dict_value, stream_value
 from fontmetrics import FONT_METRICS
-from utils import apply_matrix_norm, nunpack, choplist
+from utils import apply_matrix_norm, nunpack, choplist, isnumber
 
 
 def get_widths(seq):
@@ -28,7 +28,7 @@ def get_widths(seq):
                 for (i, w) in enumerate(v):
                     widths[char1+i] = w
                 r = []
-        elif isinstance(v, int):
+        elif isnumber(v):
             r.append(v)
             if len(r) == 3:
                 (char1, char2, w) = r
@@ -51,7 +51,7 @@ def get_widths2(seq):
                 for (i, (w, vx, vy)) in enumerate(choplist(3, v)):
                     widths[char1+i] = (w, (vx, vy))
                 r = []
-        elif isinstance(v, int):
+        elif isnumber(v):
             r.append(v)
             if len(r) == 5:
                 (char1, char2, w, vx, vy) = r

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from utils import mult_matrix, translate_matrix
-from utils import enc, bbox2str
+from utils import enc, bbox2str, isnumber
 from pdffont import PDFUnicodeNotDefined
 
 
@@ -85,7 +85,7 @@ class PDFTextDevice(PDFDevice):
                                  font, fontsize, scaling, charspace, wordspace, rise, dxscale):
         needcharspace = False
         for obj in seq:
-            if isinstance(obj, int) or isinstance(obj, float):
+            if isnumber(obj):
                 x -= obj*dxscale
                 needcharspace = True
             else:
@@ -103,7 +103,7 @@ class PDFTextDevice(PDFDevice):
                                font, fontsize, scaling, charspace, wordspace, rise, dxscale):
         needcharspace = False
         for obj in seq:
-            if isinstance(obj, int) or isinstance(obj, float):
+            if isnumber(obj):
                 y -= obj*dxscale
                 needcharspace = True
             else:

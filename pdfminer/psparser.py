@@ -556,11 +556,7 @@ class PSStackParser(PSBaseParser):
         while not self.results:
             (pos, token) = self.nexttoken()
             #print (pos,token), (self.curtype, self.curstack)
-            if (isinstance(token, int) or
-                isinstance(token, float) or
-                isinstance(token, bool) or
-                isinstance(token, str) or
-                isinstance(token, PSLiteral)):
+            if isinstance(token, (int, long, float, bool, str, PSLiteral)):
                 # normal token
                 self.push((pos, token))
             elif token == KEYWORD_ARRAY_BEGIN:

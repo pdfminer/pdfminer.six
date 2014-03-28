@@ -79,6 +79,10 @@ def apply_matrix_norm((a, b, c, d, e, f), (p, q)):
 ##  Utility functions
 ##
 
+# isnumber
+def isnumber(x):
+    return isinstance(x, (int, long, float))
+
 # uniq
 def uniq(objs):
     """Eliminates duplicated elements."""

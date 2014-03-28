@@ -6,7 +6,7 @@ from runlength import rldecode
 from ccitt import ccittfaxdecode
 from psparser import PSException, PSObject
 from psparser import LIT, STRICT
-from utils import apply_png_predictor
+from utils import apply_png_predictor, isnumber
 
 LITERAL_CRYPT = LIT('Crypt')
 
@@ -126,7 +126,7 @@ def float_value(x):
 
 def num_value(x):
     x = resolve1(x)
-    if not (isinstance(x, int) or isinstance(x, float)):
+    if not isnumber(x):
         if STRICT:
             raise PDFTypeError('Int or Float required: %r' % x)
         return 0
@@ -144,7 +144,7 @@ def str_value(x):
 
 def list_value(x):
     x = resolve1(x)
-    if not (isinstance(x, list) or isinstance(x, tuple)):
+    if not isinstance(x, (list, tuple)):
         if STRICT:
             raise PDFTypeError('List required: %r' % x)
         return []

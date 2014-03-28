@@ -13,6 +13,7 @@ from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines
 from pdfminer.pdftypes import PDFObjectNotFound, PDFValueError
 from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
 from pdfminer.pdfpage import PDFPage
+from pdfminer.utils import isnumber
 
 
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
@@ -75,7 +76,7 @@ def dumpxml(out, obj, codec=None):
         out.write('<literal>%s</literal>' % obj.name)
         return
 
-    if isinstance(obj, int) or isinstance(obj, float):
+    if isnumber(obj):
         out.write('<number>%s</number>' % obj)
         return
 
