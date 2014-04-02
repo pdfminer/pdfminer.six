@@ -20,7 +20,9 @@ import cgi, logging, traceback, random
 # comment out at this at runtime.
 #import cgitb; cgitb.enable()
 import pdfminer
-from pdfminer.pdfinterp import PDFResourceManager, process_pdf
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import HTMLConverter, TextConverter
 from pdfminer.layout import LAParams
 
@@ -62,12 +64,16 @@ def convert(infp, outfp, path, codec='utf-8',
     rsrcmgr = PDFResourceManager()
     laparams = LAParams()
     if html:
-        device = HTMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
+        device = HTMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+                               layoutmode='exact')
     else:
         device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
     fp = file(path, 'rb')
-    process_pdf(rsrcmgr, device, fp, pagenos, maxpages=maxpages)
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages):
+        interpreter.process_page(page)
     fp.close()
+    device.close()
     return
 
 
@@ -158,10 +164,10 @@ class WebApp(object):
         return status
 
     def convert(self):
-        self.form = cgi.FieldStorage(fp=self.infp, environ=self.environ)
+        form = cgi.FieldStorage(fp=self.infp, environ=self.environ)
         if (self.method != 'POST' or
-            'c' not in self.form or
-            'f' not in self.form):
+            'c' not in form or
+            'f' not in form):
             self.response_200()
             self.coverpage()
             return
