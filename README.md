@@ -12,6 +12,7 @@ PDF parser that can be used for other purposes than text analysis.
 
  * Webpage: https://euske.github.io/pdfminer/
  * Download (PyPI): https://pypi.python.org/pypi/pdfminer/
+ * Demo WebApp: http://pdf2html.tabesugi.net:8080/
 
 
 Features
