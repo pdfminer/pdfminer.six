@@ -29,18 +29,44 @@ class CMapError(Exception):
     pass
 
 
-##  CMap
+##  CMapBase
 ##
-class CMap(object):
+class CMapBase(object):
 
     debug = 0
 
-    def __init__(self, code2cid=None):
-        self.code2cid = code2cid or {}
+    def __init__(self, **kwargs):
+        self.attrs = kwargs.copy()
         return
 
     def is_vertical(self):
-        return False
+        return self.attrs.get('WMode', 0) != 0
+
+    def set_attr(self, k, v):
+        self.attrs[k] = v
+        return
+
+    def add_code2cid(self, code, cid):
+        return
+
+    def add_cid2unichr(self, cid, code):
+        return
+
+    def use_cmap(self, cmap):
+        return
+
+
+##  CMap
+##
+class CMap(CMapBase):
+
+    def __init__(self, **kwargs):
+        CMapBase.__init__(self, **kwargs)
+        self.code2cid = {}
+        return
+
+    def __repr__(self):
+        return '<CMap: %s>' % self.attrs.get('CMapName')
 
     def use_cmap(self, cmap):
         assert isinstance(cmap, CMap)
@@ -86,14 +112,7 @@ class CMap(object):
 
 ##  IdentityCMap
 ##
-class IdentityCMap(object):
-
-    def __init__(self, vertical):
-        self.vertical = vertical
-        return
-
-    def is_vertical(self):
-        return self.vertical
+class IdentityCMap(CMapBase):
 
     def decode(self, code):
         n = len(code)//2
@@ -105,13 +124,15 @@ class IdentityCMap(object):
 
 ##  UnicodeMap
 ##
-class UnicodeMap(object):
+class UnicodeMap(CMapBase):
 
-    debug = 0
-
-    def __init__(self, cid2unichr=None):
-        self.cid2unichr = cid2unichr or {}
+    def __init__(self, **kwargs):
+        CMapBase.__init__(self, **kwargs)
+        self.cid2unichr = {}
         return
+
+    def __repr__(self):
+        return '<UnicodeMap: %s>' % self.attrs.get('CMapName')
 
     def get_unichr(self, cid):
         if self.debug:
@@ -127,21 +148,6 @@ class UnicodeMap(object):
 ##  FileCMap
 ##
 class FileCMap(CMap):
-
-    def __init__(self):
-        CMap.__init__(self)
-        self.attrs = {}
-        return
-
-    def __repr__(self):
-        return '<CMap: %s>' % self.attrs.get('CMapName')
-
-    def is_vertical(self):
-        return self.attrs.get('WMode', 0) != 0
-
-    def set_attr(self, k, v):
-        self.attrs[k] = v
-        return
 
     def add_code2cid(self, code, cid):
         assert isinstance(code, str) and isinstance(cid, int)
@@ -163,18 +169,6 @@ class FileCMap(CMap):
 ##
 class FileUnicodeMap(UnicodeMap):
 
-    def __init__(self):
-        UnicodeMap.__init__(self)
-        self.attrs = {}
-        return
-
-    def __repr__(self):
-        return '<UnicodeMap: %s>' % self.attrs.get('CMapName')
-
-    def set_attr(self, k, v):
-        self.attrs[k] = v
-        return
-
     def add_cid2unichr(self, cid, code):
         assert isinstance(cid, int)
         if isinstance(code, PSLiteral):
@@ -195,16 +189,11 @@ class FileUnicodeMap(UnicodeMap):
 class PyCMap(CMap):
 
     def __init__(self, name, module):
-        CMap.__init__(self, module.CODE2CID)
-        self.name = name
-        self._is_vertical = module.IS_VERTICAL
+        CMap.__init__(self, CMapName=name)
+        self.code2cid = module.CODE2CID
+        if module.IS_VERTICAL:
+            self.attrs['WMode'] = 1
         return
-
-    def __repr__(self):
-        return '<PyCMap: %s>' % (self.name)
-
-    def is_vertical(self):
-        return self._is_vertical
 
 
 ##  PyUnicodeMap
@@ -212,16 +201,13 @@ class PyCMap(CMap):
 class PyUnicodeMap(UnicodeMap):
 
     def __init__(self, name, module, vertical):
+        UnicodeMap.__init__(self, CMapName=name)
         if vertical:
-            cid2unichr = module.CID2UNICHR_V
+            self.cid2unichr = module.CID2UNICHR_V
+            self.attrs['WMode'] = 1
         else:
-            cid2unichr = module.CID2UNICHR_H
-        UnicodeMap.__init__(self, cid2unichr)
-        self.name = name
+            self.cid2unichr = module.CID2UNICHR_H
         return
-
-    def __repr__(self):
-        return '<PyUnicodeMap: %s>' % (self.name)
 
 
 ##  CMapDB
@@ -256,9 +242,9 @@ class CMapDB(object):
     @classmethod
     def get_cmap(klass, name):
         if name == 'Identity-H':
-            return IdentityCMap(False)
+            return IdentityCMap(WMode=0)
         elif name == 'Identity-V':
-            return IdentityCMap(True)
+            return IdentityCMap(WMode=1)
         try:
             return klass._cmap_cache[name]
         except KeyError:
