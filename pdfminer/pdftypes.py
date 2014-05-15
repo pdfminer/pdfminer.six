@@ -250,6 +250,10 @@ class PDFStream(PDFObject):
                 data = rldecode(data)
             elif f in LITERALS_CCITTFAX_DECODE:
                 data = ccittfaxdecode(data, params)
+            elif f in LITERALS_DCT_DECODE:
+                # This is probably a JPG stream - it does not need to be decoded twice.
+                # Just return the stream to the user.
+                pass
             elif f == LITERAL_CRYPT:
                 # not yet..
                 raise PDFNotImplementedError('/Crypt filter is unsupported')
