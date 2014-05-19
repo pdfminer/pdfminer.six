@@ -112,10 +112,12 @@ class PDFParser(PSStackParser):
                 if 'endstream' in line:
                     i = line.index('endstream')
                     objlen += i
-                    data += line[:i]
+                    if self.fallback:
+                        data += line[:i]
                     break
                 objlen += len(line)
-                data += line
+                if self.fallback:
+                    data += line
             self.seek(pos+objlen)
             # XXX limit objlen not to exceed object boundary
             if 2 <= self.debug:

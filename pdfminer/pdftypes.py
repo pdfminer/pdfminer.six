@@ -224,7 +224,7 @@ class PDFStream(PDFObject):
         data = self.rawdata
         if self.decipher:
             # Handle encryption
-            data = self.decipher(self.objid, self.genno, data)
+            data = self.decipher(self.objid, self.genno, data, self.attrs)
         filters = self.get_filters()
         if not filters:
             self.data = data
