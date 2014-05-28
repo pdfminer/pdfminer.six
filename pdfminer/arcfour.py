@@ -43,6 +43,10 @@ class Arcfour(object):
             r += chr(ord(c) ^ k)
         (self.i, self.j) = (i, j)
         return r
+    
+    encrypt = decrypt = process
+
+new = Arcfour
 
 # test
 if __name__ == '__main__':

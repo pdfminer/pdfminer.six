@@ -52,11 +52,13 @@ all: htmls texts xmls
 
 test:
 	$(MAKE) all CMP=cmp
+	cd encryption && $(MAKE) test
 
 clean:
 	-$(RM) $(HTMLS)
 	-$(RM) $(TEXTS)
 	-$(RM) $(XMLS)
+	cd encryption && $(MAKE) clean
 
 htmls: $(HTMLS)
 texts: $(TEXTS)

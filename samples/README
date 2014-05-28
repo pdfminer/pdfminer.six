@@ -47,3 +47,14 @@ nonfree/nlp2004slides.pdf:
 nonfree/naacl06-shinyama.pdf:
   Yusuke Shinyama and Satoshi Sekine
   "Preemptive Information Extraction using Unrestircted Relation Discovery"
+
+--
+Files in the encryption folder have been generated with cpdf 1.7 [http://www.coherentpdf.com/]
+from the base.pdf file generated with LibreOffice 4.1.1.2 as follows:
+
+cpdf -encrypt 40bit foo baz base.pdf -o rc4-40.pdf
+cpdf -encrypt 128bit foo baz base.pdf -o rc4-128.pdf
+cpdf -encrypt AES foo baz base.pdf -o aes-128.pdf
+cpdf -encrypt AES foo baz base.pdf -no-encrypt-metadata -o aes-128-m.pdf
+cpdf -encrypt AES256 foo baz base.pdf -o aes-256.pdf
+cpdf -encrypt AES256 foo baz base.pdf -no-encrypt-metadata -o aes-256-m.pdf
