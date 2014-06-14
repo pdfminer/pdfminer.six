@@ -5,4 +5,5 @@ python:
 install:
   - pip install pycrypto
 script:
+  - make unittest
   - make test

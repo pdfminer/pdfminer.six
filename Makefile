@@ -64,6 +64,6 @@ unittest:
 	$(PYTHON) pdfminer/psparser.py
 
 test: cmap
-	cd samples && $(MAKE) test
+	cd samples && $(MAKE) clean test
 test_clean:
 	-cd samples && $(MAKE) clean
