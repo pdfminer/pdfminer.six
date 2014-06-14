@@ -53,6 +53,16 @@ $(CMAPDST)/to-unicode-Adobe-Korea1.pickle.gz: $(CMAPDST)
 	$(CONV_CMAP) -c KSC-EUC=euc-kr -c KSC-Johab=johab -c KSCms-UHC=cp949 -c UniKS-UTF8=utf-8 \
 		$(CMAPDST) Adobe-Korea1 $(CMAPSRC)/cid2code_Adobe_Korea1.txt
 
+unittest:
+	$(PYTHON) -m doctest \
+		pdfminer/arcfour.py \
+		pdfminer/lzw.py \
+		pdfminer/ascii85.py \
+		pdfminer/runlength.py \
+		pdfminer/rijndael.py
+	$(PYTHON) pdfminer/ccitt.py
+	$(PYTHON) pdfminer/psparser.py
+
 test: cmap
 	cd samples && $(MAKE) test
 test_clean:
