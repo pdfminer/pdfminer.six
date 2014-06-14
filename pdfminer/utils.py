@@ -245,6 +245,7 @@ def matrix2str((a, b, c, d, e, f)):
 class Plane(object):
 
     def __init__(self, bbox, gridsize=50):
+        self._seq = []          # preserve the object order.
         self._objs = set()
         self._grid = {}
         self.gridsize = gridsize
@@ -255,7 +256,7 @@ class Plane(object):
         return ('<Plane objs=%r>' % list(self))
 
     def __iter__(self):
-        return iter(self._objs)
+        return ( obj for obj in self._seq if obj in self._objs )
 
     def __len__(self):
         return len(self._objs)
@@ -290,6 +291,7 @@ class Plane(object):
             else:
                 r = self._grid[k]
             r.append(obj)
+        self._seq.append(obj)
         self._objs.add(obj)
         return
 
