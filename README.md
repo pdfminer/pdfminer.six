@@ -1,6 +1,8 @@
 PDFMiner
 ========
 
+[![Build Status](https://travis-ci.org/euske/pdfminer.svg?branch=master)](https://travis-ci.org/euske/pdfminer)
+
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting 
 and analyzing text data. PDFMiner allows one to obtain
