@@ -17,6 +17,7 @@ import os.path
 import gzip
 import cPickle as pickle
 import struct
+import logging
 from psparser import PSStackParser
 from psparser import PSSyntaxError, PSEOF
 from psparser import PSLiteral
@@ -84,7 +85,7 @@ class CMap(CMapBase):
 
     def decode(self, code):
         if self.debug:
-            print >>sys.stderr, 'decode: %r, %r' % (self, code)
+            logging.debug('decode: %r, %r' % (self, code))
         d = self.code2cid
         for c in code:
             c = ord(c)
@@ -136,7 +137,7 @@ class UnicodeMap(CMapBase):
 
     def get_unichr(self, cid):
         if self.debug:
-            print >>sys.stderr, 'get_unichr: %r, %r' % (self, cid)
+            logging.debug('get_unichr: %r, %r' % (self, cid))
         return self.cid2unichr[cid]
 
     def dump(self, out=sys.stdout):
@@ -225,7 +226,7 @@ class CMapDB(object):
     def _load_data(klass, name):
         filename = '%s.pickle.gz' % name
         if klass.debug:
-            print >>sys.stderr, 'loading:', name
+            logging.info('loading: %r' % name)
         cmap_paths = (os.environ.get('CMAP_PATH', '/usr/share/pdfminer/'),
                       os.path.join(os.path.dirname(__file__), 'cmap'),)
         for directory in cmap_paths:

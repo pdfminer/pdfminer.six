@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import re
+import logging
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -160,8 +161,8 @@ class PDFResourceManager(object):
         if objid and objid in self._cached_fonts:
             font = self._cached_fonts[objid]
         else:
-            if 2 <= self.debug:
-                print >>sys.stderr, 'get_font: create: objid=%r, spec=%r' % (objid, spec)
+            if 1 <= self.debug:
+                logging.info('get_font: create: objid=%r, spec=%r' % (objid, spec))
             if STRICT:
                 if spec['Type'] is not LITERAL_FONT:
                     raise PDFFontError('Type is not /Font')
@@ -337,7 +338,7 @@ class PDFPageInterpreter(object):
                 return PREDEFINED_COLORSPACE.get(name)
         for (k, v) in dict_value(resources).iteritems():
             if 2 <= self.debug:
-                print >>sys.stderr, 'Resource: %r: %r' % (k, v)
+                logging.debug('Resource: %r: %r' % (k, v))
             if k == 'Font':
                 for (fontid, spec) in dict_value(v).iteritems():
                     objid = None
@@ -794,7 +795,7 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
             return
         if 1 <= self.debug:
-            print >>sys.stderr, 'Processing xobj: %r' % xobj
+            logging.info('Processing xobj: %r' % xobj)
         subtype = xobj.get('Subtype')
         if subtype is LITERAL_FORM and 'BBox' in xobj:
             interpreter = self.dup()
@@ -818,7 +819,7 @@ class PDFPageInterpreter(object):
 
     def process_page(self, page):
         if 1 <= self.debug:
-            print >>sys.stderr, 'Processing page: %r' % page
+            logging.info('Processing page: %r' % page)
         (x0, y0, x1, y1) = page.mediabox
         if page.rotate == 90:
             ctm = (0, -1, 1, 0, -y0, x1)
@@ -838,8 +839,8 @@ class PDFPageInterpreter(object):
     #   This method may be called recursively.
     def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY):
         if 1 <= self.debug:
-            print >>sys.stderr, ('render_contents: resources=%r, streams=%r, ctm=%r' %
-                                 (resources, streams, ctm))
+            logging.info('render_contents: resources=%r, streams=%r, ctm=%r' %
+                         (resources, streams, ctm))
         self.init_resources(resources)
         self.init_state(ctm)
         self.execute(list_value(streams))
@@ -865,12 +866,12 @@ class PDFPageInterpreter(object):
                     if nargs:
                         args = self.pop(nargs)
                         if 2 <= self.debug:
-                            print >>sys.stderr, 'exec: %s %r' % (name, args)
+                            logging.debug('exec: %s %r' % (name, args))
                         if len(args) == nargs:
                             func(*args)
                     else:
                         if 2 <= self.debug:
-                            print >>sys.stderr, 'exec: %s' % (name)
+                            logging.debug('exec: %s' % name)
                         func()
                 else:
                     if STRICT:

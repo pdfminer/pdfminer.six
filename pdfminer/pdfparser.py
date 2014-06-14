@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import logging
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -121,8 +122,8 @@ class PDFParser(PSStackParser):
             self.seek(pos+objlen)
             # XXX limit objlen not to exceed object boundary
             if 2 <= self.debug:
-                print >>sys.stderr, 'Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
-                                    (pos, objlen, dic, data[:10])
+                logging.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
+                              (pos, objlen, dic, data[:10]))
             obj = PDFStream(dic, data, self.doc.decipher)
             self.push((pos, obj))
 

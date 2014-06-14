@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import logging
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -94,8 +95,8 @@ class LZWDecoder(object):
                 break
             yield x
             if self.debug:
-                print >>sys.stderr, ('nbits=%d, code=%d, output=%r, table=%r' %
-                                     (self.nbits, code, x, self.table[258:]))
+                logging.debug('nbits=%d, code=%d, output=%r, table=%r' %
+                              (self.nbits, code, x, self.table[258:]))
         return
 
 

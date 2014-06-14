@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import logging
 from pdfdevice import PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
 from layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve
@@ -104,7 +105,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
 
     def handle_undefined_char(self, font, cid):
         if self.debug:
-            print >>sys.stderr, 'undefined: %r, %r' % (font, cid)
+            logging.info('undefined: %r, %r' % (font, cid))
         return '(cid:%d)' % cid
 
     def receive_layout(self, ltpage):

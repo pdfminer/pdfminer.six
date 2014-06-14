@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import logging
 from psparser import LIT
 from pdftypes import PDFObjectNotFound
 from pdftypes import resolve1
@@ -86,13 +87,13 @@ class PDFPage(object):
                     tree[k] = v
             if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
                 if 1 <= debug:
-                    print >>sys.stderr, 'Pages: Kids=%r' % tree['Kids']
+                    logging.info('Pages: Kids=%r' % tree['Kids'])
                 for c in list_value(tree['Kids']):
                     for x in search(c, tree):
                         yield x
             elif tree.get('Type') is LITERAL_PAGE:
                 if 1 <= debug:
-                    print >>sys.stderr, 'Page: %r' % tree
+                    logging.info('Page: %r' % tree)
                 yield (objid, tree)
         pages = False
         if 'Pages' in document.catalog:
