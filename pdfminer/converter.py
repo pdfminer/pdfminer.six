@@ -104,8 +104,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return item.adv
 
     def handle_undefined_char(self, font, cid):
-        if self.debug:
-            logging.info('undefined: %r, %r' % (font, cid))
+        logging.info('undefined: %r, %r' % (font, cid))
         return '(cid:%d)' % cid
 
     def receive_layout(self, ltpage):
@@ -207,7 +206,7 @@ class HTMLConverter(PDFConverter):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
                  scale=1, fontscale=1.0, layoutmode='normal', showpageno=True,
-                 pagemargin=50, imagewriter=None,
+                 pagemargin=50, imagewriter=None, debug=0,
                  rect_colors={'curve': 'black', 'page': 'gray'},
                  text_colors={'char': 'black'}):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
@@ -219,7 +218,7 @@ class HTMLConverter(PDFConverter):
         self.imagewriter = imagewriter
         self.rect_colors = rect_colors
         self.text_colors = text_colors
-        if self.debug:
+        if debug:
             self.rect_colors.update(self.RECT_COLORS)
             self.text_colors.update(self.TEXT_COLORS)
         self._yoffset = self.pagemargin

@@ -8,8 +8,6 @@ from pdffont import PDFUnicodeNotDefined
 ##
 class PDFDevice(object):
 
-    debug = 0
-
     def __init__(self, rsrcmgr):
         self.rsrcmgr = rsrcmgr
         self.ctm = None
@@ -125,11 +123,10 @@ class PDFTextDevice(PDFDevice):
 ##
 class TagExtractor(PDFDevice):
 
-    def __init__(self, rsrcmgr, outfp, codec='utf-8', debug=0):
+    def __init__(self, rsrcmgr, outfp, codec='utf-8'):
         PDFDevice.__init__(self, rsrcmgr)
         self.outfp = outfp
         self.codec = codec
-        self.debug = debug
         self.pageno = 0
         self._stack = []
         return

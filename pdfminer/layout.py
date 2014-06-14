@@ -607,6 +607,7 @@ class LTLayoutContainer(LTContainer):
             y1 = max(obj1.y1, obj2.y1)
             objs = set(plane.find((x0, y0, x1, y1)))
             return objs.difference((obj1, obj2))
+        
         # XXX this still takes O(n^2)  :(
         dists = []
         for i in xrange(len(boxes)):

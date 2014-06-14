@@ -192,7 +192,7 @@ class PSBaseParser(object):
     def seek(self, pos):
         """Seeks the parser to the given position.
         """
-        if 2 <= self.debug:
+        if self.debug:
             logging.debug('seek: %r' % pos)
         self.fp.seek(pos)
         # reset the status for nextline()
@@ -243,7 +243,7 @@ class PSBaseParser(object):
             else:
                 linebuf += self.buf[self.charpos:]
                 self.charpos = len(self.buf)
-        if 2 <= self.debug:
+        if self.debug:
             logging.debug('nextline: %r, %r' % (linepos, linebuf))
         return (linepos, linebuf)
 
@@ -483,7 +483,7 @@ class PSBaseParser(object):
             self.fillbuf()
             self.charpos = self._parse1(self.buf, self.charpos)
         token = self._tokens.pop(0)
-        if 2 <= self.debug:
+        if self.debug:
             logging.debug('nexttoken: %r' % token)
         return token
 
@@ -524,7 +524,7 @@ class PSStackParser(PSBaseParser):
         return objs
 
     def add_results(self, *objs):
-        if 2 <= self.debug:
+        if self.debug:
             logging.debug('add_results: %r' % objs)
         self.results.extend(objs)
         return
@@ -532,7 +532,7 @@ class PSStackParser(PSBaseParser):
     def start_type(self, pos, type):
         self.context.append((pos, self.curtype, self.curstack))
         (self.curtype, self.curstack) = (type, [])
-        if 2 <= self.debug:
+        if self.debug:
             logging.debug('start_type: pos=%r, type=%r' % (pos, type))
         return
 
@@ -541,7 +541,7 @@ class PSStackParser(PSBaseParser):
             raise PSTypeError('Type mismatch: %r != %r' % (self.curtype, type))
         objs = [obj for (_, obj) in self.curstack]
         (pos, self.curtype, self.curstack) = self.context.pop()
-        if 2 <= self.debug:
+        if self.debug:
             logging.debug('end_type: pos=%r, type=%r, objs=%r' % (pos, type, objs))
         return (pos, objs)
 
@@ -596,7 +596,7 @@ class PSStackParser(PSBaseParser):
                     if STRICT:
                         raise
             else:
-                if 2 <= self.debug:
+                if self.debug:
                     logging.debug('do_keyword: pos=%r, token=%r, stack=%r' % \
                                   (pos, token, self.curstack))
                 self.do_keyword(pos, token)
@@ -605,7 +605,7 @@ class PSStackParser(PSBaseParser):
             else:
                 self.flush()
         obj = self.results.pop(0)
-        if 2 <= self.debug:
+        if self.debug:
             logging.debug('nextobject: %r' % obj)
         return obj
 

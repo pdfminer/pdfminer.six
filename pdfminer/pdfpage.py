@@ -74,7 +74,7 @@ class PDFPage(object):
     INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
 
     @classmethod
-    def create_pages(klass, document, debug=0):
+    def create_pages(klass, document):
         def search(obj, parent):
             if isinstance(obj, int):
                 objid = obj
@@ -86,14 +86,12 @@ class PDFPage(object):
                 if k in klass.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
             if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
-                if 1 <= debug:
-                    logging.info('Pages: Kids=%r' % tree['Kids'])
+                logging.info('Pages: Kids=%r' % tree['Kids'])
                 for c in list_value(tree['Kids']):
                     for x in search(c, tree):
                         yield x
             elif tree.get('Type') is LITERAL_PAGE:
-                if 1 <= debug:
-                    logging.info('Page: %r' % tree)
+                logging.info('Page: %r' % tree)
                 yield (objid, tree)
         pages = False
         if 'Pages' in document.catalog:

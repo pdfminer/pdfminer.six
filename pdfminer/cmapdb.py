@@ -215,7 +215,6 @@ class PyUnicodeMap(UnicodeMap):
 ##
 class CMapDB(object):
 
-    debug = 0
     _cmap_cache = {}
     _umap_cache = {}
 
@@ -225,8 +224,7 @@ class CMapDB(object):
     @classmethod
     def _load_data(klass, name):
         filename = '%s.pickle.gz' % name
-        if klass.debug:
-            logging.info('loading: %r' % name)
+        logging.info('loading: %r' % name)
         cmap_paths = (os.environ.get('CMAP_PATH', '/usr/share/pdfminer/'),
                       os.path.join(os.path.dirname(__file__), 'cmap'),)
         for directory in cmap_paths:

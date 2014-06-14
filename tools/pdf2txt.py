@@ -67,9 +67,7 @@ def main(argv):
     PDFDocument.debug = debug
     PDFParser.debug = debug
     CMapDB.debug = debug
-    PDFResourceManager.debug = debug
     PDFPageInterpreter.debug = debug
-    PDFDevice.debug = debug
     #
     rsrcmgr = PDFResourceManager(caching=caching)
     if not outtype:
@@ -94,7 +92,7 @@ def main(argv):
     elif outtype == 'html':
         device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
                                layoutmode=layoutmode, laparams=laparams,
-                               imagewriter=imagewriter)
+                               imagewriter=imagewriter, debug=debug)
     elif outtype == 'tag':
         device = TagExtractor(rsrcmgr, outfp, codec=codec)
     else:

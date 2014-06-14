@@ -15,8 +15,6 @@ class CorruptDataError(Exception):
 ##
 class LZWDecoder(object):
 
-    debug = 0
-
     def __init__(self, fp):
         self.fp = fp
         self.buff = 0
@@ -94,9 +92,8 @@ class LZWDecoder(object):
                 # just ignore corrupt data and stop yielding there
                 break
             yield x
-            if self.debug:
-                logging.debug('nbits=%d, code=%d, output=%r, table=%r' %
-                              (self.nbits, code, x, self.table[258:]))
+            #logging.debug('nbits=%d, code=%d, output=%r, table=%r' %
+            #              (self.nbits, code, x, self.table[258:]))
         return
 
 
