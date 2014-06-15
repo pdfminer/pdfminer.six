@@ -81,14 +81,15 @@ class LTComponent(LTItem):
         return ('<%s %s>' %
                 (self.__class__.__name__, bbox2str(self.bbox)))
 
-    def set_bbox(self, (x0, y0, x1, y1)):
+    def set_bbox(self, bbox):
+        (x0, y0, x1, y1) = bbox
         self.x0 = x0
         self.y0 = y0
         self.x1 = x1
         self.y1 = y1
         self.width = x1-x0
         self.height = y1-y0
-        self.bbox = (x0, y0, x1, y1)
+        self.bbox = bbox
         return
 
     def is_empty(self):
@@ -158,7 +159,8 @@ class LTLine(LTCurve):
 ##
 class LTRect(LTCurve):
 
-    def __init__(self, linewidth, (x0, y0, x1, y1)):
+    def __init__(self, linewidth, bbox):
+        (x0, y0, x1, y1) = bbox
         LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)])
         return
 
