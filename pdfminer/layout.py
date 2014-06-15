@@ -615,7 +615,8 @@ class LTLayoutContainer(LTContainer):
             for j in xrange(i+1, len(boxes)):
                 obj2 = boxes[j]
                 dists.append((0, dist(obj1, obj2), obj1, obj2))
-        dists.sort()
+        # We could use dists.sort(), but it would randomize the test result.
+        dists = csort(dists)
         plane = Plane(self.bbox)
         plane.extend(boxes)
         while dists:
@@ -630,11 +631,10 @@ class LTLayoutContainer(LTContainer):
                 group = LTTextGroupLRTB([obj1, obj2])
             plane.remove(obj1)
             plane.remove(obj2)
-            # this line is optimized -- don't change without profiling
-            dists = [n for n in dists if n[2] in plane._objs and n[3] in plane._objs]
+            dists = [ n for n in dists if (n[2] in plane and n[3] in plane) ]
             for other in plane:
                 dists.append((0, dist(group, other), group, other))
-            dists.sort()
+            dists = csort(dists)
             plane.add(group)
         assert len(plane) == 1
         return list(plane)
