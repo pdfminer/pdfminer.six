@@ -63,4 +63,4 @@ test: cmap
 		pdfminer/rijndael.py
 	$(PYTHON) pdfminer/ccitt.py
 	$(PYTHON) pdfminer/psparser.py
-	cd samples && $(MAKE) clean test
+	cd samples && $(MAKE) test

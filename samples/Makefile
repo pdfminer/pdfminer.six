@@ -2,78 +2,67 @@
 
 RM=rm -f
 CMP=:
+ECHO=echo
 PYTHON=python2
 
 PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -p1 -V
 
-HTMLS=$(HTMLS_FREE) $(HTMLS_NONFREE)
-HTMLS_FREE= \
-	simple1.html \
-	simple2.html \
-	simple3.html \
-	jo.html
-HTMLS_NONFREE= \
-	nonfree/dmca.html \
-	nonfree/f1040nr.html \
-	nonfree/i1040nr.html \
-	nonfree/kampo.html \
-	nonfree/naacl06-shinyama.html \
-	nonfree/nlp2004slides.html
+FREE= \
+	simple1 \
+	simple2 \
+	simple3 \
+	jo
 
-TEXTS=$(TEXTS_FREE) $(TEXTS_NONFREE)
-TEXTS_FREE= \
-	simple1.txt \
-	simple2.txt \
-	simple3.txt \
-	jo.txt
-TEXTS_NONFREE= \
-	nonfree/dmca.txt \
-	nonfree/f1040nr.txt \
-	nonfree/i1040nr.txt \
-	nonfree/kampo.txt \
-	nonfree/naacl06-shinyama.txt \
-	nonfree/nlp2004slides.txt
+NONFREE= \
+	nonfree/dmca \
+	nonfree/f1040nr \
+	nonfree/i1040nr \
+	nonfree/kampo \
+	nonfree/naacl06-shinyama \
+	nonfree/nlp2004slides
 
-XMLS=$(XMLS_FREE) $(XMLS_NONFREE)
-XMLS_FREE= \
-	simple1.xml \
-	simple2.xml \
-	simple3.xml \
-	jo.xml
-XMLS_NONFREE= \
-	nonfree/dmca.xml \
-	nonfree/f1040nr.xml \
-	nonfree/i1040nr.xml \
-	nonfree/kampo.xml \
-	nonfree/naacl06-shinyama.xml \
-	nonfree/nlp2004slides.xml
+TESTS=$(FREE) $(NONFREE)
 
-all: htmls texts xmls
+CRYPT_PASS1=foo
+CRYPT_PASS2=baz
+CRYPT_BASE=encryption/base
+CRYPTS= \
+	encryption/rc4-40 \
+	encryption/rc4-128 \
+	encryption/aes-128 \
+	encryption/aes-128-m \
+	encryption/aes-256 \
+	encryption/aes-256-m
+
+all: tests crypts
+
+tests:
+	for i in $(TESTS); do \
+		$(ECHO) $$i; \
+		$(PDF2TXT) -t html -o $$i.html $$i.pdf; \
+		$(CMP) $$i.html $$i.html.ref; \
+		$(PDF2TXT) -t xml -o $$i.xml $$i.pdf; \
+		$(CMP) $$i.xml $$i.xml.ref; \
+		$(PDF2TXT) -t text -o $$i.txt $$i.pdf; \
+		$(CMP) $$i.txt $$i.txt.ref; \
+	done
+
+crypts:
+	for i in $(CRYPTS); do \
+		$(ECHO) $$i; \
+		$(PDF2TXT) -t xml -P $(CRYPT_PASS1) -o $$i.1.xml $$i.pdf; \
+		$(CMP) $$i.1.xml $(CRYPT_BASE).xml; \
+		$(PDF2TXT) -t xml -P $(CRYPT_PASS2) -o $$i.2.xml $$i.pdf; \
+		$(CMP) $$i.2.xml $(CRYPT_BASE).xml; \
+	done
 
 test:
 	$(MAKE) all CMP=cmp
-	cd encryption && $(MAKE) test
 
 clean:
-	-$(RM) $(HTMLS)
-	-$(RM) $(TEXTS)
-	-$(RM) $(XMLS)
-	cd encryption && $(MAKE) clean
-
-htmls: $(HTMLS)
-texts: $(TEXTS)
-xmls: $(XMLS)
-
-.SUFFIXES: .pdf .html .xml .txt
-
-.pdf.html:
-	$(PDF2TXT) -t html -o $@ $<
-	$(CMP) $@ $@.ref
-
-.pdf.xml:
-	$(PDF2TXT) -t xml -o $@ $<
-	$(CMP) $@ $@.ref
-
-.pdf.txt:
-	$(PDF2TXT) -t text -o $@ $<
-	$(CMP) $@ $@.ref
+	-for i in $(TESTS); do \
+		$(RM) $$i.html $$i.xml $$i.txt; \
+	done
+	-for i in $(CRYPTS); do \
+		$(RM) $$i.1.xml $$i.2.xml; \
+	done
