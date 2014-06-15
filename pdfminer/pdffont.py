@@ -718,7 +718,7 @@ def main(argv):
         fp = file(fname, 'rb')
         #font = TrueTypeFont(fname, fp)
         font = CFFFont(fname, fp)
-        print font
+        print (font)
         fp.close()
     return
 

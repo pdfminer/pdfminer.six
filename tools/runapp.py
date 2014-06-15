@@ -88,7 +88,7 @@ class WebAppHandler(SimpleHTTPRequestHandler):
 def main(argv):
     import getopt, imp
     def usage():
-        print 'usage: %s [-h host] [-p port] [-n name] module.class' % argv[0]
+        print ('usage: %s [-h host] [-p port] [-n name] module.class' % argv[0])
         return 100
     try:
         (opts, args) = getopt.getopt(argv[1:], 'h:p:n:')
@@ -105,7 +105,7 @@ def main(argv):
     path = args.pop(0)
     module = imp.load_source('app', path)
     WebAppHandler.APP_CLASS = getattr(module, name)
-    print 'Listening %s:%d...' % (host,port)
+    print ('Listening %s:%d...' % (host,port))
     httpd = HTTPServer((host,port), WebAppHandler)
     httpd.serve_forever()
     return

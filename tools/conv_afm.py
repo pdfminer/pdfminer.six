@@ -30,11 +30,11 @@ def main(argv):
                 props['Flags'] = 64
         elif k == 'FontBBox':
             props[k] = tuple(map(float, f[1:5]))
-    print '# -*- python -*-'
-    print 'FONT_METRICS = {'
+    print ('# -*- python -*-')
+    print ('FONT_METRICS = {')
     for (fontname,(props,chars)) in fonts.iteritems():
-        print ' %r: %r,' % (fontname, (props,chars))
-    print '}'
+        print (' %r: %r,' % (fontname, (props,chars)))
+    print ('}')
     return 0
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

@@ -4,7 +4,7 @@ import sys
 def prof_main(argv):
     import hotshot, hotshot.stats
     def usage():
-        print 'usage: %s module.function [args ...]' % argv[0]
+        print ('usage: %s module.function [args ...]' % argv[0])
         return 100
     args = argv[1:]
     if len(args) < 1: return usage()

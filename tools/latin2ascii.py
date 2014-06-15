@@ -112,7 +112,7 @@ def latin2ascii(s):
 def main(argv):
     import getopt, fileinput
     def usage():
-        print 'usage: %s [-c codec] file ...' % argv[0]
+        print ('usage: %s [-c codec] file ...' % argv[0])
         return 100
     try:
         (opts, args) = getopt.getopt(argv[1:], 'c')

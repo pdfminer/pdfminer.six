@@ -9,16 +9,14 @@ def main(argv):
         if not line or line.startswith('#'):
             if state == 1:
                 state = 2
-                print '}'
-                print
-            print line
+                print ('}\n')
+            print (line)
             continue
         if state == 0:
-            print
-            print 'glyphname2unicode = {'
+            print ('\nglyphname2unicode = {')
             state = 1
         (name,x) = line.split(';')
         codes = x.split(' ')
-        print ' %r: u\'%s\',' % (name, ''.join( '\\u%s' % code for code in codes ))
+        print (' %r: u\'%s\',' % (name, ''.join( '\\u%s' % code for code in codes )))
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

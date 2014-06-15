@@ -425,7 +425,7 @@ class CCITTG4Parser(BitParser):
         return
 
     def output_line(self, y, bits):
-        print y, ''.join(str(b) for b in bits)
+        print (y, ''.join(str(b) for b in bits))
         return
 
     def _reset_line(self):
