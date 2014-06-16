@@ -637,7 +637,7 @@ class PDFCIDFont(PDFFont):
             name = 'unknown'
         try:
             self.cmap = CMapDB.get_cmap(name)
-        except CMapDB.CMapNotFound, e:
+        except CMapDB.CMapNotFound as e:
             if STRICT:
                 raise PDFFontError(e)
             self.cmap = CMap()
@@ -666,7 +666,7 @@ class PDFCIDFont(PDFFont):
         else:
             try:
                 self.unicode_map = CMapDB.get_unicode_map(self.cidcoding, self.cmap.is_vertical())
-            except CMapDB.CMapNotFound, e:
+            except CMapDB.CMapNotFound as e:
                 pass
 
         self.vertical = self.cmap.is_vertical()

@@ -104,7 +104,7 @@ def dumpallobjs(out, doc, codec=None):
                 out.write('<object id="%d">\n' % objid)
                 dumpxml(out, obj, codec=codec)
                 out.write('\n</object>\n\n')
-            except PDFObjectNotFound, e:
+            except PDFObjectNotFound as e:
                 print >>sys.stderr, 'not found: %r' % e
     dumptrailers(out, doc)
     out.write('</pdf>')
