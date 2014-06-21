@@ -16,12 +16,12 @@ def main(argv):
     def usage():
         print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output]'
                ' [-C] [-n] [-A] [-V] [-M char_margin] [-L line_margin] [-W word_margin]'
-               ' [-F boxes_flow] [-Y layout_mode] [-O output_dir] [-R rotation]'
+               ' [-F boxes_flow] [-Y layout_mode] [-O output_dir] [-R rotation] [-S]'
                ' [-t text|html|xml|tag] [-c codec] [-s scale]'
                ' file ...' % argv[0])
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:CnAVM:L:W:F:Y:O:R:t:c:s:')
+        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:CnAVM:L:W:F:Y:O:R:St:c:s:')
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
@@ -36,6 +36,7 @@ def main(argv):
     outtype = None
     imagewriter = None
     rotation = 0
+    stripcontrol = False
     layoutmode = 'normal'
     codec = 'utf-8'
     pageno = 1
@@ -60,6 +61,7 @@ def main(argv):
         elif k == '-Y': layoutmode = v
         elif k == '-O': imagewriter = ImageWriter(v)
         elif k == '-R': rotation = int(v)
+        elif k == '-S': stripcontrol = True
         elif k == '-t': outtype = v
         elif k == '-c': codec = v
         elif k == '-s': scale = float(v)
@@ -88,7 +90,8 @@ def main(argv):
                                imagewriter=imagewriter)
     elif outtype == 'xml':
         device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
-                              imagewriter=imagewriter)
+                              imagewriter=imagewriter,
+                              stripcontrol=stripcontrol)
     elif outtype == 'html':
         device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
                                layoutmode=layoutmode, laparams=laparams,

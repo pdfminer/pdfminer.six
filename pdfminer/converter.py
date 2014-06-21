@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import logging
+import re
 from pdfdevice import PDFTextDevice
 from pdffont import PDFUnicodeNotDefined
 from layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve
@@ -386,10 +387,13 @@ class HTMLConverter(PDFConverter):
 ##
 class XMLConverter(PDFConverter):
 
+    CONTROL = re.compile(ur'[\x00-\x08\x0b-\x0c\x0e-\x1f]')
+
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1,
-                 laparams=None, imagewriter=None):
+                 laparams=None, imagewriter=None, stripcontrol=False):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.imagewriter = imagewriter
+        self.stripcontrol = stripcontrol
         self.write_header()
         return
 
@@ -403,6 +407,8 @@ class XMLConverter(PDFConverter):
         return
 
     def write_text(self, text):
+        if self.stripcontrol:
+            text = self.CONTROL.sub(u'', text)
         self.outfp.write(enc(text, self.codec))
         return
 
