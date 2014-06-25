@@ -664,12 +664,12 @@ func/a/b{(c)do*}def
     ]
 
     def get_tokens(self, s):
-        import StringIO
+        from io import BytesIO
 
         class MyParser(PSBaseParser):
             def flush(self):
                 self.add_results(*self.popall())
-        parser = MyParser(StringIO.StringIO(s))
+        parser = MyParser(BytesIO(s))
         r = []
         try:
             while 1:
@@ -679,12 +679,12 @@ func/a/b{(c)do*}def
         return r
 
     def get_objects(self, s):
-        import StringIO
+        from io import BytesIO
 
         class MyParser(PSStackParser):
             def flush(self):
                 self.add_results(*self.popall())
-        parser = MyParser(StringIO.StringIO(s))
+        parser = MyParser(BytesIO(s))
         r = []
         try:
             while 1:

@@ -15,7 +15,10 @@ import sys
 import os
 import os.path
 import gzip
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle as pickle
 import struct
 import logging
 from psparser import PSStackParser

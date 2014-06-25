@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 import sys
 import struct
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import BytesIO
 from cmapdb import CMapDB, CMapParser, FileUnicodeMap, CMap
 from encodingdb import EncodingDB, name2unicode
 from psparser import PSStackParser
@@ -122,7 +119,7 @@ NIBBLES = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'e-', Non
 ##
 def getdict(data):
     d = {}
-    fp = StringIO(data)
+    fp = BytesIO(data)
     stack = []
     while 1:
         c = fp.read(1)
@@ -538,7 +535,7 @@ class PDFSimpleFont(PDFFont):
         if 'ToUnicode' in spec:
             strm = stream_value(spec['ToUnicode'])
             self.unicode_map = FileUnicodeMap()
-            CMapParser(self.unicode_map, StringIO(strm.get_data())).run()
+            CMapParser(self.unicode_map, BytesIO(strm.get_data())).run()
         PDFFont.__init__(self, descriptor, widths)
         return
 
@@ -578,7 +575,7 @@ class PDFType1Font(PDFSimpleFont):
             self.fontfile = stream_value(descriptor.get('FontFile'))
             length1 = int_value(self.fontfile['Length1'])
             data = self.fontfile.get_data()[:length1]
-            parser = Type1FontHeaderParser(StringIO(data))
+            parser = Type1FontHeaderParser(BytesIO(data))
             self.cid2unicode = parser.get_encoding()
         return
 
@@ -651,12 +648,12 @@ class PDFCIDFont(PDFFont):
         if 'FontFile2' in descriptor:
             self.fontfile = stream_value(descriptor.get('FontFile2'))
             ttf = TrueTypeFont(self.basefont,
-                               StringIO(self.fontfile.get_data()))
+                               BytesIO(self.fontfile.get_data()))
         self.unicode_map = None
         if 'ToUnicode' in spec:
             strm = stream_value(spec['ToUnicode'])
             self.unicode_map = FileUnicodeMap()
-            CMapParser(self.unicode_map, StringIO(strm.get_data())).run()
+            CMapParser(self.unicode_map, BytesIO(strm.get_data())).run()
         elif self.cidcoding in ('Adobe-Identity', 'Adobe-UCS'):
             if ttf:
                 try:

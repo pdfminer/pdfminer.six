@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 import sys
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle as pickle
 
 
 ##  CMapConverter

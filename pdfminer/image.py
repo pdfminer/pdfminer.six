@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import cStringIO
 import struct
 import os, os.path
+from io import BytesIO
 from pdftypes import LITERALS_DCT_DECODE
 from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
 
@@ -83,7 +83,7 @@ class ImageWriter(object):
             if LITERAL_DEVICE_CMYK in image.colorspace:
                 from PIL import Image
                 from PIL import ImageChops
-                ifp = cStringIO.StringIO(raw_data)
+                ifp = BytesIO(raw_data)
                 i = Image.open(ifp)
                 i = ImageChops.invert(i)
                 i = i.convert('RGB')

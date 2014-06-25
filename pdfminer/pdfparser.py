@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 import sys
 import logging
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import BytesIO
 from psparser import PSStackParser
 from psparser import PSSyntaxError, PSEOF
 from psparser import KWD, STRICT
@@ -147,7 +144,7 @@ class PDFStreamParser(PDFParser):
     """
 
     def __init__(self, data):
-        PDFParser.__init__(self, StringIO(data))
+        PDFParser.__init__(self, BytesIO(data))
         return
 
     def flush(self):

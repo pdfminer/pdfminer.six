@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 import sys
 import logging
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import BytesIO
 
 
 class CorruptDataError(Exception):
@@ -103,7 +100,7 @@ def lzwdecode(data):
     >>> lzwdecode('\x80\x0b\x60\x50\x22\x0c\x0c\x85\x01')
     '\x2d\x2d\x2d\x2d\x2d\x41\x2d\x2d\x2d\x42'
     """
-    fp = StringIO(data)
+    fp = BytesIO(data)
     return ''.join(LZWDecoder(fp).run())
 
 if __name__ == '__main__':
