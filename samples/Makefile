@@ -39,21 +39,21 @@ all: tests crypts
 tests:
 	for i in $(TESTS); do \
 		$(ECHO) $$i; \
-		$(PDF2TXT) -t html -o $$i.html $$i.pdf; \
-		$(CMP) $$i.html $$i.html.ref; \
-		$(PDF2TXT) -t xml -o $$i.xml $$i.pdf; \
-		$(CMP) $$i.xml $$i.xml.ref; \
-		$(PDF2TXT) -t text -o $$i.txt $$i.pdf; \
-		$(CMP) $$i.txt $$i.txt.ref; \
+		$(PDF2TXT) -t html -o $$i.html $$i.pdf || exit 1; \
+		$(CMP) $$i.html $$i.html.ref || exit 1; \
+		$(PDF2TXT) -t xml -o $$i.xml $$i.pdf || exit 1; \
+		$(CMP) $$i.xml $$i.xml.ref || exit 1; \
+		$(PDF2TXT) -t text -o $$i.txt $$i.pdf || eixt 1; \
+		$(CMP) $$i.txt $$i.txt.ref || exit 1; \
 	done
 
 crypts:
 	for i in $(CRYPTS); do \
 		$(ECHO) $$i; \
-		$(PDF2TXT) -t xml -P $(CRYPT_PASS1) -o $$i.1.xml $$i.pdf; \
-		$(CMP) $$i.1.xml $(CRYPT_BASE).xml; \
-		$(PDF2TXT) -t xml -P $(CRYPT_PASS2) -o $$i.2.xml $$i.pdf; \
-		$(CMP) $$i.2.xml $(CRYPT_BASE).xml; \
+		$(PDF2TXT) -t xml -P $(CRYPT_PASS1) -o $$i.1.xml $$i.pdf || exit 1; \
+		$(CMP) $$i.1.xml $(CRYPT_BASE).xml || exit 1; \
+		$(PDF2TXT) -t xml -P $(CRYPT_PASS2) -o $$i.2.xml $$i.pdf || exit 1; \
+		$(CMP) $$i.2.xml $(CRYPT_BASE).xml || exit 1; \
 	done
 
 test:
