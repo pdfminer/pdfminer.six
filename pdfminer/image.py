@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import struct
-import os, os.path
+import os
+import os.path
 from io import BytesIO
-from pdftypes import LITERALS_DCT_DECODE
-from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB, LITERAL_DEVICE_CMYK
+from .pdftypes import LITERALS_DCT_DECODE
+from .pdfcolor import LITERAL_DEVICE_GRAY
+from .pdfcolor import LITERAL_DEVICE_RGB
+from .pdfcolor import LITERAL_DEVICE_CMYK
 
 
 def align32(x):

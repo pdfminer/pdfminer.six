@@ -1,25 +1,35 @@
 #!/usr/bin/env python
-import sys
 import re
 import logging
 from io import BytesIO
-from cmapdb import CMapDB, CMap
-from psparser import PSTypeError, PSEOF
-from psparser import PSKeyword, literal_name, keyword_name
-from psparser import PSStackParser
-from psparser import LIT, KWD, STRICT
-from pdftypes import PDFException, PDFStream, PDFObjRef
-from pdftypes import resolve1
-from pdftypes import list_value, dict_value, stream_value
-from pdffont import PDFFontError
-from pdffont import PDFType1Font, PDFTrueTypeFont, PDFType3Font
-from pdffont import PDFCIDFont
-from pdfcolor import PDFColorSpace
-from pdfcolor import PREDEFINED_COLORSPACE
-from pdfcolor import LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
-from pdfcolor import LITERAL_DEVICE_CMYK
-from utils import choplist
-from utils import mult_matrix, MATRIX_IDENTITY
+from .cmapdb import CMapDB
+from .cmapdb import CMap
+from .psparser import PSTypeError
+from .psparser import PSEOF
+from .psparser import PSKeyword
+from .psparser import literal_name
+from .psparser import keyword_name
+from .psparser import PSStackParser
+from .psparser import LIT
+from .psparser import KWD
+from .psparser import STRICT
+from .pdftypes import PDFException
+from .pdftypes import PDFStream
+from .pdftypes import PDFObjRef
+from .pdftypes import resolve1
+from .pdftypes import list_value
+from .pdftypes import dict_value
+from .pdftypes import stream_value
+from .pdffont import PDFFontError
+from .pdffont import PDFType1Font
+from .pdffont import PDFTrueTypeFont
+from .pdffont import PDFType3Font
+from .pdffont import PDFCIDFont
+from .pdfcolor import PDFColorSpace
+from .pdfcolor import PREDEFINED_COLORSPACE
+from .utils import choplist
+from .utils import mult_matrix
+from .utils import MATRIX_IDENTITY
 
 
 ##  Exceptions

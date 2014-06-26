@@ -61,6 +61,6 @@ test: cmap
 		pdfminer/ascii85.py \
 		pdfminer/runlength.py \
 		pdfminer/rijndael.py
-	$(PYTHON) pdfminer/ccitt.py
-	$(PYTHON) pdfminer/psparser.py
+	$(PYTHON) -m pdfminer.ccitt
+	$(PYTHON) -m pdfminer.psparser
 	cd samples && $(MAKE) test

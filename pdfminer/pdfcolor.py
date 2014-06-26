@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from psparser import LIT
+from .psparser import LIT
 
 
 ##  PDFColorSpace

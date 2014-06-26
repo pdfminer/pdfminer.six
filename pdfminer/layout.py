@@ -1,6 +1,13 @@
 #!/usr/bin/env python
-from utils import INF, Plane, get_bound, uniq, csort, fsplit
-from utils import bbox2str, matrix2str, apply_matrix_pt
+from .utils import INF
+from .utils import Plane
+from .utils import get_bound
+from .utils import uniq
+from .utils import csort
+from .utils import fsplit
+from .utils import bbox2str
+from .utils import matrix2str
+from .utils import apply_matrix_pt
 
 
 ##  IndexAssigner

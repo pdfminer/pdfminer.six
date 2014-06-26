@@ -1,14 +1,25 @@
 #!/usr/bin/env python
-import sys
 import logging
 import re
-from pdfdevice import PDFTextDevice
-from pdffont import PDFUnicodeNotDefined
-from layout import LTContainer, LTPage, LTText, LTLine, LTRect, LTCurve
-from layout import LTFigure, LTImage, LTChar, LTTextLine
-from layout import LTTextBox, LTTextBoxVertical, LTTextGroup
-from utils import apply_matrix_pt, mult_matrix
-from utils import enc, bbox2str
+from .pdfdevice import PDFTextDevice
+from .pdffont import PDFUnicodeNotDefined
+from .layout import LTContainer
+from .layout import LTPage
+from .layout import LTText
+from .layout import LTLine
+from .layout import LTRect
+from .layout import LTCurve
+from .layout import LTFigure
+from .layout import LTImage
+from .layout import LTChar
+from .layout import LTTextLine
+from .layout import LTTextBox
+from .layout import LTTextBoxVertical
+from .layout import LTTextGroup
+from .utils import apply_matrix_pt
+from .utils import mult_matrix
+from .utils import enc
+from .utils import bbox2str
 
 
 ##  PDFLayoutAnalyzer

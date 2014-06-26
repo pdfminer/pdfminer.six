@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 import zlib
-from lzw import lzwdecode
-from ascii85 import ascii85decode, asciihexdecode
-from runlength import rldecode
-from ccitt import ccittfaxdecode
-from psparser import PSException, PSObject
-from psparser import LIT, STRICT
-from utils import apply_png_predictor, isnumber
+from .lzw import lzwdecode
+from .ascii85 import ascii85decode
+from .ascii85 import asciihexdecode
+from .runlength import rldecode
+from .ccitt import ccittfaxdecode
+from .psparser import PSException
+from .psparser import PSObject
+from .psparser import LIT
+from .psparser import STRICT
+from .utils import apply_png_predictor
+from .utils import isnumber
+
 
 LITERAL_CRYPT = LIT('Crypt')
 

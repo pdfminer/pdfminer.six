@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-
 import re
-from psparser import PSLiteral
-from glyphlist import glyphname2unicode
-from latin_enc import ENCODING
+from .psparser import PSLiteral
+from .glyphlist import glyphname2unicode
+from .latin_enc import ENCODING
 
 
 STRIP_NAME = re.compile(r'[0-9]+')

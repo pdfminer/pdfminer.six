@@ -21,12 +21,14 @@ except ImportError:
     import pickle as pickle
 import struct
 import logging
-from psparser import PSStackParser
-from psparser import PSSyntaxError, PSEOF
-from psparser import PSLiteral
-from psparser import literal_name
-from encodingdb import name2unicode
-from utils import choplist, nunpack
+from .psparser import PSStackParser
+from .psparser import PSSyntaxError
+from .psparser import PSEOF
+from .psparser import PSLiteral
+from .psparser import literal_name
+from .encodingdb import name2unicode
+from .utils import choplist
+from .utils import nunpack
 
 
 class CMapError(Exception):

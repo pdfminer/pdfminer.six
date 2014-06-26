@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import sys
-import logging
 from io import BytesIO
 
 

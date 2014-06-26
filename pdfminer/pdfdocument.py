@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 import re
 import struct
 import logging
@@ -13,20 +12,27 @@ try:
     from Crypto.Hash import SHA256
 except ImportError:
     AES = SHA256 = None
-    import arcfour as ARC4
-
-from psparser import PSEOF
-from psparser import literal_name
-from psparser import LIT, KWD, STRICT
-from pdftypes import PDFException, PDFTypeError, PDFNotImplementedError
-from pdftypes import PDFObjectNotFound, PDFStream
-from pdftypes import decipher_all
-from pdftypes import int_value
-from pdftypes import str_value, list_value, dict_value, stream_value
-from pdfparser import PDFSyntaxError
-from pdfparser import PDFStreamParser
-from utils import choplist, nunpack
-from utils import decode_text
+    from . import arcfour as ARC4
+from .psparser import PSEOF
+from .psparser import literal_name
+from .psparser import LIT
+from .psparser import KWD
+from .psparser import STRICT
+from .pdftypes import PDFException
+from .pdftypes import PDFTypeError
+from .pdftypes import PDFStream
+from .pdftypes import PDFObjectNotFound
+from .pdftypes import decipher_all
+from .pdftypes import int_value
+from .pdftypes import str_value
+from .pdftypes import list_value
+from .pdftypes import dict_value
+from .pdftypes import stream_value
+from .pdfparser import PDFSyntaxError
+from .pdfparser import PDFStreamParser
+from .utils import choplist
+from .utils import nunpack
+from .utils import decode_text
 
 
 ##  Exceptions

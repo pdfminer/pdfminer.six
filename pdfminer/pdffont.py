@@ -2,17 +2,31 @@
 import sys
 import struct
 from io import BytesIO
-from cmapdb import CMapDB, CMapParser, FileUnicodeMap, CMap
-from encodingdb import EncodingDB, name2unicode
-from psparser import PSStackParser
-from psparser import PSEOF
-from psparser import LIT, KWD, STRICT
-from psparser import PSLiteral, literal_name
-from pdftypes import PDFException, resolve1
-from pdftypes import int_value, num_value
-from pdftypes import list_value, dict_value, stream_value
-from fontmetrics import FONT_METRICS
-from utils import apply_matrix_norm, nunpack, choplist, isnumber
+from .cmapdb import CMapDB
+from .cmapdb import CMapParser
+from .cmapdb import FileUnicodeMap
+from .cmapdb import CMap
+from .encodingdb import EncodingDB
+from .encodingdb import name2unicode
+from .psparser import PSStackParser
+from .psparser import PSEOF
+from .psparser import LIT
+from .psparser import KWD
+from .psparser import STRICT
+from .psparser import PSLiteral
+from .psparser import literal_name
+from .pdftypes import PDFException
+from .pdftypes import resolve1
+from .pdftypes import int_value
+from .pdftypes import num_value
+from .pdftypes import list_value
+from .pdftypes import dict_value
+from .pdftypes import stream_value
+from .fontmetrics import FONT_METRICS
+from .utils import apply_matrix_norm
+from .utils import nunpack
+from .utils import choplist
+from .utils import isnumber
 
 
 def get_widths(seq):
@@ -566,7 +580,7 @@ class PDFType1Font(PDFSimpleFont):
         except KeyError:
             descriptor = dict_value(spec.get('FontDescriptor', {}))
             firstchar = int_value(spec.get('FirstChar', 0))
-            lastchar = int_value(spec.get('LastChar', 255))
+            #lastchar = int_value(spec.get('LastChar', 255))
             widths = list_value(spec.get('Widths', [0]*256))
             widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
         PDFSimpleFont.__init__(self, descriptor, widths, spec)
@@ -595,7 +609,7 @@ class PDFType3Font(PDFSimpleFont):
 
     def __init__(self, rsrcmgr, spec):
         firstchar = int_value(spec.get('FirstChar', 0))
-        lastchar = int_value(spec.get('LastChar', 0))
+        #lastchar = int_value(spec.get('LastChar', 0))
         widths = list_value(spec.get('Widths', [0]*256))
         widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
         if 'FontDescriptor' in spec:
