@@ -104,7 +104,7 @@ def uniq(objs):
 
 
 # csort
-def csort(objs, key=lambda x: x):
+def csort(objs, key):
     """Order-preserving sorting function."""
     idxs = dict((obj, i) for (i, obj) in enumerate(objs))
     return sorted(objs, key=lambda obj: (key(obj), idxs[obj]))

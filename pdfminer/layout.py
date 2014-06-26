@@ -81,6 +81,16 @@ class LTComponent(LTItem):
         return ('<%s %s>' %
                 (self.__class__.__name__, bbox2str(self.bbox)))
 
+    # Disable comparison.
+    def __lt__(self, _):
+        raise ValueError
+    def __le__(self, _):
+        raise ValueError
+    def __gt__(self, _):
+        raise ValueError
+    def __ge__(self, _):
+        raise ValueError
+
     def set_bbox(self, bbox):
         (x0, y0, x1, y1) = bbox
         self.x0 = x0
@@ -609,6 +619,10 @@ class LTLayoutContainer(LTContainer):
             y1 = max(obj1.y1, obj2.y1)
             objs = set(plane.find((x0, y0, x1, y1)))
             return objs.difference((obj1, obj2))
+
+        def key_obj(t):
+            (c,d,_,_) = t
+            return (c,d)
         
         # XXX this still takes O(n^2)  :(
         dists = []
@@ -618,7 +632,7 @@ class LTLayoutContainer(LTContainer):
                 obj2 = boxes[j]
                 dists.append((0, dist(obj1, obj2), obj1, obj2))
         # We could use dists.sort(), but it would randomize the test result.
-        dists = csort(dists)
+        dists = csort(dists, key=key_obj)
         plane = Plane(self.bbox)
         plane.extend(boxes)
         while dists:
@@ -633,10 +647,11 @@ class LTLayoutContainer(LTContainer):
                 group = LTTextGroupLRTB([obj1, obj2])
             plane.remove(obj1)
             plane.remove(obj2)
-            dists = [ n for n in dists if (n[2] in plane and n[3] in plane) ]
+            dists = [ (c,d,obj1,obj2) for (c,d,obj1,obj2) in dists
+                      if (obj1 in plane and obj2 in plane) ]
             for other in plane:
                 dists.append((0, dist(group, other), group, other))
-            dists = csort(dists)
+            dists = csort(dists, key=key_obj)
             plane.add(group)
         assert len(plane) == 1
         return list(plane)
