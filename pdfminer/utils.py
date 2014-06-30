@@ -14,28 +14,28 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
         raise ValueError(bitspercomponent)
     nbytes = colors*columns*bitspercomponent//8
     i = 0
-    buf = ''
-    line0 = '\x00' * columns
+    buf = b''
+    line0 = b'\x00' * columns
     for i in xrange(0, len(data), nbytes+1):
         ft = data[i]
         i += 1
         line1 = data[i:i+nbytes]
-        line2 = ''
-        if ft == '\x00':
+        line2 = b''
+        if ft == b'\x00':
             # PNG none
             line2 += line1
-        elif ft == '\x01':
+        elif ft == b'\x01':
             # PNG sub (UNTESTED)
             c = 0
             for b in line1:
                 c = (c+ord(b)) & 255
                 line2 += chr(c)
-        elif ft == '\x02':
+        elif ft == b'\x02':
             # PNG up
             for (a, b) in zip(line0, line1):
                 c = (ord(a)+ord(b)) & 255
                 line2 += chr(c)
-        elif ft == '\x03':
+        elif ft == b'\x03':
             # PNG average (UNTESTED)
             c = 0
             for (a, b) in zip(line0, line1):
@@ -176,7 +176,7 @@ def nunpack(s, default=0):
     elif l == 2:
         return struct.unpack('>H', s)[0]
     elif l == 3:
-        return struct.unpack('>L', '\x00'+s)[0]
+        return struct.unpack('>L', b'\x00'+s)[0]
     elif l == 4:
         return struct.unpack('>L', s)[0]
     else:
@@ -222,7 +222,7 @@ PDFDocEncoding = ''.join(unichr(x) for x in (
 
 def decode_text(s):
     """Decodes a PDFDocEncoding string to Unicode."""
-    if s.startswith('\xfe\xff'):
+    if s.startswith(b'\xfe\xff'):
         return unicode(s[2:], 'utf-16be', 'ignore')
     else:
         return ''.join(PDFDocEncoding[ord(c)] for c in s)

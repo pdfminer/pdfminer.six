@@ -237,7 +237,7 @@ class CMapDB(object):
             if os.path.exists(path):
                 gzfile = gzip.open(path)
                 try:
-                    return type(name, (), pickle.loads(gzfile.read()))
+                    return type(str(name), (), pickle.loads(gzfile.read()))
                 finally:
                     gzfile.close()
         else:
@@ -288,17 +288,17 @@ class CMapParser(PSStackParser):
 
     def do_keyword(self, pos, token):
         name = token.name
-        if name == 'begincmap':
+        if name == b'begincmap':
             self._in_cmap = True
             self.popall()
             return
-        elif name == 'endcmap':
+        elif name == b'endcmap':
             self._in_cmap = False
             return
         if not self._in_cmap:
             return
         #
-        if name == 'def':
+        if name == b'def':
             try:
                 ((_, k), (_, v)) = self.pop(2)
                 self.cmap.set_attr(literal_name(k), v)
@@ -306,7 +306,7 @@ class CMapParser(PSStackParser):
                 pass
             return
 
-        if name == 'usecmap':
+        if name == b'usecmap':
             try:
                 ((_, cmapname),) = self.pop(1)
                 self.cmap.use_cmap(CMapDB.get_cmap(literal_name(cmapname)))
@@ -316,17 +316,17 @@ class CMapParser(PSStackParser):
                 pass
             return
 
-        if name == 'begincodespacerange':
+        if name == b'begincodespacerange':
             self.popall()
             return
-        if name == 'endcodespacerange':
+        if name == b'endcodespacerange':
             self.popall()
             return
 
-        if name == 'begincidrange':
+        if name == b'begincidrange':
             self.popall()
             return
-        if name == 'endcidrange':
+        if name == b'endcidrange':
             objs = [obj for (__, obj) in self.popall()]
             for (s, e, cid) in choplist(3, objs):
                 if (not isinstance(s, str) or not isinstance(e, str) or
@@ -347,20 +347,20 @@ class CMapParser(PSStackParser):
                     self.cmap.add_code2cid(x, cid+i)
             return
 
-        if name == 'begincidchar':
+        if name == b'begincidchar':
             self.popall()
             return
-        if name == 'endcidchar':
+        if name == b'endcidchar':
             objs = [obj for (__, obj) in self.popall()]
             for (cid, code) in choplist(2, objs):
                 if isinstance(code, str) and isinstance(cid, str):
                     self.cmap.add_code2cid(code, nunpack(cid))
             return
 
-        if name == 'beginbfrange':
+        if name == b'beginbfrange':
             self.popall()
             return
-        if name == 'endbfrange':
+        if name == b'endbfrange':
             objs = [obj for (__, obj) in self.popall()]
             for (s, e, code) in choplist(3, objs):
                 if (not isinstance(s, str) or not isinstance(e, str) or
@@ -382,20 +382,20 @@ class CMapParser(PSStackParser):
                         self.cmap.add_cid2unichr(s1+i, x)
             return
 
-        if name == 'beginbfchar':
+        if name == b'beginbfchar':
             self.popall()
             return
-        if name == 'endbfchar':
+        if name == b'endbfchar':
             objs = [obj for (__, obj) in self.popall()]
             for (cid, code) in choplist(2, objs):
                 if isinstance(cid, str) and isinstance(code, str):
                     self.cmap.add_cid2unichr(nunpack(cid), code)
             return
 
-        if name == 'beginnotdefrange':
+        if name == b'beginnotdefrange':
             self.popall()
             return
-        if name == 'endnotdefrange':
+        if name == b'endnotdefrange':
             self.popall()
             return
 

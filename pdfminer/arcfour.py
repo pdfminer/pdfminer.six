@@ -12,11 +12,11 @@ This code is in the public domain.
 class Arcfour(object):
 
     """
-    >>> Arcfour('Key').process('Plaintext').encode('hex')
+    >>> Arcfour(b'Key').process(b'Plaintext').encode('hex')
     'bbf316e8d940af0ad3'
-    >>> Arcfour('Wiki').process('pedia').encode('hex')
+    >>> Arcfour(b'Wiki').process(b'pedia').encode('hex')
     '1021bf0420'
-    >>> Arcfour('Secret').process('Attack at dawn').encode('hex')
+    >>> Arcfour(b'Secret').process(b'Attack at dawn').encode('hex')
     '45a01f645fc35b383552544b9bf5'
     """
 
@@ -34,7 +34,7 @@ class Arcfour(object):
     def process(self, data):
         (i, j) = (self.i, self.j)
         s = self.s
-        r = ''
+        r = b''
         for c in data:
             i = (i+1) % 256
             j = (j+s[i]) % 256

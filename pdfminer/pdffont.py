@@ -88,15 +88,15 @@ class FontMetricsDB(object):
 ##
 class Type1FontHeaderParser(PSStackParser):
 
-    KEYWORD_BEGIN = KWD('begin')
-    KEYWORD_END = KWD('end')
-    KEYWORD_DEF = KWD('def')
-    KEYWORD_PUT = KWD('put')
-    KEYWORD_DICT = KWD('dict')
-    KEYWORD_ARRAY = KWD('array')
-    KEYWORD_READONLY = KWD('readonly')
-    KEYWORD_FOR = KWD('for')
-    KEYWORD_FOR = KWD('for')
+    KEYWORD_BEGIN = KWD(b'begin')
+    KEYWORD_END = KWD(b'end')
+    KEYWORD_DEF = KWD(b'def')
+    KEYWORD_PUT = KWD(b'put')
+    KEYWORD_DICT = KWD(b'dict')
+    KEYWORD_ARRAY = KWD(b'array')
+    KEYWORD_READONLY = KWD(b'readonly')
+    KEYWORD_FOR = KWD(b'for')
+    KEYWORD_FOR = KWD(b'for')
 
     def __init__(self, data):
         PSStackParser.__init__(self, data)
@@ -311,13 +311,13 @@ class CFFFont(object):
         self.gid2code = {}
         self.fp.seek(encoding_pos)
         format = self.fp.read(1)
-        if format == '\x00':
+        if format == b'\x00':
             # Format 0
             (n,) = struct.unpack('B', self.fp.read(1))
             for (code, gid) in enumerate(struct.unpack('B'*n, self.fp.read(n))):
                 self.code2gid[code] = gid
                 self.gid2code[gid] = code
-        elif format == '\x01':
+        elif format == b'\x01':
             # Format 1
             (n,) = struct.unpack('B', self.fp.read(1))
             code = 0
@@ -334,7 +334,7 @@ class CFFFont(object):
         self.gid2name = {}
         self.fp.seek(charset_pos)
         format = self.fp.read(1)
-        if format == '\x00':
+        if format == b'\x00':
             # Format 0
             n = self.nglyphs-1
             for (gid, sid) in enumerate(struct.unpack('>'+'H'*n, self.fp.read(2*n))):
@@ -342,7 +342,7 @@ class CFFFont(object):
                 name = self.getstr(sid)
                 self.name2gid[name] = gid
                 self.gid2name[gid] = name
-        elif format == '\x01':
+        elif format == b'\x01':
             # Format 1
             (n,) = struct.unpack('B', self.fp.read(1))
             sid = 0
@@ -353,7 +353,7 @@ class CFFFont(object):
                     self.name2gid[name] = gid
                     self.gid2name[gid] = name
                     sid += 1
-        elif format == '\x02':
+        elif format == b'\x02':
             # Format 2
             assert 0
         else:

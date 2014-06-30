@@ -246,10 +246,10 @@ class PDFContentParser(PSStackParser):
         self.charpos = 0
         return
 
-    def get_inline_data(self, pos, target='EI'):
+    def get_inline_data(self, pos, target=b'EI'):
         self.seek(pos)
         i = 0
-        data = ''
+        data = b''
         while i <= len(target):
             self.fillbuf()
             if i:
@@ -273,16 +273,16 @@ class PDFContentParser(PSStackParser):
                     data += self.buf[self.charpos:]
                     self.charpos = len(self.buf)
         data = data[:-(len(target)+1)]  # strip the last part
-        data = re.sub(r'(\x0d\x0a|[\x0d\x0a])$', '', data)
+        data = re.sub(br'(\x0d\x0a|[\x0d\x0a])$', b'', data)
         return (pos, data)
 
     def flush(self):
         self.add_results(*self.popall())
         return
 
-    KEYWORD_BI = KWD('BI')
-    KEYWORD_ID = KWD('ID')
-    KEYWORD_EI = KWD('EI')
+    KEYWORD_BI = KWD(b'BI')
+    KEYWORD_ID = KWD(b'ID')
+    KEYWORD_EI = KWD(b'EI')
 
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_BI:
@@ -294,7 +294,7 @@ class PDFContentParser(PSStackParser):
                 if len(objs) % 2 != 0:
                     raise PSTypeError('Invalid dictionary construct: %r' % objs)
                 d = dict((literal_name(k), v) for (k, v) in choplist(2, objs))
-                (pos, data) = self.get_inline_data(pos+len('ID '))
+                (pos, data) = self.get_inline_data(pos+len(b'ID '))
                 obj = PDFStream(d, data)
                 self.push((pos, obj))
                 self.push((pos, self.KEYWORD_EI))

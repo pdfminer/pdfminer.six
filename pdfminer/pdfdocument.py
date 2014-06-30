@@ -100,10 +100,10 @@ class PDFXRef(PDFBaseXRef):
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
             if not line:
                 raise PDFNoValidXRef('Premature eof: %r' % parser)
-            if line.startswith('trailer'):
+            if line.startswith(b'trailer'):
                 parser.seek(pos)
                 break
-            f = line.strip().split(' ')
+            f = line.strip().split(b' ')
             if len(f) != 2:
                 raise PDFNoValidXRef('Trailer not found: %r: line=%r' % (parser, line))
             try:
@@ -115,11 +115,11 @@ class PDFXRef(PDFBaseXRef):
                     (_, line) = parser.nextline()
                 except PSEOF:
                     raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
-                f = line.strip().split(' ')
+                f = line.strip().split(b' ')
                 if len(f) != 3:
                     raise PDFNoValidXRef('Invalid XRef format: %r, line=%r' % (parser, line))
                 (pos, genno, use) = f
-                if use != 'n':
+                if use != b'n':
                     continue
                 self.offsets[objid] = (None, long(pos), int(genno))
         logging.info('xref objects: %r' % self.offsets)
@@ -170,7 +170,7 @@ class PDFXRefFallback(PDFXRef):
                 (pos, line) = parser.nextline()
             except PSEOF:
                 break
-            if line.startswith('trailer'):
+            if line.startswith(b'trailer'):
                 parser.seek(pos)
                 self.load_trailer(parser)
                 logging.info('trailer: %r' % self.get_trailer())
@@ -284,10 +284,10 @@ class PDFXRefStream(PDFBaseXRef):
 ##
 class PDFStandardSecurityHandler(object):
 
-    PASSWORD_PADDING = '(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
+    PASSWORD_PADDING = b'(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz'
     supported_revisions = (2, 3)
 
-    def __init__(self, docid, param, password=''):
+    def __init__(self, docid, param, password=b''):
         self.docid = docid
         self.param = param
         self.password = password
@@ -331,7 +331,7 @@ class PDFStandardSecurityHandler(object):
             hash.update(self.docid[0])  # 3
             result = ARC4.new(key).encrypt(hash.digest())  # 4
             for i in range(1, 20):  # 5
-                k = ''.join(chr(ord(c) ^ i) for c in key)
+                k = b''.join(chr(ord(c) ^ i) for c in key)
                 result = ARC4.new(k).encrypt(result)
             result += result  # 6
             return result
@@ -345,7 +345,7 @@ class PDFStandardSecurityHandler(object):
         hash.update(self.docid[0])  # 5
         if self.r >= 4:
             if not self.encrypt_metadata:
-                hash.update('\xff\xff\xff\xff')
+                hash.update(b'\xff\xff\xff\xff')
         result = hash.digest()
         n = 5
         if self.r >= 3:
@@ -388,7 +388,7 @@ class PDFStandardSecurityHandler(object):
         else:
             user_password = self.o
             for i in range(19, -1, -1):
-                k = ''.join(chr(ord(c) ^ i) for c in key)
+                k = b''.join(chr(ord(c) ^ i) for c in key)
                 user_password = ARC4.new(k).decrypt(user_password)
         return self.authenticate_user_password(user_password)
 
@@ -444,7 +444,7 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
         return data
 
     def decrypt_aes128(self, objid, genno, data):
-        key = self.key + struct.pack('<L', objid)[:3] + struct.pack('<L', genno)[:2] + "sAlT"
+        key = self.key + struct.pack('<L', objid)[:3] + struct.pack('<L', genno)[:2] + b'sAlT'
         hash = md5.md5(key)
         key = hash.digest()[:min(len(key), 16)]
         return AES.new(key, mode=AES.MODE_CBC, IV=data[:16]).decrypt(data[16:])
@@ -479,13 +479,13 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
             hash = SHA256.new(password)
             hash.update(self.o_key_salt)
             hash.update(self.u)
-            return AES.new(hash.digest(), mode=AES.MODE_CBC, IV='\x00' * 16).decrypt(self.oe)
+            return AES.new(hash.digest(), mode=AES.MODE_CBC, IV=b'\x00' * 16).decrypt(self.oe)
         hash = SHA256.new(password)
         hash.update(self.u_validation_salt)
         if hash.digest() == self.u_hash:
             hash = SHA256.new(password)
             hash.update(self.u_key_salt)
-            return AES.new(hash.digest(), mode=AES.MODE_CBC, IV='\x00' * 16).decrypt(self.ue)
+            return AES.new(hash.digest(), mode=AES.MODE_CBC, IV=b'\x00' * 16).decrypt(self.ue)
 
     def decrypt_aes256(self, objid, genno, data):
         return AES.new(self.key, mode=AES.MODE_CBC, IV=data[:16]).decrypt(data[16:])
@@ -517,7 +517,7 @@ class PDFDocument(object):
             security_handler_registry[5] = PDFStandardSecurityHandlerV5
     debug = 0
 
-    def __init__(self, parser, password='', caching=True, fallback=True):
+    def __init__(self, parser, password=b'', caching=True, fallback=True):
         "Set the document to use a given PDFParser object."
         self.caching = caching
         self.xrefs = []
@@ -566,9 +566,9 @@ class PDFDocument(object):
                 raise PDFSyntaxError('Catalog not found!')
         return
 
-    # _initialize_password(password='')
+    # _initialize_password(password=b'')
     #   Perform the initialization with a given password.
-    def _initialize_password(self, password=''):
+    def _initialize_password(self, password=b''):
         (docid, param) = self.encryption
         if literal_name(param.get('Filter')) != 'Standard':
             raise PDFEncryptionError('Unknown filter: param=%r' % param)
@@ -740,7 +740,7 @@ class PDFDocument(object):
             line = line.strip()
             if self.debug:
                 logging.debug('find_xref: %r' % line)
-            if line == 'startxref':
+            if line == b'startxref':
                 break
             if line:
                 prev = line

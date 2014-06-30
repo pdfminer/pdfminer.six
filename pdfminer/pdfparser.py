@@ -50,12 +50,12 @@ class PDFParser(PSStackParser):
         self.doc = doc
         return
 
-    KEYWORD_R = KWD('R')
-    KEYWORD_NULL = KWD('null')
-    KEYWORD_ENDOBJ = KWD('endobj')
-    KEYWORD_STREAM = KWD('stream')
-    KEYWORD_XREF = KWD('xref')
-    KEYWORD_STARTXREF = KWD('startxref')
+    KEYWORD_R = KWD(b'R')
+    KEYWORD_NULL = KWD(b'null')
+    KEYWORD_ENDOBJ = KWD(b'endobj')
+    KEYWORD_STREAM = KWD(b'stream')
+    KEYWORD_XREF = KWD(b'xref')
+    KEYWORD_STARTXREF = KWD(b'startxref')
 
     def do_keyword(self, pos, token):
         """Handles PDF-related keywords."""
@@ -109,8 +109,8 @@ class PDFParser(PSStackParser):
                     if STRICT:
                         raise PDFSyntaxError('Unexpected EOF')
                     break
-                if 'endstream' in line:
-                    i = line.index('endstream')
+                if b'endstream' in line:
+                    i = line.index(b'endstream')
                     objlen += i
                     if self.fallback:
                         data += line[:i]
@@ -153,7 +153,7 @@ class PDFStreamParser(PDFParser):
         self.add_results(*self.popall())
         return
 
-    KEYWORD_OBJ = KWD('obj')
+    KEYWORD_OBJ = KWD(b'obj')
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_R:
             # reference to indirect object
@@ -169,7 +169,7 @@ class PDFStreamParser(PDFParser):
             if STRICT:
                 # See PDF Spec 3.4.6: Only the object values are stored in the
                 # stream; the obj and endobj keywords are not used.
-                raise PDFSyntaxError("Keyword endobj found in stream")
+                raise PDFSyntaxError('Keyword endobj found in stream')
             return
         # others
         self.push((pos, token))

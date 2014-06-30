@@ -24,24 +24,24 @@ def ascii85decode(data):
     The sample string is taken from:
       http://en.wikipedia.org/w/index.php?title=Ascii85
 
-    >>> ascii85decode('9jqo^BlbD-BleB1DJ+*+F(f,q')
+    >>> ascii85decode(b'9jqo^BlbD-BleB1DJ+*+F(f,q')
     'Man is distinguished'
-    >>> ascii85decode('E,9)oF*2M7/c~>')
+    >>> ascii85decode(b'E,9)oF*2M7/c~>')
     'pleasure.'
     """
     n = b = 0
-    out = ''
+    out = b''
     for c in data:
-        if '!' <= c and c <= 'u':
+        if b'!' <= c and c <= b'u':
             n += 1
             b = b*85+(ord(c)-33)
             if n == 5:
                 out += struct.pack('>L', b)
                 n = b = 0
-        elif c == 'z':
+        elif c == b'z':
             assert n == 0
-            out += '\0\0\0\0'
-        elif c == '~':
+            out += b'\0\0\0\0'
+        elif c == b'~':
             if n:
                 for _ in range(5-n):
                     b = b*85+84
@@ -64,19 +64,19 @@ def asciihexdecode(data):
     the EOD marker after reading an odd number of hexadecimal digits, it
     will behave as if a 0 followed the last digit.
 
-    >>> asciihexdecode('61 62 2e6364   65')
+    >>> asciihexdecode(b'61 62 2e6364   65')
     'ab.cde'
-    >>> asciihexdecode('61 62 2e6364   657>')
+    >>> asciihexdecode(b'61 62 2e6364   657>')
     'ab.cdep'
-    >>> asciihexdecode('7>')
+    >>> asciihexdecode(b'7>')
     'p'
     """
     decode = (lambda hx: chr(int(hx, 16)))
     out = map(decode, hex_re.findall(data))
     m = trail_re.search(data)
     if m:
-        out.append(decode("%c0" % m.group(1)))
-    return ''.join(out)
+        out.append(decode('%c0' % m.group(1)))
+    return b''.join(out)
 
 
 if __name__ == '__main__':

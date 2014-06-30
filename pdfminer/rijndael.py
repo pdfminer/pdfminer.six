@@ -898,7 +898,7 @@ def rijndaelEncrypt(rk, nrounds, plaintext):
           Te3[(t2      ) & 0xff] ^
           rk[p+3])
 
-    ciphertext = ''
+    ciphertext = b''
 
     # apply last round and
     # map cipher state to byte array block:
@@ -1001,7 +1001,7 @@ def rijndaelDecrypt(rk, nrounds, ciphertext):
           Td3[(t0      ) & 0xff] ^
           rk[p+3])
 
-    plaintext = ''
+    plaintext = b''
 
     # apply last round and
     # map cipher state to byte array block:
@@ -1042,8 +1042,8 @@ def rijndaelDecrypt(rk, nrounds, ciphertext):
 class RijndaelDecryptor(object):
 
     """
-    >>> key = '00010203050607080a0b0c0d0f101112'.decode('hex')
-    >>> ciphertext = 'd8f532538289ef7d06b506a4fd5be9c9'.decode('hex')
+    >>> key = b'00010203050607080a0b0c0d0f101112'.decode('hex')
+    >>> ciphertext = b'd8f532538289ef7d06b506a4fd5be9c9'.decode('hex')
     >>> RijndaelDecryptor(key, 128).decrypt(ciphertext).encode('hex')
     '506812a45f08c889b97f5980038b8359'
     """
@@ -1064,8 +1064,8 @@ class RijndaelDecryptor(object):
 class RijndaelEncryptor(object):
 
     """
-    >>> key = '00010203050607080a0b0c0d0f101112'.decode('hex')
-    >>> plaintext = '506812a45f08c889b97f5980038b8359'.decode('hex')
+    >>> key = b'00010203050607080a0b0c0d0f101112'.decode('hex')
+    >>> plaintext = b'506812a45f08c889b97f5980038b8359'.decode('hex')
     >>> RijndaelEncryptor(key, 128).encrypt(plaintext).encode('hex')
     'd8f532538289ef7d06b506a4fd5be9c9'
     """

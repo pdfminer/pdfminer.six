@@ -244,7 +244,7 @@ class PDFStream(PDFObject):
                 except zlib.error as e:
                     if STRICT:
                         raise PDFException('Invalid zlib bytes: %r, %r' % (e, data))
-                    data = ''
+                    data = b''
             elif f in LITERALS_LZW_DECODE:
                 data = lzwdecode(data)
             elif f in LITERALS_ASCII85_DECODE:

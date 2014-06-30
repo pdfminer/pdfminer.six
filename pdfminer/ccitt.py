@@ -691,7 +691,7 @@ class CCITTFaxDecoder(CCITTG4Parser):
     def __init__(self, width, bytealign=False, reversed=False):
         CCITTG4Parser.__init__(self, width, bytealign=bytealign)
         self.reversed = reversed
-        self._buf = ''
+        self._buf = b''
         return
 
     def close(self):
