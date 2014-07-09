@@ -218,11 +218,14 @@ class PDFStream(PDFObject):
 
     def get_filters(self):
         filters = self.get_any(('F', 'Filter'))
+        params = self.get_any(('DP', 'DecodeParms', 'FDecodeParms'), {})
         if not filters:
             return []
-        if isinstance(filters, list):
-            return filters
-        return [filters]
+        if not isinstance(filters, list):
+            filters = [filters]
+        if not isinstance(params, list):
+            params = [params]
+        return zip(filters, params)
 
     def decode(self):
         assert self.data is None and self.rawdata is not None
@@ -235,8 +238,7 @@ class PDFStream(PDFObject):
             self.data = data
             self.rawdata = None
             return
-        for f in filters:
-            params = self.get_any(('DP', 'DecodeParms', 'FDecodeParms'), {})
+        for (f,params) in filters:
             if f in LITERALS_FLATE_DECODE:
                 # will get errors if the document is encrypted.
                 try:
