@@ -3,8 +3,9 @@
 Miscellaneous Routines.
 """
 import struct
-from sys import maxint as INF
+INF=2147483647 #from sys import maxint as INF #doesn't work anymore under Python3, but PDF still uses 32 bits ints
 
+import six #Python 2+3 compatibility
 
 ##  PNG Predictor
 ##
@@ -184,7 +185,7 @@ def nunpack(s, default=0):
 
 
 # decode_text
-PDFDocEncoding = ''.join(unichr(x) for x in (
+PDFDocEncoding = ''.join(six.unichr(x) for x in (
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
     0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
     0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0017, 0x0017,

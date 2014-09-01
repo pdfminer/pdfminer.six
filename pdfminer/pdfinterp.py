@@ -31,6 +31,7 @@ from .utils import choplist
 from .utils import mult_matrix
 from .utils import MATRIX_IDENTITY
 
+import six # Python 2+3 compatibility
 
 ##  Exceptions
 ##
@@ -39,15 +40,6 @@ class PDFResourceError(PDFException):
 
 class PDFInterpreterError(PDFException):
     pass
-
-
-##  Constants
-##
-LITERAL_PDF = LIT('PDF')
-LITERAL_TEXT = LIT('Text')
-LITERAL_FONT = LIT('Font')
-LITERAL_FORM = LIT('Form')
-LITERAL_IMAGE = LIT('Image')
 
 
 ##  PDFTextState
@@ -341,7 +333,7 @@ class PDFPageInterpreter(object):
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
                 return PREDEFINED_COLORSPACE.get(name)
-        for (k, v) in dict_value(resources).iteritems():
+        for (k, v) in six.iteritems(dict_value(resources)):
             if self.debug:
                 logging.debug('Resource: %r: %r' % (k, v))
             if k == 'Font':
@@ -352,7 +344,7 @@ class PDFPageInterpreter(object):
                     spec = dict_value(spec)
                     self.fontmap[fontid] = self.rsrcmgr.get_font(objid, spec)
             elif k == 'ColorSpace':
-                for (csid, spec) in dict_value(v).iteritems():
+                for (csid, spec) in six.iteritems(dict_value(v)):
                     self.csmap[csid] = get_colorspace(resolve1(spec))
             elif k == 'ProcSet':
                 self.rsrcmgr.get_procset(list_value(v))
@@ -376,7 +368,7 @@ class PDFPageInterpreter(object):
         # set some global states.
         self.scs = self.ncs = None
         if self.csmap:
-            self.scs = self.ncs = self.csmap.values()[0]
+            self.scs = self.ncs = six.next(six.itervalues(self.csmap))
         return
 
     def push(self, obj):

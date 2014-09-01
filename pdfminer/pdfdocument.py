@@ -2,6 +2,8 @@
 import re
 import struct
 import logging
+
+import six # Python 2+3 compatibility
 try:
     import hashlib as md5
 except ImportError:
@@ -107,10 +109,13 @@ class PDFXRef(PDFBaseXRef):
             if len(f) != 2:
                 raise PDFNoValidXRef('Trailer not found: %r: line=%r' % (parser, line))
             try:
-                (start, nobjs) = map(long, f)
+                if six.PY2:
+                    (start, nobjs) = map(long, f)
+                else:
+                    (start, nobjs) = map(int, f)
             except ValueError:
                 raise PDFNoValidXRef('Invalid line: %r: line=%r' % (parser, line))
-            for objid in xrange(start, start+nobjs):
+            for objid in range(start, start+nobjs):
                 try:
                     (_, line) = parser.nextline()
                 except PSEOF:
@@ -121,17 +126,15 @@ class PDFXRef(PDFBaseXRef):
                 (pos, genno, use) = f
                 if use != b'n':
                     continue
-                self.offsets[objid] = (None, long(pos), int(genno))
+                self.offsets[objid] = (None, long(pos) if six.PY2 else int(pos), int(genno))
         logging.info('xref objects: %r' % self.offsets)
         self.load_trailer(parser)
         return
 
-    KEYWORD_TRAILER = KWD('trailer')
-
     def load_trailer(self, parser):
         try:
             (_, kwd) = parser.nexttoken()
-            assert kwd is self.KEYWORD_TRAILER
+            assert kwd.name == 'trailer'
             (_, dic) = parser.nextobject()
         except PSEOF:
             x = parser.pop(1)
@@ -145,7 +148,7 @@ class PDFXRef(PDFBaseXRef):
         return self.trailer
 
     def get_objids(self):
-        return self.offsets.iterkeys()
+        return six.iterkeys(self.offsets)
 
     def get_pos(self, objid):
         try:
@@ -175,6 +178,8 @@ class PDFXRefFallback(PDFXRef):
                 self.load_trailer(parser)
                 logging.info('trailer: %r' % self.get_trailer())
                 break
+            if six.PY3:
+                line=line.decode('utf-8')
             m = self.PDFOBJ_CUE.match(line)
             if not m:
                 continue
@@ -634,8 +639,6 @@ class PDFDocument(object):
             pass
         return (objs, n)
 
-    KEYWORD_OBJ = KWD('obj')
-
     def _getobj_parse(self, pos, objid):
         self._parser.seek(pos)
         (_, objid1) = self._parser.nexttoken()  # objid
@@ -643,7 +646,7 @@ class PDFDocument(object):
             raise PDFSyntaxError('objid mismatch: %r=%r' % (objid1, objid))
         (_, genno) = self._parser.nexttoken()  # genno
         (_, kwd) = self._parser.nexttoken()
-        if kwd is not self.KEYWORD_OBJ:
+        if kwd.name !='obj':
             raise PDFSyntaxError('Invalid object spec: offset=%r' % pos)
         (_, obj) = self._parser.nextobject()
         return obj
@@ -762,7 +765,7 @@ class PDFDocument(object):
         else:
             raise PDFNoValidXRef('Unexpected EOF')
         logging.info('xref found: pos=%r' % prev)
-        return long(prev)
+        return long(prev) if six.PY2 else int(prev)
 
     # read xref table
     def read_xref_from(self, parser, start, xrefs):

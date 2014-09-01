@@ -10,10 +10,7 @@ from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument
 from .pdfdocument import PDFTextExtractionNotAllowed
 
-# some predefined literals and keywords.
-LITERAL_PAGE = LIT('Page')
-LITERAL_PAGES = LIT('Pages')
-
+import six # Python 2+3 compatibility
 
 ##  PDFPage
 ##
@@ -82,15 +79,15 @@ class PDFPage(object):
             else:
                 objid = obj.objid
                 tree = dict_value(obj).copy()
-            for (k, v) in parent.iteritems():
+            for (k, v) in six.iteritems(parent):
                 if k in klass.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
-            if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
+            if tree.get('Type').name=='Pages' and 'Kids' in tree:
                 logging.info('Pages: Kids=%r' % tree['Kids'])
                 for c in list_value(tree['Kids']):
                     for x in search(c, tree):
                         yield x
-            elif tree.get('Type') is LITERAL_PAGE:
+            elif tree.get('Type').name=='Page':
                 logging.info('Page: %r' % tree)
                 yield (objid, tree)
         pages = False

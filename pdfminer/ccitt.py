@@ -13,6 +13,7 @@
 import sys
 import array
 
+import six #Python 2+3 compatibility
 
 ##  BitParser
 ##
@@ -26,7 +27,7 @@ class BitParser(object):
     def add(klass, root, v, bits):
         p = root
         b = None
-        for i in xrange(len(bits)):
+        for i in range(len(bits)):
             if 0 < i:
                 if p[b] is None:
                     p[b] = [None, None]
@@ -686,6 +687,25 @@ class TestCCITTG4Parser(unittest.TestCase):
 
 ##  CCITTFaxDecoder
 ##
+    def test___init__(self):
+        # c_citt_g4_parser = CCITTG4Parser(width, bytealign)
+        raise SkipTest # TODO: implement your test here
+
+    def test_feedbytes(self):
+        # c_citt_g4_parser = CCITTG4Parser(width, bytealign)
+        # assert_equal(expected, c_citt_g4_parser.feedbytes(data))
+        raise SkipTest # TODO: implement your test here
+
+    def test_output_line(self):
+        # c_citt_g4_parser = CCITTG4Parser(width, bytealign)
+        # assert_equal(expected, c_citt_g4_parser.output_line(y, bits))
+        raise SkipTest # TODO: implement your test here
+
+    def test_reset(self):
+        # c_citt_g4_parser = CCITTG4Parser(width, bytealign)
+        # assert_equal(expected, c_citt_g4_parser.reset())
+        raise SkipTest # TODO: implement your test here
+
 class CCITTFaxDecoder(CCITTG4Parser):
 
     def __init__(self, width, bytealign=False, reversed=False):
