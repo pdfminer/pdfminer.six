@@ -90,8 +90,7 @@ class CMap(CMapBase):
         return
 
     def decode(self, code):
-        if self.debug:
-            logging.debug('decode: %r, %r' % (self, code))
+        logging.debug('decode: %r, %r' % (self, code))
         d = self.code2cid
         for c in code:
             c = ord(c)
@@ -142,8 +141,7 @@ class UnicodeMap(CMapBase):
         return '<UnicodeMap: %s>' % self.attrs.get('CMapName')
 
     def get_unichr(self, cid):
-        if self.debug:
-            logging.debug('get_unichr: %r, %r' % (self, cid))
+        logging.debug('get_unichr: %r, %r' % (self, cid))
         return self.cid2unichr[cid]
 
     def dump(self, out=sys.stdout):

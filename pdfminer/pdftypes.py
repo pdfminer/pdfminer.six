@@ -160,6 +160,8 @@ def dict_value(x):
     x = resolve1(x)
     if not isinstance(x, dict):
         if STRICT:
+            import logging
+            logging.error('PDFTypeError : Dict required: %r' % x)
             raise PDFTypeError('Dict required: %r' % x)
         return {}
     return x

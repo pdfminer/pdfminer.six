@@ -302,8 +302,6 @@ class PDFContentParser(PSStackParser):
 ##
 class PDFPageInterpreter(object):
 
-    debug = 0
-
     def __init__(self, rsrcmgr, device):
         self.rsrcmgr = rsrcmgr
         self.device = device
@@ -334,8 +332,7 @@ class PDFPageInterpreter(object):
             else:
                 return PREDEFINED_COLORSPACE.get(name)
         for (k, v) in six.iteritems(dict_value(resources)):
-            if self.debug:
-                logging.debug('Resource: %r: %r' % (k, v))
+            logging.debug('Resource: %r: %r' % (k, v))
             if k == 'Font':
                 for (fontid, spec) in dict_value(v).iteritems():
                     objid = None
@@ -856,16 +853,14 @@ class PDFPageInterpreter(object):
                 method = 'do_%s' % name.replace('*', '_a').replace('"', '_w').replace("'", '_q')
                 if hasattr(self, method):
                     func = getattr(self, method)
-                    nargs = func.func_code.co_argcount-1
+                    nargs = six.get_function_code(func).co_argcount-1
                     if nargs:
                         args = self.pop(nargs)
-                        if self.debug:
-                            logging.debug('exec: %s %r' % (name, args))
+                        logging.debug('exec: %s %r' % (name, args))
                         if len(args) == nargs:
                             func(*args)
                     else:
-                        if self.debug:
-                            logging.debug('exec: %s' % name)
+                        logging.debug('exec: %s' % name)
                         func()
                 else:
                     if STRICT:

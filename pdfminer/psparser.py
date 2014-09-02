@@ -22,7 +22,7 @@ def bytes(s,i,j=None):
 
 from .utils import choplist
 
-STRICT = 0
+STRICT = True
 
 ##  PS Exceptions
 ##
@@ -143,17 +143,30 @@ def literal_name(x):
         if STRICT:
             raise PSTypeError('Literal required: %r' % x)
         else:
-            return str(x)
-    return x.name
-
+            name=x
+    else:
+        name=x.name
+        if six.PY3:
+            try:
+                name = str(name,'utf-8')
+            except:
+                pass
+    return name
 
 def keyword_name(x):
     if not isinstance(x, PSKeyword):
         if STRICT:
             raise PSTypeError('Keyword required: %r' % x)
         else:
-            return str(x)
-    return x.name
+            name=x
+    else:
+        name=x.name
+        if six.PY3:
+            try:
+                name = str(name,'utf-8')
+            except:
+                pass
+    return name
 
 
 ##  PSBaseParser

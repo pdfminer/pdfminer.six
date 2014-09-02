@@ -93,7 +93,7 @@ class PDFXRef(PDFBaseXRef):
         return '<PDFXRef: offsets=%r>' % (self.offsets.keys())
 
     def load(self, parser):
-        while 1:
+        while True:
             try:
                 (pos, line) = parser.nextline()
                 if not line.strip():
@@ -134,7 +134,7 @@ class PDFXRef(PDFBaseXRef):
     def load_trailer(self, parser):
         try:
             (_, kwd) = parser.nexttoken()
-            assert kwd.name == 'trailer'
+            assert kwd is KWD(b'trailer')
             (_, dic) = parser.nextobject()
         except PSEOF:
             x = parser.pop(1)
@@ -142,6 +142,7 @@ class PDFXRef(PDFBaseXRef):
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted')
             (_, dic) = x[0]
         self.trailer.update(dict_value(dic))
+        logging.debug('trailer=%r'%self.trailer)
         return
 
     def get_trailer(self):
@@ -535,8 +536,6 @@ class PDFDocument(object):
         if SHA256 is not None:
             security_handler_registry[5] = PDFStandardSecurityHandlerV5
 
-    debug = 0
-
     def __init__(self, parser, password=b'', caching=True, fallback=True):
         "Set the document to use a given PDFParser object."
         self.caching = caching
@@ -557,7 +556,7 @@ class PDFDocument(object):
             pos = self.find_xref(parser)
             self.read_xref_from(parser, pos, self.xrefs)
         except PDFNoValidXRef:
-            fallback = True
+            pass # fallback = True
         if fallback:
             parser.fallback = True
             xref = PDFXRefFallback()
@@ -646,7 +645,7 @@ class PDFDocument(object):
             raise PDFSyntaxError('objid mismatch: %r=%r' % (objid1, objid))
         (_, genno) = self._parser.nexttoken()  # genno
         (_, kwd) = self._parser.nexttoken()
-        if kwd.name !='obj':
+        if kwd != KWD(b'obj'):
             raise PDFSyntaxError('Invalid object spec: offset=%r' % pos)
         (_, obj) = self._parser.nextobject()
         return obj
@@ -656,8 +655,7 @@ class PDFDocument(object):
         assert objid != 0
         if not self.xrefs:
             raise PDFException('PDFDocument is not initialized')
-        if self.debug:
-            logging.debug('getobj: objid=%r' % objid)
+        logging.debug('getobj: objid=%r' % objid)
         if objid in self._cached_objs:
             (obj, genno) = self._cached_objs[objid]
         else:
@@ -682,8 +680,7 @@ class PDFDocument(object):
                     continue
             else:
                 raise PDFObjectNotFound(objid)
-            if self.debug:
-                logging.debug('register: objid=%r: %r' % (objid, obj))
+            logging.debug('register: objid=%r: %r' % (objid, obj))
             if self.caching:
                 self._cached_objs[objid] = (obj, genno)
         return obj
@@ -756,8 +753,7 @@ class PDFDocument(object):
         prev = None
         for line in parser.revreadlines():
             line = line.strip()
-            if self.debug:
-                logging.debug('find_xref: %r' % line)
+            logging.debug('find_xref: %r' % line)
             if line == b'startxref':
                 break
             if line:
