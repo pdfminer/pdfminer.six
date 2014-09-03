@@ -41,6 +41,13 @@ class PDFResourceError(PDFException):
 class PDFInterpreterError(PDFException):
     pass
 
+##  Constants
+##
+LITERAL_PDF = LIT('PDF')
+LITERAL_TEXT = LIT('Text')
+LITERAL_FONT = LIT('Font')
+LITERAL_FORM = LIT('Form')
+LITERAL_IMAGE = LIT('Image')
 
 ##  PDFTextState
 ##
@@ -245,7 +252,8 @@ class PDFContentParser(PSStackParser):
         while i <= len(target):
             self.fillbuf()
             if i:
-                c = self.buf[self.charpos]
+                c = six.indexbytes(self.buf,self.charpos)
+                c=six.int2byte(c)
                 data += c
                 self.charpos += 1
                 if len(target) <= i and c.isspace():
@@ -334,7 +342,7 @@ class PDFPageInterpreter(object):
         for (k, v) in six.iteritems(dict_value(resources)):
             logging.debug('Resource: %r: %r' % (k, v))
             if k == 'Font':
-                for (fontid, spec) in dict_value(v).iteritems():
+                for (fontid, spec) in six.iteritems(dict_value(v)):
                     objid = None
                     if isinstance(spec, PDFObjRef):
                         objid = spec.objid
@@ -346,7 +354,7 @@ class PDFPageInterpreter(object):
             elif k == 'ProcSet':
                 self.rsrcmgr.get_procset(list_value(v))
             elif k == 'XObject':
-                for (xobjid, xobjstrm) in dict_value(v).iteritems():
+                for (xobjid, xobjstrm) in six.iteritems(dict_value(v)):
                     self.xobjmap[xobjid] = xobjstrm
         return
 

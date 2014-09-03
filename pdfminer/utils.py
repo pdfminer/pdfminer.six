@@ -128,7 +128,7 @@ def fsplit(pred, objs):
 def drange(v0, v1, d):
     """Returns a discrete range."""
     assert v0 < v1
-    return xrange(int(v0)//d, int(v1+d)//d)
+    return range(int(v0)//d, int(v1+d)//d)
 
 
 # get_bound

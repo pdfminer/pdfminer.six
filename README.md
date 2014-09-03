@@ -34,7 +34,7 @@ Features
 How to Install
 --------------
 
- * Install Python 2.6 or newer. (**Python 3 is not supported.**)
+ * Install Python 2.6 or newer. (Python 3.4 is supported.)
  * Download the source code.
  * Unpack it.
  * Run `setup.py`:

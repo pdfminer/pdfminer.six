@@ -28,7 +28,7 @@ def main(argv):
     # debug option
     debug = 0
     # input option
-    password = ''
+    password = b''
     pagenos = set()
     maxpages = 0
     # output option
@@ -82,7 +82,7 @@ def main(argv):
             elif outfile.endswith('.tag'):
                 outtype = 'tag'
     if outfile:
-        outfp = file(outfile, 'w')
+        outfp = open(outfile, 'wb')
     else:
         outfp = sys.stdout
     if outtype == 'text':
@@ -101,7 +101,7 @@ def main(argv):
     else:
         return usage()
     for fname in args:
-        fp = file(fname, 'rb')
+        fp = open(fname, 'rb')
         interpreter = PDFPageInterpreter(rsrcmgr, device)
         for page in PDFPage.get_pages(fp, pagenos,
                                       maxpages=maxpages, password=password,

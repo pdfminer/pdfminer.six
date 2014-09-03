@@ -31,6 +31,7 @@ from .encodingdb import name2unicode
 from .utils import choplist
 from .utils import nunpack
 
+import six #Python 2+3 compatibility
 
 class CMapError(Exception):
     pass
@@ -92,8 +93,8 @@ class CMap(CMapBase):
     def decode(self, code):
         logging.debug('decode: %r, %r' % (self, code))
         d = self.code2cid
-        for c in code:
-            c = ord(c)
+        for i in six.iterbytes(code):
+            c = six.int2byte(i)
             if c in d:
                 d = d[c]
                 if isinstance(d, int):

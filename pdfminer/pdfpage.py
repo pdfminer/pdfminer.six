@@ -12,6 +12,10 @@ from .pdfdocument import PDFTextExtractionNotAllowed
 
 import six # Python 2+3 compatibility
 
+# some predefined literals and keywords.
+LITERAL_PAGE = LIT('Page')
+LITERAL_PAGES = LIT('Pages')
+
 ##  PDFPage
 ##
 class PDFPage(object):
@@ -82,12 +86,12 @@ class PDFPage(object):
             for (k, v) in six.iteritems(parent):
                 if k in klass.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
-            if tree.get('Type').name=='Pages' and 'Kids' in tree:
+            if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
                 logging.info('Pages: Kids=%r' % tree['Kids'])
                 for c in list_value(tree['Kids']):
                     for x in search(c, tree):
                         yield x
-            elif tree.get('Type').name=='Page':
+            elif tree.get('Type') is LITERAL_PAGE:
                 logging.info('Page: %r' % tree)
                 yield (objid, tree)
         pages = False

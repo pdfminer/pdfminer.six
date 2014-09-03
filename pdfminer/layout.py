@@ -9,6 +9,7 @@ from .utils import bbox2str
 from .utils import matrix2str
 from .utils import apply_matrix_pt
 
+import six # Python 2+3 compatibility
 
 ##  IndexAssigner
 ##
@@ -633,9 +634,9 @@ class LTLayoutContainer(LTContainer):
         
         # XXX this still takes O(n^2)  :(
         dists = []
-        for i in xrange(len(boxes)):
+        for i in range(len(boxes)):
             obj1 = boxes[i]
-            for j in xrange(i+1, len(boxes)):
+            for j in range(i+1, len(boxes)):
                 obj2 = boxes[j]
                 dists.append((0, dist(obj1, obj2), obj1, obj2))
         # We could use dists.sort(), but it would randomize the test result.

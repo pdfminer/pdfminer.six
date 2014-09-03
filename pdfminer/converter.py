@@ -21,6 +21,7 @@ from .utils import mult_matrix
 from .utils import enc
 from .utils import bbox2str
 
+import six # Python 2+3 compatibility
 
 ##  PDFLayoutAnalyzer
 ##
@@ -106,7 +107,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
     def render_char(self, matrix, font, fontsize, scaling, rise, cid):
         try:
             text = font.to_unichr(cid)
-            assert isinstance(text, unicode), text
+            assert isinstance(text, six.text_type), text
         except PDFUnicodeNotDefined:
             text = self.handle_undefined_char(font, cid)
         textwidth = font.char_width(cid)
@@ -398,7 +399,7 @@ class HTMLConverter(PDFConverter):
 ##
 class XMLConverter(PDFConverter):
 
-    CONTROL = re.compile(ur'[\x00-\x08\x0b-\x0c\x0e-\x1f]')
+    CONTROL = re.compile(u'[\x00-\x08\x0b-\x0c\x0e-\x1f]')
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1,
                  laparams=None, imagewriter=None, stripcontrol=False):
