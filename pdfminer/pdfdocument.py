@@ -180,7 +180,7 @@ class PDFXRefFallback(PDFXRef):
                 logging.info('trailer: %r' % self.get_trailer())
                 break
             if six.PY3:
-                line=line.decode('utf-8')
+                line=line.decode('latin-1') #default pdf encoding
             m = self.PDFOBJ_CUE.match(line)
             if not m:
                 continue

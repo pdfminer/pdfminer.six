@@ -9,6 +9,8 @@ This code is in the public domain.
 import re
 import struct
 
+import six #Python 2+3 compatibility
+
 
 # ascii85decode(data)
 def ascii85decode(data):
@@ -31,7 +33,8 @@ def ascii85decode(data):
     """
     n = b = 0
     out = b''
-    for c in data:
+    for i in six.iterbytes(data):
+        c=six.int2byte(i)
         if b'!' <= c and c <= b'u':
             n += 1
             b = b*85+(ord(c)-33)

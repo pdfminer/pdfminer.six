@@ -17,7 +17,7 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     i = 0
     buf = b''
     line0 = b'\x00' * columns
-    for i in xrange(0, len(data), nbytes+1):
+    for i in range(0, len(data), nbytes+1):
         ft = data[i]
         i += 1
         line1 = data[i:i+nbytes]
@@ -90,7 +90,7 @@ def apply_matrix_norm(m, v):
 
 # isnumber
 def isnumber(x):
-    return isinstance(x, (int, long, float))
+    return isinstance(x, (six.integer_types, float))
 
 # uniq
 def uniq(objs):

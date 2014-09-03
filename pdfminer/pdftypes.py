@@ -12,6 +12,7 @@ from .psparser import STRICT
 from .utils import apply_png_predictor
 from .utils import isnumber
 
+import six #Python 2+3 compatibility
 
 LITERAL_CRYPT = LIT('Crypt')
 
@@ -105,7 +106,7 @@ def decipher_all(decipher, objid, genno, x):
     if isinstance(x, list):
         x = [decipher_all(decipher, objid, genno, v) for v in x]
     elif isinstance(x, dict):
-        for (k, v) in x.iteritems():
+        for (k, v) in six.iteritems(x):
             x[k] = decipher_all(decipher, objid, genno, v)
     return x
 
@@ -140,7 +141,7 @@ def num_value(x):
 
 def str_value(x):
     x = resolve1(x)
-    if not isinstance(x, str):
+    if not isinstance(x, six.binary_type):
         if STRICT:
             raise PDFTypeError('String required: %r' % x)
         return ''
