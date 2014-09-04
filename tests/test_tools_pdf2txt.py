@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import unittest, logging, os
+import nose, logging, os
 
 import tools.pdf2txt as pdf2txt
 
@@ -16,7 +16,7 @@ def run(datapath,filename,options=None):
          s='pdf2txt -o%s %s'%(o,i)
     pdf2txt.main(s.split(' '))
 
-class TestDumpPDF(unittest.TestCase):
+class TestDumpPDF():
     
 
     def test_1(self):
@@ -41,4 +41,4 @@ class TestDumpPDF(unittest.TestCase):
         run('../samples/nonfree/','naacl06-shinyama')
 
 if __name__ == '__main__':
-    unittest.main()
+    nose.runmodule()

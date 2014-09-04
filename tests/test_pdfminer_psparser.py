@@ -102,6 +102,6 @@ func/a/b{(c)do*}def
         return
 
 if __name__ == '__main__':
-    import logging,sys,os,six
-    logging.basicConfig(level=logging.DEBUG, filename='%s_%d.%d.log'%(os.path.basename(__file__),sys.version_info[0],sys.version_info[1]))
+    #import logging,sys,os,six
+    #logging.basicConfig(level=logging.DEBUG, filename='%s_%d.%d.log'%(os.path.basename(__file__),sys.version_info[0],sys.version_info[1]))
     nose.runmodule()

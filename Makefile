@@ -55,12 +55,5 @@ $(CMAPDST)/to-unicode-Adobe-Korea1.pickle.gz: $(CMAPDST)
 		$(CMAPDST) Adobe-Korea1 $(CMAPSRC)/cid2code_Adobe_Korea1.txt
 
 test: cmap
-	$(PYTHON) -m doctest \
-		pdfminer/arcfour.py \
-		pdfminer/lzw.py \
-		pdfminer/ascii85.py \
-		pdfminer/runlength.py \
-		pdfminer/rijndael.py
-	$(PYTHON) -m pdfminer.ccitt
-	$(PYTHON) -m pdfminer.psparser
+	nosetests
 	cd samples && $(MAKE) test

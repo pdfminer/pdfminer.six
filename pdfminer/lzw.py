@@ -96,14 +96,6 @@ class LZWDecoder(object):
 
 # lzwdecode
 def lzwdecode(data):
-    """
-    >>> lzwdecode(b'\x80\x0b\x60\x50\x22\x0c\x0c\x85\x01')
-    '\x2d\x2d\x2d\x2d\x2d\x41\x2d\x2d\x2d\x42'
-    """
     fp = BytesIO(data)
     s=LZWDecoder(fp).run()
     return b''.join(s)
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()

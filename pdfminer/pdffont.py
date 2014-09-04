@@ -28,6 +28,8 @@ from .utils import nunpack
 from .utils import choplist
 from .utils import isnumber
 
+import six #Python 2+3 compatibility
+
 
 def get_widths(seq):
     widths = {}
@@ -492,7 +494,7 @@ class PDFFont(object):
         return False
 
     def decode(self, bytes):
-        return map(ord, bytes)
+        return [six.indexbytes(bytes, i) for i,_ in enumerate(bytes)] # map(ord, bytes)
 
     def get_ascent(self):
         return self.ascent * self.vscale
@@ -630,7 +632,7 @@ class PDFType3Font(PDFSimpleFont):
 # PDFCIDFont
 class PDFCIDFont(PDFFont):
 
-    def __init__(self, rsrcmgr, spec):
+    def __init__(self, rsrcmgr, spec, STRICT=False):
         try:
             self.basefont = literal_name(spec['BaseFont'])
         except KeyError:
@@ -684,10 +686,10 @@ class PDFCIDFont(PDFFont):
         if self.vertical:
             # writing mode: vertical
             widths = get_widths2(list_value(spec.get('W2', [])))
-            self.disps = dict((cid, (vx, vy)) for (cid, (_, (vx, vy))) in widths.iteritems())
+            self.disps = dict((cid, (vx, vy)) for (cid, (_, (vx, vy))) in six.iteritems(widths))
             (vy, w) = spec.get('DW2', [880, -1000])
             self.default_disp = (None, vy)
-            widths = dict((cid, w) for (cid, (w, _)) in widths.iteritems())
+            widths = dict((cid, w) for (cid, (w, _)) in six.iteritems(widths))
             default_width = w
         else:
             # writing mode: horizontal

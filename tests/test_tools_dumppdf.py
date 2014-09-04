@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import unittest, logging, os
+import nose, logging, os
 
 import tools.dumppdf as dumppdf
 
@@ -16,7 +16,7 @@ def run(datapath,filename,options=None):
          s='dumppdf -o%s %s'%(o,i)
     dumppdf.main(s.split(' '))
 
-class TestDumpPDF(unittest.TestCase):
+class TestDumpPDF():
     
 
     def test_1(self):
@@ -41,6 +41,6 @@ class TestDumpPDF(unittest.TestCase):
         run('../samples/nonfree/','naacl06-shinyama','-t -a')
 
 if __name__ == '__main__':
-    import logging,sys,os,six
-    logging.basicConfig(level=logging.DEBUG, filename='%s_%d.%d.log'%(os.path.basename(__file__),sys.version_info[0],sys.version_info[1]))
-    unittest.main()
+    #import logging,sys,os,six
+    #logging.basicConfig(level=logging.DEBUG, filename='%s_%d.%d.log'%(os.path.basename(__file__),sys.version_info[0],sys.version_info[1]))
+    nose.runmodule()

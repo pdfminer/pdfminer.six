@@ -7,5 +7,4 @@ install:
   - pip install six
   - pip install pycrypto
 script:
-  - make test
-  - nosetests
+  nosetests

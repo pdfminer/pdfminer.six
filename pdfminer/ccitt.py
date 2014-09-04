@@ -463,10 +463,10 @@ class CCITTG4Parser(BitParser):
         x0 = max(0, self._curpos)
         x1 = max(0, min(self.width, x1))
         if x1 < x0:
-            for x in xrange(x1, x0):
+            for x in range(x1, x0):
                 self._curline[x] = self._color
         elif x0 < x1:
-            for x in xrange(x0, x1):
+            for x in range(x0, x1):
                 self._curline[x] = self._color
         self._curpos = x1
         self._color = 1-self._color
@@ -496,7 +496,7 @@ class CCITTG4Parser(BitParser):
                   self._refline[x1] == self._color):
                 break
             x1 += 1
-        for x in xrange(self._curpos, x1):
+        for x in range(self._curpos, x1):
             self._curline[x] = self._color
         self._curpos = x1
         return
@@ -506,12 +506,12 @@ class CCITTG4Parser(BitParser):
         if self._curpos < 0:
             self._curpos = 0
         x = self._curpos
-        for _ in xrange(n1):
+        for _ in range(n1):
             if len(self._curline) <= x:
                 break
             self._curline[x] = self._color
             x += 1
-        for _ in xrange(n2):
+        for _ in range(n2):
             if len(self._curline) <= x:
                 break
             self._curline[x] = 1-self._color
@@ -527,184 +527,8 @@ class CCITTG4Parser(BitParser):
             self._flush_line()
         return
 
-import unittest
 
 
-##  Test cases
-##
-class TestCCITTG4Parser(unittest.TestCase):
-
-    def get_parser(self, bits):
-        parser = CCITTG4Parser(len(bits))
-        parser._curline = [int(c) for c in bits]
-        parser._reset_line()
-        return parser
-
-    def test_b1(self):
-        parser = self.get_parser('00000')
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 0)
-        return
-
-    def test_b2(self):
-        parser = self.get_parser('10000')
-        parser._do_vertical(-1)
-        self.assertEqual(parser._curpos, 0)
-        return
-
-    def test_b3(self):
-        parser = self.get_parser('000111')
-        parser._do_pass()
-        self.assertEqual(parser._curpos, 3)
-        self.assertEqual(parser._get_bits(), '111')
-        return
-
-    def test_b4(self):
-        parser = self.get_parser('00000')
-        parser._do_vertical(+2)
-        self.assertEqual(parser._curpos, 2)
-        self.assertEqual(parser._get_bits(), '11')
-        return
-
-    def test_b5(self):
-        parser = self.get_parser('11111111100')
-        parser._do_horizontal(0, 3)
-        self.assertEqual(parser._curpos, 3)
-        parser._do_vertical(1)
-        self.assertEqual(parser._curpos, 10)
-        self.assertEqual(parser._get_bits(), '0001111111')
-        return
-
-    def test_e1(self):
-        parser = self.get_parser('10000')
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 1)
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 5)
-        self.assertEqual(parser._get_bits(), '10000')
-        return
-
-    def test_e2(self):
-        parser = self.get_parser('10011')
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 1)
-        parser._do_vertical(2)
-        self.assertEqual(parser._curpos, 5)
-        self.assertEqual(parser._get_bits(), '10000')
-        return
-
-    def test_e3(self):
-        parser = self.get_parser('011111')
-        parser._color = 0
-        parser._do_vertical(0)
-        self.assertEqual(parser._color, 1)
-        self.assertEqual(parser._curpos, 1)
-        parser._do_vertical(-2)
-        self.assertEqual(parser._color, 0)
-        self.assertEqual(parser._curpos, 4)
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 6)
-        self.assertEqual(parser._get_bits(), '011100')
-        return
-
-    def test_e4(self):
-        parser = self.get_parser('10000')
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 1)
-        parser._do_vertical(-2)
-        self.assertEqual(parser._curpos, 3)
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 5)
-        self.assertEqual(parser._get_bits(), '10011')
-        return
-
-    def test_e5(self):
-        parser = self.get_parser('011000')
-        parser._color = 0
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 1)
-        parser._do_vertical(3)
-        self.assertEqual(parser._curpos, 6)
-        self.assertEqual(parser._get_bits(), '011111')
-        return
-
-    def test_e6(self):
-        parser = self.get_parser('11001')
-        parser._do_pass()
-        self.assertEqual(parser._curpos, 4)
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 5)
-        self.assertEqual(parser._get_bits(), '11111')
-        return
-
-    def test_e7(self):
-        parser = self.get_parser('0000000000')
-        parser._curpos = 2
-        parser._color = 1
-        parser._do_horizontal(2, 6)
-        self.assertEqual(parser._curpos, 10)
-        self.assertEqual(parser._get_bits(), '1111000000')
-        return
-
-    def test_e8(self):
-        parser = self.get_parser('001100000')
-        parser._curpos = 1
-        parser._color = 0
-        parser._do_vertical(0)
-        self.assertEqual(parser._curpos, 2)
-        parser._do_horizontal(7, 0)
-        self.assertEqual(parser._curpos, 9)
-        self.assertEqual(parser._get_bits(), '101111111')
-        return
-
-    def test_m1(self):
-        parser = self.get_parser('10101')
-        parser._do_pass()
-        self.assertEqual(parser._curpos, 2)
-        parser._do_pass()
-        self.assertEqual(parser._curpos, 4)
-        self.assertEqual(parser._get_bits(), '1111')
-        return
-
-    def test_m2(self):
-        parser = self.get_parser('101011')
-        parser._do_vertical(-1)
-        parser._do_vertical(-1)
-        parser._do_vertical(1)
-        parser._do_horizontal(1, 1)
-        self.assertEqual(parser._get_bits(), '011101')
-        return
-
-    def test_m3(self):
-        parser = self.get_parser('10111011')
-        parser._do_vertical(-1)
-        parser._do_pass()
-        parser._do_vertical(1)
-        parser._do_vertical(1)
-        self.assertEqual(parser._get_bits(), '00000001')
-        return
-
-
-##  CCITTFaxDecoder
-##
-    def test___init__(self):
-        # c_citt_g4_parser = CCITTG4Parser(width, bytealign)
-        raise SkipTest # TODO: implement your test here
-
-    def test_feedbytes(self):
-        # c_citt_g4_parser = CCITTG4Parser(width, bytealign)
-        # assert_equal(expected, c_citt_g4_parser.feedbytes(data))
-        raise SkipTest # TODO: implement your test here
-
-    def test_output_line(self):
-        # c_citt_g4_parser = CCITTG4Parser(width, bytealign)
-        # assert_equal(expected, c_citt_g4_parser.output_line(y, bits))
-        raise SkipTest # TODO: implement your test here
-
-    def test_reset(self):
-        # c_citt_g4_parser = CCITTG4Parser(width, bytealign)
-        # assert_equal(expected, c_citt_g4_parser.reset())
-        raise SkipTest # TODO: implement your test here
 
 class CCITTFaxDecoder(CCITTG4Parser):
 
