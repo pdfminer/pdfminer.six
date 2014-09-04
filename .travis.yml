@@ -6,4 +6,4 @@ install:
   - pip install six
   - pip install pycrypto
 script:
-  nosetests
+  nosetests --nologcapture
