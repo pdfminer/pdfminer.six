@@ -85,6 +85,8 @@ def main(argv):
         outfp = open(outfile, 'wb')
     else:
         outfp = sys.stdout
+        if outfp.encoding is not None:
+            codec = None
     if outtype == 'text':
         device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
                                imagewriter=imagewriter)

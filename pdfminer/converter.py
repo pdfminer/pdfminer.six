@@ -164,7 +164,9 @@ class TextConverter(PDFConverter):
         return
 
     def write_text(self, text):
-        self.outfp.write(text.encode(self.codec, 'ignore'))
+        if self.codec:
+            text = text.encode(self.codec, 'ignore')
+        self.outfp.write(text)
         return
 
     def receive_layout(self, ltpage):
