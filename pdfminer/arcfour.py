@@ -37,3 +37,4 @@ class Arcfour(object):
     
     encrypt = decrypt = process
 
+new = Arcfour

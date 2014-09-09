@@ -342,7 +342,7 @@ class PDFStandardSecurityHandler(object):
             hash.update(self.docid[0])  # 3
             result = ARC4.new(key).encrypt(hash.digest())  # 4
             for i in range(1, 20):  # 5
-                k = b''.join(chr(ord(c) ^ i) for c in key)
+                k = b''.join(six.int2byte(c ^ i) for c in six.iterbytes(key))
                 result = ARC4.new(k).encrypt(result)
             result += result  # 6
             return result

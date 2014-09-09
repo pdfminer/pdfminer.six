@@ -99,7 +99,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         # other shapes
         pts = []
         for p in path:
-            for i in xrange(1, len(p), 2):
+            for i in range(1, len(p), 2):
                 pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
         self.cur_item.add(LTCurve(gstate.linewidth, pts))
         return
@@ -164,7 +164,9 @@ class TextConverter(PDFConverter):
         return
 
     def write_text(self, text):
-        self.outfp.write(text.encode(self.codec, 'ignore'))
+        if self.codec:
+            text = text.encode(self.codec, 'ignore')
+        self.outfp.write(text)
         return
 
     def receive_layout(self, ltpage):
@@ -252,7 +254,7 @@ class HTMLConverter(PDFConverter):
 
     def write_footer(self):
         self.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' %
-                   ', '.join('<a href="#%s">%s</a>' % (i, i) for i in xrange(1, self.pageno)))
+                   ', '.join('<a href="#%s">%s</a>' % (i, i) for i in range(1, self.pageno)))
         self.write('</body></html>\n')
         return
 

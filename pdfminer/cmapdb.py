@@ -180,11 +180,11 @@ class FileUnicodeMap(UnicodeMap):
         if isinstance(code, PSLiteral):
             # Interpret as an Adobe glyph name.
             self.cid2unichr[cid] = name2unicode(code.name)
-        elif isinstance(code, str):
+        elif isinstance(code, bytes):
             # Interpret as UTF-16BE.
-            self.cid2unichr[cid] = unicode(code, 'UTF-16BE', 'ignore')
+            self.cid2unichr[cid] = code.decode('UTF-16BE', 'ignore')
         elif isinstance(code, int):
-            self.cid2unichr[cid] = unichr(code)
+            self.cid2unichr[cid] = six.unichr(code)
         else:
             raise TypeError(code)
         return
@@ -358,7 +358,7 @@ class CMapParser(PSStackParser):
                 e1 = nunpack(evar)
                 vlen = len(svar)
                 #assert s1 <= e1
-                for i in xrange(e1-s1+1):
+                for i in range(e1-s1+1):
                     x = sprefix+struct.pack('>L', s1+i)[-vlen:]
                     self.cmap.add_code2cid(x, cid+i)
             return
@@ -379,21 +379,21 @@ class CMapParser(PSStackParser):
         if token is self.KEYWORD_ENDBFRANGE:
             objs = [obj for (__, obj) in self.popall()]
             for (s, e, code) in choplist(3, objs):
-                if (not isinstance(s, str) or not isinstance(e, str) or
+                if (not isinstance(s, bytes) or not isinstance(e, bytes) or
                    len(s) != len(e)):
                         continue
                 s1 = nunpack(s)
                 e1 = nunpack(e)
                 #assert s1 <= e1
                 if isinstance(code, list):
-                    for i in xrange(e1-s1+1):
+                    for i in range(e1-s1+1):
                         self.cmap.add_cid2unichr(s1+i, code[i])
                 else:
                     var = code[-4:]
                     base = nunpack(var)
                     prefix = code[:-4]
                     vlen = len(var)
-                    for i in xrange(e1-s1+1):
+                    for i in range(e1-s1+1):
                         x = prefix+struct.pack('>L', base+i)[-vlen:]
                         self.cmap.add_cid2unichr(s1+i, x)
             return
@@ -404,7 +404,7 @@ class CMapParser(PSStackParser):
         if token is self.KEYWORD_ENDBFCHAR:
             objs = [obj for (__, obj) in self.popall()]
             for (cid, code) in choplist(2, objs):
-                if isinstance(cid, str) and isinstance(code, str):
+                if isinstance(cid, bytes) and isinstance(code, bytes):
                     self.cmap.add_cid2unichr(nunpack(cid), code)
             return
 
