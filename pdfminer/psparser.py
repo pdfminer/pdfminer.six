@@ -8,17 +8,10 @@ import six # Python 2+3 compatibility
 
 def bytes(s,i,j=None):
     """implements s[i], s[i:], s[i:j] for Python2 and Python3"""
-    if six.PY2:
-        if j is None:
-            return s[i]
-        if j<0:
-            return s[i:]
-        return s[i:j]
-    else: # six.PY3
-        if i<0 : i=len(s)+i
-        if j is None: j=i+1
-        if j<0 : j=len(s)
-    return b''.join(six.int2byte(s[_]) for _ in range(i,j))
+    if i<0 : i=len(s)+i
+    if j is None: j=i+1
+    if j<0 : j=len(s)
+    return s[i:j]
 
 from .utils import choplist
 
