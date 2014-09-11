@@ -247,7 +247,7 @@ def main(argv):
     outfp = sys.stdout
     extractdir = None
     for (k, v) in opts:
-        if k == '-d': logging.getLogger().setlevel(logging.DEBUG)
+        if k == '-d': logging.getLogger().setLevel(logging.DEBUG)
         elif k == '-o': outfp = open(v, 'w')
         elif k == '-i': objids.extend( int(x) for x in v.split(',') )
         elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )

@@ -9,6 +9,7 @@ from pdfminer.converter import XMLConverter, HTMLConverter, TextConverter
 from pdfminer.cmapdb import CMapDB
 from pdfminer.layout import LAParams
 from pdfminer.image import ImageWriter
+import logging
 
 # main
 def main(argv):
@@ -25,8 +26,6 @@ def main(argv):
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
-    # debug option
-    debug = 0
     # input option
     password = b''
     pagenos = set()
@@ -45,7 +44,7 @@ def main(argv):
     showpageno = True
     laparams = LAParams()
     for (k, v) in opts:
-        if k == '-d': debug += 1
+        if k == '-d': logging.getLogger().setLevel(logging.DEBUG)
         elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
         elif k == '-m': maxpages = int(v)
         elif k == '-P': password = v
@@ -65,11 +64,6 @@ def main(argv):
         elif k == '-t': outtype = v
         elif k == '-c': codec = v
         elif k == '-s': scale = float(v)
-    #
-    PDFDocument.debug = debug
-    PDFParser.debug = debug
-    CMapDB.debug = debug
-    PDFPageInterpreter.debug = debug
     #
     rsrcmgr = PDFResourceManager(caching=caching)
     if not outtype:
@@ -97,7 +91,7 @@ def main(argv):
     elif outtype == 'html':
         device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
                                layoutmode=layoutmode, laparams=laparams,
-                               imagewriter=imagewriter, debug=debug)
+                               imagewriter=imagewriter)
     elif outtype == 'tag':
         device = TagExtractor(rsrcmgr, outfp, codec=codec)
     else:
