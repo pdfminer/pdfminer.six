@@ -94,9 +94,8 @@ class CMap(CMapBase):
         logging.debug('decode: %r, %r' % (self, code))
         d = self.code2cid
         for i in six.iterbytes(code):
-            c = six.int2byte(i)
-            if c in d:
-                d = d[c]
+            if i in d:
+                d = d[i]
                 if isinstance(d, int):
                     yield d
                     d = self.code2cid
