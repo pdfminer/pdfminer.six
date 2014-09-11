@@ -4,6 +4,8 @@ try:
     import cPickle as pickle
 except ImportError:
     import pickle as pickle
+import codecs
+import six
 
 
 ##  CMapConverter
@@ -56,14 +58,17 @@ class CMapConverter(object):
 
             def put(dmap, code, cid, force=False):
                 for b in code[:-1]:
-                    b = ord(b)
+                    if six.PY2:
+                        b = ord(b)
                     if b in dmap:
                         dmap = dmap[b]
                     else:
                         d = {}
                         dmap[b] = d
                         dmap = d
-                b = ord(code[-1])
+                b = code[-1]
+                if six.PY2:
+                    b = ord(b)
                 if force or ((b not in dmap) or dmap[b] == cid):
                     dmap[b] = cid
                 return
@@ -83,8 +88,8 @@ class CMapConverter(object):
                 return
 
             def pick(unimap):
-                chars = unimap.items()
-                chars.sort(key=(lambda (c,n):(n,-ord(c))), reverse=True)
+                chars = list(unimap.items())
+                chars.sort(key=(lambda x:(x[1],-ord(x[0]))), reverse=True)
                 (c,_) = chars[0]
                 return c
 
@@ -103,7 +108,7 @@ class CMapConverter(object):
                     if vertical:
                         code = code[:-1]
                     try:
-                        code = code.decode('hex')
+                        code = codecs.decode(code, 'hex_codec')
                     except:
                         code = chr(int(code, 16))
                     if vertical:
@@ -138,7 +143,7 @@ class CMapConverter(object):
             IS_VERTICAL=self.is_vertical.get(enc, False),
             CODE2CID=self.code2cid.get(enc),
         )
-        fp.write(pickle.dumps(data))
+        fp.write(pickle.dumps(data, 2))
         return
 
     def dump_unicodemap(self, fp):
@@ -146,7 +151,7 @@ class CMapConverter(object):
             CID2UNICHR_H=self.cid2unichr_h,
             CID2UNICHR_V=self.cid2unichr_v,
         )
-        fp.write(pickle.dumps(data))
+        fp.write(pickle.dumps(data, 2))
         return
 
 # main
@@ -175,7 +180,7 @@ def main(argv):
     converter = CMapConverter(enc2codec)
     for path in args:
         print ('reading: %r...' % path)
-        fp = file(path)
+        fp = open(path)
         converter.load(fp)
         fp.close()
 
