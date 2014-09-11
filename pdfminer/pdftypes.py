@@ -101,7 +101,7 @@ def resolve_all(x, default=None):
 def decipher_all(decipher, objid, genno, x):
     """Recursively deciphers the given object.
     """
-    if isinstance(x, str):
+    if isinstance(x, bytes):
         return decipher(objid, genno, x)
     if isinstance(x, list):
         x = [decipher_all(decipher, objid, genno, v) for v in x]
