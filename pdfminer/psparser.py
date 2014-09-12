@@ -6,19 +6,12 @@ import logging
 
 import six # Python 2+3 compatibility
 
-def bytes(s,i,j=None):
+def bytesindex(s,i,j=None):
     """implements s[i], s[i:], s[i:j] for Python2 and Python3"""
-    if six.PY2:
-        if j is None:
-            return s[i]
-        if j<0:
-            return s[i:]
-        return s[i:j]
-    else: # six.PY3
-        if i<0 : i=len(s)+i
-        if j is None: j=i+1
-        if j<0 : j=len(s)
-    return b''.join(six.int2byte(s[_]) for _ in range(i,j))
+    if i<0 : i=len(s)+i
+    if j is None: j=i+1
+    if j<0 : j=len(s)
+    return s[i:j]
 
 from .utils import choplist
 
@@ -214,14 +207,14 @@ class PSBaseParser(object):
         if not pos:
             pos = self.bufpos+self.charpos
         self.fp.seek(pos)
-        logging.info('poll(%d): %r' % (pos, self.fp.read(n)))
+        logging.info('poll(%d): %r', pos, self.fp.read(n))
         self.fp.seek(pos0)
         return
 
     def seek(self, pos):
         """Seeks the parser to the given position.
         """
-        logging.debug('seek: %r' % pos)
+        logging.debug('seek: %r', pos)
         self.fp.seek(pos)
         # reset the status for nextline()
         self.bufpos = pos
@@ -254,7 +247,7 @@ class PSBaseParser(object):
         while 1:
             self.fillbuf()
             if eol:
-                c = bytes(self.buf,self.charpos)
+                c = bytesindex(self.buf,self.charpos)
                 # handle b'\r\n'
                 if c == b'\n':
                     linebuf += c
@@ -262,16 +255,16 @@ class PSBaseParser(object):
                 break
             m = EOL.search(self.buf, self.charpos)
             if m:
-                linebuf += bytes(self.buf,self.charpos,m.end(0))
+                linebuf += bytesindex(self.buf,self.charpos,m.end(0))
                 self.charpos = m.end(0)
-                if bytes(linebuf,-1) == b'\r':
+                if bytesindex(linebuf,-1) == b'\r':
                     eol = True
                 else:
                     break
             else:
-                linebuf += bytes(self.buf,self.charpos,-1)
+                linebuf += bytesindex(self.buf,self.charpos,-1)
                 self.charpos = len(self.buf)
-        logging.debug('nextline: %r, %r' % (linepos, linebuf))
+        logging.debug('nextline: %r, %r', linepos, linebuf)
         
         return (linepos, linebuf)
 
@@ -295,8 +288,8 @@ class PSBaseParser(object):
                 if n == -1:
                     buf = s + buf
                     break
-                yield bytes(s,n,-1)+buf
-                s = bytes(s,0,n)
+                yield bytesindex(s,n,-1)+buf
+                s = bytesindex(s,0,n)
                 buf = b''
         return
 
@@ -305,7 +298,7 @@ class PSBaseParser(object):
         if not m:
             return len(s)
         j = m.start(0)
-        c = bytes(s,j)
+        c = bytesindex(s,j)
         self._curtokenpos = self.bufpos+j
         if c == b'%':
             self._curtoken = b'%'
@@ -351,10 +344,10 @@ class PSBaseParser(object):
     def _parse_comment(self, s, i):
         m = EOL.search(s, i)
         if not m:
-            self._curtoken += bytes(s,i,-1)
+            self._curtoken += bytesindex(s,i,-1)
             return (self._parse_comment, len(s))
         j = m.start(0)
-        self._curtoken += bytes(s,i,j)
+        self._curtoken += bytesindex(s,i,j)
         self._parse1 = self._parse_main
         # We ignore comments.
         #self._tokens.append(self._curtoken)
@@ -363,11 +356,11 @@ class PSBaseParser(object):
     def _parse_literal(self, s, i):
         m = END_LITERAL.search(s, i)
         if not m:
-            self._curtoken += bytes(s,i,-1)
+            self._curtoken += bytesindex(s,i,-1)
             return len(s)
         j = m.start(0)
-        self._curtoken += bytes(s,i,j)
-        c = bytes(s,j)
+        self._curtoken += bytesindex(s,i,j)
+        c = bytesindex(s,j)
         if c == b'#':
             self.hex = b''
             self._parse1 = self._parse_literal_hex
@@ -381,7 +374,7 @@ class PSBaseParser(object):
         return j
 
     def _parse_literal_hex(self, s, i):
-        c = bytes(s,i)
+        c = bytesindex(s,i)
         if HEX.match(c) and len(self.hex) < 2:
             self.hex += c
             return i+1
@@ -393,11 +386,11 @@ class PSBaseParser(object):
     def _parse_number(self, s, i):
         m = END_NUMBER.search(s, i)
         if not m:
-            self._curtoken += bytes(s,i,-1)
+            self._curtoken += bytesindex(s,i,-1)
             return len(s)
         j = m.start(0)
-        self._curtoken += bytes(s,i,j)
-        c = bytes(s,j)
+        self._curtoken += bytesindex(s,i,j)
+        c = bytesindex(s,j)
         if c == b'.':
             self._curtoken += c
             self._parse1 = self._parse_float
@@ -412,10 +405,10 @@ class PSBaseParser(object):
     def _parse_float(self, s, i):
         m = END_NUMBER.search(s, i)
         if not m:
-            self._curtoken += bytes(s,i,-1)
+            self._curtoken += bytesindex(s,i,-1)
             return len(s)
         j = m.start(0)
-        self._curtoken += bytes(s,i,j)
+        self._curtoken += bytesindex(s,i,j)
         try:
             self._add_token(float(self._curtoken))
         except ValueError:
@@ -426,10 +419,10 @@ class PSBaseParser(object):
     def _parse_keyword(self, s, i):
         m = END_KEYWORD.search(s, i)
         if not m:
-            self._curtoken += bytes(s,i,-1)
+            self._curtoken += bytesindex(s,i,-1)
             return len(s)
         j = m.start(0)
-        self._curtoken += bytes(s,i,j)
+        self._curtoken += bytesindex(s,i,j)
         if self._curtoken == b'true':
             token = True
         elif self._curtoken == b'false':
@@ -443,11 +436,11 @@ class PSBaseParser(object):
     def _parse_string(self, s, i):
         m = END_STRING.search(s, i)
         if not m:
-            self._curtoken += bytes(s,i,-1)
+            self._curtoken += bytesindex(s,i,-1)
             return len(s)
         j = m.start(0)
-        self._curtoken += bytes(s,i,j)
-        c = bytes(s,j)
+        self._curtoken += bytesindex(s,i,j)
+        c = bytesindex(s,j)
         if c == b'\\':
             self.oct = b''
             self._parse1 = self._parse_string_1
@@ -466,7 +459,7 @@ class PSBaseParser(object):
         return j+1
 
     def _parse_string_1(self, s, i):
-        c = bytes(s,i)
+        c = bytesindex(s,i)
         if OCT_STRING.match(c) and len(self.oct) < 3:
             self.oct += c
             return i+1
@@ -480,7 +473,7 @@ class PSBaseParser(object):
         return i+1
 
     def _parse_wopen(self, s, i):
-        c = bytes(s,i)
+        c = bytesindex(s,i)
         if c == b'<':
             self._add_token(KEYWORD_DICT_BEGIN)
             self._parse1 = self._parse_main
@@ -490,7 +483,7 @@ class PSBaseParser(object):
         return i
 
     def _parse_wclose(self, s, i):
-        c = bytes(s,i)
+        c = bytesindex(s,i)
         if c == b'>':
             self._add_token(KEYWORD_DICT_END)
             i += 1
@@ -500,10 +493,10 @@ class PSBaseParser(object):
     def _parse_hexstring(self, s, i):
         m = END_HEX_STRING.search(s, i)
         if not m:
-            self._curtoken += bytes(s,i,-1)
+            self._curtoken += bytesindex(s,i,-1)
             return len(s)
         j = m.start(0)
-        self._curtoken += bytes(s,i,j)
+        self._curtoken += bytesindex(s,i,j)
         token = HEX_PAIR.sub(lambda m: six.int2byte(int(m.group(0), 16)),SPC.sub(b'', self._curtoken))
         self._add_token(token)
         self._parse1 = self._parse_main
@@ -514,7 +507,7 @@ class PSBaseParser(object):
             self.fillbuf()
             self.charpos = self._parse1(self.buf, self.charpos)
         token = self._tokens.pop(0)
-        logging.debug('nexttoken: (%r:%r)' % token)
+        logging.debug('nexttoken: %r', token)
         return token
 
 
@@ -555,7 +548,7 @@ class PSStackParser(PSBaseParser):
 
     def add_results(self, *objs):
         try:
-            logging.debug('add_results: %s' % repr(objs))
+            logging.debug('add_results: %r', objs)
         except:
             logging.debug('add_results: (unprintable object)')
         self.results.extend(objs)
@@ -564,7 +557,7 @@ class PSStackParser(PSBaseParser):
     def start_type(self, pos, type):
         self.context.append((pos, self.curtype, self.curstack))
         (self.curtype, self.curstack) = (type, [])
-        logging.debug('start_type: pos=%r, type=%r' % (pos, type))
+        logging.debug('start_type: pos=%r, type=%r', pos, type)
         return
 
     def end_type(self, type):
@@ -572,7 +565,7 @@ class PSStackParser(PSBaseParser):
             raise PSTypeError('Type mismatch: %r != %r' % (self.curtype, type))
         objs = [obj for (_, obj) in self.curstack]
         (pos, self.curtype, self.curstack) = self.context.pop()
-        logging.debug('end_type: pos=%r, type=%r, objs=%r' % (pos, type, objs))
+        logging.debug('end_type: pos=%r, type=%r, objs=%r', pos, type, objs)
         return (pos, objs)
 
     def do_keyword(self, pos, token):
@@ -626,10 +619,10 @@ class PSStackParser(PSBaseParser):
                     if STRICT:
                         raise
             elif isinstance(token,PSKeyword):
-                logging.debug('do_keyword: pos=%r, token=%r, stack=%r' % (pos, token, self.curstack))
+                logging.debug('do_keyword: pos=%r, token=%r, stack=%r', pos, token, self.curstack)
                 self.do_keyword(pos, token)
             else:
-                logging.error('unknown token: pos=%r, token=%r, stack=%r' % (pos, token, self.curstack))
+                logging.error('unknown token: pos=%r, token=%r, stack=%r', pos, token, self.curstack)
                 self.do_keyword(pos, token)
                 raise
             if self.context:
@@ -638,7 +631,7 @@ class PSStackParser(PSBaseParser):
                 self.flush()
         obj = self.results.pop(0)
         try:
-            logging.debug('nextobject: %s' % repr(obj))
+            logging.debug('nextobject: %r', obj)
         except:
             logging.debug('nextobject: (unprintable object)')
         return obj

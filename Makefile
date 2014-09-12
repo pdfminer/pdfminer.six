@@ -3,7 +3,7 @@
 
 PACKAGE=pdfminer
 
-PYTHON=python2
+PYTHON=python
 GIT=git
 RM=rm -f
 CP=cp -f

@@ -120,7 +120,7 @@ class PDFParser(PSStackParser):
                     data += line
             self.seek(pos+objlen)
             # XXX limit objlen not to exceed object boundary
-            logging.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % (pos, objlen, dic, data[:10]))
+            logging.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...', pos, objlen, dic, data[:10])
             obj = PDFStream(dic, data, self.doc.decipher)
             self.push((pos, obj))
 
