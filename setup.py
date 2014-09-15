@@ -3,11 +3,11 @@ from distutils.core import setup
 from pdfminer import __version__
 
 setup(
-    name='pdfminer_six',
+    name='pdfminer.six',
     version=__version__,
     packages=['pdfminer',],
     package_data={'pdfminer': ['cmap/*.pickle.gz']},
-    install_requires=['six'],
+    requires=['six'],
     description='PDF parser and analyzer',
     long_description='''fork of PDFMiner using six for Python 2+3 compatibility
     

@@ -1,7 +1,9 @@
-PDFMiner
-========
+PDFMiner.six
+============
 
-[![Build Status](https://travis-ci.org/euske/pdfminer.svg?branch=master)](https://travis-ci.org/euske/pdfminer)
+PDFMiner.six is a fork of PDFMiner using six for Python 2+3 compatibility
+
+[![Build Status](https://travis-ci.org/goulu/pdfminer.svg?branch=master)](https://travis-ci.org/goulu/pdfminer)
 
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting 
@@ -13,7 +15,7 @@ into other text formats (such as HTML). It has an extensible
 PDF parser that can be used for other purposes than text analysis.
 
  * Webpage: https://euske.github.io/pdfminer/
- * Download (PyPI): https://pypi.python.org/pypi/pdfminer/
+ * Download (PyPI): https://pypi.python.org/pypi/pdfminer.six/
  * Demo WebApp: http://pdf2html.tabesugi.net:8080/
 
 
@@ -34,7 +36,7 @@ Features
 How to Install
 --------------
 
- * Install Python 2.6 or newer. (Python 3.4 is supported.)
+ * Install Python 2.7 or newer. (Python 3.4 is supported in pdfminer.six)
  * Download the source code.
  * Unpack it.
  * Run `setup.py`:
@@ -115,9 +117,6 @@ is a list of the changes:
 TODO
 ----
 
- * Replace STRICT variable with something better.
- * Use logging module instead of sys.stderr.
- * Proper test cases.
  * PEP-8 and PEP-257 conformance.
  * Better documentation.
  * Crypt stream filter support.
