@@ -82,14 +82,14 @@ http://pdf2html.tabesugi.net:8080/
 <h3><a name="download">Download</a></h3>
 <p>
 <strong>Source distribution:</strong><br>
-<a href="http://pypi.python.org/pypi/pdfminer/">
-http://pypi.python.org/pypi/pdfminer/
+<a href="http://pypi.python.org/pypi/pdfminer_six/">
+http://pypi.python.org/pypi/pdfminer_six/
 </a>
 
 <P>
 <strong>github:</strong><br>
-<a href="https://github.com/euske/pdfminer/">
-https://github.com/euske/pdfminer/
+<a href="https://github.com/goulu/pdfminer/">
+https://github.com/goulu/pdfminer/
 </a>
 
 <h3><a name="wheretoask">Where to Ask</a></h3>
@@ -100,11 +100,9 @@ https://github.com/euske/pdfminer/
 http://groups.google.com/group/pdfminer-users/
 </a>
 
-
 <h2><a name="install">How to Install</a></h2>
 <ol>
 <li> Install <a href="http://www.python.org/download/">Python</a> 2.6 or newer.
-     (<font color=red><strong>Python 3 is not supported.</strong></font>)
 <li> Download the <a href="#source">PDFMiner source</a>.
 <li> Unpack it.
 <li> Run <code>setup.py</code> to install:<br>
@@ -372,82 +370,10 @@ no stream header is displayed for the ease of saving it to a file.
 <dd> Increases the debug level.
 </dl>
 
-<h2><a name="changes">Changes</a></h2>
+<h2><a name="changes">Changes:</a></h2>
 <ul>
-<li> 2014/03/28: Further bugfixes.
-<li> 2014/03/24: Bugfixes and improvements for fauly PDFs.<br>
-API changes:
- <ul>
- <li> <code>PDFDocument.initialize()</code> method is removed and no longer needed.
-  A password is given as an argument of a PDFDocument constructor.
- </ul>
-<li> 2013/11/13: Bugfixes and minor improvements.<br>
-As of November 2013, there were a few changes made to the PDFMiner API
-prior to October 2013. This is the result of code restructuring.  Here
-is a list of the changes:
- <ul>
- <li> <code>PDFDocument</code> class is moved to <code>pdfdocument.py</code>.
- <li> <code>PDFDocument</code> class now takes a <code>PDFParser</code> object as an argument.
- <li> <code>PDFDocument.set_parser()</code> and <code>PDFParser.set_document()</code> is removed.
- <li> <code>PDFPage</code> class is moved to <code>pdfpage.py</code>.
- <li> <code>process_pdf</code> function is implemented as <code>PDFPage.get_pages</code>.
-</ul>
-<li> 2013/10/22: Sudden resurge of interests. API changes.
-Incorporated a lot of patches and robust handling of broken PDFs.
-<li> 2011/05/15: Speed improvements for layout analysis.
-<li> 2011/05/15: API changes. <code>LTText.get_text()</code> is added.
-<li> 2011/04/20: API changes. LTPolygon class was renamed as LTCurve.
-<li> 2011/04/20: LTLine now represents horizontal/vertical lines only. Thanks to Koji Nakagawa.
-<li> 2011/03/07: Documentation improvements by Jakub Wilk. Memory usage patch by Jonathan Hunt.
-<li> 2011/02/27: Bugfixes and layout analysis improvements. Thanks to fujimoto.report.
-<li> 2010/12/26: A couple of bugfixes and minor improvements. Thanks to Kevin Brubeck Unhammer and Daniel Gerber.
-<li> 2010/10/17: A couple of bugfixes and minor improvements. Thanks to standardabweichung and Alastair Irving.
-<li> 2010/09/07: A minor bugfix. Thanks to Alexander Garden.
-<li> 2010/08/29: A couple of bugfixes. Thanks to Sahan Malagi, pk, and Humberto Pereira.
-<li> 2010/07/06: Minor bugfixes. Thanks to Federico Brega.
-<li> 2010/06/13: Bugfixes and improvements on CMap data compression. Thanks to Jakub Wilk.
-<li> 2010/04/24: Bugfixes and improvements on TOC extraction. Thanks to Jose Maria.
-<li> 2010/03/26: Bugfixes. Thanks to Brian Berry and Lubos Pintes.
-<li> 2010/03/22: Improved layout analysis. Added regression tests.
-<li> 2010/03/12: A couple of bugfixes. Thanks to Sean Manefield.
-<li> 2010/02/27: Changed the way of internal layout handling. (LTTextItem -&gt; LTChar)
-<li> 2010/02/15: Several bugfixes. Thanks to Sean.
-<li> 2010/02/13: Bugfix and enhancement. Thanks to Andr&eacute; Auzi.
-<li> 2010/02/07: Several bugfixes. Thanks to Hiroshi Manabe.
-<li> 2010/01/31: JPEG image extraction supported. Page rotation bug fixed. 
-<li> 2010/01/04: Python 2.6 warning removal. More doctest conversion.
-<li> 2010/01/01: CMap bug fix. Thanks to Winfried Plappert.
-<li> 2009/12/24: RunLengthDecode filter added. Thanks to Troy Bollinger.
-<li> 2009/12/20: Experimental polygon shape extraction added. Thanks to Yusuf Dewaswala for reporting.
-<li> 2009/12/19: CMap resources are now the part of the package. Thanks to Adobe for open-sourcing them.
-<li> 2009/11/29: Password encryption bug fixed. Thanks to Yannick Gingras.
-<li> 2009/10/31: SGML output format is changed and renamed as XML.
-<li> 2009/10/24: Charspace bug fixed. Adjusted for 4-space indentation.
-<li> 2009/10/04: Another matrix operation bug fixed. Thanks to Vitaly Sedelnik.
-<li> 2009/09/12: Fixed rectangle handling. Able to extract image boundaries.
-<li> 2009/08/30: Fixed page rotation handling.
-<li> 2009/08/26: Fixed zlib decoding bug. Thanks to Shon Urbas.
-<li> 2009/08/24: Fixed a bug in character placing. Thanks to Pawan Jain.
-<li> 2009/07/21: Improvement in layout analysis.
-<li> 2009/07/11: Improvement in layout analysis. Thanks to Lubos Pintes.
-<li> 2009/05/17: Bugfixes, massive code restructuring, and simple graphic element support added. setup.py is supported.
-<li> 2009/03/30: Text output mode added.
-<li> 2009/03/25: Encoding problems fixed. Word splitting option added. 
-<li> 2009/02/28: Robust handling of corrupted PDFs. Thanks to Troy Bollinger.
-<li> 2009/02/01: Various bugfixes. Thanks to Hiroshi Manabe.
-<li> 2009/01/17: Handling a trailer correctly that contains both /XrefStm and /Prev entries.
-<li> 2009/01/10: Handling Type3 font metrics correctly.
-<li> 2008/12/28: Better handling of word spacing. Thanks to Christian Nentwich.
-<li> 2008/09/06: A sample pdf2html webapp added.
-<li> 2008/08/30: ASCII85 encoding filter support.
-<li> 2008/07/27: Tagged contents extraction support.
-<li> 2008/07/10: Outline (TOC) extraction support.
-<li> 2008/06/29: HTML output added. Reorganized the directory structure.
-<li> 2008/04/29: Bugfix for Win32. Thanks to Chris Clark.
-<li> 2008/04/27: Basic encryption and LZW decoding support added.
-<li> 2008/01/07: Several bugfixes. Thanks to Nick Fabry for his vast contribution.
-<li> 2007/12/31: Initial release.
-<li> 2004/12/24: Start writing the code out of boredom...
+<li> 2014/09/15: pushed on PyPi</li>
+<li> 2014/09/10: pdfminer_six forked from pdfminer since Yusuke didn't want to merge and pdfminer3k is outdated</li>
 </ul>
 
 <h2><a name="todo">TODO</a></h2>

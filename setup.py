@@ -3,10 +3,13 @@ from distutils.core import setup
 from pdfminer import __version__
 
 setup(
-    name='pdfminer',
+    name='pdfminer_six',
     version=__version__,
+    packages=['pdfminer',],
+    package_data={'pdfminer': ['cmap/*.pickle.gz']},
     description='PDF parser and analyzer',
-    long_description='''PDFMiner is a tool for extracting information from PDF documents.
+    long_description='''fork of PDFMiner using six for Python 2+3 compatibility
+PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting
 and analyzing text data. PDFMiner allows to obtain
 the exact location of texts in a page, as well as
@@ -15,15 +18,9 @@ It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
 PDF parser that can be used for other purposes instead of text analysis.''',
     license='MIT/X',
-    author='Yusuke Shinyama',
-    author_email='yusuke at cs dot nyu dot edu',
-    url='http://euske.github.io/pdfminer/index.html',
-    packages=[
-    'pdfminer',
-    ],
-    package_data={
-    'pdfminer': ['cmap/*.pickle.gz']
-    },
+    author='Yusuke Shinyama + Philippe Guglielmetti',
+    author_email='pdfminer@goulu.net',
+    url='http://github.com/goulu/pdfminer',
     scripts=[
     'tools/pdf2txt.py',
     'tools/dumppdf.py',
@@ -34,7 +31,7 @@ PDF parser that can be used for other purposes instead of text analysis.''',
     'Programming Language :: Python',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.4',
-    'Development Status :: 4 - Beta',
+    'Development Status :: 5 - Production/Stable',
     'Environment :: Console',
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
