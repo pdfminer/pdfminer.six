@@ -7,8 +7,10 @@ setup(
     version=__version__,
     packages=['pdfminer',],
     package_data={'pdfminer': ['cmap/*.pickle.gz']},
+    install_requires=['six'],
     description='PDF parser and analyzer',
     long_description='''fork of PDFMiner using six for Python 2+3 compatibility
+    
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting
 and analyzing text data. PDFMiner allows to obtain
