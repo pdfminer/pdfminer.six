@@ -402,7 +402,7 @@ class PDFStandardSecurityHandler(object):
         else:
             user_password = self.o
             for i in range(19, -1, -1):
-                k = b''.join(chr(ord(c) ^ i) for c in key)
+                k = b''.join(six.int2byte(c ^ i) for c in six.iterbytes(key))
                 user_password = ARC4.new(k).decrypt(user_password)
         return self.authenticate_user_password(user_password)
 
