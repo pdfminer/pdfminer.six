@@ -805,7 +805,8 @@ class PDFPageInterpreter(object):
             # According to PDF reference 1.7 section 4.9.1, XObjects in
             # earlier PDFs (prior to v1.2) use the page's Resources entry
             # instead of having their own Resources entry.
-            resources = dict_value(xobj.get('Resources')) or self.resources.copy()
+            xobjres = xobj.get('Resources')
+            resources = dict_value(xobjres) if xobjres else self.resources.copy()
             self.device.begin_figure(xobjid, bbox, matrix)
             interpreter.render_contents(resources, [xobj], ctm=mult_matrix(matrix, self.ctm))
             self.device.end_figure(xobjid)
