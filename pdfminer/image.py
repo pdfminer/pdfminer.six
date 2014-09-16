@@ -45,7 +45,7 @@ class BMPWriter(object):
                 self.fp.write(struct.pack('BBBx', i, i, i))
         elif ncols == 256:
             # grayscale color table
-            for i in xrange(256):
+            for i in range(256):
                 self.fp.write(struct.pack('BBBx', i, i, i))
         self.pos0 = self.fp.tell()
         self.pos1 = self.pos0 + self.datasize
@@ -98,7 +98,7 @@ class ImageWriter(object):
             data = stream.get_data()
             i = 0
             width = (width+7)//8
-            for y in xrange(height):
+            for y in range(height):
                 bmp.write_line(y, data[i:i+width])
                 i += width
         elif image.bits == 8 and image.colorspace is LITERAL_DEVICE_RGB:
@@ -106,14 +106,14 @@ class ImageWriter(object):
             data = stream.get_data()
             i = 0
             width = width*3
-            for y in xrange(height):
+            for y in range(height):
                 bmp.write_line(y, data[i:i+width])
                 i += width
         elif image.bits == 8 and image.colorspace is LITERAL_DEVICE_GRAY:
             bmp = BMPWriter(fp, 8, width, height)
             data = stream.get_data()
             i = 0
-            for y in xrange(height):
+            for y in range(height):
                 bmp.write_line(y, data[i:i+width])
                 i += width
         else:

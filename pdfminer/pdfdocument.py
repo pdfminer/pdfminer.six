@@ -208,7 +208,7 @@ class PDFXRefFallback(PDFXRef):
                 except PSEOF:
                     pass
                 n = min(n, len(objs)//2)
-                for index in xrange(n):
+                for index in range(n):
                     objid1 = objs[index*2]
                     self.offsets[objid1] = (objid, index, 0)
         return
@@ -254,7 +254,7 @@ class PDFXRefStream(PDFBaseXRef):
 
     def get_objids(self):
         for (start, nobjs) in self.ranges:
-            for i in xrange(nobjs):
+            for i in range(nobjs):
                 offset = self.entlen * i
                 ent = self.data[offset:offset+self.entlen]
                 f1 = nunpack(ent[:self.fl1], 1)
