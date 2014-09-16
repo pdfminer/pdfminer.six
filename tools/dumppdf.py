@@ -261,6 +261,9 @@ def main(argv):
             extractdir = v
             proc = extractembedded
 
+    if six.PY2 and sys.stdin.encoding:
+        password = password.decode(sys.stdin.encoding)
+
     for fname in args:
         proc(outfp, fname, objids, pagenos, password=password,
              dumpall=dumpall, codec=codec, extractdir=extractdir)

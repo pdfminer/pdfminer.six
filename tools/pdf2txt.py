@@ -10,6 +10,7 @@ from pdfminer.cmapdb import CMapDB
 from pdfminer.layout import LAParams
 from pdfminer.image import ImageWriter
 import logging
+import six
 
 # main
 def main(argv):
@@ -65,6 +66,10 @@ def main(argv):
         elif k == '-c': codec = v
         elif k == '-s': scale = float(v)
     #
+
+    if six.PY2 and sys.stdin.encoding:
+        password = password.decode(sys.stdin.encoding)
+
     rsrcmgr = PDFResourceManager(caching=caching)
     if not outtype:
         outtype = 'text'
