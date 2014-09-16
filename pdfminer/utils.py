@@ -19,29 +19,37 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     line0 = b'\x00' * columns
     for i in range(0, len(data), nbytes+1):
         ft = data[i]
+        if six.PY2:
+            ft = six.byte2int(ft)
         i += 1
         line1 = data[i:i+nbytes]
         line2 = b''
-        if ft == b'\x00':
+        if ft == 0:
             # PNG none
             line2 += line1
-        elif ft == b'\x01':
+        elif ft == 1:
             # PNG sub (UNTESTED)
             c = 0
             for b in line1:
-                c = (c+ord(b)) & 255
-                line2 += chr(c)
-        elif ft == b'\x02':
+                if six.PY2:
+                    b = six.byte2int(b)
+                c = (c+b) & 255
+                line2 += six.int2byte(c)
+        elif ft == 2:
             # PNG up
             for (a, b) in zip(line0, line1):
-                c = (ord(a)+ord(b)) & 255
-                line2 += chr(c)
-        elif ft == b'\x03':
+                if six.PY2:
+                    a, b = six.byte2int(a), six.byte2int(b)
+                c = (a+b) & 255
+                line2 += six.int2byte(c)
+        elif ft == 3:
             # PNG average (UNTESTED)
             c = 0
             for (a, b) in zip(line0, line1):
-                c = ((c+ord(a)+ord(b))//2) & 255
-                line2 += chr(c)
+                if six.PY2:
+                    a, b = six.byte2int(a), six.byte2int(b)
+                c = ((c+a+b)//2) & 255
+                line2 += six.int2byte(c)
         else:
             # unsupported
             raise ValueError(ft)
