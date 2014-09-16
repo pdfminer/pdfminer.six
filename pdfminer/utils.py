@@ -233,7 +233,9 @@ def decode_text(s):
 def enc(x, codec='ascii'):
     """Encodes a string for SGML/XML/HTML"""
     x = x.replace('&', '&amp;').replace('>', '&gt;').replace('<', '&lt;').replace('"', '&quot;')
-    return x.encode(codec, 'xmlcharrefreplace')
+    if codec:
+        x = x.encode(codec, 'xmlcharrefreplace')
+    return x
 
 
 def bbox2str(bbox):

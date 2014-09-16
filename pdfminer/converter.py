@@ -243,12 +243,17 @@ class HTMLConverter(PDFConverter):
         return
 
     def write(self, text):
+        if self.codec:
+            text = text.encode(self.codec)
         self.outfp.write(text)
         return
 
     def write_header(self):
         self.write('<html><head>\n')
-        self.write('<meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % self.codec)
+        if self.codec:
+            self.write('<meta http-equiv="Content-Type" content="text/html; charset=%s">\n' % self.codec)
+        else:
+            self.write('<meta http-equiv="Content-Type" content="text/html">\n')
         self.write('</head><body>\n')
         return
 
@@ -259,7 +264,7 @@ class HTMLConverter(PDFConverter):
         return
 
     def write_text(self, text):
-        self.write(enc(text, self.codec))
+        self.write(enc(text, None))
         return
 
     def place_rect(self, color, borderwidth, x, y, w, h):
@@ -281,7 +286,7 @@ class HTMLConverter(PDFConverter):
             name = self.imagewriter.export_image(item)
             self.write('<img src="%s" border="%d" style="position:absolute; left:%dpx; top:%dpx;" '
                        'width="%d" height="%d" />\n' %
-                       (enc(name), borderwidth,
+                       (enc(name, None), borderwidth,
                         x*self.scale, (self._yoffset-y)*self.scale,
                         w*self.scale, h*self.scale))
         return
@@ -411,88 +416,97 @@ class XMLConverter(PDFConverter):
         self.write_header()
         return
 
+    def write(self, text):
+        if self.codec:
+            text = text.encode(self.codec)
+        self.outfp.write(text)
+        return
+
     def write_header(self):
-        self.outfp.write('<?xml version="1.0" encoding="%s" ?>\n' % self.codec)
-        self.outfp.write('<pages>\n')
+        if self.codec:
+            self.write('<?xml version="1.0" encoding="%s" ?>\n' % self.codec)
+        else:
+            self.write('<?xml version="1.0" ?>\n')
+        self.write('<pages>\n')
         return
 
     def write_footer(self):
-        self.outfp.write('</pages>\n')
+        self.write('</pages>\n')
         return
 
     def write_text(self, text):
         if self.stripcontrol:
             text = self.CONTROL.sub(u'', text)
-        self.outfp.write(enc(text, self.codec))
+        self.write(enc(text, None))
         return
 
     def receive_layout(self, ltpage):
         def show_group(item):
             if isinstance(item, LTTextBox):
-                self.outfp.write('<textbox id="%d" bbox="%s" />\n' %
+                self.write('<textbox id="%d" bbox="%s" />\n' %
                                  (item.index, bbox2str(item.bbox)))
             elif isinstance(item, LTTextGroup):
-                self.outfp.write('<textgroup bbox="%s">\n' % bbox2str(item.bbox))
+                self.write('<textgroup bbox="%s">\n' % bbox2str(item.bbox))
                 for child in item:
                     show_group(child)
-                self.outfp.write('</textgroup>\n')
+                self.write('</textgroup>\n')
             return
 
         def render(item):
             if isinstance(item, LTPage):
-                self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
+                self.write('<page id="%s" bbox="%s" rotate="%d">\n' %
                                  (item.pageid, bbox2str(item.bbox), item.rotate))
                 for child in item:
                     render(child)
                 if item.groups is not None:
-                    self.outfp.write('<layout>\n')
+                    self.write('<layout>\n')
                     for group in item.groups:
                         show_group(group)
-                    self.outfp.write('</layout>\n')
-                self.outfp.write('</page>\n')
+                    self.write('</layout>\n')
+                self.write('</page>\n')
             elif isinstance(item, LTLine):
-                self.outfp.write('<line linewidth="%d" bbox="%s" />\n' %
+                self.write('<line linewidth="%d" bbox="%s" />\n' %
                                  (item.linewidth, bbox2str(item.bbox)))
             elif isinstance(item, LTRect):
-                self.outfp.write('<rect linewidth="%d" bbox="%s" />\n' %
+                self.write('<rect linewidth="%d" bbox="%s" />\n' %
                                  (item.linewidth, bbox2str(item.bbox)))
             elif isinstance(item, LTCurve):
-                self.outfp.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
+                self.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
                                  (item.linewidth, bbox2str(item.bbox), item.get_pts()))
             elif isinstance(item, LTFigure):
-                self.outfp.write('<figure name="%s" bbox="%s">\n' %
+                self.write('<figure name="%s" bbox="%s">\n' %
                                  (item.name, bbox2str(item.bbox)))
                 for child in item:
                     render(child)
-                self.outfp.write('</figure>\n')
+                self.write('</figure>\n')
             elif isinstance(item, LTTextLine):
-                self.outfp.write('<textline bbox="%s">\n' % bbox2str(item.bbox))
+                self.write('<textline bbox="%s">\n' % bbox2str(item.bbox))
                 for child in item:
                     render(child)
-                self.outfp.write('</textline>\n')
+                self.write('</textline>\n')
             elif isinstance(item, LTTextBox):
                 wmode = ''
                 if isinstance(item, LTTextBoxVertical):
                     wmode = ' wmode="vertical"'
-                self.outfp.write('<textbox id="%d" bbox="%s"%s>\n' %
+                self.write('<textbox id="%d" bbox="%s"%s>\n' %
                                  (item.index, bbox2str(item.bbox), wmode))
                 for child in item:
                     render(child)
-                self.outfp.write('</textbox>\n')
+                self.write('</textbox>\n')
             elif isinstance(item, LTChar):
-                self.outfp.write('<text font="%s" bbox="%s" size="%.3f">' %
-                                 (enc(item.fontname), bbox2str(item.bbox), item.size))
+                self.write('<text font="%s" bbox="%s" size="%.3f">' %
+                                 (enc(item.fontname, None), bbox2str(item.bbox), item.size))
                 self.write_text(item.get_text())
-                self.outfp.write('</text>\n')
+                self.write('</text>\n')
             elif isinstance(item, LTText):
-                self.outfp.write('<text>%s</text>\n' % item.get_text())
+                self.write('<text>%s</text>\n' % item.get_text())
             elif isinstance(item, LTImage):
                 if self.imagewriter is not None:
                     name = self.imagewriter.export_image(item)
-                    self.outfp.write('<image src="%s" width="%d" height="%d" />\n' %
-                                     (enc(name), item.width, item.height))
+                    self.write('<image src="%s" width="%d" height="%d" />\n' %
+                                     (enc(name, None), item.width, item.height))
                 else:
-                    self.outfp.write('<image width="%d" height="%d" />\n' %
+                    self.write('<image width="%d" height="%d" />\n' %
                                      (item.width, item.height))
             else:
                 assert 0, item
