@@ -294,7 +294,7 @@ class PDFStandardSecurityHandler(object):
                         b'..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz')
     supported_revisions = (2, 3)
 
-    def __init__(self, docid, param, password=b''):
+    def __init__(self, docid, param, password=''):
         self.docid = docid
         self.param = param
         self.password = password
@@ -366,6 +366,7 @@ class PDFStandardSecurityHandler(object):
         return result[:n]
 
     def authenticate(self, password):
+        password = password.encode("latin1")
         key = self.authenticate_user_password(password)
         if key is None:
             key = self.authenticate_owner_password(password)
@@ -536,7 +537,7 @@ class PDFDocument(object):
         if SHA256 is not None:
             security_handler_registry[5] = PDFStandardSecurityHandlerV5
 
-    def __init__(self, parser, password=b'', caching=True, fallback=True):
+    def __init__(self, parser, password='', caching=True, fallback=True):
         "Set the document to use a given PDFParser object."
         self.caching = caching
         self.xrefs = []
@@ -587,7 +588,7 @@ class PDFDocument(object):
 
     # _initialize_password(password=b'')
     #   Perform the initialization with a given password.
-    def _initialize_password(self, password=b''):
+    def _initialize_password(self, password=''):
         (docid, param) = self.encryption
         if literal_name(param.get('Filter')) != 'Standard':
             raise PDFEncryptionError('Unknown filter: param=%r' % param)

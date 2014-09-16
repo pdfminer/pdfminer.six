@@ -241,7 +241,7 @@ def main(argv):
     objids = []
     pagenos = set()
     codec = None
-    password = b''
+    password = ''
     dumpall = False
     proc = dumppdf
     outfp = sys.stdout

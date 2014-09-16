@@ -113,7 +113,7 @@ class PDFPage(object):
 
     @classmethod
     def get_pages(klass, fp,
-                  pagenos=None, maxpages=0, password=b'',
+                  pagenos=None, maxpages=0, password='',
                   caching=True, check_extractable=True):
         # Create a PDF parser object associated with the file object.
         parser = PDFParser(fp)

@@ -27,7 +27,7 @@ def main(argv):
         return usage()
     if not args: return usage()
     # input option
-    password = b''
+    password = ''
     pagenos = set()
     maxpages = 0
     # output option
