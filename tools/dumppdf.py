@@ -241,7 +241,7 @@ def main(argv):
     objids = []
     pagenos = set()
     codec = None
-    password = b''
+    password = ''
     dumpall = False
     proc = dumppdf
     outfp = sys.stdout
@@ -260,6 +260,9 @@ def main(argv):
         elif k == '-E':
             extractdir = v
             proc = extractembedded
+
+    if six.PY2 and sys.stdin.encoding:
+        password = password.decode(sys.stdin.encoding)
 
     for fname in args:
         proc(outfp, fname, objids, pagenos, password=password,

@@ -208,7 +208,7 @@ class PDFXRefFallback(PDFXRef):
                 except PSEOF:
                     pass
                 n = min(n, len(objs)//2)
-                for index in xrange(n):
+                for index in range(n):
                     objid1 = objs[index*2]
                     self.offsets[objid1] = (objid, index, 0)
         return
@@ -254,7 +254,7 @@ class PDFXRefStream(PDFBaseXRef):
 
     def get_objids(self):
         for (start, nobjs) in self.ranges:
-            for i in xrange(nobjs):
+            for i in range(nobjs):
                 offset = self.entlen * i
                 ent = self.data[offset:offset+self.entlen]
                 f1 = nunpack(ent[:self.fl1], 1)
@@ -294,7 +294,7 @@ class PDFStandardSecurityHandler(object):
                         b'..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz')
     supported_revisions = (2, 3)
 
-    def __init__(self, docid, param, password=b''):
+    def __init__(self, docid, param, password=''):
         self.docid = docid
         self.param = param
         self.password = password
@@ -366,6 +366,7 @@ class PDFStandardSecurityHandler(object):
         return result[:n]
 
     def authenticate(self, password):
+        password = password.encode("latin1")
         key = self.authenticate_user_password(password)
         if key is None:
             key = self.authenticate_owner_password(password)
@@ -401,7 +402,7 @@ class PDFStandardSecurityHandler(object):
         else:
             user_password = self.o
             for i in range(19, -1, -1):
-                k = b''.join(chr(ord(c) ^ i) for c in key)
+                k = b''.join(six.int2byte(c ^ i) for c in six.iterbytes(key))
                 user_password = ARC4.new(k).decrypt(user_password)
         return self.authenticate_user_password(user_password)
 
@@ -536,7 +537,7 @@ class PDFDocument(object):
         if SHA256 is not None:
             security_handler_registry[5] = PDFStandardSecurityHandlerV5
 
-    def __init__(self, parser, password=b'', caching=True, fallback=True):
+    def __init__(self, parser, password='', caching=True, fallback=True):
         "Set the document to use a given PDFParser object."
         self.caching = caching
         self.xrefs = []
@@ -587,7 +588,7 @@ class PDFDocument(object):
 
     # _initialize_password(password=b'')
     #   Perform the initialization with a given password.
-    def _initialize_password(self, password=b''):
+    def _initialize_password(self, password=''):
         (docid, param) = self.encryption
         if literal_name(param.get('Filter')) != 'Standard':
             raise PDFEncryptionError('Unknown filter: param=%r' % param)

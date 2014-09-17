@@ -806,7 +806,7 @@ def rijndaelSetupDecrypt(key, keybits):
         j -= 4
     # apply the inverse MixColumn transform to all round keys but the first and the last:
     p = 0
-    for i in xrange(1, nrounds):
+    for i in range(1, nrounds):
         p += 4
         rk[p+0] = (
           Td0[Te4[(rk[p+0] >> 24)       ] & 0xff] ^
