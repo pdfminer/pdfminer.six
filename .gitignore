@@ -1,0 +1,54 @@
+# Intermediate documents
+*.xps
+
+# Password and Key Files
+*.pem
+*.p12
+
+# Compiled source #
+###################
+*.pyc
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Mecurial Files?
+*.i
+*.d
+*.mo
+*.hg/
+
+# Python data files #
+*.shelf
+*.shelve
+
+# Don't track these files, they are output from scripts
+
+# Subversion files
+*.svn-base
+all-wcprops
+entries
+
+# Logs and databases #
+######################
+bulkloader-log-*
+*.log
+*.sql
+*.sql3
+*.sql3-journal
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# tmp files #
+#############
+~$*.doc
+~WRL*.tmp
