@@ -232,7 +232,7 @@ PDFDocEncoding = ''.join(six.unichr(x) for x in (
 def decode_text(s):
     """Decodes a PDFDocEncoding string to Unicode."""
     if s.startswith(b'\xfe\xff'):
-        return unicode(s[2:], 'utf-16be', 'ignore')
+        return six.text_type(s[2:], 'utf-16be', 'ignore')
     else:
         return ''.join(PDFDocEncoding[ord(c)] for c in s)
 
