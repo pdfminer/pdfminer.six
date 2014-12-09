@@ -139,6 +139,8 @@ class PDFResourceManager(object):
     allocated multiple times.
     """
 
+    debug = False
+    
     def __init__(self, caching=True):
         self.caching = caching
         self._cached_fonts = {}
@@ -167,7 +169,8 @@ class PDFResourceManager(object):
         if objid and objid in self._cached_fonts:
             font = self._cached_fonts[objid]
         else:
-            logging.info('get_font: create: objid=%r, spec=%r' % (objid, spec))
+            if self.debug:
+                logging.info('get_font: create: objid=%r, spec=%r' % (objid, spec))
             if STRICT:
                 if spec['Type'] is not LITERAL_FONT:
                     raise PDFFontError('Type is not /Font')
@@ -799,7 +802,7 @@ class PDFPageInterpreter(object):
             if STRICT:
                 raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
             return
-        logging.info('Processing xobj: %r' % xobj)
+        if self.debug: logging.info('Processing xobj: %r' % xobj)
         subtype = xobj.get('Subtype')
         if subtype is LITERAL_FORM and 'BBox' in xobj:
             interpreter = self.dup()
@@ -822,7 +825,7 @@ class PDFPageInterpreter(object):
         return
 
     def process_page(self, page):
-        logging.info('Processing page: %r' % page)
+        if self.debug: logging.info('Processing page: %r' % page)
         (x0, y0, x1, y1) = page.mediabox
         if page.rotate == 90:
             ctm = (0, -1, 1, 0, -y0, x1)
@@ -841,7 +844,8 @@ class PDFPageInterpreter(object):
     #   Render the content streams.
     #   This method may be called recursively.
     def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY):
-        logging.info('render_contents: resources=%r, streams=%r, ctm=%r' %
+        if self.debug:
+            logging.info('render_contents: resources=%r, streams=%r, ctm=%r' %
                      (resources, streams, ctm))
         self.init_resources(resources)
         self.init_state(ctm)

@@ -39,6 +39,8 @@ class PDFPage(object):
       beads: a chain that represents natural reading order.
     """
 
+    debug = False
+
     def __init__(self, doc, pageid, attrs):
         """Initialize a page object.
 
@@ -86,12 +88,12 @@ class PDFPage(object):
                 if k in klass.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
             if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
-                logging.info('Pages: Kids=%r' % tree['Kids'])
+                if klass.debug: logging.info('Pages: Kids=%r' % tree['Kids'])
                 for c in list_value(tree['Kids']):
                     for x in search(c, tree):
                         yield x
             elif tree.get('Type') is LITERAL_PAGE:
-                logging.info('Page: %r' % tree)
+                if klass.debug: logging.info('Page: %r' % tree)
                 yield (objid, tree)
         pages = False
         if 'Pages' in document.catalog:

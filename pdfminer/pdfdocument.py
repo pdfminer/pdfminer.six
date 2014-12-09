@@ -65,6 +65,8 @@ LITERAL_CATALOG = LIT('Catalog')
 ##
 class PDFBaseXRef(object):
 
+    debug = False
+    
     def get_trailer(self):
         raise NotImplementedError
 
@@ -122,7 +124,7 @@ class PDFXRef(PDFBaseXRef):
                 if use != b'n':
                     continue
                 self.offsets[objid] = (None, long(pos), int(genno))
-        logging.info('xref objects: %r' % self.offsets)
+        if self.debug: logging.info('xref objects: %r' % self.offsets)
         self.load_trailer(parser)
         return
 
@@ -173,7 +175,7 @@ class PDFXRefFallback(PDFXRef):
             if line.startswith(b'trailer'):
                 parser.seek(pos)
                 self.load_trailer(parser)
-                logging.info('trailer: %r' % self.get_trailer())
+                if self.debug: logging.info('trailer: %r' % self.get_trailer())
                 break
             m = self.PDFOBJ_CUE.match(line)
             if not m:
@@ -212,6 +214,8 @@ class PDFXRefFallback(PDFXRef):
 ##
 class PDFXRefStream(PDFBaseXRef):
 
+    debug = False
+    
     def __init__(self):
         self.data = None
         self.entlen = None
@@ -238,7 +242,8 @@ class PDFXRefStream(PDFBaseXRef):
         self.data = stream.get_data()
         self.entlen = self.fl1+self.fl2+self.fl3
         self.trailer = stream.attrs
-        logging.info('xref stream: objid=%s, fields=%d,%d,%d' %
+        if self.debug:
+            logging.info('xref stream: objid=%s, fields=%d,%d,%d' %
                      (', '.join(map(repr, self.ranges)),
                       self.fl1, self.fl2, self.fl3))
         return
@@ -761,7 +766,8 @@ class PDFDocument(object):
                 prev = line
         else:
             raise PDFNoValidXRef('Unexpected EOF')
-        logging.info('xref found: pos=%r' % prev)
+        if self.debug:
+            logging.info('xref found: pos=%r' % prev)
         return long(prev)
 
     # read xref table
@@ -773,7 +779,8 @@ class PDFDocument(object):
             (pos, token) = parser.nexttoken()
         except PSEOF:
             raise PDFNoValidXRef('Unexpected EOF')
-        logging.info('read_xref_from: start=%d, token=%r' % (start, token))
+        if self.debug:
+            logging.info('read_xref_from: start=%d, token=%r' % (start, token))
         if isinstance(token, int):
             # XRefStream: PDF-1.5
             parser.seek(pos)
@@ -787,7 +794,8 @@ class PDFDocument(object):
             xref.load(parser)
         xrefs.append(xref)
         trailer = xref.get_trailer()
-        logging.info('trailer: %r' % trailer)
+        if self.debug:
+            logging.info('trailer: %r' % trailer)
         if 'XRefStm' in trailer:
             pos = int_value(trailer['XRefStm'])
             self.read_xref_from(parser, pos, xrefs)

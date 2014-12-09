@@ -343,7 +343,15 @@ class PSBaseParser(object):
             self.hex = b''
             self._parse1 = self._parse_literal_hex
             return j+1
-        self._add_token(LIT(unicode(self._curtoken)))
+        
+        try:
+            # Try to interpret the token as a utf-8 string
+            utoken = self._curtoken.decode('utf-8')
+        except UnicodeDecodeError:
+            # We failed, there is possibly a corrupt PDF here.
+            if STRICT: raise
+            utoken = ""
+        self._add_token(LIT(utoken))
         self._parse1 = self._parse_main
         return j
 
