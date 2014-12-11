@@ -122,7 +122,7 @@ KEYWORD_DICT_END = KWD(b'>>')
 def literal_name(x):
     if not isinstance(x, PSLiteral):
         if STRICT:
-            raise PSTypeError('Literal required: %r' % x)
+            raise PSTypeError('Literal required: %r' % (x,))
         else:
             return str(x)
     return x.name
@@ -131,7 +131,7 @@ def literal_name(x):
 def keyword_name(x):
     if not isinstance(x, PSKeyword):
         if STRICT:
-            raise PSTypeError('Keyword required: %r' % x)
+            raise PSTypeError('Keyword required: %r' % (x,))
         else:
             return str(x)
     return x.name
@@ -361,7 +361,10 @@ class PSBaseParser(object):
             self.hex += c
             return i+1
         if self.hex:
-            self._curtoken += chr(int(self.hex, 16))
+            try:
+                self._curtoken += chr(int(self.hex, 16))
+            except ValueError:
+                pass
         self._parse1 = self._parse_literal
         return i
 
@@ -446,7 +449,10 @@ class PSBaseParser(object):
             self.oct += c
             return i+1
         if self.oct:
-            self._curtoken += chr(int(self.oct, 8))
+            try:
+                self._curtoken += chr(int(self.oct, 8))
+            except ValueError:
+                pass
             self._parse1 = self._parse_string
             return i
         if c in ESC_STRING:
@@ -479,9 +485,12 @@ class PSBaseParser(object):
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        token = HEX_PAIR.sub(lambda m: chr(int(m.group(0), 16)),
-                             SPC.sub(b'', self._curtoken))
-        self._add_token(token)
+        try:
+            token = HEX_PAIR.sub(lambda m: chr(int(m.group(0), 16)),
+                                 SPC.sub(b'', self._curtoken))
+            self._add_token(token)
+        except ValueError:
+            pass
         self._parse1 = self._parse_main
         return j
 
@@ -491,7 +500,7 @@ class PSBaseParser(object):
             self.charpos = self._parse1(self.buf, self.charpos)
         token = self._tokens.pop(0)
         if self.debug:
-            logging.debug('nexttoken: %r' % token)
+            logging.debug('nexttoken: %r' % (token,))
         return token
 
 
@@ -532,7 +541,7 @@ class PSStackParser(PSBaseParser):
 
     def add_results(self, *objs):
         if self.debug:
-            logging.debug('add_results: %r' % objs)
+            logging.debug('add_results: %r' % (objs,))
         self.results.extend(objs)
         return
 
@@ -585,7 +594,7 @@ class PSStackParser(PSBaseParser):
                 try:
                     (pos, objs) = self.end_type('d')
                     if len(objs) % 2 != 0:
-                        raise PSSyntaxError('Invalid dictionary construct: %r' % objs)
+                        raise PSSyntaxError('Invalid dictionary construct: %r' % (objs,))
                     # construct a Python dictionary.
                     d = dict((literal_name(k), v) for (k, v) in choplist(2, objs) if v is not None)
                     self.push((pos, d))
@@ -613,7 +622,7 @@ class PSStackParser(PSBaseParser):
                 self.flush()
         obj = self.results.pop(0)
         if self.debug:
-            logging.debug('nextobject: %r' % obj)
+            logging.debug('nextobject: %r' % (obj,))
         return obj
 
 
