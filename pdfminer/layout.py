@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import logging
 from .utils import INF
 from .utils import Plane
 from .utils import get_bound
@@ -355,6 +356,9 @@ class LTTextLine(LTTextContainer):
         LTContainer.add(self, LTAnno('\n'))
         return
 
+    def group_line_neighbors(self, objs, ratio):
+        return objs
+
     def find_neighbors(self, plane, ratio):
         raise NotImplementedError
 
@@ -383,14 +387,52 @@ class LTTextLineHorizontal(LTTextLine):
         LTTextLine.add(self, obj)
         return
 
+    def is_neighbor(self, obj, d, same_line = False):
+        # Horizontal lines can only connect with horizontal lines
+        if not isinstance(obj, LTTextLineHorizontal):
+            return False
+        # Ensure they are vertically close
+        if abs(obj.height-self.height) >= d:
+            return False
+        # Ensure that they have similar start or stop x positions
+        if not (abs(obj.x0-self.x0) < d or
+                abs(obj.x1-self.x1) < d or 
+            # Or that they intersect eachother horizontally.
+                (obj.x0 < self.x0 and obj.x1 > self.x0) or
+                (obj.x0 > self.x0 and obj.x0 < self.x1)):
+            return False
+        if same_line and not (
+            # Ensure they have similar 
+                (obj.y0 == self.y0) or (obj.y1 == self.y1) or
+                (obj.y0 < self.y0 and obj.y0 > self.y1) or
+                (obj.y0 > self.y0 and obj.y1 < self.y0)):
+            return False
+        return True
+        
+    def group_line_neighbors(self, objs, ratio):
+        '''
+        Given a set of objects that may or may not be on the same line as this,
+        add the objects that are on the same line.
+        
+        Return the objects that are not on the same line.
+        '''
+        d = ratio*self.height
+        other_lines = []
+        for o in objs:
+            if o == self:
+                other_lines.append(o)
+            elif self.is_neighbor(o, d, same_line=True):
+                [self.add(oc) for oc in o]
+                # Clear out the old line
+                o._objs = []
+            else:
+                other_lines.append(o)
+        return other_lines
+    
     def find_neighbors(self, plane, ratio):
         d = ratio*self.height
         objs = plane.find((self.x0, self.y0-d, self.x1, self.y1+d))
-        return [obj for obj in objs
-                if (isinstance(obj, LTTextLineHorizontal) and
-                    abs(obj.height-self.height) < d and
-                    (abs(obj.x0-self.x0) < d or
-                     abs(obj.x1-self.x1) < d))]
+        return [o for o in objs if self.is_neighbor(o, d)]
 
 
 class LTTextLineVertical(LTTextLine):
@@ -577,19 +619,25 @@ class LTLayoutContainer(LTContainer):
         yield line
         return
 
-    # group_textlines: group neighboring lines to textboxes.
+    # group_textlines: group neighbouring lines to textboxes.
     def group_textlines(self, laparams, lines):
         plane = Plane(self.bbox)
         plane.extend(lines)
         boxes = {}
+        # for line in plane:
+            # print "line", ("".join([s._text for s in line])).encode('ascii', 'ignore')
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
-            if line not in neighbors: continue
+            if line not in neighbors: 
+                logging.error("Line cannot find itself: %s"%line)
+                continue
+            neighbors = line.group_line_neighbors(neighbors, laparams.line_margin)
             members = []
             for obj1 in neighbors:
                 members.append(obj1)
                 if obj1 in boxes:
                     members.extend(boxes.pop(obj1))
+            # print "members: ", ["".join([o._text for o in line]) for line in members]
             if isinstance(line, LTTextLineHorizontal):
                 box = LTTextBoxHorizontal()
             else:
