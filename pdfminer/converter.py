@@ -315,7 +315,7 @@ class HTMLConverter(PDFConverter):
             if self._font is not None:
                 self.write('</span>')
             self.write('<span style="font-family: %s; font-size:%dpx">' %
-                       (fontname, fontsize * self.scale * self.fontscale))
+                       (enc(fontname), fontsize * self.scale * self.fontscale))
             self._font = font
         self.write_text(text)
         return
