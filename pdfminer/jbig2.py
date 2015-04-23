@@ -43,6 +43,9 @@ def masked_value(mask, value):
 
     raise Exception("Invalid mask or value")
 
+def dump(bin_string):
+    return map(lambda x: x.encode('hex'), bin_string)
+
 def mask_value(mask, value):
     for bit_pos in range(0, 31):
         if bit_set(bit_pos, mask):
@@ -171,9 +174,11 @@ class JBIG2StreamWriter(object):
             value = segment.get(name)
             encoder = getattr(self, "encode_%s" % name, None)
             if callable(encoder):
-                data += encoder(value, segment)
+                field = encoder(value, segment)
             else:
-                data += pack(field_format, value)
+                field = pack(field_format, value)
+            print "writing field '%s': %s" % (name, dump(field))
+            data += field
         return data
 
     def encode_flags(self, value, segment):
@@ -203,7 +208,7 @@ class JBIG2StreamWriter(object):
             flags_byte = mask_value(REF_COUNT_SHORT_MASK, ref_count)
             for ref_index, ref_retain in enumerate(retain_segments):
 
-                flags_byte |= 1 << ref_index
+                flags_byte &= 1 << ref_index
             flags.append(flags_byte)
         else:
             bytes_count = ceil((ref_count + 1)/8)
@@ -218,7 +223,7 @@ class JBIG2StreamWriter(object):
                 ret_byte = 0
                 ret_part = retain_segments[byte_index*8:byte_index*8+8]
                 for bit_pos, ret_seg in enumerate(ret_part):
-                    ret_byte |= 1 << bit_pos if ret_seg else ret_byte
+                    ret_byte &= 1 << bit_pos if ret_seg else ret_byte
 
                 flags.append(ret_byte)
             
@@ -236,4 +241,11 @@ class JBIG2StreamWriter(object):
             flags_format += ref_format
             flags.append(ref)
 
+        print flags_format, flags, dump(pack(flags_format, *flags))
+
         return pack(flags_format, *flags)
+
+    def encode_data_length(self, value, segment):
+        data = pack(">L", value)
+        data += segment["raw_data"]
+        return data
