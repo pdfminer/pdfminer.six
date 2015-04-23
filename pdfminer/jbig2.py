@@ -30,6 +30,12 @@ SEG_TYPE_IMMEDIATE_GEN_REGION = 38
 SEG_TYPE_END_OF_PAGE = 49
 SEG_TYPE_END_OF_FILE = 50
 
+# file literals
+
+FILE_HEADER_ID = '\x97\x4A\x42\x32\x0D\x0A\x1A\x0A'
+FILE_HEAD_FLAG_SEQUENTIAL = 0b00000001
+FILE_HEAD_FLAG_PAGES_UNKNOWN = 0b00000010
+
 def bit_set(bit_pos, value):
     return bool((value >> bit_pos) & 1)
 
@@ -52,6 +58,7 @@ def mask_value(mask, value):
             return (value & (mask >> bit_pos)) << bit_pos
 
     raise Exception("Invalid mask or value")
+
 
 class JBIG2StreamReader(object):
 
@@ -159,12 +166,52 @@ class JBIG2StreamWriter(object):
     def __init__(self, stream):
         self.stream = stream
 
-    def write_segments(self, segments):
+    def write_segments(self, segments, fix_last_page=True):
         data_len = 0
+        current_page = None
+        seg_num = None
+
         for segment in segments:
             data = self.encode_segment(segment)
             self.stream.write(data)
             data_len += len(data)
+
+            seg_num = segment["number"]
+
+            if fix_last_page:
+                seg_page = segment.get("page_assoc")
+
+                if segment["flags"]["type"] == SEG_TYPE_END_OF_PAGE:
+                    current_page = None
+                elif seg_page:                
+                    current_page = seg_page
+
+        if fix_last_page and current_page and (seg_num is not None):
+            segment = self.get_eop_segment(seg_num + 1, current_page)
+            data = self.encode_segment(segment)
+            self.stream.write(data)
+            data_len += len(data)
+
+        return data_len
+
+    def write_file(self, segments, fix_last_page=True):
+        header = FILE_HEADER_ID
+        header_flags = FILE_HEAD_FLAG_SEQUENTIAL | FILE_HEAD_FLAG_PAGES_UNKNOWN
+        header += pack(">B", header_flags)
+        self.stream.write(header)
+        data_len = len(header)
+
+        data_len += self.write_segments(segments, fix_last_page)
+
+        seg_num = 0
+        for segment in segments:
+            seg_num = segment["number"]
+
+        eof_segment = self.get_eof_segment(seg_num+1)
+        data = self.encode_segment(eof_segment)
+
+        self.stream.write(data)
+        data_len += len(data)
 
         return data_len
 
@@ -177,7 +224,6 @@ class JBIG2StreamWriter(object):
                 field = encoder(value, segment)
             else:
                 field = pack(field_format, value)
-            print "writing field '%s': %s" % (name, dump(field))
             data += field
         return data
 
@@ -241,11 +287,37 @@ class JBIG2StreamWriter(object):
             flags_format += ref_format
             flags.append(ref)
 
-        print flags_format, flags, dump(pack(flags_format, *flags))
-
         return pack(flags_format, *flags)
 
     def encode_data_length(self, value, segment):
         data = pack(">L", value)
         data += segment["raw_data"]
         return data
+
+    def get_eop_segment(self, seg_number, page_number):
+        return {
+            'data_length': 0,
+            'flags': {'deferred': False, 'type': SEG_TYPE_END_OF_PAGE},
+            'number': seg_number,
+            'page_assoc': page_number,
+            'raw_data': '',
+            'retention_flags': {
+                'ref_count': 0,
+                'ref_segments': [],
+                'retain_segments': []
+            }
+        }
+
+    def get_eof_segment(self, seg_number):
+        return {
+            'data_length': 0,
+            'flags': {'deferred': False, 'type': SEG_TYPE_END_OF_FILE},
+            'number': seg_number,
+            'page_assoc': 0,
+            'raw_data': '',
+            'retention_flags': {
+                'ref_count': 0,
+                'ref_segments': [],
+                'retain_segments': []
+            }
+        }
