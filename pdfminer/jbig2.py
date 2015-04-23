@@ -2,6 +2,15 @@ import math
 import os
 from struct import pack, unpack, calcsize
 
+# segment structure base
+SEG_STRUCT = [
+    (">L", "number"),
+    (">B", "flags"),
+    (">B", "retention_flags"),
+    (">B", "page_assoc"),
+    (">L", "data_length"),
+]
+
 # segment header literals
 
 HEADER_FLAG_DEFERRED = 0b10000000
@@ -18,6 +27,8 @@ DATA_LEN_UNKNOWN = 0xffffffff
 # segment types
 
 SEG_TYPE_IMMEDIATE_GEN_REGION = 38
+SEG_TYPE_END_OF_PAGE = 49
+SEG_TYPE_END_OF_FILE = 50
 
 def bit_set(bit_pos, value):
     return bool((value >> bit_pos) & 1)
@@ -32,14 +43,14 @@ def masked_value(mask, value):
 
     raise Exception("Invalid mask or value")
 
+def mask_value(mask, value):
+    for bit_pos in range(0, 31):
+        if bit_set(bit_pos, mask):
+            return (value & (mask >> bit_pos)) << bit_pos
+
+    raise Exception("Invalid mask or value")
+
 class JBIG2StreamReader(object):
-    fields = [
-        (">L", "number"),
-        (">B", "flags"),
-        (">B", "retention_flags"),
-        (">B", "page_assoc"),
-        (">L", "data_length"),
-    ]
 
     def __init__(self, stream):
         self.stream = stream
@@ -48,7 +59,7 @@ class JBIG2StreamReader(object):
         segments = []
         while not self.is_eof():
             segment = {}
-            for field_format, name in self.fields:
+            for field_format, name in SEG_STRUCT:
                 field_len = calcsize(field_format)
                 field = self.stream.read(field_len)
                 if len(field) < field_len:
@@ -135,6 +146,94 @@ class JBIG2StreamReader(object):
                     "is not implemented yet"
                 )
             else:
-                segment["data"] = self.stream.read(length)
+                segment["raw_data"] = self.stream.read(length)
 
         return length
+
+
+class JBIG2StreamWriter(object):
+
+    def __init__(self, stream):
+        self.stream = stream
+
+    def write_segments(self, segments):
+        data_len = 0
+        for segment in segments:
+            data = self.encode_segment(segment)
+            self.stream.write(data)
+            data_len += len(data)
+
+        return data_len
+
+    def encode_segment(self, segment):
+        data = ''
+        for field_format, name in SEG_STRUCT:
+            value = segment.get(name)
+            encoder = getattr(self, "encode_%s" % name, None)
+            if callable(encoder):
+                data += encoder(value, segment)
+            else:
+                data += pack(field_format, value)
+        return data
+
+    def encode_flags(self, value, segment):
+        flags = 0
+        if value.get("deferred"):
+            flags |= HEADER_FLAG_DEFERRED
+
+        if "page_assoc_long" in value:
+            flags |= HEADER_FLAG_PAGE_ASSOC_LONG \
+                if value["page_assoc_long"] else flags
+        else:
+            flags |= HEADER_FLAG_PAGE_ASSOC_LONG \
+                if segment.get("page", 0) > 255 else flags
+
+
+        flags |= mask_value(SEG_TYPE_MASK, value["type"])
+
+        return pack(">B", flags)
+
+    def encode_retention_flags(self, value, segment):
+        flags = []
+        flags_format = ">B"
+        ref_count = value["ref_count"]
+        retain_segments = value.get("retain_segments", [])
+
+        if ref_count <= 4:
+            flags_byte = mask_value(REF_COUNT_SHORT_MASK, ref_count)
+            for ref_index, ref_retain in enumerate(retain_segments):
+
+                flags_byte |= 1 << ref_index
+            flags.append(flags_byte)
+        else:
+            bytes_count = ceil((ref_count + 1)/8)
+            flags_format = ">L" + ("B" * bytes_count)
+            flags_dword = mask_value(
+                REF_COUNT_SHORT_MASK,
+                REF_COUNT_LONG
+            ) << 24
+            flags.append(flags_dword)
+
+            for byte_index in range(bytes_count):
+                ret_byte = 0
+                ret_part = retain_segments[byte_index*8:byte_index*8+8]
+                for bit_pos, ret_seg in enumerate(ret_part):
+                    ret_byte |= 1 << bit_pos if ret_seg else ret_byte
+
+                flags.append(ret_byte)
+            
+        ref_segments = value.get("ref_segments", [])
+
+        seg_num = segment["number"]
+        if seg_num <= 256:
+            ref_format = "B"
+        elif seg_num <= 65536:
+            ref_format = "I"
+        else:
+            ref_format = "L"
+
+        for ref in ref_segments:
+            flags_format += ref_format
+            flags.append(ref)
+
+        return pack(flags_format, *flags)
