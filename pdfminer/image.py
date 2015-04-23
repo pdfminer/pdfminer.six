@@ -1,8 +1,10 @@
 
+from cStringIO import StringIO
 import struct
 import os
 import os.path
 from io import BytesIO
+from .jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from .pdftypes import LITERALS_DCT_DECODE, LITERALS_JBIG2_DECODE
 from .pdfcolor import LITERAL_DEVICE_GRAY
 from .pdfcolor import LITERAL_DEVICE_RGB
@@ -103,7 +105,14 @@ class ImageWriter(object):
             else:
                 fp.write(raw_data)
         elif is_jbig2:
-            fp.write(stream.get_data())
+            input_stream = StringIO()
+            input_stream.write(stream.get_data())
+            input_stream.seek(0)
+            reader = JBIG2StreamReader(input_stream)
+            segments = reader.get_segments()
+
+            writer = JBIG2StreamWriter(fp)
+            writer.write_file(segments)
         elif image.bits == 1:
             bmp = BMPWriter(fp, 1, width, height)
             data = stream.get_data()
