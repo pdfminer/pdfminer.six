@@ -87,6 +87,20 @@ class JBIG2StreamReader(object):
                 segments.append(segment)
         return segments
 
+    def read_file(self):
+        # reading header
+        id_str = self.stream.read(len(FILE_HEADER_ID))
+        if id_str != FILE_HEADER_ID:
+            raise Exception("JBIG2 file header is corrupted")
+        [file_flags] = unpack(">B", self.stream.read(1))
+        if not check_flag(FILE_HEAD_FLAG_PAGES_UNKNOWN, file_flags):
+            page_count = unpack(">L", self.stream.read(4))
+
+        # reading segments
+        segments = self.get_segments()
+
+        return segments
+
     def is_eof(self):
         if self.stream.read(1) == '':
             return True
@@ -130,7 +144,7 @@ class JBIG2StreamReader(object):
         ref_size = calcsize(ref_format)
 
         for ref_index in range(ref_count):
-            ref = stream.read(ref_size)
+            ref = self.stream.read(ref_size)
             [ref] = unpack(ref_format, ref)
             ref_segments.append(ref)
 
