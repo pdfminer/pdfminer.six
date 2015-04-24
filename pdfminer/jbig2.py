@@ -268,7 +268,7 @@ class JBIG2StreamWriter(object):
             flags_byte = mask_value(REF_COUNT_SHORT_MASK, ref_count)
             for ref_index, ref_retain in enumerate(retain_segments):
 
-                flags_byte &= 1 << ref_index
+                flags_byte |= 1 << ref_index
             flags.append(flags_byte)
         else:
             bytes_count = ceil((ref_count + 1)/8)
@@ -283,7 +283,7 @@ class JBIG2StreamWriter(object):
                 ret_byte = 0
                 ret_part = retain_segments[byte_index*8:byte_index*8+8]
                 for bit_pos, ret_seg in enumerate(ret_part):
-                    ret_byte &= 1 << bit_pos if ret_seg else ret_byte
+                    ret_byte |= 1 << bit_pos if ret_seg else ret_byte
 
                 flags.append(ret_byte)
             
