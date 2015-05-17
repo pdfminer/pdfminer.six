@@ -20,6 +20,7 @@ from .utils import apply_matrix_pt
 from .utils import mult_matrix
 from .utils import enc
 from .utils import bbox2str
+from . import utils
 
 import six # Python 2+3 compatibility
 
@@ -164,8 +165,11 @@ class TextConverter(PDFConverter):
         return
 
     def write_text(self, text):
-        if self.codec:
-            text = text.encode(self.codec, 'ignore')
+        text = utils.compatible_encode_method(text, self.codec, 'ignore')
+#        if six.PY2 and self.codec:
+#            text = text.encode(self.codec, 'ignore')
+#        if six.PY3 and isinstance(text, bytes):
+#            text = text.decode(self.codec, 'ignore')
         self.outfp.write(text)
         return
 
