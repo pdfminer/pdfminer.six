@@ -9,21 +9,6 @@ import pdfminer.high_level
 import pdfminer.layout
 
 
-def _check_arg():
-    """
-    Type-checking the ugly way, because we can't do arg annotations and reflection
-    in Python 2.
-    """
-    arg = locals()[arg_name]
-    assert isinstance(arg, arg_permitted), ("Argument '{}' should be of type(s)"
-            " '{}' but is type '{}'").format(arg_name, arg_permitted, type(arg))
-    if contains_permitted is not None and arg:
-        for contained in arg:
-            assert isinstance(contained, contains_permitted), ("Value within"
-                    " argument '{}' should be of type '{}' but is '{}'"
-                    ).format(arg_name, contains_permitted, type(contained))
-
-
 def extract_text(files=[], outfile='-',
             _py2_no_more_posargs=None,  # Bloody Python2 needs a shim
             no_laparams=False, all_texts=None, detect_vertical=None, # LAParams
