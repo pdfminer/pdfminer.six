@@ -8,7 +8,6 @@ if six.PY3:
     from tools import dumppdf
 elif six.PY2:
     import os, sys
-#    raise Exception("{}\n{}".format(sys.path, os.path.abspath(os.path.curdir)))
     sys.path.append(os.path.abspath(os.path.curdir))
     import tools.dumppdf as dumppdf
 
