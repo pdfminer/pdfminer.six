@@ -28,6 +28,21 @@ def extract_text_to_fp(inf, outfp,
     Takes loads of optional arguments but the defaults are somewhat sane.
     Beware laparams: Including an empty LAParams is not the same as passing None!
     Returns nothing, acting as it does on two streams. Use StringIO to get strings.
+    
+    output_type: May be 'text', 'xml', 'html', 'tag'. Only 'text' works properly.
+    codec: Text decoding codec
+    laparams: An LAParams object from pdfminer.layout.
+        Default is None but may not layout correctly.
+    maxpages: How many pages to stop parsing after
+    page_numbers: zero-indexed page numbers to operate on.
+    password: For encrypted PDFs, the password to decrypt.
+    scale: Scale factor
+    rotation: Rotation factor
+    layoutmode: Default is 'normal', see pdfminer.converter.HTMLConverter
+    output_dir: If given, creates an ImageWriter for extracted images.
+    strip_control: Does what it says on the tin
+    debug: Output more logging data
+    disable_caching: Does what it says on the tin
     """
     if six.PY2 and sys.stdin.encoding:
         password = password.decode(sys.stdin.encoding)
