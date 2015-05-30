@@ -150,6 +150,23 @@ class PDFConverter(PDFLayoutAnalyzer):
         PDFLayoutAnalyzer.__init__(self, rsrcmgr, pageno=pageno, laparams=laparams)
         self.outfp = outfp
         self.codec = codec
+        if hasattr(self.outfp, 'mode'):
+            if 'b' in self.outfp.mode:
+                self.outfp_binary = True
+            else:
+                self.outfp_binary = False
+        else:
+            import io
+            if isinstance(self.outfp, io.BytesIO):
+                self.outfp_binary = True
+            elif isinstance(self.outfp, io.StringIO):
+                self.outfp_binary = False
+            else:
+                try:
+                    self.outfp.write(u"é")
+                    self.outfp_binary = False
+                except TypeError:
+                    self.outfp_binary = True
         return
 
 
@@ -166,10 +183,8 @@ class TextConverter(PDFConverter):
 
     def write_text(self, text):
         text = utils.compatible_encode_method(text, self.codec, 'ignore')
-#        if six.PY2 and self.codec:
-#            text = text.encode(self.codec, 'ignore')
-#        if six.PY3 and isinstance(text, bytes):
-#            text = text.decode(self.codec, 'ignore')
+        if six.PY3 and self.outfp_binary:
+            text = text.encode()
         self.outfp.write(text)
         return
 

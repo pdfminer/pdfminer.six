@@ -16,17 +16,183 @@ from pdfminer.cmapdb import CMapDB
 from pdfminer.layout import LAParams
 from pdfminer.image import ImageWriter
 
+
+def _check_arg():
+    """
+    Type-checking the ugly way, because we can't do arg annotations and reflection
+    in Python 2.
+    """
+    arg = locals()[arg_name]
+    assert isinstance(arg, arg_permitted), ("Argument '{}' should be of type(s)"
+            " '{}' but is type '{}'").format(arg_name, arg_permitted, type(arg))
+    if contains_permitted is not None and arg:
+        for contained in arg:
+            assert isinstance(contained, contains_permitted), ("Value within"
+                    " argument '{}' should be of type '{}' but is '{}'"
+                    ).format(arg_name, contains_permitted, type(contained))
+
+def extract_text_to_fp(inf, outfp,
+                    output_type='text', codec='utf-8', laparams = None,
+                    maxpages=0, page_numbers=None, password="", scale=1.0, rotation=0,
+                    layoutmode='normal', output_dir=None, strip_control=False,
+                    debug=False, disable_caching=False, **other):
+    """
+    Parses text from inf-file and writes to outfp file-like object.
+    Takes loads of optional arguments but the defaults are somewhat sane.
+    Beware laparams: Including an empty LAParams is not the same as passing None!
+    Returns nothing, acting as it does on two streams. Use StringIO to get strings.
+    """
+    if six.PY2 and sys.stdin.encoding:
+        password = password.decode(sys.stdin.encoding)
+
+    imagewriter = None
+    if output_dir:
+        imagewriter = ImageWriter(output_dir)
+    
+    rsrcmgr = PDFResourceManager(caching=not disable_caching)
+
+    if output_type == 'text':
+        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+                               imagewriter=imagewriter)
+
+    if six.PY3 and outfp == sys.stdout:
+        outfp = sys.stdout.buffer
+
+    if output_type == 'xml':
+        device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+                              imagewriter=imagewriter,
+                              stripcontrol=strip_control)
+    elif output_type == 'html':
+        device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
+                               layoutmode=layoutmode, laparams=laparams,
+                               imagewriter=imagewriter)
+    elif output_type == 'tag':
+        device = TagExtractor(rsrcmgr, outfp, codec=codec)
+
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    for page in PDFPage.get_pages(inf,
+                                  page_numbers,
+                                  maxpages=maxpages,
+                                  password=password,
+                                  caching=not disable_caching,
+                                  check_extractable=True):
+        page.rotate = (page.rotate + rotation) % 360
+        interpreter.process_page(page)    
+    
+
+def extract_text(files=[], outfile='-',
+                     _py2_no_more_posargs=None,  # Bloody Python2 users need a shim for mandatory keyword args..
+                     output_type='text', codec='utf-8', maxpages=0, page_numbers=None, password="", scale=1.0,
+                     all_texts=None, detect_vertical=None, word_margin=None, char_margin=None, line_margin=None, boxes_flow=None, # LAParams
+                     debug=False, layoutmode='normal', no_laparams=False, rotation=0, output_dir=None,
+                     disable_caching=False, strip_control=False, pagenos=None):
+    if _py2_no_more_posargs is not None:
+        raise ValueError("Too many positional arguments passed.")
+    if not files:
+        raise ValueError("Must provide files to work upon!")
+
+    # == Typechecking ==
+    # You can be sure for this many arguments that typechecking will catch errors.
+    # Yet more Py2 stupidity, should be able to use argument annotations to do
+    # type-checking cleanly, but can't. Not bothering to typecheck everything here.
+    if debug:
+        for arg_name, arg_permitted, contains_permitted in (
+                    ("files", list, str),
+                    ("outfile", str, None),
+                    ("password", str, None),
+                    ("scale", float, None),
+                    ("output_type", str, None),
+                    ("codec", str, None),
+                    ("maxpages", int, None),
+                    ("page_numbers", (type(None), list, set), int)
+                ):
+            arg = locals()[arg_name]
+            assert isinstance(arg, arg_permitted), ("Argument '{}' should be of type(s)"
+                    " '{}' but is type '{}'").format(arg_name, arg_permitted, type(arg))
+            if contains_permitted is not None and arg:
+                for contained in arg:
+                    assert isinstance(contained, contains_permitted), ("Value within"
+                            " argument '{}' should be of type '{}' but is '{}'"
+                            ).format(arg_name, contains_permitted, type(contained))
+    # == Typechecking over ==    
+
+    # If any LAParams group arguments were passed, create an LAParams object and
+    # populate with given args. Otherwise, set it to None.
+    if not no_laparams: 
+        laparams = LAParams()
+        for param in ("all_texts", "detect_vertical", "word_margin", "char_margin", "line_margin", "boxes_flow"):
+            paramv = locals().get(param, None)
+            if paramv is not None:
+                setattr(laparams, param, paramv)
+    else:
+        laparams = None
+
+    imagewriter = None
+    if output_dir:
+        imagewriter = ImageWriter(output_dir)
+
+    if six.PY2 and sys.stdin.encoding:
+        password = password.decode(sys.stdin.encoding)
+    
+    if output_type == "text" and outfile != "-":
+        for override, alttype in (  (".htm", "html"),
+                                    (".html", "html"),
+                                    (".xml", "xml"),
+                                    (".tag", "tag") ):
+            if outfile.endswith(override):
+                output_type = alttype
+    
+    if outfile == "-":
+        outfp = sys.stdout
+        if outfp.encoding is not None:
+            codec = 'utf-8'
+    else:
+        outfp = open(outfile, "wb")
+    
+    rsrcmgr = PDFResourceManager(caching=not disable_caching)
+
+    if output_type == 'text':
+        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+                               imagewriter=imagewriter)
+
+    if six.PY3 and outfp == sys.stdout:
+        outfp = sys.stdout.buffer
+
+    if output_type == 'xml':
+        device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+                              imagewriter=imagewriter,
+                              stripcontrol=strip_control)
+    elif output_type == 'html':
+        device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
+                               layoutmode=layoutmode, laparams=laparams,
+                               imagewriter=imagewriter)
+    elif output_type == 'tag':
+        device = TagExtractor(rsrcmgr, outfp, codec=codec)
+
+    for fname in files:
+        with open(fname, "rb") as fp:
+            interpreter = PDFPageInterpreter(rsrcmgr, device)
+            for page in PDFPage.get_pages(fp,
+                                          page_numbers,
+                                          maxpages=maxpages,
+                                          password=password,
+                                          caching=not disable_caching,
+                                          check_extractable=True):
+                page.rotate = (page.rotate + rotation) % 360
+                interpreter.process_page(page)
+    device.close()
+    return outfp
+
 # main
-def main(argv):
+def main(args=None):
     import argparse
     P = argparse.ArgumentParser(description=__doc__)
-    P.add_argument("files", type=str, nargs="+", help="Files to process.")
+    P.add_argument("files", type=str, default=None, nargs="+", help="Files to process.")
     P.add_argument("-d", "--debug", default=False, action="store_true", help="Debug output.")
     P.add_argument("-p", "--pagenos", type=str, help="Comma-separated list of page numbers to parse. Included for legacy applications, use -P/--page-numbers for more idiomatic argument entry.")
-    P.add_argument("--page-numbers", type=int, nargs="+", help="Alternative to --pagenos with space-separated numbers; supercedes --pagenos where it is used.")
+    P.add_argument("--page-numbers", type=int, default=None, nargs="+", help="Alternative to --pagenos with space-separated numbers; supercedes --pagenos where it is used.")
     P.add_argument("-m", "--maxpages", type=int, default=0, help = "Maximum pages to parse")
     P.add_argument("-P", "--password", type=str, default="", help = "Decryption password for PDF")
-#    P.add_argument("-o", "--outfile", type=argparse.FileType("w"), default=sys.stdout, help="Output file (default stdout)")
     P.add_argument("-o", "--outfile", type=str, default="-", help="Output file (default/'-' is stdout)")
     P.add_argument("-t", "--output_type", type=str, default="text", help = "Output type: text|html|xml|tag (default is text)")
     P.add_argument("-c", "--codec", type=str, default="utf-8", help = "Text encoding")
@@ -43,7 +209,7 @@ def main(argv):
     P.add_argument("-O", "--output-dir", default=None, help="Output directory for images")
     P.add_argument("-C", "--disable-caching", default=False, action="store_true", help="Disable caching")
     P.add_argument("-S", "--strip-control", default=False, action="store_true", help="Strip control in XML mode")
-    A = P.parse_args()
+    A = P.parse_args(args=args)
 
     if A.no_laparams:
         laparams = None
@@ -58,7 +224,7 @@ def main(argv):
         A.page_numbers = set([x-1 for x in A.page_numbers])
     if A.pagenos:
         A.page_numbers = set([int(x)-1 for x in A.pagenos.split(",")])
-    
+        
     imagewriter = None
     if A.output_dir:
         imagewriter = ImageWriter(A.output_dir)
@@ -67,56 +233,25 @@ def main(argv):
         A.password = A.password.decode(sys.stdin.encoding)
 
     if A.output_type == "text" and A.outfile != "-":
-        for override, alttype in (  (".htm", "html"),
+        for override, alttype in (  (".htm",  "html"),
                                     (".html", "html"),
-                                    (".xml", "xml"),
-                                    (".tag", "tag") ):
+                                    (".xml",  "xml" ),
+                                    (".tag",  "tag" ) ):
             if A.outfile.endswith(override):
                 A.output_type = alttype
 
     if A.outfile == "-":
         outfp = sys.stdout
         if outfp.encoding is not None:
+            # Why ignore outfp.encoding? :-/ stupid cathal?
             A.codec = 'utf-8'
-            #A.codec = outfp.encoding
     else:
         outfp = open(A.outfile, "wb")
 
-    rsrcmgr = PDFResourceManager(caching=not A.disable_caching)
-
-    if A.output_type == 'text':
-        device = TextConverter(rsrcmgr, outfp, codec=A.codec, laparams=laparams,
-                               imagewriter=imagewriter)
-    elif A.output_type == 'xml':
-        if six.PY3 and outfp == sys.stdout:
-            outfp = sys.stdout.buffer
-        device = XMLConverter(rsrcmgr, outfp, codec=A.codec, laparams=laparams,
-                              imagewriter=imagewriter,
-                              stripcontrol=A.strip_control)
-    elif A.output_type == 'html':
-        if six.PY3 and outfp == sys.stdout:
-            outfp = sys.stdout.buffer
-        device = HTMLConverter(rsrcmgr, outfp, codec=A.codec, scale=A.scale,
-                               layoutmode=A.layoutmode, laparams=laparams,
-                               imagewriter=imagewriter)
-    elif A.output_type == 'tag':
-        if six.PY3 and outfp == sys.stdout:
-            outfp = sys.stdout.buffer
-        device = TagExtractor(rsrcmgr, outfp, codec=A.codec)
-    else:
-        return usage()
-    for fname in A.files:
-        fp = open(fname, 'rb')
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-        for page in PDFPage.get_pages(fp, A.page_numbers,
-                                      maxpages=A.maxpages, password=A.password,
-                                      caching=not A.disable_caching, check_extractable=True):
-            page.rotate = (page.rotate + A.rotation) % 360
-            interpreter.process_page(page)
-        fp.close()
-    device.close()
+    ## Test Code
+    outfp = extract_text(**vars(A))
     outfp.close()
-    return
+    return None
 
 def main_old(argv):
     import getopt
@@ -222,4 +357,4 @@ def main_old(argv):
     return
 
 #if __name__ == '__main__': sys.exit(main_old(sys.argv))
-if __name__ == '__main__': sys.exit(main(sys.argv))
+if __name__ == '__main__': sys.exit(main())

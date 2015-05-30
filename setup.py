@@ -2,13 +2,14 @@
 #from distutils.core import setup
 from setuptools import setup
 from pdfminer import __version__
+import sys
 
 setup(
     name='pdfminer.six',
     version=__version__,
     packages=['pdfminer',],
     package_data={'pdfminer': ['cmap/*.pickle.gz']},
-    requires=['six', 'chardet'],
+    requires=['six', 'chardet'] if sys.version_info.major>2 else ['six'],
     description='PDF parser and analyzer',
     long_description='''fork of PDFMiner using six for Python 2+3 compatibility
     
