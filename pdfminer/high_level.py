@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Functions that encapsulate "usual" use-cases for pdfminer, for use making
 bundled scripts and for using pdfminer as a module for routine tasks.

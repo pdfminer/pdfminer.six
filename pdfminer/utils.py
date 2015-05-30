@@ -10,6 +10,9 @@ INF = (1<<31) - 1
 import six  #Python 2+3 compatibility
 import chardet  # For str encoding detection in Py3
 
+if six.PY3:
+    unicode = str
+
 def make_compat_bytes(in_str):
     "In Py2, does nothing. In Py3, converts to bytes, encoding to unicode."
     assert isinstance(in_str, str)
@@ -20,7 +23,7 @@ def make_compat_bytes(in_str):
 
 def make_compat_str(in_str):
     "In Py2, does nothing. In Py3, converts to string, guessing encoding."
-    assert isinstance(in_str, (bytes, str))
+    assert isinstance(in_str, (bytes, str, unicode))
     if six.PY3 and isinstance(in_str, bytes):
         enc = chardet.detect(in_str)
         in_str = in_str.decode(enc['encoding'])
@@ -29,7 +32,7 @@ def make_compat_str(in_str):
 def compatible_encode_method(bytesorstring, encoding='utf-8', erraction='ignore'):
     "When Py2 str.encode is called, it often means bytes.encode in Py3. This does either."
     if six.PY2:
-        assert isinstance(bytesorstring, str), ("Error: Assumed was calling"
+        assert isinstance(bytesorstring, (str, unicode)), ("Error: Assumed was calling"
             " encode() on a string in Py2: {}").format(type(bytesorstring))
         return bytesorstring.encode(encoding, erraction)
     if six.PY3:
