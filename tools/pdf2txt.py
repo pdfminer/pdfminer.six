@@ -31,6 +31,7 @@ def _check_arg():
                     " argument '{}' should be of type '{}' but is '{}'"
                     ).format(arg_name, contains_permitted, type(contained))
 
+
 def extract_text_to_fp(inf, outfp,
                     output_type='text', codec='utf-8', laparams = None,
                     maxpages=0, page_numbers=None, password="", scale=1.0, rotation=0,
@@ -131,9 +132,6 @@ def extract_text(files=[], outfile='-',
     if output_dir:
         imagewriter = ImageWriter(output_dir)
 
-#    if six.PY2 and sys.stdin.encoding:
-#        password = password.decode(sys.stdin.encoding)
-    
     if output_type == "text" and outfile != "-":
         for override, alttype in (  (".htm", "html"),
                                     (".html", "html"),
@@ -149,39 +147,10 @@ def extract_text(files=[], outfile='-',
     else:
         outfp = open(outfile, "wb")
     
-#    rsrcmgr = PDFResourceManager(caching=not disable_caching)
-
-#    if output_type == 'text':
-#        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
-#                               imagewriter=imagewriter)
-
-#    if six.PY3 and outfp == sys.stdout:
-#        outfp = sys.stdout.buffer
-
-#    if output_type == 'xml':
-#        device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
-#                              imagewriter=imagewriter,
-#                              stripcontrol=strip_control)
-#    elif output_type == 'html':
-#        device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
-#                               layoutmode=layoutmode, laparams=laparams,
-#                               imagewriter=imagewriter)
-#    elif output_type == 'tag':
-#        device = TagExtractor(rsrcmgr, outfp, codec=codec)
 
     for fname in files:
         with open(fname, "rb") as fp:
             extract_text_to_fp(fp, **locals())
-#            interpreter = PDFPageInterpreter(rsrcmgr, device)
-#            for page in PDFPage.get_pages(fp,
-#                                          page_numbers,
-#                                          maxpages=maxpages,
-#                                          password=password,
-#                                          caching=not disable_caching,
-#                                          check_extractable=True):
-#                page.rotate = (page.rotate + rotation) % 360
-#                interpreter.process_page(page)
-#    device.close()
     return outfp
 
 # main
@@ -254,108 +223,5 @@ def main(args=None):
     outfp.close()
     return None
 
-def main_old(argv):
-    import getopt
-    def usage():
-        print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output]'
-               ' [-C] [-n] [-A] [-V] [-M char_margin] [-L line_margin] [-W word_margin]'
-               ' [-F boxes_flow] [-Y layout_mode] [-O output_dir] [-R rotation] [-S]'
-               ' [-t text|html|xml|tag] [-c codec] [-s scale]'
-               ' file ...' % argv[0])
-        return 100
-    try:
-        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:CnAVM:L:W:F:Y:O:R:St:c:s:')
-    except getopt.GetoptError:
-        return usage()
-    if not args: return usage()
-    # input option
-    password = ''
-    pagenos = set()
-    maxpages = 0
-    # output option
-    outfile = None
-    outtype = None
-    imagewriter = None
-    rotation = 0
-    stripcontrol = False
-    layoutmode = 'normal'
-    codec = 'utf-8'
-    pageno = 1
-    scale = 1
-    caching = True
-    showpageno = True
-    laparams = LAParams()
-    for (k, v) in opts:
-        if k == '-d': logging.getLogger().setLevel(logging.DEBUG)
-        elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
-        elif k == '-m': maxpages = int(v)
-        elif k == '-P': password = v
-        elif k == '-o': outfile = v
-        elif k == '-C': caching = False
-        elif k == '-n': laparams = None
-        elif k == '-A': laparams.all_texts = True
-        elif k == '-V': laparams.detect_vertical = True
-        elif k == '-M': laparams.char_margin = float(v)
-        elif k == '-L': laparams.line_margin = float(v)
-        elif k == '-W': laparams.word_margin = float(v)
-        elif k == '-F': laparams.boxes_flow = float(v)
-        elif k == '-Y': layoutmode = v
-        elif k == '-O': imagewriter = ImageWriter(v)
-        elif k == '-R': rotation = int(v)
-        elif k == '-S': stripcontrol = True
-        elif k == '-t': outtype = v
-        elif k == '-c': codec = v
-        elif k == '-s': scale = float(v)
-    #
 
-    if six.PY2 and sys.stdin.encoding:
-        password = password.decode(sys.stdin.encoding)
-
-    rsrcmgr = PDFResourceManager(caching=caching)
-    if not outtype:
-        outtype = 'text'
-        if outfile:
-            if outfile.endswith('.htm') or outfile.endswith('.html'):
-                outtype = 'html'
-            elif outfile.endswith('.xml'):
-                outtype = 'xml'
-            elif outfile.endswith('.tag'):
-                outtype = 'tag'
-    if outfile:
-        outfp = open(outfile, 'wb')
-    else:
-        outfp = sys.stdout
-        if outfp.encoding is not None:
-            codec = None
-    if outtype == 'text':
-        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
-                               imagewriter=imagewriter)
-    elif outtype == 'xml':
-        device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
-                              imagewriter=imagewriter,
-                              stripcontrol=stripcontrol)
-    elif outtype == 'html':
-        device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
-                               layoutmode=layoutmode, laparams=laparams,
-                               imagewriter=imagewriter)
-    elif outtype == 'tag':
-        if six.PY3 and outfp == sys.stdout:
-            outfp = sys.stdout.buffer
-        device = TagExtractor(rsrcmgr, outfp, codec=codec)
-    else:
-        return usage()
-    for fname in args:
-        fp = open(fname, 'rb')
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-        for page in PDFPage.get_pages(fp, pagenos,
-                                      maxpages=maxpages, password=password,
-                                      caching=caching, check_extractable=True):
-            page.rotate = (page.rotate+rotation) % 360
-            interpreter.process_page(page)
-        fp.close()
-    device.close()
-    outfp.close()
-    return
-
-#if __name__ == '__main__': sys.exit(main_old(sys.argv))
 if __name__ == '__main__': sys.exit(main())
