@@ -131,8 +131,8 @@ def extract_text(files=[], outfile='-',
     if output_dir:
         imagewriter = ImageWriter(output_dir)
 
-    if six.PY2 and sys.stdin.encoding:
-        password = password.decode(sys.stdin.encoding)
+#    if six.PY2 and sys.stdin.encoding:
+#        password = password.decode(sys.stdin.encoding)
     
     if output_type == "text" and outfile != "-":
         for override, alttype in (  (".htm", "html"),
@@ -149,38 +149,39 @@ def extract_text(files=[], outfile='-',
     else:
         outfp = open(outfile, "wb")
     
-    rsrcmgr = PDFResourceManager(caching=not disable_caching)
+#    rsrcmgr = PDFResourceManager(caching=not disable_caching)
 
-    if output_type == 'text':
-        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
-                               imagewriter=imagewriter)
+#    if output_type == 'text':
+#        device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+#                               imagewriter=imagewriter)
 
-    if six.PY3 and outfp == sys.stdout:
-        outfp = sys.stdout.buffer
+#    if six.PY3 and outfp == sys.stdout:
+#        outfp = sys.stdout.buffer
 
-    if output_type == 'xml':
-        device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
-                              imagewriter=imagewriter,
-                              stripcontrol=strip_control)
-    elif output_type == 'html':
-        device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
-                               layoutmode=layoutmode, laparams=laparams,
-                               imagewriter=imagewriter)
-    elif output_type == 'tag':
-        device = TagExtractor(rsrcmgr, outfp, codec=codec)
+#    if output_type == 'xml':
+#        device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+#                              imagewriter=imagewriter,
+#                              stripcontrol=strip_control)
+#    elif output_type == 'html':
+#        device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
+#                               layoutmode=layoutmode, laparams=laparams,
+#                               imagewriter=imagewriter)
+#    elif output_type == 'tag':
+#        device = TagExtractor(rsrcmgr, outfp, codec=codec)
 
     for fname in files:
         with open(fname, "rb") as fp:
-            interpreter = PDFPageInterpreter(rsrcmgr, device)
-            for page in PDFPage.get_pages(fp,
-                                          page_numbers,
-                                          maxpages=maxpages,
-                                          password=password,
-                                          caching=not disable_caching,
-                                          check_extractable=True):
-                page.rotate = (page.rotate + rotation) % 360
-                interpreter.process_page(page)
-    device.close()
+            extract_text_to_fp(fp, **locals())
+#            interpreter = PDFPageInterpreter(rsrcmgr, device)
+#            for page in PDFPage.get_pages(fp,
+#                                          page_numbers,
+#                                          maxpages=maxpages,
+#                                          password=password,
+#                                          caching=not disable_caching,
+#                                          check_extractable=True):
+#                page.rotate = (page.rotate + rotation) % 360
+#                interpreter.process_page(page)
+#    device.close()
     return outfp
 
 # main
