@@ -14,7 +14,7 @@ def run(datapath,filename,options=None):
         s='pdf2txt -o%s %s %s'%(o,options,i)
     else:
          s='pdf2txt -o%s %s'%(o,i)
-    pdf2txt.main(s.split(' '))
+    pdf2txt.main(s.split(' ')[1:])
 
 class TestDumpPDF():
     

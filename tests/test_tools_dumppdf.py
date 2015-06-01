@@ -1,9 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import six
 
 import nose, logging, os
 
-import tools.dumppdf as dumppdf
+if six.PY3:
+    from tools import dumppdf
+elif six.PY2:
+    import os, sys
+    sys.path.append(os.path.abspath(os.path.curdir))
+    import tools.dumppdf as dumppdf
 
 path=os.path.dirname(os.path.abspath(__file__))+'/'
 

@@ -3,9 +3,43 @@
 Miscellaneous Routines.
 """
 import struct
-INF=2147483647 #from sys import maxint as INF #doesn't work anymore under Python3, but PDF still uses 32 bits ints
+# from sys import maxint as INF #doesn't work anymore under Python3,
+# but PDF still uses 32 bits ints
+INF = (1<<31) - 1
 
-import six #Python 2+3 compatibility
+import six  #Python 2+3 compatibility
+
+if six.PY3:
+    import chardet  # For str encoding detection in Py3
+    unicode = str
+
+def make_compat_bytes(in_str):
+    "In Py2, does nothing. In Py3, converts to bytes, encoding to unicode."
+    assert isinstance(in_str, str)
+    if six.PY2:
+        return in_str
+    else:
+        return in_str.encode()
+
+def make_compat_str(in_str):
+    "In Py2, does nothing. In Py3, converts to string, guessing encoding."
+    assert isinstance(in_str, (bytes, str, unicode))
+    if six.PY3 and isinstance(in_str, bytes):
+        enc = chardet.detect(in_str)
+        in_str = in_str.decode(enc['encoding'])
+    return in_str
+
+def compatible_encode_method(bytesorstring, encoding='utf-8', erraction='ignore'):
+    "When Py2 str.encode is called, it often means bytes.encode in Py3. This does either."
+    if six.PY2:
+        assert isinstance(bytesorstring, (str, unicode)), ("Error: Assumed was calling"
+            " encode() on a string in Py2: {}").format(type(bytesorstring))
+        return bytesorstring.encode(encoding, erraction)
+    if six.PY3:
+        if isinstance(bytesorstring, str): return bytesorstring
+        assert isinstance(bytesorstring, bytes), ("Error: Assumed was calling"
+            " encode() on a bytes in Py3: {}").format(type(bytesorstring))
+        return bytesorstring.decode(encoding, erraction)
 
 ##  PNG Predictor
 ##
