@@ -34,7 +34,7 @@ Features
 How to Install
 --------------
 
- * Install Python 2.6 or newer. (**Python 3 is not supported.**)
+ * Install Python 2.6 or newer. (**For Python 3 support have a look at [pdfminer.six](https://github.com/goulu/pdfminer)**).
  * Download the source code.
  * Unpack it.
  * Run `setup.py`:
