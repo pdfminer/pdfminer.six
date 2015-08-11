@@ -9,7 +9,7 @@ setup(
     version=__version__,
     packages=['pdfminer',],
     package_data={'pdfminer': ['cmap/*.pickle.gz']},
-    requires=['six', 'chardet'] if sys.version_info.major>2 else ['six'],
+    install_requires=['six', 'chardet'] if sys.version_info.major>2 else ['six'],
     description='PDF parser and analyzer',
     long_description='''fork of PDFMiner using six for Python 2+3 compatibility
     
