@@ -9,6 +9,7 @@ from .pdftypes import dict_value
 from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument
 from .pdfdocument import PDFTextExtractionNotAllowed
+from .settings import ENFORCE_CHECK_EXTRACTABLE
 
 import six # Python 2+3 compatibility
 
@@ -120,8 +121,9 @@ class PDFPage(object):
         # Create a PDF document object that stores the document structure.
         doc = PDFDocument(parser, password=password, caching=caching)
         # Check if the document allows text extraction. If not, abort.
-        if check_extractable and not doc.is_extractable:
-            raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fp)
+        if ENFORCE_CHECK_EXTRACTABLE:
+            if check_extractable and not doc.is_extractable:
+                raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fp)
         # Process each page contained in the document.
         for (pageno, page) in enumerate(klass.create_pages(doc)):
             if pagenos and (pageno not in pagenos):

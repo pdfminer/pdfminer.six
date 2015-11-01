@@ -19,7 +19,7 @@ from .psparser import PSEOF
 from .psparser import literal_name
 from .psparser import LIT
 from .psparser import KWD
-from .psparser import STRICT
+from .settings import STRICT
 from .pdftypes import PDFException
 from .pdftypes import PDFTypeError
 from .pdftypes import PDFStream
