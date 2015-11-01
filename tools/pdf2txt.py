@@ -7,7 +7,6 @@ import logging
 import six
 import pdfminer.settings
 pdfminer.settings.STRICT = False
-pdfminer.settings.ENFORCE_CHECK_EXTRACTABLE = False
 import pdfminer.high_level
 import pdfminer.layout
 

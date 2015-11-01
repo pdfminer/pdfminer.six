@@ -6,4 +6,3 @@ except ImportError:
 
 # Get defaults from django settings
 STRICT = getattr(django_settings, 'PDF_MINER_IS_STRICT', True)
-ENFORCE_CHECK_EXTRACTABLE = True
