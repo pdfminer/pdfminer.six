@@ -9,7 +9,6 @@ from .pdftypes import dict_value
 from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument
 from .pdfdocument import PDFTextExtractionNotAllowed
-from .settings import
 
 import six # Python 2+3 compatibility
 

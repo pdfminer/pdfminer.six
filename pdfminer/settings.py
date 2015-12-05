@@ -1,6 +1,6 @@
 try:
     from django.conf import django_settings
-except ImportError:
+except (ImportError, NameError) as e:
     # in case it's not a django project
     django_settings = None
 
