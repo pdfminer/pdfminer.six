@@ -5,6 +5,8 @@ Converts PDF text content (though not images containing text) to plain text, htm
 import sys
 import logging
 import six
+import pdfminer.settings
+pdfminer.settings.STRICT = False
 import pdfminer.high_level
 import pdfminer.layout
 
@@ -24,7 +26,7 @@ def extract_text(files=[], outfile='-',
 
     # If any LAParams group arguments were passed, create an LAParams object and
     # populate with given args. Otherwise, set it to None.
-    if not no_laparams: 
+    if not no_laparams:
         laparams = pdfminer.layout.LAParams()
         for param in ("all_texts", "detect_vertical", "word_margin", "char_margin", "line_margin", "boxes_flow"):
             paramv = locals().get(param, None)
@@ -44,14 +46,14 @@ def extract_text(files=[], outfile='-',
                                     (".tag", "tag") ):
             if outfile.endswith(override):
                 output_type = alttype
-    
+
     if outfile == "-":
         outfp = sys.stdout
         if outfp.encoding is not None:
             codec = 'utf-8'
     else:
         outfp = open(outfile, "wb")
-    
+
 
     for fname in files:
         with open(fname, "rb") as fp:
@@ -90,7 +92,7 @@ def main(args=None):
         A.page_numbers = set([x-1 for x in A.page_numbers])
     if A.pagenos:
         A.page_numbers = set([int(x)-1 for x in A.pagenos.split(",")])
-        
+
     imagewriter = None
     if A.output_dir:
         imagewriter = ImageWriter(A.output_dir)

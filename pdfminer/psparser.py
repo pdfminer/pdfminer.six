@@ -5,12 +5,8 @@ import re
 import logging
 
 import six # Python 2+3 compatibility
-try:
-    from django.conf import settings
-except ImportError:
-    # in case it's not a django project
-    settings = None
 
+from .settings import STRICT
 
 def bytesindex(s,i,j=None):
     """implements s[i], s[i:], s[i:j] for Python2 and Python3"""
@@ -21,7 +17,6 @@ def bytesindex(s,i,j=None):
 
 from .utils import choplist
 
-STRICT = getattr(settings, 'PDF_MINER_IS_STRICT', True)
 
 ##  PS Exceptions
 ##

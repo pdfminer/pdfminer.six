@@ -8,7 +8,7 @@ from .ccitt import ccittfaxdecode
 from .psparser import PSException
 from .psparser import PSObject
 from .psparser import LIT
-from .psparser import STRICT
+from .settings import STRICT
 from .utils import apply_png_predictor
 from .utils import isnumber
 

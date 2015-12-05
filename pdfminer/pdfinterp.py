@@ -12,7 +12,7 @@ from .psparser import keyword_name
 from .psparser import PSStackParser
 from .psparser import LIT
 from .psparser import KWD
-from .psparser import STRICT
+from .settings import STRICT
 from .pdftypes import PDFException
 from .pdftypes import PDFStream
 from .pdftypes import PDFObjRef
