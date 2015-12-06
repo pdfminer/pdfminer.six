@@ -12,7 +12,7 @@ from .psparser import PSStackParser
 from .psparser import PSEOF
 from .psparser import LIT
 from .psparser import KWD
-from .psparser import STRICT
+from .settings import STRICT
 from .psparser import PSLiteral
 from .psparser import literal_name
 from .pdftypes import PDFException
