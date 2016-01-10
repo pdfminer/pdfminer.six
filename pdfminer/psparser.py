@@ -6,7 +6,7 @@ import logging
 
 import six # Python 2+3 compatibility
 
-from .settings import STRICT
+from . import settings
 
 def bytesindex(s,i,j=None):
     """implements s[i], s[i:], s[i:j] for Python2 and Python3"""
@@ -134,7 +134,7 @@ KEYWORD_DICT_END = KWD(b'>>')
 
 def literal_name(x):
     if not isinstance(x, PSLiteral):
-        if STRICT:
+        if settings.STRICT:
             raise PSTypeError('Literal required: %r' % x)
         else:
             name=x
@@ -149,7 +149,7 @@ def literal_name(x):
 
 def keyword_name(x):
     if not isinstance(x, PSKeyword):
-        if STRICT:
+        if settings.STRICT:
             raise PSTypeError('Keyword required: %r' % x)
         else:
             name=x
@@ -592,7 +592,7 @@ class PSStackParser(PSBaseParser):
                 try:
                     self.push(self.end_type('a'))
                 except PSTypeError:
-                    if STRICT:
+                    if settings.STRICT:
                         raise
             elif token == KEYWORD_DICT_BEGIN:
                 # begin dictionary
@@ -607,7 +607,7 @@ class PSStackParser(PSBaseParser):
                     d = dict((literal_name(k), v) for (k, v) in choplist(2, objs) if v is not None)
                     self.push((pos, d))
                 except PSTypeError:
-                    if STRICT:
+                    if settings.STRICT:
                         raise
             elif token == KEYWORD_PROC_BEGIN:
                 # begin proc
@@ -617,7 +617,7 @@ class PSStackParser(PSBaseParser):
                 try:
                     self.push(self.end_type('p'))
                 except PSTypeError:
-                    if STRICT:
+                    if settings.STRICT:
                         raise
             elif isinstance(token,PSKeyword):
                 logging.debug('do_keyword: pos=%r, token=%r, stack=%r', pos, token, self.curstack)
