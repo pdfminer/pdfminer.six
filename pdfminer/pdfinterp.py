@@ -12,7 +12,7 @@ from .psparser import keyword_name
 from .psparser import PSStackParser
 from .psparser import LIT
 from .psparser import KWD
-from .settings import STRICT
+from . import settings
 from .pdftypes import PDFException
 from .pdftypes import PDFStream
 from .pdftypes import PDFObjRef
@@ -167,14 +167,14 @@ class PDFResourceManager(object):
             font = self._cached_fonts[objid]
         else:
             logging.info('get_font: create: objid=%r, spec=%r', objid, spec)
-            if STRICT:
+            if settings.STRICT:
                 if spec['Type'] is not LITERAL_FONT:
                     raise PDFFontError('Type is not /Font')
             # Create a Font object.
             if 'Subtype' in spec:
                 subtype = literal_name(spec['Subtype'])
             else:
-                if STRICT:
+                if settings.STRICT:
                     raise PDFFontError('Font Subtype is not specified.')
                 subtype = 'Type1'
             if subtype in ('Type1', 'MMType1'):
@@ -199,7 +199,7 @@ class PDFResourceManager(object):
                         subspec[k] = resolve1(spec[k])
                 font = self.get_font(None, subspec)
             else:
-                if STRICT:
+                if settings.STRICT:
                     raise PDFFontError('Invalid Font spec: %r' % spec)
                 font = PDFType1Font(self, spec)  # this is so wrong!
             if objid and self.caching:
@@ -299,7 +299,7 @@ class PDFContentParser(PSStackParser):
                 self.push((pos, obj))
                 self.push((pos, self.KEYWORD_EI))
             except PSTypeError:
-                if STRICT:
+                if settings.STRICT:
                     raise
         else:
             self.push((pos, token))
@@ -559,7 +559,7 @@ class PDFPageInterpreter(object):
         try:
             self.scs = self.csmap[literal_name(name)]
         except KeyError:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFInterpreterError('Undefined ColorSpace: %r' % name)
         return
 
@@ -568,7 +568,7 @@ class PDFPageInterpreter(object):
         try:
             self.ncs = self.csmap[literal_name(name)]
         except KeyError:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFInterpreterError('Undefined ColorSpace: %r' % name)
         return
 
@@ -607,7 +607,7 @@ class PDFPageInterpreter(object):
         if self.scs:
             n = self.scs.ncomponents
         else:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFInterpreterError('No colorspace specified!')
             n = 1
         self.pop(n)
@@ -617,7 +617,7 @@ class PDFPageInterpreter(object):
         if self.ncs:
             n = self.ncs.ncomponents
         else:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFInterpreterError('No colorspace specified!')
             n = 1
         self.pop(n)
@@ -698,7 +698,7 @@ class PDFPageInterpreter(object):
         try:
             self.textstate.font = self.fontmap[literal_name(fontid)]
         except KeyError:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFInterpreterError('Undefined Font id: %r' % fontid)
             self.textstate.font = self.rsrcmgr.get_font(None, {})
         self.textstate.fontsize = fontsize
@@ -748,7 +748,7 @@ class PDFPageInterpreter(object):
     def do_TJ(self, seq):
         #print >>sys.stderr, 'TJ(%r): %r' % (seq, self.textstate)
         if self.textstate.font is None:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFInterpreterError('No font specified!')
             return
         self.device.render_string(self.textstate, seq)
@@ -793,7 +793,7 @@ class PDFPageInterpreter(object):
         try:
             xobj = stream_value(self.xobjmap[xobjid])
         except KeyError:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
             return
         logging.info('Processing xobj: %r', xobj)
@@ -872,7 +872,7 @@ class PDFPageInterpreter(object):
                         logging.debug('exec: %s', name)
                         func()
                 else:
-                    if STRICT:
+                    if settings.STRICT:
                         raise PDFInterpreterError('Unknown operator: %r' % name)
             else:
                 self.push(obj)

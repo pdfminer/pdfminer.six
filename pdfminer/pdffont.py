@@ -12,7 +12,7 @@ from .psparser import PSStackParser
 from .psparser import PSEOF
 from .psparser import LIT
 from .psparser import KWD
-from .settings import STRICT
+from . import settings
 from .psparser import PSLiteral
 from .psparser import literal_name
 from .pdftypes import PDFException
@@ -574,7 +574,7 @@ class PDFType1Font(PDFSimpleFont):
         try:
             self.basefont = literal_name(spec['BaseFont'])
         except KeyError:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFFontError('BaseFont is missing')
             self.basefont = 'unknown'
         try:
@@ -632,11 +632,11 @@ class PDFType3Font(PDFSimpleFont):
 # PDFCIDFont
 class PDFCIDFont(PDFFont):
 
-    def __init__(self, rsrcmgr, spec, STRICT=False):
+    def __init__(self, rsrcmgr, spec, strict=settings.STRICT):
         try:
             self.basefont = literal_name(spec['BaseFont'])
         except KeyError:
-            if STRICT:
+            if strict:
                 raise PDFFontError('BaseFont is missing')
             self.basefont = 'unknown'
         self.cidsysteminfo = dict_value(spec.get('CIDSystemInfo', {}))
@@ -645,19 +645,19 @@ class PDFCIDFont(PDFFont):
         try:
             name = literal_name(spec['Encoding'])
         except KeyError:
-            if STRICT:
+            if strict:
                 raise PDFFontError('Encoding is unspecified')
             name = 'unknown'
         try:
             self.cmap = CMapDB.get_cmap(name)
         except CMapDB.CMapNotFound as e:
-            if STRICT:
+            if strict:
                 raise PDFFontError(e)
             self.cmap = CMap()
         try:
             descriptor = dict_value(spec['FontDescriptor'])
         except KeyError:
-            if STRICT:
+            if strict:
                 raise PDFFontError('FontDescriptor is missing')
             descriptor = {}
         ttf = None

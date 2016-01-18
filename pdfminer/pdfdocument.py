@@ -19,7 +19,7 @@ from .psparser import PSEOF
 from .psparser import literal_name
 from .psparser import LIT
 from .psparser import KWD
-from .settings import STRICT
+from . import settings
 from .pdftypes import PDFException
 from .pdftypes import PDFTypeError
 from .pdftypes import PDFStream
@@ -196,7 +196,7 @@ class PDFXRefFallback(PDFXRef):
                 try:
                     n = stream['N']
                 except KeyError:
-                    if STRICT:
+                    if settings.STRICT:
                         raise PDFSyntaxError('N is not defined: %r' % stream)
                     n = 0
                 parser1 = PDFStreamParser(stream.get_data())
@@ -582,7 +582,7 @@ class PDFDocument(object):
         else:
             raise PDFSyntaxError('No /Root object! - Is this really a PDF?')
         if self.catalog.get('Type') is not LITERAL_CATALOG:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFSyntaxError('Catalog not found!')
         return
 
@@ -620,12 +620,12 @@ class PDFDocument(object):
 
     def _get_objects(self, stream):
         if stream.get('Type') is not LITERAL_OBJSTM:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFSyntaxError('Not a stream object: %r' % stream)
         try:
             n = stream['N']
         except KeyError:
-            if STRICT:
+            if settings.STRICT:
                 raise PDFSyntaxError('N is not defined: %r' % stream)
             n = 0
         parser = PDFStreamParser(stream.get_data())
