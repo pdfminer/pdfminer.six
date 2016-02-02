@@ -1,0 +1,14 @@
+*.class
+*.pyc
+*.pyo
+.svn
+_svn
+.pythoscope
+.ipynb_checkpoints
+.settings
+_update.bat
+docs/_build
+/Goulib.egg-info/
+/build/
+/dist/
+/pdfminer.six.egg-info/
