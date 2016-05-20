@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import zlib
+import logging
 from .lzw import lzwdecode
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
@@ -13,6 +14,8 @@ from .utils import apply_png_predictor
 from .utils import isnumber
 
 import six #Python 2+3 compatibility
+
+log = logging.getLogger(__name__)
 
 LITERAL_CRYPT = LIT('Crypt')
 
@@ -161,8 +164,7 @@ def dict_value(x):
     x = resolve1(x)
     if not isinstance(x, dict):
         if settings.STRICT:
-            import logging
-            logging.error('PDFTypeError : Dict required: %r', x)
+            log.error('PDFTypeError : Dict required: %r', x)
             raise PDFTypeError('Dict required: %r' % x)
         return {}
     return x
