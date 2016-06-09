@@ -31,7 +31,10 @@ from .encodingdb import name2unicode
 from .utils import choplist
 from .utils import nunpack
 
-import six #Python 2+3 compatibility
+import six  #Python 2+3 compatibility
+
+log = logging.getLogger(__name__)
+
 
 class CMapError(Exception):
     pass
@@ -91,7 +94,7 @@ class CMap(CMapBase):
         return
 
     def decode(self, code):
-        logging.debug('decode: %r, %r', self, code)
+        log.debug('decode: %r, %r', self, code)
         d = self.code2cid
         for i in six.iterbytes(code):
             if i in d:
@@ -141,7 +144,7 @@ class UnicodeMap(CMapBase):
         return '<UnicodeMap: %s>' % self.attrs.get('CMapName')
 
     def get_unichr(self, cid):
-        logging.debug('get_unichr: %r, %r', self, cid)
+        log.debug('get_unichr: %r, %r', self, cid)
         return self.cid2unichr[cid]
 
     def dump(self, out=sys.stdout):
@@ -228,7 +231,7 @@ class CMapDB(object):
     @classmethod
     def _load_data(klass, name):
         filename = '%s.pickle.gz' % name
-        logging.info('loading: %r', name)
+        log.info('loading: %r', name)
         cmap_paths = (os.environ.get('CMAP_PATH', '/usr/share/pdfminer/'),
                       os.path.join(os.path.dirname(__file__), 'cmap'),)
         for directory in cmap_paths:

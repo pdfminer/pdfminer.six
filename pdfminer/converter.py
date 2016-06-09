@@ -23,7 +23,10 @@ from .utils import enc
 from .utils import bbox2str
 from . import utils
 
-import six # Python 2+3 compatibility
+import six  # Python 2+3 compatibility
+
+log = logging.getLogger(__name__)
+
 
 ##  PDFLayoutAnalyzer
 ##
@@ -119,7 +122,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return item.adv
 
     def handle_undefined_char(self, font, cid):
-        logging.info('undefined: %r, %r', font, cid)
+        log.info('undefined: %r, %r', font, cid)
         return '(cid:%d)' % cid
 
     def receive_layout(self, ltpage):
