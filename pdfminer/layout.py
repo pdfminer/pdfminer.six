@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import logging
 from .utils import INF
 from .utils import Plane
 from .utils import get_bound
@@ -356,9 +355,6 @@ class LTTextLine(LTTextContainer):
         LTContainer.add(self, LTAnno('\n'))
         return
 
-    def group_line_neighbors(self, objs, ratio):
-        return objs
-
     def find_neighbors(self, plane, ratio):
         raise NotImplementedError
 
@@ -372,67 +368,21 @@ class LTTextLineHorizontal(LTTextLine):
 
     def add(self, obj):
         if isinstance(obj, LTChar) and self.word_margin:
-            # Add a space between words if separated by more than word_margin 
-            # apart.  Use the max of obj width and height so narrow letters 
-            # (i, l) are treated like wider letters, reducing extra spaces
             margin = self.word_margin * max(obj.width, obj.height)
             if self._x1 < obj.x0-margin:
-                # But only do it if there is not already a space.
-                last_was_alpha = self._objs and \
-                                isinstance(self._objs[-1], LTChar) and \
-                                self._objs[-1]._text == ' '
-                if not last_was_alpha:
-                    LTContainer.add(self, LTAnno(' '))
+                LTContainer.add(self, LTAnno(' '))
         self._x1 = obj.x1
         LTTextLine.add(self, obj)
         return
 
-    def is_neighbor(self, obj, d, same_line = False):
-        # Horizontal lines can only connect with horizontal lines
-        if not isinstance(obj, LTTextLineHorizontal):
-            return False
-        # Ensure they are vertically close
-        if abs(obj.height-self.height) >= d:
-            return False
-        # Ensure that they have similar start or stop x positions
-        if not (abs(obj.x0-self.x0) < d or
-                abs(obj.x1-self.x1) < d or 
-            # Or that they intersect eachother horizontally.
-                (obj.x0 < self.x0 and obj.x1 > self.x0) or
-                (obj.x0 > self.x0 and obj.x0 < self.x1)):
-            return False
-        if same_line and not (
-            # Ensure they have similar 
-                (obj.y0 == self.y0) or (obj.y1 == self.y1) or
-                (obj.y0 < self.y0 and obj.y0 > self.y1) or
-                (obj.y0 > self.y0 and obj.y1 < self.y0)):
-            return False
-        return True
-        
-    def group_line_neighbors(self, objs, ratio):
-        '''
-        Given a set of objects that may or may not be on the same line as this,
-        add the objects that are on the same line.
-        
-        Return the objects that are not on the same line.
-        '''
-        d = ratio*self.height
-        other_lines = []
-        for o in objs:
-            if o == self:
-                other_lines.append(o)
-            elif self.is_neighbor(o, d, same_line=True):
-                [self.add(oc) for oc in o]
-                # Clear out the old line
-                o._objs = []
-            else:
-                other_lines.append(o)
-        return other_lines
-    
     def find_neighbors(self, plane, ratio):
         d = ratio*self.height
         objs = plane.find((self.x0, self.y0-d, self.x1, self.y1+d))
-        return [o for o in objs if self.is_neighbor(o, d)]
+        return [obj for obj in objs
+                if (isinstance(obj, LTTextLineHorizontal) and
+                    abs(obj.height-self.height) < d and
+                    (abs(obj.x0-self.x0) < d or
+                     abs(obj.x1-self.x1) < d))]
 
 
 class LTTextLineVertical(LTTextLine):
@@ -563,9 +513,7 @@ class LTLayoutContainer(LTContainer):
                           (min(obj0.height, obj1.height) * laparams.line_overlap <
                            obj0.voverlap(obj1)) and
                           (obj0.hdistance(obj1) <
-                           max(obj0.width, obj1.width) * laparams.char_margin) or
-                           # If the line is zero width, default to horizontal
-                           (max(obj0.width, obj1.width) == 0 and obj1.x0 >= obj0.x0))
+                           max(obj0.width, obj1.width) * laparams.char_margin))
                 
                 # valign: obj0 and obj1 is vertically aligned.
                 #
@@ -587,10 +535,7 @@ class LTLayoutContainer(LTContainer):
                           (min(obj0.width, obj1.width) * laparams.line_overlap <
                            obj0.hoverlap(obj1)) and
                           (obj0.vdistance(obj1) <
-                           max(obj0.height, obj1.height) * laparams.char_margin) and
-                           # Don't start a vertical line if the previous letter is 
-                           # whitspace. Prevents double spaces being caught as vert lines.
-                           (line or obj0._text.strip()))
+                           max(obj0.height, obj1.height) * laparams.char_margin))
                 
                 if ((halign and isinstance(line, LTTextLineHorizontal)) or
                     (valign and isinstance(line, LTTextLineVertical))):
@@ -619,25 +564,19 @@ class LTLayoutContainer(LTContainer):
         yield line
         return
 
-    # group_textlines: group neighbouring lines to textboxes.
+    # group_textlines: group neighboring lines to textboxes.
     def group_textlines(self, laparams, lines):
         plane = Plane(self.bbox)
         plane.extend(lines)
         boxes = {}
-        # for line in plane:
-            # print "line", ("".join([s._text for s in line])).encode('ascii', 'ignore')
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
-            if line not in neighbors: 
-                logging.error("Line cannot find itself: %s"%line)
-                continue
-            neighbors = line.group_line_neighbors(neighbors, laparams.line_margin)
+            if line not in neighbors: continue
             members = []
             for obj1 in neighbors:
                 members.append(obj1)
                 if obj1 in boxes:
                     members.extend(boxes.pop(obj1))
-            # print "members: ", ["".join([o._text for o in line]) for line in members]
             if isinstance(line, LTTextLineHorizontal):
                 box = LTTextBoxHorizontal()
             else:
@@ -692,19 +631,8 @@ class LTLayoutContainer(LTContainer):
             (c,d,_,_) = t
             return (c,d)
         
-        # The algorithm below still takes O(n^2) :(
-        # For now, if we have many boxes, split them into two and perform them 
-        # separately. This will cause bugs, but will prevent hanging.
-        if len(boxes) > 100:
-            boxes = sorted(boxes, key=lambda obj: obj.y0)
-            # Divide in two, then perform grouping
-            # print "Making Recursive Call %d"%len(boxes)
-            bot_boxes = self.group_textboxes(laparams, boxes[:len(boxes)/2])
-            top_boxes = self.group_textboxes(laparams, boxes[len(boxes)/2:])
-            boxes = bot_boxes + top_boxes
-            
+        # XXX this still takes O(n^2)  :(
         dists = []
-        # Calculate the distance between each box
         for i in xrange(len(boxes)):
             obj1 = boxes[i]
             for j in xrange(i+1, len(boxes)):
@@ -714,20 +642,16 @@ class LTLayoutContainer(LTContainer):
         dists = csort(dists, key=key_obj)
         plane = Plane(self.bbox)
         plane.extend(boxes)
-        # Start with the two closest objects
         while dists:
             (c, d, obj1, obj2) = dists.pop(0)
-            # If there are any objects in between, then skip these two
             if c == 0 and isany(obj1, obj2):
                 dists.append((1, d, obj1, obj2))
                 continue
-            # Group these two closest objects
             if (isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or
                 isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL))):
                 group = LTTextGroupTBRL([obj1, obj2])
             else:
                 group = LTTextGroupLRTB([obj1, obj2])
-            # Remove the two individual objects
             plane.remove(obj1)
             plane.remove(obj2)
             dists = [ (c,d,obj1,obj2) for (c,d,obj1,obj2) in dists
