@@ -1,15 +1,9 @@
 # GNUMakefile for test
 
-UNAME_S := $(shell uname -o)
-CNVTXT=:
-ifeq ($(UNAME_S),Cygwin)
-	CNVTXT=unix2dos
-endif
-
 RM=rm -f
 CMP=:
 ECHO=echo
-PYTHON=python
+PYTHON=python2
 
 PDF2TXT=PYTHONPATH=.. $(PYTHON) ../tools/pdf2txt.py -p1 -V
 
@@ -46,13 +40,10 @@ tests:
 	for i in $(TESTS); do \
 		$(ECHO) $$i; \
 		$(PDF2TXT) -t html -o $$i.html $$i.pdf || exit 1; \
-		$(CNVTXT) $$i.html || exit 1; \
 		$(CMP) $$i.html $$i.html.ref || exit 1; \
 		$(PDF2TXT) -t xml -o $$i.xml $$i.pdf || exit 1; \
-		$(CNVTXT) $$i.xml || exit 1; \
 		$(CMP) $$i.xml $$i.xml.ref || exit 1; \
-		$(PDF2TXT) -t text -o $$i.txt $$i.pdf || exit 1; \
-		$(CNVTXT) $$i.txt || exit 1; \
+		$(PDF2TXT) -t text -o $$i.txt $$i.pdf || eixt 1; \
 		$(CMP) $$i.txt $$i.txt.ref || exit 1; \
 	done
 
