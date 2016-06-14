@@ -223,8 +223,13 @@ class PDFStream(PDFObject):
             return []
         if not isinstance(filters, list):
             filters = [filters]
-        if not isinstance(params, list):
+        if not params:
+            # Make sure the parameters list is the same as filters.
+            params = [{}]*len(filters)
+        elif not isinstance(params, list):
             params = [params]
+        if STRICT and len(params) != len(filters):
+            raise PDFException("Parameters len filter mismatch")
         return zip(filters, params)
 
     def decode(self):
