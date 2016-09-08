@@ -7,7 +7,7 @@ Unicode characters instead of using decimal/hex character code.
 
 The following data was taken by
 
-  $ wget http://www.adobe.com/devnet/opentype/archives/glyphlist.txt
+  $ wget https://partners.adobe.com/public/developer/en/opentype/glyphlist.txt
   $ python tools/conv_glyphlist.py glyphlist.txt > glyphlist.py
 
 """
