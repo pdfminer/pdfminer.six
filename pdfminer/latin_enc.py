@@ -162,6 +162,7 @@ ENCODING = [
   ('mu', None, 181, 181, 181),
   ('multiply', None, None, 215, 215),
   ('n', 110, 110, 110, 110),
+  ('nbspace',  None, 202, 160, None),
   ('nine', 57, 57, 57, 57),
   ('ntilde', None, 150, 241, 241),
   ('numbersign', 35, 35, 35, 35),
