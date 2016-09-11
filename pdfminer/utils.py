@@ -11,7 +11,7 @@ from sys import maxint as INF
 def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     if bitspercomponent != 8:
         # unsupported
-        raise ValueError(bitspercomponent)
+        raise ValueError("Unsupported `bitspercomponent': %d"%bitspercomponent)
     nbytes = colors*columns*bitspercomponent//8
     i = 0
     buf = b''
@@ -43,7 +43,7 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
                 line2 += chr(c)
         else:
             # unsupported
-            raise ValueError(ft)
+            raise ValueError("Unsupported predictor value: %d"%ft)
         buf += line2
         line0 = line2
     return buf
