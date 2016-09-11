@@ -223,11 +223,9 @@ class PDFStream(PDFObject):
             return []
         if not isinstance(filters, list):
             filters = [filters]
-        if not params:
+        if not isinstance(params, list):
             # Make sure the parameters list is the same as filters.
-            params = [{}]*len(filters)
-        elif not isinstance(params, list):
-            params = [params]
+            params = [params]*len(filters)
         if STRICT and len(params) != len(filters):
             raise PDFException("Parameters len filter mismatch")
         return zip(filters, params)
