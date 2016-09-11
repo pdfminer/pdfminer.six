@@ -60,7 +60,7 @@ class PSLiteral(PSObject):
         return
 
     def __repr__(self):
-        return '/%s' % self.name
+        return '/%r' % self.name
 
 
 ##  PSKeyword
