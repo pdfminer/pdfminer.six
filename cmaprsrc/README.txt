@@ -5,7 +5,7 @@ to decode text data written in CJK (Chinese, Japanese, Korean) language.
 CMap resources are now available freely from Adobe web site:
 http://opensource.adobe.com/wiki/display/cmap/CMap+Resources
 
-The follwing files were extracted from the downloadable tarballs:
+The following files were extracted from the downloadable tarballs:
 
 cid2code_Adobe_CNS1.txt:
 	http://download.macromedia.com/pub/opensource/cmap/cmapresources_cns1-6.tar.z

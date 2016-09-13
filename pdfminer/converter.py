@@ -185,7 +185,7 @@ class TextConverter(PDFConverter):
         return
 
     # Some dummy functions to save memory/CPU when all that is wanted
-    # is text.  This stops all the image and drawing ouput from being
+    # is text.  This stops all the image and drawing output from being
     # recorded and taking up RAM.
     def render_image(self, name, stream):
         if self.imagewriter is None:

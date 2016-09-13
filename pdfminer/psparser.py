@@ -247,7 +247,7 @@ class PSBaseParser(object):
         return (linepos, linebuf)
 
     def revreadlines(self):
-        """Fetches a next line backword.
+        """Fetches a next line backward.
 
         This is used to locate the trailers at the end of a file.
         """
