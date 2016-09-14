@@ -110,7 +110,7 @@ def decipher_all(decipher, objid, genno, x):
     return x
 
 
-# Type cheking
+# Type checking
 def int_value(x):
     x = resolve1(x)
     if not isinstance(x, int):
