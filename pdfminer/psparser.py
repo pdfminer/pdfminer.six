@@ -138,7 +138,7 @@ KEYWORD_DICT_END = KWD(b'>>')
 def literal_name(x):
     if not isinstance(x, PSLiteral):
         if settings.STRICT:
-            raise PSTypeError('Literal required: %r' % x)
+            raise PSTypeError('Literal required: %r' % (x,))
         else:
             name=x
     else:
