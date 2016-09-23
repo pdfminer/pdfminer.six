@@ -46,8 +46,9 @@ def compatible_encode_method(bytesorstring, encoding='utf-8', erraction='ignore'
 def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     if bitspercomponent != 8:
         # unsupported
-        raise ValueError(bitspercomponent)
-    nbytes = colors*columns*bitspercomponent//8
+        raise ValueError("Unsupported `bitspercomponent': %d" %
+                         bitspercomponent)
+    nbytes = colors * columns * bitspercomponent // 8
     i = 0
     buf = b''
     line0 = b'\x00' * columns
@@ -86,7 +87,7 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
                 line2 += six.int2byte(c)
         else:
             # unsupported
-            raise ValueError(ft)
+            raise ValueError("Unsupported predictor value: %d" % ft)
         buf += line2
         line0 = line2
     return buf

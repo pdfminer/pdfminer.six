@@ -229,7 +229,7 @@ class PDFStream(PDFObject):
         if not isinstance(filters, list):
             filters = [filters]
         if not isinstance(params, list):
-            params = [params]
+            params = [params] * len(filters)
         return zip(filters, params)
 
     def decode(self):

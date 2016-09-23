@@ -4,15 +4,19 @@ from setuptools import setup
 from pdfminer import __version__
 import sys
 
+requires = ['six', 'pycrypto']
+if sys.version_info >= (3, 0):
+    requires.append('chardet')
+
 setup(
     name='pdfminer.six',
     version=__version__,
-    packages=['pdfminer',],
+    packages=['pdfminer'],
     package_data={'pdfminer': ['cmap/*.pickle.gz']},
-    install_requires=['six', 'chardet'] if sys.version_info >= (3, 0) else ['six'],
+    install_requires=requires,
     description='PDF parser and analyzer',
     long_description='''fork of PDFMiner using six for Python 2+3 compatibility
-    
+
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting
 and analyzing text data. PDFMiner allows to obtain
