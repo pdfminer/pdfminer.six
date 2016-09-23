@@ -45,13 +45,13 @@ tests:
 		$(CMP) $$i.html $$i.html.ref || exit 1; \
 		$(PDF2TXT) -t xml -o $$i.xml $$i.pdf || exit 1; \
 		$(CMP) $$i.xml $$i.xml.ref || exit 1; \
-		$(PDF2TXT) -t text -o $$i.txt $$i.pdf || eixt 1; \
+		$(PDF2TXT) -t text -o $$i.txt $$i.pdf || exit 1; \
 		$(CMP) $$i.txt $$i.txt.ref || exit 1; \
 		$(PDF2TXT3) -t html -o $$i.html $$i.pdf || exit 1; \
 		$(CMP) $$i.html $$i.html.ref || exit 1; \
 		$(PDF2TXT3) -t xml -o $$i.xml $$i.pdf || exit 1; \
 		$(CMP) $$i.xml $$i.xml.ref || exit 1; \
-		$(PDF2TXT3) -t text -o $$i.txt $$i.pdf || eixt 1; \
+		$(PDF2TXT3) -t text -o $$i.txt $$i.pdf || exit 1; \
 		$(CMP) $$i.txt $$i.txt.ref || exit 1; \
 	done
 
