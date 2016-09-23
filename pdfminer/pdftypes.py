@@ -9,6 +9,7 @@ from .ccitt import ccittfaxdecode
 from .psparser import PSException
 from .psparser import PSObject
 from .psparser import LIT
+from .psparser import STRICT
 from . import settings
 from .utils import apply_png_predictor
 from .utils import isnumber
@@ -229,7 +230,10 @@ class PDFStream(PDFObject):
         if not isinstance(filters, list):
             filters = [filters]
         if not isinstance(params, list):
+            # Make sure the parameters list is the same as filters.
             params = [params] * len(filters)
+        if STRICT and len(params) != len(filters):
+            raise PDFException("Parameters len filter mismatch")
         return zip(filters, params)
 
     def decode(self):
