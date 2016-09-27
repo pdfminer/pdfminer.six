@@ -268,7 +268,7 @@ def decode_text(s):
     if s.startswith(b'\xfe\xff'):
         return six.text_type(s[2:], 'utf-16be', 'ignore')
     else:
-        return ''.join(PDFDocEncoding[ord(c)] for c in s)
+        return ''.join(PDFDocEncoding[c] for c in s)
 
 
 # enc
