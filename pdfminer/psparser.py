@@ -159,10 +159,7 @@ def keyword_name(x):
     else:
         name=x.name
         if six.PY3:
-            try:
-                name = str(name,'utf-8')
-            except:
-                pass
+            name = str(name,'utf-8','ignore')
     return name
 
 
