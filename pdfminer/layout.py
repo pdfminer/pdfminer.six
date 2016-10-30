@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 from .utils import INF
 from .utils import Plane
 from .utils import get_bound

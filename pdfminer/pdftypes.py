@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import zlib
 import logging
 from .lzw import lzwdecode

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import logging
 from io import BytesIO
 from .psparser import PSStackParser

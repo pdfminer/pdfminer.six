@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import sys
 
 def prof_main(argv):

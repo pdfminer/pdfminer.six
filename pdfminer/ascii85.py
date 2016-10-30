@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 
 """ Python implementation of ASCII85/ASCIIHex decoder (Adobe version).
 

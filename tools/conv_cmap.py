@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import sys
 try:
     import cPickle as pickle

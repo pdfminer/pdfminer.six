@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import re
 import struct
 import logging

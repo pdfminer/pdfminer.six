@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 
 """ Mappings from Adobe glyph names to Unicode characters.
 

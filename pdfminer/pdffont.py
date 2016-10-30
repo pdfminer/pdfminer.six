@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import sys
 import struct
 from io import BytesIO
