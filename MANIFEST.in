@@ -1,4 +1,5 @@
 include Makefile
+include LICENSE
 include *.md
 include *.py
 graft docs

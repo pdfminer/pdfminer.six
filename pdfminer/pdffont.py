@@ -543,7 +543,7 @@ class PDFSimpleFont(PDFFont):
             encoding = LITERAL_STANDARD_ENCODING
         if isinstance(encoding, dict):
             name = literal_name(encoding.get('BaseEncoding', LITERAL_STANDARD_ENCODING))
-            diff = list_value(encoding.get('Differences', None))
+            diff = list_value(encoding.get('Differences', []))
             self.cid2unicode = EncodingDB.get_encoding(name, diff)
         else:
             self.cid2unicode = EncodingDB.get_encoding(literal_name(encoding))
