@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 from .psparser import LIT
 
 import six #Python 2+3 compatibility

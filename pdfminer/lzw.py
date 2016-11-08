@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 from io import BytesIO
 
 import six  #Python 2+3 compatibility

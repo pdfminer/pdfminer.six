@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 from .pdffont import PDFUnicodeNotDefined
 
 from . import utils

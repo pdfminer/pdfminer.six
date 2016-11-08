@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # CCITT Fax decoder
 #
 # Bugs: uncompressed mode untested.

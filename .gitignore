@@ -12,3 +12,6 @@ docs/_build
 /build/
 /dist/
 /pdfminer.six.egg-info/
+tests/*.xml
+tests/*.txt
+.idea/

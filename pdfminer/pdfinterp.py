@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import re
 import logging
 from io import BytesIO

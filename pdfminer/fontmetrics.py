@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 
 """ Font metrics for the Adobe core 14 fonts.
 

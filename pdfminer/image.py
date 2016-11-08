@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import struct
 import os
 import os.path

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 
 """ Python implementation of Arcfour encryption algorithm.
 See https://en.wikipedia.org/wiki/RC4

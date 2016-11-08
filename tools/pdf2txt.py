@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """
 Converts PDF text content (though not images containing text) to plain text, html, xml or "tags".
 """

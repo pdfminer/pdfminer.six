@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import logging
 from .psparser import LIT
 from .pdftypes import PDFObjectNotFound
