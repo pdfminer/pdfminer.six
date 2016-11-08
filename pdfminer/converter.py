@@ -85,7 +85,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
             (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
             if x0 == x1 or y0 == y1:
-                self.cur_item.add(LTLine(gstate.linewidth, (x0, y0), (x1, y1)))
+                self.cur_item.add(LTLine(gstate.linewidth, (x0, y0), (x1, y1),
+                    stroke, fill, evenodd, gstate.scolor, gstate.ncolor))
                 return
         if shape == 'mlllh':
             # rectangle
@@ -99,14 +100,16 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             (x3, y3) = apply_matrix_pt(self.ctm, (x3, y3))
             if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
                 (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
-                self.cur_item.add(LTRect(gstate.linewidth, (x0, y0, x2, y2)))
+                self.cur_item.add(LTRect(gstate.linewidth, (x0, y0, x2, y2),
+                    stroke, fill, evenodd, gstate.scolor, gstate.ncolor))
                 return
         # other shapes
         pts = []
         for p in path:
             for i in range(1, len(p), 2):
                 pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
-        self.cur_item.add(LTCurve(gstate.linewidth, pts))
+        self.cur_item.add(LTCurve(gstate.linewidth, pts, stroke, fill,
+            evenodd, gstate.scolor, gstate.ncolor))
         return
 
     def render_char(self, matrix, font, fontsize, scaling, rise, cid):
