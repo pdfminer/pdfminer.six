@@ -214,7 +214,7 @@ class TextConverter(PDFConverter):
         return
 
     # Some dummy functions to save memory/CPU when all that is wanted
-    # is text.  This stops all the image and drawing ouput from being
+    # is text.  This stops all the image and drawing output from being
     # recorded and taking up RAM.
     def render_image(self, name, stream):
         if self.imagewriter is None:
@@ -349,7 +349,7 @@ class HTMLConverter(PDFConverter):
             if self._font is not None:
                 self.write('</span>')
             self.write('<span style="font-family: %s; font-size:%dpx">' %
-                       (fontname, fontsize * self.scale * self.fontscale))
+                       (enc(fontname), fontsize * self.scale * self.fontscale))
             self._font = font
         self.write_text(text)
         return

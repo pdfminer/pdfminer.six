@@ -1,4 +1,4 @@
-##  Makefile (for maintainance purpose)
+##  Makefile (for maintenance purpose)
 ##
 
 PACKAGE=pdfminer

@@ -1,7 +1,9 @@
 include Makefile
 include LICENSE
+include *.txt
 include *.md
 include *.py
+graft cmaprsrc
 graft docs
 graft pdfminer
 graft samples
