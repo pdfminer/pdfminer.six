@@ -3,7 +3,7 @@ PDFMiner.six
 
 PDFMiner.six is a fork of PDFMiner using six for Python 2+3 compatibility
 
-[![Build Status](https://travis-ci.org/goulu/pdfminer.svg?branch=master)](https://travis-ci.org/goulu/pdfminer)
+[![Build Status](https://travis-ci.org/pdfminer/pdfminer.six.svg?branch=master)](https://travis-ci.org/pdfminer/pdfminer.six)
 
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting 
@@ -14,9 +14,9 @@ It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
 PDF parser that can be used for other purposes than text analysis.
 
- * Webpage: https://euske.github.io/pdfminer/
+ * Webpage: https://github.com/pdfminer/
  * Download (PyPI): https://pypi.python.org/pypi/pdfminer.six/
- * Demo WebApp: http://pdf2html.tabesugi.net:8080/
+ * Demo WebApp: http://pdf2html.tabesugi.net:8080/ (broken?)
 
 
 Features
