@@ -30,13 +30,9 @@ class TestDumpPDF():
         run('../samples/nonfree/','dmca')
         
     def test_3(self):
-        nose.SkipTest()
-        return # takes too much time
         run('../samples/nonfree/','f1040nr')
 
     def test_4(self):
-        nose.SkipTest()
-        return # takes too much time
         run('../samples/nonfree/','i1040nr')
         
     def test_5(self):
