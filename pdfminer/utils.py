@@ -211,7 +211,7 @@ def choplist(n, seq):
 
 # nunpack
 def nunpack(s, default=0):
-    """Unpacks 1 to 4 byte integers (big endian)."""
+    """Unpacks 1 to 4 or 8 byte integers (big endian)."""
     l = len(s)
     if not l:
         return default
@@ -223,6 +223,8 @@ def nunpack(s, default=0):
         return struct.unpack('>L', b'\x00'+s)[0]
     elif l == 4:
         return struct.unpack('>L', s)[0]
+    elif l == 8:
+        return struct.unpack('>Q', s)[0]
     else:
         raise TypeError('invalid length: %d' % l)
 
@@ -269,7 +271,7 @@ def decode_text(s):
     if s.startswith(b'\xfe\xff'):
         return six.text_type(s[2:], 'utf-16be', 'ignore')
     else:
-        return ''.join(PDFDocEncoding[ord(c)] for c in s)
+        return ''.join(PDFDocEncoding[c] for c in s)
 
 
 # enc
