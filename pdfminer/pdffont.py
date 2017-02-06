@@ -640,8 +640,8 @@ class PDFCIDFont(PDFFont):
                 raise PDFFontError('BaseFont is missing')
             self.basefont = 'unknown'
         self.cidsysteminfo = dict_value(spec.get('CIDSystemInfo', {}))
-        self.cidcoding = '%s-%s' % (self.cidsysteminfo.get('Registry', b'unknown').decode("latin1"),
-                                    self.cidsysteminfo.get('Ordering', b'unknown').decode("latin1"))
+        self.cidcoding = '%s-%s' % (resolve1(self.cidsysteminfo.get('Registry', b'unknown')).decode("latin1"),
+                                    resolve1(self.cidsysteminfo.get('Ordering', b'unknown')).decode("latin1"))
         try:
             name = literal_name(spec['Encoding'])
         except KeyError:

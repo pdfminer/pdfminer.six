@@ -1,4 +1,4 @@
-STRICT = True
+STRICT = False
 
 try:
     from django.conf import settings
