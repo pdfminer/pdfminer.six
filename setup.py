@@ -27,7 +27,7 @@ PDF parser that can be used for other purposes instead of text analysis.''',
     license='MIT/X',
     author='Yusuke Shinyama + Philippe Guglielmetti',
     author_email='pdfminer@goulu.net',
-    url='http://github.com/goulu/pdfminer',
+    url='http://github.com/pdfminer/pdfminer',
     scripts=[
     'tools/pdf2txt.py',
     'tools/dumppdf.py',
