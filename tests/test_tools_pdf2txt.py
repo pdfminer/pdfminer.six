@@ -18,7 +18,6 @@ def run(datapath,filename,options=None):
     pdf2txt.main(s.split(' ')[1:])
 
 class TestDumpPDF():
-    
 
     def test_1(self):
         run('../samples/','jo')
@@ -40,6 +39,9 @@ class TestDumpPDF():
         
     def test_6(self):
         run('../samples/nonfree/','naacl06-shinyama')
+
+    def test_7(self):
+        run('../samples/contrib/','stamp-no')
 
 if __name__ == '__main__':
     nose.runmodule()
