@@ -13,7 +13,17 @@
 import sys
 import array
 
-import six #Python 2+3 compatibility
+import six  #Python 2+3 compatibility
+
+if six.PY3:
+    def get_bytes(data):
+        for byte in data:
+            yield byte
+else:
+    def get_bytes(data):
+        for char in data:
+            yield ord(char)
+
 
 ##  BitParser
 ##
@@ -40,10 +50,9 @@ class BitParser(object):
         return
 
     def feedbytes(self, data):
-        for c in data:
-            b = ord(c)
+        for byte in get_bytes(data):
             for m in (128, 64, 32, 16, 8, 4, 2, 1):
-                self._parse_bit(b & m)
+                self._parse_bit(byte & m)
         return
 
     def _parse_bit(self, x):
@@ -328,11 +337,10 @@ class CCITTG4Parser(BitParser):
         return
 
     def feedbytes(self, data):
-        for c in data:
-            b = ord(c)
+        for byte in get_bytes(data):
             try:
                 for m in (128, 64, 32, 16, 8, 4, 2, 1):
-                    self._parse_bit(b & m)
+                    self._parse_bit(byte & m)
             except self.ByteSkip:
                 self._accept = self._parse_mode
                 self._state = self.MODE

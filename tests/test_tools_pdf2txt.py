@@ -18,28 +18,34 @@ def run(datapath,filename,options=None):
     pdf2txt.main(s.split(' ')[1:])
 
 class TestDumpPDF():
-    
 
     def test_1(self):
         run('../samples/','jo')
         run('../samples/','simple1')
         run('../samples/','simple2')
         run('../samples/','simple3')
-        
+
     def test_2(self):
         run('../samples/nonfree/','dmca')
-        
+
     def test_3(self):
         run('../samples/nonfree/','f1040nr')
 
     def test_4(self):
         run('../samples/nonfree/','i1040nr')
-        
+
     def test_5(self):
         run('../samples/nonfree/','kampo')
-        
+
     def test_6(self):
         run('../samples/nonfree/','naacl06-shinyama')
 
+    # this test works on Windows but on Linux & Travis-CI it says
+    # PDFSyntaxError: No /Root object! - Is this really a PDF?
+    # TODO: Find why
+    """
+    def test_7(self):
+        run('../samples/contrib/','stamp-no')
+    """
 if __name__ == '__main__':
     nose.runmodule()

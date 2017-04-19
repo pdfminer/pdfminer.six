@@ -175,7 +175,7 @@ def stream_value(x):
     if not isinstance(x, PDFStream):
         if settings.STRICT:
             raise PDFTypeError('PDFStream required: %r' % x)
-        return PDFStream({}, '')
+        return PDFStream({}, b'')
     return x
 
 

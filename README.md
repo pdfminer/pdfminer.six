@@ -16,7 +16,6 @@ PDF parser that can be used for other purposes than text analysis.
 
  * Webpage: https://github.com/pdfminer/
  * Download (PyPI): https://pypi.python.org/pypi/pdfminer.six/
- * Demo WebApp: http://pdf2html.tabesugi.net:8080/ (broken?)
 
 
 Features
@@ -36,14 +35,12 @@ Features
 How to Install
 --------------
 
- * Install Python 2.7 or newer. (Python 3.4 is supported in pdfminer.six)
- * Download the source code.
- * Unpack it.
- * Run `setup.py`:
+ * Install Python 2.7 or newer. (Python 3.x is supported in pdfminer.six)
+ * Install
 
-    $ python setup.py install
+    $ pip install pdfminer.six
 
- * Do the following test:
+ * Run the following test:
 
     $ pdf2txt.py samples/simple1.pdf
 
@@ -76,35 +73,11 @@ but it's also possible to extract some meaningful contents (e.g. images).
 (For details, refer to the html document.)
 
 
-API Changes
------------
-
-As of November 2013, there were a few changes made to the PDFMiner API
-prior to October 2013. This is the result of code restructuring.  Here
-is a list of the changes:
-
- * PDFDocument class is moved to pdfdocument.py.
- * PDFDocument class now takes a PDFParser object as an argument.
-   PDFDocument.set_parser() and PDFParser.set_document() is removed.
- * PDFPage class is moved to pdfpage.py
- * process_pdf function is implemented as a class method PDFPage.get_pages.
-
-
 TODO
 ----
 
  * PEP-8 and PEP-257 conformance.
  * Better documentation.
- * Crypt stream filter support.
-
-
-Related Projects
-----------------
-
- * <a href="http://pybrary.net/pyPdf/">pyPdf</a>
- * <a href="http://www.foolabs.com/xpdf/">xpdf</a>
- * <a href="http://pdfbox.apache.org/">pdfbox</a>
- * <a href="http://mupdf.com/">mupdf</a>
 
 
 Terms and Conditions
