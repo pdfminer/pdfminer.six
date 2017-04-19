@@ -644,10 +644,24 @@ class PDFDocument(object):
     def _getobj_parse(self, pos, objid):
         self._parser.seek(pos)
         (_, objid1) = self._parser.nexttoken()  # objid
-        if objid1 != objid:
-            raise PDFSyntaxError('objid mismatch: %r=%r' % (objid1, objid))
         (_, genno) = self._parser.nexttoken()  # genno
         (_, kwd) = self._parser.nexttoken()
+        # #### hack around malformed pdf files
+        # copied from https://github.com/jaepil/pdfminer3k/blob/master/pdfminer/pdfparser.py#L399
+        #to solve https://github.com/pdfminer/pdfminer.six/issues/56
+        #assert objid1 == objid, (objid, objid1)
+        if objid1 != objid:
+            x = []
+            while kwd is not self.KEYWORD_OBJ:
+                (_,kwd) = self._parser.nexttoken()
+                x.append(kwd)
+            if x:
+                objid1 = x[-2]
+                genno = x[-1]
+        # #### end hack around malformed pdf files
+        if objid1 != objid:
+            raise PDFSyntaxError('objid mismatch: %r=%r' % (objid1, objid))
+
         if kwd != KWD(b'obj'):
             raise PDFSyntaxError('Invalid object spec: offset=%r' % pos)
         (_, obj) = self._parser.nextobject()

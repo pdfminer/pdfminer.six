@@ -47,5 +47,8 @@ class TestDumpPDF():
     def test_7(self):
         run('../samples/contrib/','stamp-no')
     """
+ 
+    def test_8(self):
+        run('../samples/contrib/','2b','-A -t xml')
 if __name__ == '__main__':
     nose.runmodule()
