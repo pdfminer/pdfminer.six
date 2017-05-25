@@ -48,8 +48,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
     def end_page(self, page):
-        assert not self._stack
-        assert isinstance(self.cur_item, LTPage)
+        assert not self._stack, str(len(stack))
+        assert isinstance(self.cur_item, LTPage), str(type(self.cur_item))
         if self.laparams is not None:
             self.cur_item.analyze(self.laparams)
         self.pageno += 1
@@ -63,13 +63,13 @@ class PDFLayoutAnalyzer(PDFTextDevice):
 
     def end_figure(self, _):
         fig = self.cur_item
-        assert isinstance(self.cur_item, LTFigure)
+        assert isinstance(self.cur_item, LTFigure), str(type(self.cur_item))
         self.cur_item = self._stack.pop()
         self.cur_item.add(fig)
         return
 
     def render_image(self, name, stream):
-        assert isinstance(self.cur_item, LTFigure)
+        assert isinstance(self.cur_item, LTFigure), str(type(self.cur_item))
         item = LTImage(name, stream,
                        (self.cur_item.x0, self.cur_item.y0,
                         self.cur_item.x1, self.cur_item.y1))
@@ -115,7 +115,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
     def render_char(self, matrix, font, fontsize, scaling, rise, cid):
         try:
             text = font.to_unichr(cid)
-            assert isinstance(text, six.text_type), text
+            assert isinstance(text, six.text_type), str(type(text))
         except PDFUnicodeNotDefined:
             text = self.handle_undefined_char(font, cid)
         textwidth = font.char_width(cid)
@@ -535,7 +535,7 @@ class XMLConverter(PDFConverter):
                     self.write('<image width="%d" height="%d" />\n' %
                                      (item.width, item.height))
             else:
-                assert 0, item
+                assert False, str(('Unhandled', item))
             return
         render(ltpage)
         return

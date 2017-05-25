@@ -35,7 +35,7 @@ def ascii85decode(data):
                 out += struct.pack('>L', b)
                 n = b = 0
         elif c == b'z':
-            assert n == 0
+            assert n == 0, str(n)
             out += b'\0\0\0\0'
         elif c == b'~':
             if n:
@@ -63,11 +63,11 @@ def asciihexdecode(data):
     def decode(x):
         i=int(x,16)
         return six.int2byte(i)
-    
-    out=b''    
+
+    out=b''
     for x in hex_re.findall(data):
         out+=decode(x)
-        
+
     m = trail_re.search(data)
     if m:
         out+=decode(m.group(1)+b'0')
