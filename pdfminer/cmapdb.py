@@ -80,7 +80,7 @@ class CMap(CMapBase):
         return '<CMap: %s>' % self.attrs.get('CMapName')
 
     def use_cmap(self, cmap):
-        assert isinstance(cmap, CMap)
+        assert isinstance(cmap, CMap), str(type(cmap))
 
         def copy(dst, src):
             for (k, v) in src.iteritems():
@@ -158,7 +158,7 @@ class UnicodeMap(CMapBase):
 class FileCMap(CMap):
 
     def add_code2cid(self, code, cid):
-        assert isinstance(code, str) and isinstance(cid, int)
+        assert isinstance(code, str) and isinstance(cid, int), str((type(code), type(cid)))
         d = self.code2cid
         for c in code[:-1]:
             c = ord(c)
@@ -178,7 +178,7 @@ class FileCMap(CMap):
 class FileUnicodeMap(UnicodeMap):
 
     def add_cid2unichr(self, cid, code):
-        assert isinstance(cid, int)
+        assert isinstance(cid, int), str(type(cid))
         if isinstance(code, PSLiteral):
             # Interpret as an Adobe glyph name.
             self.cid2unichr[cid] = name2unicode(code.name)
@@ -304,7 +304,7 @@ class CMapParser(PSStackParser):
     KEYWORD_ENDBFCHAR = KWD(b'endbfchar')
     KEYWORD_BEGINNOTDEFRANGE = KWD(b'beginnotdefrange')
     KEYWORD_ENDNOTDEFRANGE = KWD(b'endnotdefrange')
-    
+
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_BEGINCMAP:
             self._in_cmap = True
@@ -359,7 +359,7 @@ class CMapParser(PSStackParser):
                 s1 = nunpack(svar)
                 e1 = nunpack(evar)
                 vlen = len(svar)
-                #assert s1 <= e1
+                #assert s1 <= e1, str((s1, e1))
                 for i in range(e1-s1+1):
                     x = sprefix+struct.pack('>L', s1+i)[-vlen:]
                     self.cmap.add_code2cid(x, cid+i)
@@ -386,7 +386,7 @@ class CMapParser(PSStackParser):
                         continue
                 s1 = nunpack(s)
                 e1 = nunpack(e)
-                #assert s1 <= e1
+                #assert s1 <= e1, str((s1, e1))
                 if isinstance(code, list):
                     for i in range(e1-s1+1):
                         self.cmap.add_cid2unichr(s1+i, code[i])

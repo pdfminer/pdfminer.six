@@ -184,7 +184,7 @@ def stream_value(x):
 class PDFStream(PDFObject):
 
     def __init__(self, attrs, rawdata, decipher=None):
-        assert isinstance(attrs, dict)
+        assert isinstance(attrs, dict), str(type(attrs))
         self.attrs = attrs
         self.rawdata = rawdata
         self.decipher = decipher
@@ -236,7 +236,7 @@ class PDFStream(PDFObject):
         return list(zip(filters, params)) #solves https://github.com/pdfminer/pdfminer.six/issues/15
 
     def decode(self):
-        assert self.data is None and self.rawdata is not None
+        assert self.data is None and self.rawdata is not None, str((self.data, self.rawdata))
         data = self.rawdata
         if self.decipher:
             # Handle encryption

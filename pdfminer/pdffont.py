@@ -357,7 +357,7 @@ class CFFFont(object):
                     sid += 1
         elif format == b'\x02':
             # Format 2
-            assert 0
+            assert False, str(('Unhandled', format))
         else:
             raise ValueError('unsupported charset format: %r' % format)
         #print self.code2gid
@@ -444,7 +444,7 @@ class TrueTypeFont(object):
                         for c in range(sc, ec+1):
                             char2gid[c] = (c + idd) & 0xffff
             else:
-                assert 0
+                assert False, str(('Unhandled', fmttype))
         # create unicode map
         unicode_map = FileUnicodeMap()
         for (char, gid) in char2gid.iteritems():

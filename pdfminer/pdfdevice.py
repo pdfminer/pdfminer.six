@@ -171,7 +171,7 @@ class TagExtractor(PDFDevice):
         return
 
     def end_tag(self):
-        assert self._stack
+        assert self._stack, str(self.pageno)
         tag = self._stack.pop(-1)
         out_s = '</%s>' % utils.enc(tag.name)
         self.outfp.write(utils.make_compat_bytes(out_s))

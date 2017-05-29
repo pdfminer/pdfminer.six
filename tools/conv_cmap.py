@@ -53,7 +53,7 @@ class CMapConverter(object):
             if not line: continue
             values = line.split('\t')
             if encs is None:
-                assert values[0] == 'CID'
+                assert values[0] == 'CID', str(values)
                 encs = values
                 continue
 

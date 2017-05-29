@@ -114,36 +114,36 @@ class LTComponent(LTItem):
         return self.width <= 0 or self.height <= 0
 
     def is_hoverlap(self, obj):
-        assert isinstance(obj, LTComponent)
+        assert isinstance(obj, LTComponent), str(type(obj))
         return obj.x0 <= self.x1 and self.x0 <= obj.x1
 
     def hdistance(self, obj):
-        assert isinstance(obj, LTComponent)
+        assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_hoverlap(obj):
             return 0
         else:
             return min(abs(self.x0-obj.x1), abs(self.x1-obj.x0))
 
     def hoverlap(self, obj):
-        assert isinstance(obj, LTComponent)
+        assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_hoverlap(obj):
             return min(abs(self.x0-obj.x1), abs(self.x1-obj.x0))
         else:
             return 0
 
     def is_voverlap(self, obj):
-        assert isinstance(obj, LTComponent)
+        assert isinstance(obj, LTComponent), str(type(obj))
         return obj.y0 <= self.y1 and self.y0 <= obj.y1
 
     def vdistance(self, obj):
-        assert isinstance(obj, LTComponent)
+        assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_voverlap(obj):
             return 0
         else:
             return min(abs(self.y0-obj.y1), abs(self.y1-obj.y0))
 
     def voverlap(self, obj):
-        assert isinstance(obj, LTComponent)
+        assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_voverlap(obj):
             return min(abs(self.y0-obj.y1), abs(self.y1-obj.y0))
         else:
@@ -603,7 +603,7 @@ class LTLayoutContainer(LTContainer):
 
     # group_textboxes: group textboxes hierarchically.
     def group_textboxes(self, laparams, boxes):
-        assert boxes
+        assert boxes, str((laparams, boxes))
 
         def dist(obj1, obj2):
             """A distance function between two TextBoxes.
@@ -666,7 +666,7 @@ class LTLayoutContainer(LTContainer):
                 dists.append((0, dist(group, other), group, other))
             dists = csort(dists, key=key_obj)
             plane.add(group)
-        assert len(plane) == 1
+        assert len(plane) == 1, str(len(plane))
         return list(plane)
 
     def analyze(self, laparams):

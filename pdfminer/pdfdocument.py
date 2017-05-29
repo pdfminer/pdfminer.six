@@ -136,7 +136,7 @@ class PDFXRef(PDFBaseXRef):
     def load_trailer(self, parser):
         try:
             (_, kwd) = parser.nexttoken()
-            assert kwd is KWD(b'trailer')
+            assert kwd is KWD(b'trailer'), str(kwd)
             (_, dic) = parser.nextobject()
         except PSEOF:
             x = parser.pop(1)
@@ -571,7 +571,7 @@ class PDFDocument(object):
                 continue
             # If there's an encryption info, remember it.
             if 'Encrypt' in trailer:
-                #assert not self.encryption
+                #assert not self.encryption, str(self.encryption)
                 self.encryption = (list_value(trailer['ID']),
                                    dict_value(trailer['Encrypt']))
                 self._initialize_password(password)
@@ -649,7 +649,7 @@ class PDFDocument(object):
         # #### hack around malformed pdf files
         # copied from https://github.com/jaepil/pdfminer3k/blob/master/pdfminer/pdfparser.py#L399
         #to solve https://github.com/pdfminer/pdfminer.six/issues/56
-        #assert objid1 == objid, (objid, objid1)
+        #assert objid1 == objid, str((objid1, objid))
         if objid1 != objid:
             x = []
             while kwd is not self.KEYWORD_OBJ:
