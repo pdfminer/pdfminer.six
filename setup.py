@@ -3,7 +3,7 @@ from setuptools import setup
 from pdfminer import __version__
 import sys
 
-requires = ['six', 'pycrypto']
+requires = ['six', 'pycryptodome']
 if sys.version_info >= (3, 0):
     requires.append('chardet')
 
