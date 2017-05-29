@@ -833,7 +833,7 @@ def rijndaelSetupDecrypt(key, keybits):
 
 
 def rijndaelEncrypt(rk, nrounds, plaintext):
-    assert len(plaintext) == 16
+    assert len(plaintext) == 16, str(len(plaintext))
 
     # map byte array block to cipher state
     # and add initial round key:
@@ -931,12 +931,12 @@ def rijndaelEncrypt(rk, nrounds, plaintext):
       rk[p+3])
     ciphertext += PUTU32(s3)
 
-    assert len(ciphertext) == 16
+    assert len(ciphertext) == 16, str(len(ciphertext))
     return ciphertext
 
 
 def rijndaelDecrypt(rk, nrounds, ciphertext):
-    assert len(ciphertext) == 16
+    assert len(ciphertext) == 16, str(len(ciphertext))
 
     # map byte array block to cipher state
     # and add initial round key:
@@ -1034,7 +1034,7 @@ def rijndaelDecrypt(rk, nrounds, ciphertext):
       rk[p+3])
     plaintext += PUTU32(s3)
 
-    assert len(plaintext) == 16
+    assert len(plaintext) == 16, str(len(plaintext))
     return plaintext
 
 
@@ -1049,14 +1049,14 @@ class RijndaelDecryptor(object):
     """
 
     def __init__(self, key, keybits=256):
-        assert len(key) == KEYLENGTH(keybits)
+        assert len(key) == KEYLENGTH(keybits), str((len(key), KEYLENGTH(keybits)))
         (self.rk, self.nrounds) = rijndaelSetupDecrypt(key, keybits)
-        assert len(self.rk) == RKLENGTH(keybits)
-        assert self.nrounds == NROUNDS(keybits)
+        assert len(self.rk) == RKLENGTH(keybits), str((len(self.rk), RKLENGTH(keybits)))
+        assert self.nrounds == NROUNDS(keybits), str((self.nrounds, NROUNDS(keybits)))
         return
 
     def decrypt(self, ciphertext):
-        assert len(ciphertext) == 16
+        assert len(ciphertext) == 16, str(len(ciphertext))
         return rijndaelDecrypt(self.rk, self.nrounds, ciphertext)
 
 
@@ -1064,13 +1064,12 @@ class RijndaelDecryptor(object):
 class RijndaelEncryptor(object):
 
     def __init__(self, key, keybits=256):
-        assert len(key) == KEYLENGTH(keybits)
+        assert len(key) == KEYLENGTH(keybits), str((len(key), KEYLENGTH(keybits)))
         (self.rk, self.nrounds) = rijndaelSetupEncrypt(key, keybits)
-        assert len(self.rk) == RKLENGTH(keybits)
-        assert self.nrounds == NROUNDS(keybits)
+        assert len(self.rk) == RKLENGTH(keybits), str((len(self.rk), RKLENGTH(keybits)))
+        assert self.nrounds == NROUNDS(keybits), str((self.nrounds, NROUNDS(keybits)))
         return
 
     def encrypt(self, plaintext):
-        assert len(plaintext) == 16
+        assert len(plaintext) == 16, str(len(plaintext))
         return rijndaelEncrypt(self.rk, self.nrounds, plaintext)
-
