@@ -3,12 +3,12 @@ PDFMiner.six
 
 PDFMiner.six is a fork of PDFMiner using six for Python 2+3 compatibility
 
-[![Build Status](https://travis-ci.org/pdfminer/pdfminer.six.svg?branch=master)](https://travis-ci.org/pdfminer/pdfminer.six)
+[![Build Status](https://travis-ci.org/pdfminer/pdfminer.six.svg?branch=master)](https://travis-ci.org/pdfminer/pdfminer.six) [![PyPI version](https://img.shields.io/pypi/v/pdfminer.six.svg)](https://pypi.python.org/pypi/pdfminer.six/)
 
 PDFMiner is a tool for extracting information from PDF documents.
-Unlike other PDF-related tools, it focuses entirely on getting 
+Unlike other PDF-related tools, it focuses entirely on getting
 and analyzing text data. PDFMiner allows one to obtain
-the exact location of text in a page, as well as 
+the exact location of text in a page, as well as
 other information such as fonts or lines.
 It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
@@ -66,7 +66,7 @@ You cannot extract any text from a PDF document which does not have extraction p
 
 **dumppdf.py**
 
-dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format. 
+dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format.
 This program is primarily for debugging purposes,
 but it's also possible to extract some meaningful contents (e.g. images).
 
