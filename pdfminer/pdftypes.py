@@ -233,7 +233,13 @@ class PDFStream(PDFObject):
             params = [params] * len(filters)
         if settings.STRICT and len(params) != len(filters):
             raise PDFException("Parameters len filter mismatch")
-        return list(zip(filters, params)) #solves https://github.com/pdfminer/pdfminer.six/issues/15
+        # resolve filter if possible
+        _filters = []
+        for fltr in filters:
+            if hasattr(fltr, 'resolve'):
+                fltr = fltr.resolve()[0]
+            _filters.append(fltr)
+        return list(zip(_filters, params)) #solves https://github.com/pdfminer/pdfminer.six/issues/15
 
     def decode(self):
         assert self.data is None and self.rawdata is not None, str((self.data, self.rawdata))
