@@ -1,5 +1,6 @@
 
 import logging
+from . import settings
 from .psparser import LIT
 from .pdftypes import PDFObjectNotFound
 from .pdftypes import resolve1
@@ -88,12 +89,17 @@ class PDFPage(object):
             for (k, v) in six.iteritems(parent):
                 if k in klass.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
-            if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
+
+            tree_type = tree.get('Type')
+            if tree_type is None and not settings.STRICT:  # See #64
+                tree_type = tree.get('type')
+
+            if tree_type is LITERAL_PAGES and 'Kids' in tree:
                 log.info('Pages: Kids=%r', tree['Kids'])
                 for c in list_value(tree['Kids']):
                     for x in search(c, tree):
                         yield x
-            elif tree.get('Type') is LITERAL_PAGE:
+            elif tree_type is LITERAL_PAGE:
                 log.info('Page: %r', tree)
                 yield (objid, tree)
         pages = False
