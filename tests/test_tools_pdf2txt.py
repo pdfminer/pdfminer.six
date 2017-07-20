@@ -50,5 +50,8 @@ class TestDumpPDF():
  
     def test_8(self):
         run('../samples/contrib/','2b','-A -t xml')
+
+    def test_9(self):
+        run('../samples/nonfree/','175') # https://github.com/pdfminer/pdfminer.six/issues/65
 if __name__ == '__main__':
     nose.runmodule()
