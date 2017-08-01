@@ -494,7 +494,7 @@ class PDFFont(object):
         return False
 
     def decode(self, bytes):
-        return [six.indexbytes(bytes, i) for i,_ in enumerate(bytes)] # map(ord, bytes)
+        return bytearray(bytes)  # map(ord, bytes)
 
     def get_ascent(self):
         return self.ascent * self.vscale
