@@ -15,3 +15,4 @@ docs/_build
 tests/*.xml
 tests/*.txt
 .idea/
+.tox/
