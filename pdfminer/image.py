@@ -13,8 +13,6 @@ def align32(x):
     return ((x+3)//4)*4
 
 
-##  BMPWriter
-##
 class BMPWriter(object):
 
     def __init__(self, fp, bits, width, height):
@@ -33,9 +31,11 @@ class BMPWriter(object):
         self.linesize = align32((self.width*self.bits+7)//8)
         self.datasize = self.linesize * self.height
         headersize = 14+40+ncols*4
-        info = struct.pack('<IiiHHIIIIII', 40, self.width, self.height, 1, self.bits, 0, self.datasize, 0, 0, ncols, 0)
+        info = struct.pack('<IiiHHIIIIII', 40, self.width, self.height, 1,
+                           self.bits, 0, self.datasize, 0, 0, ncols, 0)
         assert len(info) == 40, str(len(info))
-        header = struct.pack('<ccIHHI', b'B', b'M', headersize+self.datasize, 0, 0, headersize)
+        header = struct.pack('<ccIHHI', b'B', b'M', headersize+self.datasize,
+                             0, 0, headersize)
         assert len(header) == 14, str(len(header))
         self.fp.write(header)
         self.fp.write(info)
@@ -57,8 +57,6 @@ class BMPWriter(object):
         return
 
 
-##  ImageWriter
-##
 class ImageWriter(object):
 
     def __init__(self, outdir):
@@ -74,13 +72,14 @@ class ImageWriter(object):
         if len(filters) == 1 and filters[0][0] in LITERALS_DCT_DECODE:
             ext = '.jpg'
         elif (image.bits == 1 or
-              image.bits == 8 and image.colorspace in (LITERAL_DEVICE_RGB, LITERAL_DEVICE_GRAY)):
+              image.bits == 8 and
+              image.colorspace in (LITERAL_DEVICE_RGB, LITERAL_DEVICE_GRAY)):
             ext = '.%dx%d.bmp' % (width, height)
         else:
             ext = '.%d.%dx%d.img' % (image.bits, width, height)
         name = image.name+ext
         path = os.path.join(self.outdir, name)
-        fp=open(path, 'wb')
+        fp = open(path, 'wb')
         if ext == '.jpg':
             raw_data = stream.get_rawdata()
             if LITERAL_DEVICE_CMYK in image.colorspace:

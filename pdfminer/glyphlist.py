@@ -12,7 +12,7 @@ The following data was taken by
 
 """
 
-# ###################################################################################
+# #############################################################################
 # Copyright (c) 1997,1998,2002,2007 Adobe Systems Incorporated
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,7 +42,7 @@ The following data was taken by
 # those concerning merchantability or fitness for a particular purpose or
 # non-infringement of any third party rights regarding the Adobe
 # materials.
-# ###################################################################################
+# #############################################################################
 # Name:          Adobe Glyph List
 # Table version: 2.0
 # Date:          September 20, 2002
@@ -4336,4 +4336,4 @@ glyphname2unicode = {
  'zuhiragana': u'\u305A',
  'zukatakana': u'\u30BA',
 }
-#--end
+# --end
