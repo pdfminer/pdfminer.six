@@ -15,16 +15,11 @@ from .pdftypes import dict_value
 log = logging.getLogger(__name__)
 
 
-##  Exceptions
-##
 class PDFSyntaxError(PDFException):
     pass
 
 
-##  PDFParser
-##
 class PDFParser(PSStackParser):
-
     """
     PDFParser fetch PDF objects from a file stream.
     It can handle indirect references by referring to
@@ -64,14 +59,11 @@ class PDFParser(PSStackParser):
 
         if token in (self.KEYWORD_XREF, self.KEYWORD_STARTXREF):
             self.add_results(*self.pop(1))
-
         elif token is self.KEYWORD_ENDOBJ:
             self.add_results(*self.pop(4))
-
         elif token is self.KEYWORD_NULL:
             # null object
             self.push((pos, None))
-
         elif token is self.KEYWORD_R:
             # reference to indirect object
             try:
@@ -81,7 +73,6 @@ class PDFParser(PSStackParser):
                 self.push((pos, obj))
             except PSSyntaxError:
                 pass
-
         elif token is self.KEYWORD_STREAM:
             # stream object
             ((_, dic),) = self.pop(1)
@@ -106,7 +97,7 @@ class PDFParser(PSStackParser):
             self.seek(pos+objlen)
             while 1:
                 try:
-                    (linepos, line) = self.nextline()
+                    (_, line) = self.nextline()
                 except PSEOF:
                     if settings.STRICT:
                         raise PDFSyntaxError('Unexpected EOF')
@@ -122,10 +113,10 @@ class PDFParser(PSStackParser):
                     data += line
             self.seek(pos+objlen)
             # XXX limit objlen not to exceed object boundary
-            log.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...', pos, objlen, dic, data[:10])
+            log.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...',
+                      pos, objlen, dic, data[:10])
             obj = PDFStream(dic, data, self.doc.decipher)
             self.push((pos, obj))
-
         else:
             # others
             self.push((pos, token))
@@ -133,10 +124,7 @@ class PDFParser(PSStackParser):
         return
 
 
-##  PDFStreamParser
-##
 class PDFStreamParser(PDFParser):
-
     """
     PDFStreamParser is used to parse PDF content streams
     that is contained in each page and has instructions
@@ -154,6 +142,7 @@ class PDFStreamParser(PDFParser):
         return
 
     KEYWORD_OBJ = KWD(b'obj')
+
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_R:
             # reference to indirect object

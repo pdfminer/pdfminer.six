@@ -1,6 +1,7 @@
 
 import zlib
 import logging
+import six
 from .lzw import lzwdecode
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
@@ -13,12 +14,9 @@ from . import settings
 from .utils import apply_png_predictor
 from .utils import isnumber
 
-import six #Python 2+3 compatibility
-
 log = logging.getLogger(__name__)
 
 LITERAL_CRYPT = LIT('Crypt')
-
 # Abbreviation of Filter names in PDF 4.8.6. "Inline Images"
 LITERALS_FLATE_DECODE = (LIT('FlateDecode'), LIT('Fl'))
 LITERALS_LZW_DECODE = (LIT('LZWDecode'), LIT('LZW'))
@@ -29,29 +27,30 @@ LITERALS_CCITTFAX_DECODE = (LIT('CCITTFaxDecode'), LIT('CCF'))
 LITERALS_DCT_DECODE = (LIT('DCTDecode'), LIT('DCT'))
 
 
-##  PDF Objects
-##
 class PDFObject(PSObject):
     pass
+
 
 class PDFException(PSException):
     pass
 
+
 class PDFTypeError(PDFException):
     pass
+
 
 class PDFValueError(PDFException):
     pass
 
+
 class PDFObjectNotFound(PDFException):
     pass
+
 
 class PDFNotImplementedError(PDFException):
     pass
 
 
-##  PDFObjRef
-##
 class PDFObjRef(PDFObject):
 
     def __init__(self, doc, objid, _):
@@ -60,11 +59,11 @@ class PDFObjRef(PDFObject):
                 raise PDFValueError('PDF object id cannot be 0.')
         self.doc = doc
         self.objid = objid
-        #self.genno = genno  # Never used.
+        # self.genno = genno  # Never used.
         return
 
     def __repr__(self):
-        return '<PDFObjRef:%d>' % (self.objid)
+        return '<PDFObjRef:%d>' % self.objid
 
     def resolve(self, default=None):
         try:
@@ -73,7 +72,6 @@ class PDFObjRef(PDFObject):
             return default
 
 
-# resolve
 def resolve1(x, default=None):
     """Resolves an object.
 
@@ -179,8 +177,6 @@ def stream_value(x):
     return x
 
 
-##  PDFStream type
-##
 class PDFStream(PDFObject):
 
     def __init__(self, attrs, rawdata, decipher=None):
@@ -201,10 +197,12 @@ class PDFStream(PDFObject):
     def __repr__(self):
         if self.data is None:
             assert self.rawdata is not None
-            return '<PDFStream(%r): raw=%d, %r>' % (self.objid, len(self.rawdata), self.attrs)
+            return '<PDFStream(%r): raw=%d, %r>' % \
+                   (self.objid, len(self.rawdata), self.attrs)
         else:
             assert self.data is not None
-            return '<PDFStream(%r): len=%d, %r>' % (self.objid, len(self.data), self.attrs)
+            return '<PDFStream(%r): len=%d, %r>' % \
+                   (self.objid, len(self.data), self.attrs)
 
     def __contains__(self, name):
         return name in self.attrs
@@ -239,10 +237,11 @@ class PDFStream(PDFObject):
             if hasattr(fltr, 'resolve'):
                 fltr = fltr.resolve()[0]
             _filters.append(fltr)
-        return list(zip(_filters, params)) #solves https://github.com/pdfminer/pdfminer.six/issues/15
+        return list(zip(_filters, params))
 
     def decode(self):
-        assert self.data is None and self.rawdata is not None, str((self.data, self.rawdata))
+        assert self.data is None and self.rawdata is not None, \
+            str((self.data, self.rawdata))
         data = self.rawdata
         if self.decipher:
             # Handle encryption
@@ -252,14 +251,15 @@ class PDFStream(PDFObject):
             self.data = data
             self.rawdata = None
             return
-        for (f,params) in filters:
+        for (f, params) in filters:
             if f in LITERALS_FLATE_DECODE:
                 # will get errors if the document is encrypted.
                 try:
                     data = zlib.decompress(data)
                 except zlib.error as e:
                     if settings.STRICT:
-                        raise PDFException('Invalid zlib bytes: %r, %r' % (e, data))
+                        raise PDFException('Invalid zlib bytes: %r, %r' %
+                                           (e, data))
                     data = b''
             elif f in LITERALS_LZW_DECODE:
                 data = lzwdecode(data)
@@ -272,7 +272,8 @@ class PDFStream(PDFObject):
             elif f in LITERALS_CCITTFAX_DECODE:
                 data = ccittfaxdecode(data, params)
             elif f in LITERALS_DCT_DECODE:
-                # This is probably a JPG stream - it does not need to be decoded twice.
+                # This is probably a JPG stream
+                # it does not need to be decoded twice.
                 # Just return the stream to the user.
                 pass
             elif f == LITERAL_CRYPT:
@@ -290,10 +291,13 @@ class PDFStream(PDFObject):
                     # PNG predictor
                     colors = int_value(params.get('Colors', 1))
                     columns = int_value(params.get('Columns', 1))
-                    bitspercomponent = int_value(params.get('BitsPerComponent', 8))
-                    data = apply_png_predictor(pred, colors, columns, bitspercomponent, data)
+                    bitspercomponent = int_value(params.get('BitsPerComponent',
+                                                            8))
+                    data = apply_png_predictor(pred, colors, columns,
+                                               bitspercomponent, data)
                 else:
-                    raise PDFNotImplementedError('Unsupported predictor: %r' % pred)
+                    raise PDFNotImplementedError('Unsupported predictor: %r' %
+                                                 pred)
         self.data = data
         self.rawdata = None
         return

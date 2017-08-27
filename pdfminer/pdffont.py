@@ -2,6 +2,7 @@
 import sys
 import struct
 from io import BytesIO
+import six
 from .cmapdb import CMapDB
 from .cmapdb import CMapParser
 from .cmapdb import FileUnicodeMap
@@ -27,8 +28,6 @@ from .utils import apply_matrix_norm
 from .utils import nunpack
 from .utils import choplist
 from .utils import isnumber
-
-import six #Python 2+3 compatibility
 
 
 def get_widths(seq):
@@ -599,19 +598,17 @@ class PDFType1Font(PDFSimpleFont):
         return '<PDFType1Font: basefont=%r>' % self.basefont
 
 
-# PDFTrueTypeFont
 class PDFTrueTypeFont(PDFType1Font):
 
     def __repr__(self):
         return '<PDFTrueTypeFont: basefont=%r>' % self.basefont
 
 
-# PDFType3Font
 class PDFType3Font(PDFSimpleFont):
 
     def __init__(self, rsrcmgr, spec):
         firstchar = int_value(spec.get('FirstChar', 0))
-        #lastchar = int_value(spec.get('LastChar', 0))
+        # lastchar = int_value(spec.get('LastChar', 0))
         widths = list_value(spec.get('Widths', [0]*256))
         widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
         if 'FontDescriptor' in spec:
@@ -701,7 +698,8 @@ class PDFCIDFont(PDFFont):
         return
 
     def __repr__(self):
-        return '<PDFCIDFont: basefont=%r, cidcoding=%r>' % (self.basefont, self.cidcoding)
+        return '<PDFCIDFont: basefont=%r, cidcoding=%r>' %\
+               (self.basefont, self.cidcoding)
 
     def is_vertical(self):
         return self.vertical
@@ -713,7 +711,9 @@ class PDFCIDFont(PDFFont):
         return self.cmap.decode(bytes)
 
     def char_disp(self, cid):
-        "Returns an integer for horizontal fonts, a tuple for vertical fonts."
+        """
+        Returns an integer for horizontal fonts, a tuple for vertical fonts.
+        """
         return self.disps.get(cid, self.default_disp)
 
     def to_unichr(self, cid):
@@ -725,15 +725,15 @@ class PDFCIDFont(PDFFont):
             raise PDFUnicodeNotDefined(self.cidcoding, cid)
 
 
-# main
 def main(argv):
     for fname in argv[1:]:
         fp = open(fname, 'rb')
-        #font = TrueTypeFont(fname, fp)
+        # font = TrueTypeFont(fname, fp)
         font = CFFFont(fname, fp)
-        print (font)
+        print(font)
         fp.close()
     return
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
