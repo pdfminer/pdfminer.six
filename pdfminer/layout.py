@@ -54,7 +54,7 @@ class LAParams(object):
 
 class LTItem(object):
 
-    def analyze(self, laparams):
+    def analyze(self, _):
         """Perform the layout analysis."""
         return
 
@@ -115,15 +115,13 @@ class LTComponent(LTItem):
         assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_hoverlap(obj):
             return 0
-        else:
-            return min(abs(self.x0-obj.x1), abs(self.x1-obj.x0))
+        return min(abs(self.x0-obj.x1), abs(self.x1-obj.x0))
 
     def hoverlap(self, obj):
         assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_hoverlap(obj):
             return min(abs(self.x0-obj.x1), abs(self.x1-obj.x0))
-        else:
-            return 0
+        return 0
 
     def is_voverlap(self, obj):
         assert isinstance(obj, LTComponent), str(type(obj))
@@ -133,15 +131,13 @@ class LTComponent(LTItem):
         assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_voverlap(obj):
             return 0
-        else:
-            return min(abs(self.y0-obj.y1), abs(self.y1-obj.y0))
+        return min(abs(self.y0-obj.y1), abs(self.y1-obj.y0))
 
     def voverlap(self, obj):
         assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_voverlap(obj):
             return min(abs(self.y0-obj.y1), abs(self.y1-obj.y0))
-        else:
-            return 0
+        return 0
 
 
 class LTCurve(LTComponent):
@@ -244,7 +240,7 @@ class LTChar(LTComponent, LTText):
             ty = descent + rise
             bll = (0, ty)
             bur = (self.adv, ty+height)
-        (a, b, c, d, e, f) = self.matrix
+        (a, b, c, d, _, _) = self.matrix
         self.upright = (b*c <= 0 < a*d*scaling)
         (x0, y0) = apply_matrix_pt(self.matrix, bll)
         (x1, y1) = apply_matrix_pt(self.matrix, bur)
@@ -268,8 +264,11 @@ class LTChar(LTComponent, LTText):
     def get_text(self):
         return self._text
 
-    def is_compatible(self, obj):
-        """Returns True if two characters can coexist in the same line."""
+    def is_compatible(self, _):
+        """Returns always True.
+        Was documented as:
+        Returns True if two characters can coexist in the same line.
+        """
         return True
 
 
@@ -675,8 +674,7 @@ class LTLayoutContainer(LTContainer):
             def getkey(box):
                 if isinstance(box, LTTextBoxVertical):
                     return 0, -box.x1, box.y0
-                else:
-                    return 1, box.y0, box.x0
+                return 1, box.y0, box.x0
             textboxes.sort(key=getkey)
         self._objs = textboxes + otherobjs + empties
         return
