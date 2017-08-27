@@ -1,16 +1,13 @@
 
-from io import BytesIO
-
-import six  #Python 2+3 compatibility
-
 import logging
+from io import BytesIO
+import six
+
 
 class CorruptDataError(Exception):
     pass
 
 
-##  LZWDecoder
-##
 class LZWDecoder(object):
 
     def __init__(self, fp):
@@ -98,5 +95,5 @@ class LZWDecoder(object):
 # lzwdecode
 def lzwdecode(data):
     fp = BytesIO(data)
-    s=LZWDecoder(fp).run()
+    s = LZWDecoder(fp).run()
     return b''.join(s)
