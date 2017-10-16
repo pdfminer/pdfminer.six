@@ -383,9 +383,15 @@ class TrueTypeFont(object):
         self.fp = fp
         self.tables = {}
         self.fonttype = fp.read(4)
-        (ntables, _1, _2, _3) = struct.unpack('>HHHH', fp.read(8))
+        data_str = fp.read(8)
+        if len(data_str) != 8:
+            return
+        (ntables, _1, _2, _3) = struct.unpack('>HHHH', data_str)
         for _ in range(ntables):
-            (name, tsum, offset, length) = struct.unpack('>4sLLL', fp.read(16))
+            data_str = fp.read(16)
+            if len(data_str) != 16:
+                return
+            (name, tsum, offset, length) = struct.unpack('>4sLLL', data_str)
             self.tables[name] = (offset, length)
         return
 
