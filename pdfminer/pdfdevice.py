@@ -142,8 +142,7 @@ class TagExtractor(PDFDevice):
         font = textstate.font
         text = ''
         for obj in seq:
-            obj = utils.make_compat_str(obj)
-            if not isinstance(obj, str):
+            if not isinstance(obj, bytes):
                 continue
             chars = font.decode(obj)
             for cid in chars:
@@ -169,9 +168,9 @@ class TagExtractor(PDFDevice):
     def begin_tag(self, tag, props=None):
         s = ''
         if isinstance(props, dict):
-            s = ''.join(' %s="%s"' % (utils.enc(k), utils.enc(str(v))) for (k, v)
-                        in sorted(props.iteritems()))
-        out_s = '<%s%s>' % (utils.enc(tag.name), s)
+            s = ''.join(' %s="%s"' % (k, str(v)) for (k, v)
+                        in sorted(props.items()))
+        out_s = '<%s%s>' % (tag.name, s)
         self.outfp.write(utils.make_compat_bytes(out_s))
         self._stack.append(tag)
         return
@@ -179,7 +178,7 @@ class TagExtractor(PDFDevice):
     def end_tag(self):
         assert self._stack, str(self.pageno)
         tag = self._stack.pop(-1)
-        out_s = '</%s>' % utils.enc(tag.name)
+        out_s = '</%s>' % tag.name
         self.outfp.write(utils.make_compat_bytes(out_s))
         return
 
