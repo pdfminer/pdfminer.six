@@ -62,7 +62,7 @@ direction (horizontal or vertical) for each text portion.
 You need to provide a password for protected PDF documents when its access is restricted.
 You cannot extract any text from a PDF document which does not have extraction permission.
 
-(For details, refer to the html document.)
+(For details, refer to /docs/index.html.)
 
 **dumppdf.py**
 
@@ -70,7 +70,7 @@ dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format.
 This program is primarily for debugging purposes,
 but it's also possible to extract some meaningful contents (e.g. images).
 
-(For details, refer to the html document.)
+(For details, refer to /docs/index.html.)
 
 
 TODO
