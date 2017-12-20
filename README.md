@@ -70,7 +70,7 @@ dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format.
 This program is primarily for debugging purposes,
 but it's also possible to extract some meaningful contents (e.g. images).
 
-(For details, refer to the html document.)
+(For details, refer to /docs/index.html.)
 
 
 TODO
