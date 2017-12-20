@@ -62,7 +62,7 @@ direction (horizontal or vertical) for each text portion.
 You need to provide a password for protected PDF documents when its access is restricted.
 You cannot extract any text from a PDF document which does not have extraction permission.
 
-(For details, refer to the html document.)
+(For details, refer to /docs/index.html.)
 
 **dumppdf.py**
 
