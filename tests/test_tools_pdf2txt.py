@@ -47,11 +47,15 @@ class TestDumpPDF():
     def test_7(self):
         run('../samples/contrib/','stamp-no')
     """
- 
+
     def test_8(self):
         run('../samples/contrib/','2b','-A -t xml')
 
     def test_9(self):
         run('../samples/nonfree/','175') # https://github.com/pdfminer/pdfminer.six/issues/65
+
+    def test_10(self):
+        run('../samples/scancode/','patchelf') # https://github.com/euske/pdfminer/issues/96
+
 if __name__ == '__main__':
     nose.runmodule()

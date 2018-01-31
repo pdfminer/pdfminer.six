@@ -383,10 +383,16 @@ class TrueTypeFont(object):
         self.fp = fp
         self.tables = {}
         self.fonttype = fp.read(4)
-        (ntables, _1, _2, _3) = struct.unpack('>HHHH', fp.read(8))
-        for _ in range(ntables):
-            (name, tsum, offset, length) = struct.unpack('>4sLLL', fp.read(16))
-            self.tables[name] = (offset, length)
+        try:
+            (ntables, _1, _2, _3) = struct.unpack('>HHHH', fp.read(8))
+            for _ in range(ntables):
+                (name, tsum, offset, length) = struct.unpack('>4sLLL', fp.read(16))
+                self.tables[name] = (offset, length)
+        except struct.error:
+            # Do not fail if there are not enough bytes to read. Even for
+            # corrupted PDFs we would like to get as much information as
+            # possible, so continue.
+            pass
         return
 
     def create_unicode_map(self):
