@@ -1,0 +1,3 @@
+[submodule "cmaprsrc"]
+	path = cmaprsrc
+	url = https://github.com/adobe-type-tools/cmap-resources.git
