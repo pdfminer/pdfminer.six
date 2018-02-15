@@ -149,11 +149,38 @@ class CMapConverter(object):
 
     def dump_unicodemap(self, fp):
         data = dict(
-            CID2UNICHR_H=self.cid2unichr_h,
-            CID2UNICHR_V=self.cid2unichr_v,
+            CID2UNICHR_H = self.cid2unichr_h,
+            CID2UNICHR_V = self.cid2unichr_v,
         )
         fp.write(pickle.dumps(data, 2))
         return
+
+import gzip as compressor
+import os.path
+from pathlib import Path
+archivedPickleExt = 'pickle.gz'
+def do_conversion(enc2codec, args, outdir, regname):
+    outdir = Path(outdir)
+    converter = CMapConverter(enc2codec)
+    for path in args:
+        print ('reading: %r...' % path)
+        path=Path(path)
+        with path.open() as fp:
+            converter.load(fp)
+
+    for enc in converter.get_encs():
+        fname = '%s.%s' % (enc, archivedPickleExt)
+        path = (outdir / fname)
+        print ('writing: %r...' % str(path))
+        with compressor.open(str(path), 'wb') as fp:
+            converter.dump_cmap(fp, enc)
+
+    fname = 'to-unicode-%s.%s' % (regname, archivedPickleExt)
+    path = (outdir / fname)
+    print ('writing: %r...' % str(path))
+    with compressor.open(str(path), 'wb') as fp:
+        converter.dump_unicodemap(fp)
+    fp.close()
 
 # main
 def main(argv):
@@ -178,27 +205,7 @@ def main(argv):
     if not args: return usage()
     regname = args.pop(0)
 
-    converter = CMapConverter(enc2codec)
-    for path in args:
-        print ('reading: %r...' % path)
-        fp = open(path)
-        converter.load(fp)
-        fp.close()
-
-    for enc in converter.get_encs():
-        fname = '%s.pickle.gz' % enc
-        path = os.path.join(outdir, fname)
-        print ('writing: %r...' % path)
-        fp = gzip.open(path, 'wb')
-        converter.dump_cmap(fp, enc)
-        fp.close()
-
-    fname = 'to-unicode-%s.pickle.gz' % regname
-    path = os.path.join(outdir, fname)
-    print ('writing: %r...' % path)
-    fp = gzip.open(path, 'wb')
-    converter.dump_unicodemap(fp)
-    fp.close()
+    do_conversion(enc2codec, args, outdir, regname)
     return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))
