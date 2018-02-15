@@ -1,11 +1,42 @@
 from setuptools import setup
 import sys
-
+import os
 import pdfminer as package
 
 requires = ['six', 'pycryptodome', 'sortedcontainers']
 if sys.version_info >= (3, 0):
     requires.append('chardet')
+
+thisDir = os.path.abspath(os.path.dirname(__file__))
+
+CMAPSRC = os.path.join(thisDir, "cmaprsrc")
+CMAPDST = os.path.join(thisDir, "pdfminer", "cmap")
+cid2codeFileName="cid2code.txt"
+from tools.conv_cmap import do_conversion
+charmapConversionTargets=[
+    {
+        "enc2codec":{"B5":"cp950", "UniCNS-UTF8":"utf-8"},
+        "args":[os.path.join(CMAPSRC, "Adobe-CNS1-7", cid2codeFileName)],
+        "regname": "Adobe-CNS1"
+    },
+    {
+        "enc2codec":{"GBK-EUC":"cp936", "UniGB":"utf-8"},
+        "args":[os.path.join(CMAPSRC, "Adobe-GB1-5", cid2codeFileName)],
+        "regname":"Adobe-GB1"
+    },
+    {
+        "enc2codec":{"RKSJ":"cp932", "EUC":"euc-jp", "UniJIS-UTF8":"utf-8"},
+        "args":[os.path.join(CMAPSRC, "Adobe-Japan1-7", cid2codeFileName)],
+        "regname":"Adobe-Japan1"
+    },
+    {
+        "enc2codec":{"KSC-EUC":"euc-kr", "KSC-Johab":"johab", "KSCms-UHC":"cp949", "UniKS-UTF8":"utf-8"},
+        "args":[os.path.join(CMAPSRC, "Adobe-Korea1-2", cid2codeFileName)],
+        "regname":"Adobe-Korea1"
+    }
+]
+for cmTarget in charmapConversionTargets:
+    do_conversion(outdir=CMAPDST, **cmTarget)
 
 setup(
     name='pdfminer.six',

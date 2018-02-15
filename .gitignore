@@ -16,3 +16,5 @@ tests/*.xml
 tests/*.txt
 .idea/
 .tox/
+/pdfminer/cmap/*.pickle.gz
+/pdfminer/cmap/*.pickle.xz
