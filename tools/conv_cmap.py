@@ -155,11 +155,36 @@ class CMapConverter(object):
         fp.write(pickle.dumps(data, 2))
         return
 
+import lzma
+import os.path
+from pathlib import Path
+archivedPickleExt='pickle.xz'
+def do_conversion(enc2codec, args, outdir, regname):
+    outdir=Path(outdir)
+    converter = CMapConverter(enc2codec)
+    for path in args:
+        print ('reading: %r...' % path)
+        path=Path(path)
+        with path.open() as fp:
+            converter.load(fp)
+
+    for enc in converter.get_encs():
+        fname = '%s.%s' % (enc, archivedPickleExt)
+        path = (outdir / fname)
+        print ('writing: %r...' % str(path))
+        with lzma.open(str(path), 'wb') as fp:
+            converter.dump_cmap(fp, enc)
+
+    fname = 'to-unicode-%s.%s' % (regname, archivedPickleExt)
+    path = (outdir / fname)
+    print ('writing: %r...' % str(path))
+    with lzma.open(str(path), 'wb') as fp:
+        converter.dump_unicodemap(fp)
+    fp.close()
+
 # main
 def main(argv):
     import getopt
-    import lzma
-    import os.path
 
     def usage():
         print ('usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]' % argv[0])
@@ -178,27 +203,7 @@ def main(argv):
     if not args: return usage()
     regname = args.pop(0)
 
-    converter = CMapConverter(enc2codec)
-    for path in args:
-        print ('reading: %r...' % path)
-        fp = open(path)
-        converter.load(fp)
-        fp.close()
-
-    for enc in converter.get_encs():
-        fname = '%s.pickle.xz' % enc
-        path = os.path.join(outdir, fname)
-        print ('writing: %r...' % path)
-        fp = lzma.open(path, 'wb')
-        converter.dump_cmap(fp, enc)
-        fp.close()
-
-    fname = 'to-unicode-%s.pickle.gz' % regname
-    path = os.path.join(outdir, fname)
-    print ('writing: %r...' % path)
-    fp = lzma.open(path, 'wb')
-    converter.dump_unicodemap(fp)
-    fp.close()
+    do_conversion(enc2codec, args, outdir, regname)
     return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))
