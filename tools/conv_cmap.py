@@ -157,8 +157,14 @@ class CMapConverter(object):
 
 # main
 def main(argv):
-    import getopt
-    import gzip
+    import getopt 
+    try:
+        import lzma
+    except ImportError:
+        try: 
+            import backports.lzma as lzma
+        except ImportError:
+            import pylzma as lzma
     import os.path
 
     def usage():
@@ -186,17 +192,17 @@ def main(argv):
         fp.close()
 
     for enc in converter.get_encs():
-        fname = '%s.pickle.gz' % enc
+        fname = '%s.pickle.xz' % enc
         path = os.path.join(outdir, fname)
         print ('writing: %r...' % path)
-        fp = gzip.open(path, 'wb')
+        fp = lzma.open(path, 'wb')
         converter.dump_cmap(fp, enc)
         fp.close()
 
     fname = 'to-unicode-%s.pickle.gz' % regname
     path = os.path.join(outdir, fname)
     print ('writing: %r...' % path)
-    fp = gzip.open(path, 'wb')
+    fp = lzma.open(path, 'wb')
     converter.dump_unicodemap(fp)
     fp.close()
     return
