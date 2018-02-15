@@ -12,7 +12,7 @@ requires = ['six', 'pycryptodome']
 if sys.version_info >= (3, 0):
     requires.append('chardet')
 
-cfg = read_configuration('./setup.cfg')
+cfg = read_configuration(str(thisDir / 'setup.cfg'))
 
 cfg["metadata"]["version"]=package.__version__
 cfg["metadata"]["requires"]=requires
