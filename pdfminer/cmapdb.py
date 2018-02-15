@@ -14,7 +14,7 @@ More information is available on the Adobe website:
 import sys
 import os
 import os.path
-import gzip
+import lzma
 try:
     import cPickle as pickle
 except ImportError:
@@ -231,14 +231,14 @@ class CMapDB(object):
     @classmethod
     def _load_data(klass, name):
         name = name.replace("\0", "")
-        filename = '%s.pickle.gz' % name
+        filename = '%s.pickle.xz' % name
         log.info('loading: %r', name)
         cmap_paths = (os.environ.get('CMAP_PATH', '/usr/share/pdfminer/'),
                       os.path.join(os.path.dirname(__file__), 'cmap'),)
         for directory in cmap_paths:
             path = os.path.join(directory, filename)
             if os.path.exists(path):
-                gzfile = gzip.open(path)
+                gzfile = lzma.open(path)
                 try:
                     return type(str(name), (), pickle.loads(gzfile.read()))
                 finally:
