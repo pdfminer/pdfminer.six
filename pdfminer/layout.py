@@ -1,4 +1,4 @@
-
+from math import sqrt
 from .utils import INF
 from .utils import Plane
 from .utils import get_bound
@@ -621,7 +621,10 @@ class LTLayoutContainer(LTContainer):
             y0 = min(obj1.y0, obj2.y0)
             x1 = max(obj1.x1, obj2.x1)
             y1 = max(obj1.y1, obj2.y1)
-            return ((x1-x0)*(y1-y0) - obj1.width*obj1.height - obj2.width*obj2.height)
+            s1=obj1.width*obj1.height
+            s2=obj2.width*obj2.height
+            ms=sqrt(s1*s2)
+            return ((x1-x0)*(y1-y0) - s1 - s2)/ms
 
         def isany(obj1, obj2):
             """Check if there's any other object between obj1 and obj2.
