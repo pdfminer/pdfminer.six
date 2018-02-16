@@ -308,6 +308,16 @@ def vecBetweenBoxes(obj1, obj2):
     else:
         return (max(0, iw), max(0, ih))
 
+
+def mean(it):
+    return sum(it) / len(it)
+
+def universal_key_value_iterator(it):
+    if isinstance(it, (list, tuple)):
+        return enumerate(it)
+    elif isinstance(it, dict):
+        return it.items()
+
 ##  Plane
 ##
 ##  A set-like data structure for objects placed on a plane.

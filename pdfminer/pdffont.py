@@ -2,6 +2,7 @@
 import sys
 import struct
 from io import BytesIO
+from collections import defaultdict
 from .cmapdb import CMapDB
 from .cmapdb import CMapParser
 from .cmapdb import FileUnicodeMap
@@ -27,6 +28,7 @@ from .utils import apply_matrix_norm
 from .utils import nunpack
 from .utils import choplist
 from .utils import isnumber
+from .utils import mean, universal_key_value_iterator
 
 import six #Python 2+3 compatibility
 
@@ -76,7 +78,49 @@ def get_widths2(seq):
 #assert get_widths2([1,2,3,4,5]) == {1:(3, (4,5)), 2:(3, (4,5))}
 #assert get_widths2([1,[2,3,4,5],6,[7,8,9]]) == {1:(2, (3,4)), 6:(7, (8,9))}
 
+def compute_stat(it):
+    hists = defaultdict(lambda: defaultdict(int))
+    for font_dimensions in it:
+        for dimension, size in universal_key_value_iterator(font_dimensions):
+            hists[dimension][size] += 1
+    metrics = {}
+    for dimension, sizes in hists.items():
+        res = max(sizes.items(), key=lambda x: x[1])
+        if res[1] == 1:
+            metrics[dimension] = mean(sizes.keys())
+        else:
+            metrics[dimension] = res[0]
+    return metrics
 
+def get_fonts_weights(FONT_METRICS):
+    weights = defaultdict(list)
+    for f in FONT_METRICS.values():
+        weights[f[0]['FontWeight']].append(f)
+    return weights
+
+def compute_fallback_font_metrics(FONT_METRICS):
+    """This function computes an estimation of missing metrics for a font
+    It does this selecting the one of most frequent values, if there is one. If every value encounters once, just computes the mean.
+    """
+    #TODO:
+    # * weight-dependent metrics
+    # * machine-learning based metrics prediction
+    charMetrics = compute_stat((fd[1] for fd in FONT_METRICS.values()))
+    def selectNumericMetrics():
+        for fd in FONT_METRICS.values():
+            res = {}
+            for k, v in fd[0].items():
+                if isinstance(v, (int, float)):
+                    res[k]=v
+            yield res
+    def selectBBoxMetrics():
+        for fd in FONT_METRICS.values()
+            yield fd[0]['FontBBox']
+    restMetrics = compute_stat(selectNumericMetrics())
+    restMetrics['FontBBox'] = list(compute_stat(selectBBoxMetrics()).values())
+    return (restMetrics, charMetrics)
+
+fallbackMetrics = compute_fallback_font_metrics(FONT_METRICS)
 ##  FontMetricsDB
 ##
 class FontMetricsDB(object):
@@ -84,6 +128,8 @@ class FontMetricsDB(object):
     @classmethod
     def get_metrics(klass, fontname):
         return FONT_METRICS[fontname]
+
+
 
 
 ##  Type1FontHeaderParser
@@ -586,11 +632,14 @@ class PDFType1Font(PDFSimpleFont):
         try:
             (descriptor, widths) = FontMetricsDB.get_metrics(self.basefont)
         except KeyError:
-            descriptor = dict_value(spec.get('FontDescriptor', {}))
+            descriptor = dict_value(spec.get('FontDescriptor', fallbackMetrics[0]))
             firstchar = int_value(spec.get('FirstChar', 0))
             #lastchar = int_value(spec.get('LastChar', 255))
-            widths = list_value(spec.get('Widths', [0]*256))
-            widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
+            widths = list_value(spec.get('Widths', None))
+            if widths:
+                widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
+            else:
+                widths = fallbackMetrics[1]
         PDFSimpleFont.__init__(self, descriptor, widths, spec)
         if 'Encoding' not in spec and 'FontFile' in descriptor:
             # try to recover the missing encoding info from the font file.
