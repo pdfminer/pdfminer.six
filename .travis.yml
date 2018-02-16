@@ -1,10 +1,33 @@
+sudo: false
+dist: trusty
 language: python
-python:
-  - "2.6"
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
+matrix:
+  include: # https://github.com/travis-ci/travis-ci/issues/8783
+    - os: linux
+      python: 2.7.14
+    - os: linux
+      python: pypy2.7
+    - os: linux
+      python: 3.4
+    - os: linux
+      python: 3.5
+    - os: linux
+      python: 3.6
+    - os: linux
+      python: 3.7-dev
+    - os: linux
+      python: nightly
+    - os: linux
+      python: pypy3
+    # https://github.com/travis-ci/travis-ci/issues/6865#issuecomment-345513305
+    #- os: linux
+    #  python: pypy3-nightly
+    - os: osx
+      python: nightly
+    #- os: osx
+    #  python: pypy3
+    #- os: osx
+    #  python: pypy3-nightly
 install:
   - pip install six
   - pip install pycryptodome
