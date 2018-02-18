@@ -5,6 +5,10 @@ matrix:
   include: # https://github.com/travis-ci/travis-ci/issues/8783
     - os: linux
       python: 2.7.14
+      addons:
+        apt:
+          packages:
+            - python-lzma
     #- os: linux
     #  python: pypy2.7
     - os: linux
