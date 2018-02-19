@@ -25,11 +25,6 @@ matrix:
     # https://github.com/travis-ci/travis-ci/issues/6865#issuecomment-345513305
     #- os: linux
     #  python: pypy3-nightly
-    - os: osx
-      python: nightly
-      before_install:
-        - pip install --upgrade setuptools
-        - pip install --upgrade git+https://github.com/peterjc/backports.lzma.git
     #- os: osx
     #  python: pypy3
     #- os: osx
