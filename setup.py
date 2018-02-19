@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-from pathlib import Path
+from os
 from setuptools import setup
 from setuptools.config import read_configuration
 import sys
 
-thisDir=Path(__file__).parent
+thisDir=os.path.dirname(__file__)
 
 import pdfminer as package
 
@@ -12,7 +12,7 @@ requires = ['six', 'pycryptodome']
 if sys.version_info >= (3, 0):
     requires.append('chardet')
 
-cfg = read_configuration(str(thisDir / 'setup.cfg'))
+cfg = read_configuration(os.path.join(thisDir, 'setup.cfg'))
 
 cfg["metadata"]["version"]=package.__version__
 cfg["metadata"]["requires"]=requires
