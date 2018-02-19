@@ -30,8 +30,8 @@ matrix:
     #- os: osx
     #  python: pypy3-nightly
 install:
-  - pip install six
-  - pip install pycryptodome
-  - pip install chardet
+  - pip install --upgrade git+https://github.com/benjaminp/six.git
+  - pip install --upgrade pycryptodome
+  - pip install --upgrade git+https://github.com/chardet/chardet.git
 script:
   nosetests --nologcapture
