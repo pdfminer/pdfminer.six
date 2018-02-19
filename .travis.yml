@@ -5,6 +5,8 @@ matrix:
   include: # https://github.com/travis-ci/travis-ci/issues/8783
     - os: linux
       python: 2.7.14
+      virtualenv:
+        system_site_packages: true 
       addons:
         apt:
           packages:
