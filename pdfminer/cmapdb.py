@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 
 """ Adobe character mapping (CMap) support.
 
@@ -21,6 +21,7 @@ except ImportError:
     import pickle as pickle
 import struct
 import logging
+
 from .psparser import PSStackParser
 from .psparser import PSSyntaxError
 from .psparser import PSEOF
@@ -31,7 +32,7 @@ from .encodingdb import name2unicode
 from .utils import choplist
 from .utils import nunpack
 
-import six  #Python 2+3 compatibility
+import six  # Python 2+3 compatibility
 
 log = logging.getLogger(__name__)
 
@@ -83,7 +84,7 @@ class CMap(CMapBase):
         assert isinstance(cmap, CMap), str(type(cmap))
 
         def copy(dst, src):
-            for (k, v) in src.iteritems():
+            for (k, v) in six.iteritems(src):
                 if isinstance(v, dict):
                     d = {}
                     dst[k] = d
@@ -110,7 +111,7 @@ class CMap(CMapBase):
         if code2cid is None:
             code2cid = self.code2cid
             code = ()
-        for (k, v) in sorted(code2cid.iteritems()):
+        for (k, v) in sorted(six.iteritems(code2cid)):
             c = code+(k,)
             if isinstance(v, int):
                 out.write('code %r = cid %d\n' % (c, v))
@@ -148,7 +149,7 @@ class UnicodeMap(CMapBase):
         return self.cid2unichr[cid]
 
     def dump(self, out=sys.stdout):
-        for (k, v) in sorted(self.cid2unichr.iteritems()):
+        for (k, v) in sorted(six.iteritems(self.cid2unichr)):
             out.write('cid %d = unicode %r\n' % (k, v))
         return
 
@@ -360,7 +361,7 @@ class CMapParser(PSStackParser):
                 s1 = nunpack(svar)
                 e1 = nunpack(evar)
                 vlen = len(svar)
-                #assert s1 <= e1, str((s1, e1))
+                # assert s1 <= e1, str((s1, e1))
                 for i in range(e1-s1+1):
                     x = sprefix+struct.pack('>L', s1+i)[-vlen:]
                     self.cmap.add_code2cid(x, cid+i)
@@ -387,7 +388,7 @@ class CMapParser(PSStackParser):
                         continue
                 s1 = nunpack(s)
                 e1 = nunpack(e)
-                #assert s1 <= e1, str((s1, e1))
+                # assert s1 <= e1, str((s1, e1))
                 if isinstance(code, list):
                     for i in range(e1-s1+1):
                         self.cmap.add_cid2unichr(s1+i, code[i])
@@ -428,11 +429,12 @@ def main(argv):
     for fname in args:
         fp = file(fname, 'rb')
         cmap = FileUnicodeMap()
-        #cmap = FileCMap()
+        # cmap = FileCMap()
         CMapParser(cmap, fp).run()
         fp.close()
         cmap.dump()
     return
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))

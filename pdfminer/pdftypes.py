@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import zlib
 import logging
@@ -13,7 +14,7 @@ from . import settings
 from .utils import apply_png_predictor
 from .utils import isnumber
 
-import six #Python 2+3 compatibility
+import six  # Python 2+3 compatibility
 
 log = logging.getLogger(__name__)
 
@@ -34,17 +35,22 @@ LITERALS_DCT_DECODE = (LIT('DCTDecode'), LIT('DCT'))
 class PDFObject(PSObject):
     pass
 
+
 class PDFException(PSException):
     pass
+
 
 class PDFTypeError(PDFException):
     pass
 
+
 class PDFValueError(PDFException):
     pass
 
+
 class PDFObjectNotFound(PDFException):
     pass
+
 
 class PDFNotImplementedError(PDFException):
     pass
@@ -60,7 +66,7 @@ class PDFObjRef(PDFObject):
                 raise PDFValueError('PDF object id cannot be 0.')
         self.doc = doc
         self.objid = objid
-        #self.genno = genno  # Never used.
+        # self.genno = genno  # Never used.
         return
 
     def __repr__(self):
@@ -96,7 +102,7 @@ def resolve_all(x, default=None):
     if isinstance(x, list):
         x = [resolve_all(v, default=default) for v in x]
     elif isinstance(x, dict):
-        for (k, v) in x.iteritems():
+        for (k, v) in six.iteritems(x):
             x[k] = resolve_all(v, default=default)
     return x
 
@@ -239,7 +245,7 @@ class PDFStream(PDFObject):
             if hasattr(fltr, 'resolve'):
                 fltr = fltr.resolve()[0]
             _filters.append(fltr)
-        return list(zip(_filters, params)) #solves https://github.com/pdfminer/pdfminer.six/issues/15
+        return list(zip(_filters, params))  # solves https://github.com/pdfminer/pdfminer.six/issues/15
 
     def decode(self):
         assert self.data is None and self.rawdata is not None, str((self.data, self.rawdata))
@@ -252,7 +258,7 @@ class PDFStream(PDFObject):
             self.data = data
             self.rawdata = None
             return
-        for (f,params) in filters:
+        for (f, params) in filters:
             if f in LITERALS_FLATE_DECODE:
                 # will get errors if the document is encrypted.
                 try:

@@ -1,4 +1,5 @@
 #!/usr/bin/env python -O
+# -*- coding: utf-8 -*-
 #
 # pdf2html.cgi - Gateway script for converting PDF into HTML.
 #
@@ -15,10 +16,20 @@
 #   $ cp pdfminer/tools/pdf2html.cgi $CGIDIR
 #
 
-import sys, os, os.path, re, time
-import cgi, logging, traceback, random
+import cgi
+import logging
+import os
+import os.path
+import random
+import re
+import sys
+import time
+import traceback
 # comment out at this at runtime.
-#import cgitb; cgitb.enable()
+# import cgitb; cgitb.enable()
+
+import six
+
 import pdfminer
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfpage import PDFPage
@@ -29,13 +40,16 @@ from pdfminer.layout import LAParams
 
 # quote HTML metacharacters
 def q(x):
-    return x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
+    return x.replace('&', '&amp;').replace('>', '&gt;').replace('<', '&lt;').replace('"', '&quot;')
+
 
 # encode parameters as a URL
 Q = re.compile(r'[^a-zA-Z0-9_.-=]')
+
+
 def url(base, **kw):
     r = []
-    for (k,v) in kw.iteritems():
+    for (k, v) in six.iteritems(kw):
         v = Q.sub(lambda m: '%%%02X' % ord(m.group(0)), encoder(q(v), 'replace')[0])
         r.append('%s=%s' % (k, v))
     return base+'&'.join(r)
@@ -43,7 +57,10 @@ def url(base, **kw):
 
 ##  convert
 ##
-class FileSizeExceeded(ValueError): pass
+class FileSizeExceeded(ValueError):
+    pass
+
+
 def convert(infp, outfp, path, codec='utf-8',
             maxpages=0, maxfilesize=0, pagenos=None,
             html=True):
@@ -55,7 +72,8 @@ def convert(infp, outfp, path, codec='utf-8',
         nbytes += len(data)
         if maxfilesize and maxfilesize < nbytes:
             raise FileSizeExceeded(maxfilesize)
-        if not data: break
+        if not data:
+            break
         src.write(data)
     src.close()
     infp.close()

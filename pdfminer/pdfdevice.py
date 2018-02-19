@@ -3,8 +3,8 @@
 import six
 
 from .pdffont import PDFUnicodeNotDefined
-
 from . import utils
+
 
 ##  PDFDevice
 ##
@@ -173,8 +173,8 @@ class TagExtractor(PDFDevice):
     def begin_tag(self, tag, props=None):
         s = ''
         if isinstance(props, dict):
-            s = ''.join(' %s="%s"' % (utils.enc(k), utils.enc(str(v))) for (k, v)
-                        in sorted(props.iteritems()))
+            s = ''.join(' %s="%s"' % (utils.enc(k), utils.enc(str(v)))
+                        for (k, v) in sorted(six.iteritems(props)))
         out_s = '<%s%s>' % (utils.enc(tag.name), s)
         self.outfp.write(utils.make_compat_bytes(out_s))
         self._stack.append(tag)

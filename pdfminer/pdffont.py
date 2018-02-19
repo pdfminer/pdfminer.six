@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import sys
 import struct
@@ -28,7 +29,7 @@ from .utils import nunpack
 from .utils import choplist
 from .utils import isnumber
 
-import six #Python 2+3 compatibility
+import six  # Python 2+3 compatibility
 
 
 def get_widths(seq):
@@ -49,9 +50,9 @@ def get_widths(seq):
                     widths[i] = w
                 r = []
     return widths
-#assert get_widths([1]) == {}
-#assert get_widths([1,2,3]) == {1:3, 2:3}
-#assert get_widths([1,[2,3],6,[7,8]]) == {1:2,2:3, 6:7,7:8}
+# assert get_widths([1]) == {}
+# assert get_widths([1,2,3]) == {1:3, 2:3}
+# assert get_widths([1,[2,3],6,[7,8]]) == {1:2,2:3, 6:7,7:8}
 
 
 def get_widths2(seq):
@@ -72,9 +73,9 @@ def get_widths2(seq):
                     widths[i] = (w, (vx, vy))
                 r = []
     return widths
-#assert get_widths2([1]) == {}
-#assert get_widths2([1,2,3,4,5]) == {1:(3, (4,5)), 2:(3, (4,5))}
-#assert get_widths2([1,[2,3,4,5],6,[7,8,9]]) == {1:(2, (3,4)), 6:(7, (8,9))}
+# assert get_widths2([1]) == {}
+# assert get_widths2([1,2,3,4,5]) == {1:(3, (4,5)), 2:(3, (4,5))}
+# assert get_widths2([1,[2,3,4,5],6,[7,8,9]]) == {1:(2, (3,4)), 6:(7, (8,9))}
 
 
 ##  FontMetricsDB
@@ -360,9 +361,9 @@ class CFFFont(object):
             assert False, str(('Unhandled', format))
         else:
             raise ValueError('unsupported charset format: %r' % format)
-        #print self.code2gid
-        #print self.name2gid
-        #assert 0
+        # print(self.code2gid)
+        # print(self.name2gid)
+        # assert 0
         return
 
     def getstr(self, sid):
@@ -453,7 +454,7 @@ class TrueTypeFont(object):
                 assert False, str(('Unhandled', fmttype))
         # create unicode map
         unicode_map = FileUnicodeMap()
-        for (char, gid) in char2gid.iteritems():
+        for (char, gid) in six.iteritems(char2gid):
             unicode_map.add_cid2unichr(gid, char)
         return unicode_map
 
@@ -588,7 +589,7 @@ class PDFType1Font(PDFSimpleFont):
         except KeyError:
             descriptor = dict_value(spec.get('FontDescriptor', {}))
             firstchar = int_value(spec.get('FirstChar', 0))
-            #lastchar = int_value(spec.get('LastChar', 255))
+            # lastchar = int_value(spec.get('LastChar', 255))
             widths = list_value(spec.get('Widths', [0]*256))
             widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
         PDFSimpleFont.__init__(self, descriptor, widths, spec)
@@ -617,7 +618,7 @@ class PDFType3Font(PDFSimpleFont):
 
     def __init__(self, rsrcmgr, spec):
         firstchar = int_value(spec.get('FirstChar', 0))
-        #lastchar = int_value(spec.get('LastChar', 0))
+        # lastchar = int_value(spec.get('LastChar', 0))
         widths = list_value(spec.get('Widths', [0]*256))
         widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
         if 'FontDescriptor' in spec:
@@ -692,7 +693,9 @@ class PDFCIDFont(PDFFont):
         if self.vertical:
             # writing mode: vertical
             widths = get_widths2(list_value(spec.get('W2', [])))
-            self.disps = dict((cid, (vx, vy)) for (cid, (_, (vx, vy))) in six.iteritems(widths))
+            self.disps = dict(
+                (cid, (vx, vy))
+                for (cid, (_, (vx, vy))) in six.iteritems(widths))
             (vy, w) = spec.get('DW2', [880, -1000])
             self.default_disp = (None, vy)
             widths = dict((cid, w) for (cid, (w, _)) in six.iteritems(widths))
@@ -735,11 +738,12 @@ class PDFCIDFont(PDFFont):
 def main(argv):
     for fname in argv[1:]:
         fp = open(fname, 'rb')
-        #font = TrueTypeFont(fname, fp)
+        # font = TrueTypeFont(fname, fp)
         font = CFFFont(fname, fp)
-        print (font)
+        print(font)
         fp.close()
     return
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
