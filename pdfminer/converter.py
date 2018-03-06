@@ -112,7 +112,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             evenodd, gstate.scolor, gstate.ncolor))
         return
 
-    def render_char(self, matrix, font, fontsize, scaling, rise, cid):
+    def render_char(self, matrix, font, fontsize, scaling, rise, cid, ncs, graphicstate):
         try:
             text = font.to_unichr(cid)
             assert isinstance(text, six.text_type), str(type(text))
@@ -120,7 +120,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             text = self.handle_undefined_char(font, cid)
         textwidth = font.char_width(cid)
         textdisp = font.char_disp(cid)
-        item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp)
+        item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp, ncs, graphicstate)
         self.cur_item.add(item)
         return item.adv
 
@@ -520,8 +520,9 @@ class XMLConverter(PDFConverter):
                     render(child)
                 self.write('</textbox>\n')
             elif isinstance(item, LTChar):
-                self.write('<text font="%s" bbox="%s" size="%.3f">' %
-                                 (enc(item.fontname, None), bbox2str(item.bbox), item.size))
+                self.write('<text font="%s" bbox="%s" colourspace="%s" ncolour=%s" size="%.3f">' %
+                           (enc(item.fontname, None), bbox2str(item.bbox),
+                            item.ncs.name, item.graphicstate.ncolor, item.size))
                 self.write_text(item.get_text())
                 self.write('</text>\n')
             elif isinstance(item, LTText):
