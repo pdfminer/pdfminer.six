@@ -520,7 +520,7 @@ class XMLConverter(PDFConverter):
                     render(child)
                 self.write('</textbox>\n')
             elif isinstance(item, LTChar):
-                self.write('<text font="%s" bbox="%s" colourspace="%s" ncolour=%s" size="%.3f">' %
+                self.write('<text font="%s" bbox="%s" colourspace="%s" ncolour="%s" size="%.3f">' %
                            (enc(item.fontname, None), bbox2str(item.bbox),
                             item.ncs.name, item.graphicstate.ncolor, item.size))
                 self.write_text(item.get_text())
