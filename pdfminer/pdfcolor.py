@@ -21,7 +21,11 @@ class PDFColorSpace(object):
         return '<PDFColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
 
 
-PREDEFINED_COLORSPACE = collections.OrderedDict()
+if six.PY2:
+    PREDEFINED_COLORSPACE = {}
+else:
+    PREDEFINED_COLORSPACE = collections.OrderedDict()
+
 for (name, n) in [
     ('DeviceGray', 1),  # default value first
     ('CalRGB', 3),
