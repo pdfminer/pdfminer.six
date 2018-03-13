@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from os
+import os
 from setuptools import setup
 from setuptools.config import read_configuration
 import sys
