@@ -102,7 +102,7 @@ class PDFParser(PSStackParser):
                 return
             pos += len(line)
             self.fp.seek(pos)
-            data = self.fp.read(objlen)
+            data_list = [self.fp.read(objlen)]
             self.seek(pos+objlen)
             while 1:
                 try:
@@ -115,11 +115,12 @@ class PDFParser(PSStackParser):
                     i = line.index(b'endstream')
                     objlen += i
                     if self.fallback:
-                        data += line[:i]
+                        data_list.append(line[:i])
                     break
                 objlen += len(line)
                 if self.fallback:
-                    data += line
+                    data_list.append(line)
+            data = b''.join(data_list)
             self.seek(pos+objlen)
             # XXX limit objlen not to exceed object boundary
             log.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...', pos, objlen, dic, data[:10])
