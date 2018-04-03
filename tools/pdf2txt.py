@@ -68,7 +68,7 @@ def main(args=None):
     P = argparse.ArgumentParser(description=__doc__)
     P.add_argument("files", type=str, default=None, nargs="+", help="Files to process.")
     P.add_argument("-d", "--debug", default=False, action="store_true", help="Debug output.")
-    P.add_argument("-p", "--pagenos", type=str, help="Comma-separated list of page numbers to parse. Included for legacy applications, use -P/--page-numbers for more idiomatic argument entry.")
+    P.add_argument("-p", "--pagenos", type=str, help="Comma-separated list of page numbers to parse. Included for legacy applications, use --page-numbers for more idiomatic argument entry.")
     P.add_argument("--page-numbers", type=int, default=None, nargs="+", help="Alternative to --pagenos with space-separated numbers; supercedes --pagenos where it is used.")
     P.add_argument("-m", "--maxpages", type=int, default=0, help = "Maximum pages to parse")
     P.add_argument("-P", "--password", type=str, default="", help = "Decryption password for PDF")
