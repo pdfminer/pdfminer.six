@@ -275,7 +275,7 @@ def decode_text(s):
 # enc
 def enc(x, codec='ascii'):
     """Encodes a string for SGML/XML/HTML"""
-    if isinstance(x, bytes):
+    if six.PY3 and isinstance(x, bytes):
         return ''
     x = x.replace('&', '&amp;').replace('>', '&gt;').replace('<', '&lt;').replace('"', '&quot;')
     if codec:
