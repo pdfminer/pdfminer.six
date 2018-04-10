@@ -1,9 +1,9 @@
+from sortedcontainers import SortedListWithKey
 
 from .utils import INF
 from .utils import Plane
 from .utils import get_bound
 from .utils import uniq
-from .utils import csort
 from .utils import fsplit
 from .utils import bbox2str
 from .utils import matrix2str
@@ -439,7 +439,7 @@ class LTTextBoxHorizontal(LTTextBox):
 
     def analyze(self, laparams):
         LTTextBox.analyze(self, laparams)
-        self._objs = csort(self._objs, key=lambda obj: -obj.y1)
+        self._objs.sort(key=lambda obj: -obj.y1)
         return
 
     def get_writing_mode(self):
@@ -450,7 +450,7 @@ class LTTextBoxVertical(LTTextBox):
 
     def analyze(self, laparams):
         LTTextBox.analyze(self, laparams)
-        self._objs = csort(self._objs, key=lambda obj: -obj.x1)
+        self._objs.sort(key=lambda obj: -obj.y1)
         return
 
     def get_writing_mode(self):
@@ -472,7 +472,7 @@ class LTTextGroupLRTB(LTTextGroup):
     def analyze(self, laparams):
         LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-left to bottom-right.
-        self._objs = csort(self._objs, key=lambda obj:
+        self._objs.sort(key=lambda obj:
                            (1-laparams.boxes_flow)*(obj.x0) -
                            (1+laparams.boxes_flow)*(obj.y0+obj.y1))
         return
@@ -483,7 +483,7 @@ class LTTextGroupTBRL(LTTextGroup):
     def analyze(self, laparams):
         LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-right to bottom-left.
-        self._objs = csort(self._objs, key=lambda obj:
+        self._objs.sort(key=lambda obj:
                            -(1+laparams.boxes_flow)*(obj.x0+obj.x1)
                            - (1-laparams.boxes_flow)*(obj.y1))
         return
@@ -637,21 +637,18 @@ class LTLayoutContainer(LTContainer):
             (c,d,_,_) = t
             return (c,d)
 
-        # XXX this still takes O(n^2)  :(
-        dists = []
+        dists = SortedListWithKey(key=key_obj)
         for i in range(len(boxes)):
             obj1 = boxes[i]
             for j in range(i+1, len(boxes)):
                 obj2 = boxes[j]
-                dists.append((0, dist(obj1, obj2), obj1, obj2))
-        # We could use dists.sort(), but it would randomize the test result.
-        dists = csort(dists, key=key_obj)
+                dists.add((0, dist(obj1, obj2), obj1, obj2))
         plane = Plane(self.bbox)
         plane.extend(boxes)
         while dists:
             (c, d, obj1, obj2) = dists.pop(0)
             if c == 0 and isany(obj1, obj2):
-                dists.append((1, d, obj1, obj2))
+                dists.add((1, d, obj1, obj2))
                 continue
             if (isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or
                 isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL))):
@@ -660,11 +657,13 @@ class LTLayoutContainer(LTContainer):
                 group = LTTextGroupLRTB([obj1, obj2])
             plane.remove(obj1)
             plane.remove(obj2)
-            dists = [ (c,d,obj1,obj2) for (c,d,obj1,obj2) in dists
-                      if (obj1 in plane and obj2 in plane) ]
+            removed = {obj1, obj2}
+            to_remove = [ (c,d,obj1,obj2) for (c,d,obj1,obj2) in dists
+                      if (obj1 in removed or obj2 in removed) ]
+            for r in to_remove:
+                dists.remove(r)
             for other in plane:
-                dists.append((0, dist(group, other), group, other))
-            dists = csort(dists, key=key_obj)
+                dists.add((0, dist(group, other), group, other))
             plane.add(group)
         assert len(plane) == 1, str(len(plane))
         return list(plane)

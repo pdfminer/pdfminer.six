@@ -3,7 +3,7 @@ import sys
 
 import pdfminer as package
 
-requires = ['six', 'pycryptodome']
+requires = ['six', 'pycryptodome', 'sortedcontainers']
 if sys.version_info >= (3, 0):
     requires.append('chardet')
 
