@@ -450,7 +450,7 @@ class LTTextBoxVertical(LTTextBox):
 
     def analyze(self, laparams):
         LTTextBox.analyze(self, laparams)
-        self._objs.sort(key=lambda obj: -obj.y1)
+        self._objs.sort(key=lambda obj: -obj.x1)
         return
 
     def get_writing_mode(self):
