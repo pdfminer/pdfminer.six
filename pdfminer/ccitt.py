@@ -15,6 +15,8 @@ import array
 
 import six  #Python 2+3 compatibility
 
+import unittest
+
 if six.PY3:
     def get_bytes(data):
         for byte in data:
@@ -598,7 +600,7 @@ def main(argv):
             pygame.image.save(self.img, 'out.bmp')
             return
     for path in argv[1:]:
-        fp = file(path, 'rb')
+        fp = open(path, 'rb')
         (_, _, k, w, h, _) = path.split('.')
         parser = Parser(int(w))
         parser.feedbytes(fp.read())
