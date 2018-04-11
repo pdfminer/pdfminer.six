@@ -657,7 +657,7 @@ class LTLayoutContainer(LTContainer):
                 group = LTTextGroupLRTB([obj1, obj2])
             plane.remove(obj1)
             plane.remove(obj2)
-            removed = {obj1, obj2}
+            removed = [obj1, obj2]
             to_remove = [ (c,d,obj1,obj2) for (c,d,obj1,obj2) in dists
                       if (obj1 in removed or obj2 in removed) ]
             for r in to_remove:
