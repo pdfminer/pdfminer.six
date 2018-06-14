@@ -338,7 +338,7 @@ class PSBaseParser(object):
         m = EOL.search(s, i)
         if not m:
             self._curtoken += s[i:]
-            return (self._parse_comment, len(s))
+            return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
         self._parse1 = self._parse_main
