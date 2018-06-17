@@ -38,11 +38,11 @@ How to Install
  * Install Python 2.7 or newer. (Python 3.x is supported in pdfminer.six)
  * Install
 
-    $ pip install pdfminer.six
+    `pip install pdfminer.six`
 
  * Run the following test:
 
-    $ pdf2txt.py samples/simple1.pdf
+    `pdf2txt.py samples/simple1.pdf`
 
 
 Command Line Tools
@@ -78,6 +78,7 @@ TODO
 
  * PEP-8 and PEP-257 conformance.
  * Better documentation.
+ * Performance improvements.
 
 
 Terms and Conditions
