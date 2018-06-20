@@ -213,6 +213,8 @@ ENCODING = [
   ('six', 54, 54, 54, 54),
   ('slash', 47, 47, 47, 47),
   ('space', 32, 32, 32, 32),
+  ('space', None, 202, 160, None),
+  ('space', None, 202, 173, None),
   ('sterling', 163, 163, 163, 163),
   ('t', 116, 116, 116, 116),
   ('thorn', None, None, 254, 254),
