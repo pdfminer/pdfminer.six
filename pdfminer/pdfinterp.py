@@ -586,13 +586,13 @@ class PDFPageInterpreter(object):
 
     # setgray-stroking
     def do_G(self, gray):
-        self.graphicstate.color = gray
+        self.graphicstate.scolor = gray
         #self.do_CS(LITERAL_DEVICE_GRAY)
         return
 
     # setgray-non-stroking
     def do_g(self, gray):
-        self.graphicstate.color = gray
+        self.graphicstate.ncolor = gray
         #self.do_cs(LITERAL_DEVICE_GRAY)
         return
 
@@ -769,7 +769,7 @@ class PDFPageInterpreter(object):
             if settings.STRICT:
                 raise PDFInterpreterError('No font specified!')
             return
-        self.device.render_string(self.textstate, seq)
+        self.device.render_string(self.textstate, seq, self.ncs, self.graphicstate.copy())
         return
 
     # show

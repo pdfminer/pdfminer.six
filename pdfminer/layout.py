@@ -228,11 +228,13 @@ class LTAnno(LTItem, LTText):
 class LTChar(LTComponent, LTText):
 
     def __init__(self, matrix, font, fontsize, scaling, rise,
-                 text, textwidth, textdisp):
+                 text, textwidth, textdisp, ncs, graphicstate):
         LTText.__init__(self)
         self._text = text
         self.matrix = matrix
         self.fontname = font.fontname
+        self.ncs = ncs
+        self.graphicstate = graphicstate
         self.adv = textwidth * fontsize * scaling
         # compute the boundary rectangle.
         if font.is_vertical():
