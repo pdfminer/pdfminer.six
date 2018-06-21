@@ -58,7 +58,7 @@ class PDFDevice(object):
     def render_image(self, name, stream):
         return
 
-    def render_string(self, textstate, seq):
+    def render_string(self, textstate, seq, ncs, graphicstate):
         return
 
 
@@ -145,7 +145,7 @@ class TagExtractor(PDFDevice):
         self._stack = []
         return
 
-    def render_string(self, textstate, seq):
+    def render_string(self, textstate, seq, ncs, graphicstate):
         font = textstate.font
         text = ''
         for obj in seq:
