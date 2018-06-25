@@ -15,8 +15,6 @@ import array
 
 import six  #Python 2+3 compatibility
 
-import unittest
-
 if six.PY3:
     def get_bytes(data):
         for byte in data:
@@ -578,6 +576,7 @@ def ccittfaxdecode(data, params):
 # test
 def main(argv):
     if not argv[1:]:
+        import unittest
         return unittest.main()
 
     class Parser(CCITTG4Parser):
