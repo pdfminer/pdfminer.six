@@ -500,8 +500,46 @@ class LTLayoutContainer(LTContainer):
         self.groups = None
         return
 
+    #detect if between obj0 and obj1 there is a horizontal split line
+    def hsplitted(self, obj0, obj1, splitobjs, cell_margin):
+        cross = False
+        for r in splitobjs:
+            if (r.x0 <= min(obj0.x0, obj1.x0)) and (r.x1 >= max(obj0.x1, obj1.x1)):
+                if   ((r.y0 + cell_margin) >= obj0.y0) and ((r.y0 - cell_margin) <= obj1.y1):
+                    cross = True
+                    break
+                elif ((r.y0 + cell_margin) >= obj1.y0) and ((r.y0 - cell_margin) <= obj0.y1):
+                    cross = True
+                    break
+                elif ((r.y1 + cell_margin) >= obj0.y0) and ((r.y1 - cell_margin) <= obj1.y1):
+                    cross = True
+                    break
+                elif ((r.y1 + cell_margin) >= obj1.y0) and ((r.y1 - cell_margin) <= obj0.y1):
+                    cross = True
+                    break
+        return cross
+
+    #detect if between obj0 and obj1 there is a vertical split line
+    def vsplitted(self, obj0, obj1, splitobjs, cell_margin):
+        cross = False
+        for r in splitobjs:
+            if (r.y0 <= min(obj0.y0, obj1.y0)) and (r.y1 >= max(obj0.y1, obj1.y1)):
+                if   ((r.x0 + cell_margin) >= obj0.x0) and ((r.x0 - cell_margin) <= obj1.x1):
+                    cross = True
+                    break
+                elif ((r.x0 + cell_margin) >= obj1.x0) and ((r.x0 - cell_margin) <= obj0.x1):
+                    cross = True
+                    break
+                elif ((r.x1 + cell_margin) >= obj0.x0) and ((r.x1 - cell_margin) <= obj1.x1):
+                    cross = True
+                    break
+                elif ((r.x1 + cell_margin) >= obj1.x0) and ((r.x1 - cell_margin) <= obj0.x1):
+                    cross = True
+                    break
+        return cross
+
     # group_objects: group text object to textlines.
-    def group_objects(self, laparams, objs):
+    def group_objects(self, laparams, objs, splitobjs):
         obj0 = None
         line = None
         for obj1 in objs:
@@ -573,7 +611,7 @@ class LTLayoutContainer(LTContainer):
         return
 
     # group_textlines: group neighboring lines to textboxes.
-    def group_textlines(self, laparams, lines):
+    def group_textlines(self, laparams, lines, splitobjs):
         plane = Plane(self.bbox)
         plane.extend(lines)
         boxes = {}
@@ -582,6 +620,11 @@ class LTLayoutContainer(LTContainer):
             if line not in neighbors: continue
             members = []
             for obj1 in neighbors:
+                if line is not obj1:
+                    if self.vsplitted(line, obj1, splitobjs, laparams.cell_margin):
+                        continue
+                    if self.hsplitted(line, obj1, splitobjs, laparams.cell_margin):
+                        continue
                 members.append(obj1)
                 if obj1 in boxes:
                     members.extend(boxes.pop(obj1))
@@ -675,6 +718,10 @@ class LTLayoutContainer(LTContainer):
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
         (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self)
+        if laparams.split_tables:
+            (splitobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTRect), self)
+        else:
+            splitobjs = []
         for obj in otherobjs:
             obj.analyze(laparams)
         if not textobjs:
@@ -683,7 +730,7 @@ class LTLayoutContainer(LTContainer):
         (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
         for obj in empties:
             obj.analyze(laparams)
-        textboxes = list(self.group_textlines(laparams, textlines))
+        textboxes = list(self.group_textlines(laparams, textlines, splitobjs))
         if -1 <= laparams.boxes_flow and laparams.boxes_flow <= +1 and textboxes:
             self.groups = self.group_textboxes(laparams, textboxes)
             assigner = IndexAssigner()
