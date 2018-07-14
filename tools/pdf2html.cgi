@@ -48,7 +48,7 @@ def convert(infp, outfp, path, codec='utf-8',
             maxpages=0, maxfilesize=0, pagenos=None,
             html=True):
     # save the input file.
-    src = file(path, 'wb')
+    src = open(path, 'wb')
     nbytes = 0
     while 1:
         data = infp.read(4096)
@@ -68,7 +68,7 @@ def convert(infp, outfp, path, codec='utf-8',
                                layoutmode='exact')
     else:
         device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
-    fp = file(path, 'rb')
+    fp = open(path, 'rb')
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages):
         interpreter.process_page(page)

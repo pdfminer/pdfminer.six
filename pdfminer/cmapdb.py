@@ -426,7 +426,7 @@ class CMapParser(PSStackParser):
 def main(argv):
     args = argv[1:]
     for fname in args:
-        fp = file(fname, 'rb')
+        fp = open(fname, 'rb')
         cmap = FileUnicodeMap()
         #cmap = FileCMap()
         CMapParser(cmap, fp).run()
