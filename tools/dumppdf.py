@@ -7,6 +7,7 @@
 #  options:
 #    -i objid : object id
 #
+import argparse
 import sys, os.path, re, logging
 from pdfminer.psparser import PSKeyword, PSLiteral, LIT
 from pdfminer.pdfparser import PDFParser
@@ -228,6 +229,27 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
     if codec not in ('raw','binary'):
         outfp.write('\n')
     return
+
+
+# Currently for Sphinx only. Argparse to replace Getopt in main()
+def parsetheargs():
+    parser = argparse.ArgumentParser(description=__doc__, add_help=True)
+    parser.add_argument("file", type=str, default=None, nargs="+", help="File to process.")
+    parser.add_argument("-d", "--debug", default=False, action="store_true", help="Debug output.")
+    parser.add_argument("-o", "--outfile", type=str, default="-", help="Output file (default \"-\" is stdout)")
+    parser.add_argument("-p", "--pagenos", type=str, help="Comma-separated list of page numbers to parse. Included for legacy applications, use --page-numbers for more idiomatic argument entry.")
+    parser.add_argument("-i", "--objids", type=str, default=None, help="Comma-separated list of object IDs.")
+    parser.add_argument("-P", "--password", type=str, default="", help="Decryption password for PDF")
+    parser.add_argument("-a", "--all", default=False, action="store_true", help="Dump all.")
+
+    pg = parser.add_mutually_exclusive_group()
+    pg.add_argument("-r", "--raw", default=False, action="store_true", help="Raw codec.")
+    pg.add_argument("-b", "--binary", default=False, action="store_true", help="Binary codec.")
+    pg.add_argument("-t", "--text", default=False, action="store_true", help="Text codec.")
+
+    parser.add_argument("-T", "--outline", default=False, action="store_true", help="Dump outline.")
+    parser.add_argument("-E", "--directory", type=str, default=None, help="Extract to directory.")
+    return parser
 
 
 # main
