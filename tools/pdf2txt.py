@@ -3,9 +3,10 @@
 """
 Converts PDF text content (though not images containing text) to plain text, html, xml or "tags".
 """
-import sys
+import argparse
 import logging
 import six
+import sys
 import pdfminer.settings
 pdfminer.settings.STRICT = False
 import pdfminer.high_level
@@ -62,32 +63,40 @@ def extract_text(files=[], outfile='-',
             pdfminer.high_level.extract_text_to_fp(fp, **locals())
     return outfp
 
+
+def maketheparser():
+    parser = argparse.ArgumentParser(description=__doc__, add_help=True)
+    parser.add_argument("files", type=str, default=None, nargs="+", help="File to process.")
+    parser.add_argument("-d", "--debug", default=False, action="store_true", help="Debug output.")
+    parser.add_argument("-p", "--pagenos", type=str, help="Comma-separated list of page numbers to parse. Included for legacy applications, use --page-numbers for more idiomatic argument entry.")
+    parser.add_argument("--page-numbers", type=int, default=None, nargs="+", help="Alternative to --pagenos with space-separated numbers; supercedes --pagenos where it is used.")
+    parser.add_argument("-m", "--maxpages", type=int, default=0, help="Maximum pages to parse")
+    parser.add_argument("-P", "--password", type=str, default="", help="Decryption password for PDF")
+    parser.add_argument("-o", "--outfile", type=str, default="-", help="Output file (default \"-\" is stdout)")
+    parser.add_argument("-t", "--output_type", type=str, default="text", help="Output type: text|html|xml|tag (default is text)")
+    parser.add_argument("-c", "--codec", type=str, default="utf-8", help="Text encoding")
+    parser.add_argument("-s", "--scale", type=float, default=1.0, help="Scale")
+    parser.add_argument("-A", "--all-texts", default=None, action="store_true", help="LAParams all texts")
+    parser.add_argument("-V", "--detect-vertical", default=None, action="store_true", help="LAParams detect vertical")
+    parser.add_argument("-W", "--word-margin", type=float, default=None, help="LAParams word margin")
+    parser.add_argument("-M", "--char-margin", type=float, default=None, help="LAParams char margin")
+    parser.add_argument("-L", "--line-margin", type=float, default=None, help="LAParams line margin")
+    parser.add_argument("-F", "--boxes-flow", type=float, default=None, help="LAParams boxes flow")
+    parser.add_argument("-Y", "--layoutmode", default="normal", type=str, help="HTML Layout Mode")
+    parser.add_argument("-n", "--no-laparams", default=False, action="store_true", help="Pass None as LAParams")
+    parser.add_argument("-R", "--rotation", default=0, type=int, help="Rotation")
+    parser.add_argument("-O", "--output-dir", default=None, help="Output directory for images")
+    parser.add_argument("-C", "--disable-caching", default=False, action="store_true", help="Disable caching")
+    parser.add_argument("-S", "--strip-control", default=False, action="store_true", help="Strip control in XML mode")
+    return parser
+
+
 # main
+
+
 def main(args=None):
-    import argparse
-    P = argparse.ArgumentParser(description=__doc__)
-    P.add_argument("files", type=str, default=None, nargs="+", help="Files to process.")
-    P.add_argument("-d", "--debug", default=False, action="store_true", help="Debug output.")
-    P.add_argument("-p", "--pagenos", type=str, help="Comma-separated list of page numbers to parse. Included for legacy applications, use --page-numbers for more idiomatic argument entry.")
-    P.add_argument("--page-numbers", type=int, default=None, nargs="+", help="Alternative to --pagenos with space-separated numbers; supercedes --pagenos where it is used.")
-    P.add_argument("-m", "--maxpages", type=int, default=0, help = "Maximum pages to parse")
-    P.add_argument("-P", "--password", type=str, default="", help = "Decryption password for PDF")
-    P.add_argument("-o", "--outfile", type=str, default="-", help="Output file (default/'-' is stdout)")
-    P.add_argument("-t", "--output_type", type=str, default="text", help = "Output type: text|html|xml|tag (default is text)")
-    P.add_argument("-c", "--codec", type=str, default="utf-8", help = "Text encoding")
-    P.add_argument("-s", "--scale", type=float, default=1.0, help = "Scale")
-    P.add_argument("-A", "--all-texts", default=None, action="store_true", help="LAParams all texts")
-    P.add_argument("-V", "--detect-vertical", default=None, action="store_true", help="LAParams detect vertical")
-    P.add_argument("-W", "--word-margin", type=float, default=None, help = "LAParams word margin")
-    P.add_argument("-M", "--char-margin", type=float, default=None, help = "LAParams char margin")
-    P.add_argument("-L", "--line-margin", type=float, default=None, help = "LAParams line margin")
-    P.add_argument("-F", "--boxes-flow", type=float, default=None, help = "LAParams boxes flow")
-    P.add_argument("-Y", "--layoutmode", default="normal", type=str, help="HTML Layout Mode")
-    P.add_argument("-n", "--no-laparams", default=False, action="store_true", help = "Pass None as LAParams")
-    P.add_argument("-R", "--rotation", default=0, type=int, help = "Rotation")
-    P.add_argument("-O", "--output-dir", default=None, help="Output directory for images")
-    P.add_argument("-C", "--disable-caching", default=False, action="store_true", help="Disable caching")
-    P.add_argument("-S", "--strip-control", default=False, action="store_true", help="Strip control in XML mode")
+
+    P = maketheparser()
     A = P.parse_args(args=args)
 
     if A.page_numbers:
