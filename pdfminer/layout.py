@@ -39,20 +39,22 @@ class LAParams(object):
                  line_margin=0.5,
                  word_margin=0.1,
                  boxes_flow=0.5,
+                 cell_margin=0.5,
                  detect_vertical=False,
                  all_texts=False):
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin
         self.word_margin = word_margin
+        self.cell_margin = cell_margin
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
         return
 
     def __repr__(self):
-        return ('<LAParams: char_margin=%.1f, line_margin=%.1f, word_margin=%.1f all_texts=%r>' %
-                (self.char_margin, self.line_margin, self.word_margin, self.all_texts))
+        return ('<LAParams: char_margin=%.1f, line_margin=%.1f, word_margin=%.1f, cell_margin=%.1f ,all_texts=%r>' %
+                (self.char_margin, self.line_margin, self.word_margin, self.cell_margin, self.all_texts))
 
 
 ##  LTItem
