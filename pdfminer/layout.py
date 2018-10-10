@@ -165,9 +165,9 @@ class LTCurve(LTComponent):
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
         self.linewidth = linewidth
-        self.stroke = stroke
-        self.fill = fill
         self.evenodd = evenodd
+        self.has_stroke = stroke
+        self.has_fill = fill
         self.stroking_color = stroking_color
         self.fill_color = fill_color
         return
