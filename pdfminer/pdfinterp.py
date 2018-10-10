@@ -97,6 +97,63 @@ class PDFTextState(object):
         return
 
 
+class PDFGraphicStateColor:
+    class ColorNotSet(Exception): pass
+    def __init__(self):
+        self.__rgb = None
+        self.__gray = None
+        self.__cmyk = None
+    
+    def get_color(self):
+        if self.__rgb is not None:
+            return 'rgb', self.rgb
+        elif self.__cmyk is not None:
+            return 'cmyk', self.cmyk
+        elif self.__gray is not None:
+            return 'gray', self.gray
+        else: return None, None
+
+    @property
+    def rgb(self):
+        if self.__rgb is not None: return [*self.__rgb]
+        else: raise self.ColorNotSet
+
+    @property
+    def cmyk(self):
+        if self.__cmyk is not None: return [*self.__cmyk]
+        else: raise self.ColorNotSet
+
+    @property
+    def gray(self):
+        if self.__gray is not None: return float(self.__gray)
+        else: raise self.ColorNotSet
+
+    @rgb.setter
+    def rgb(self, rgb):
+        self.__rgb = rgb
+
+    @cmyk.setter
+    def cmyk(self, cmyk):
+        self.__cmyk = cmyk
+
+    @gray.setter
+    def gray(self, color):
+        self.__gray = color
+
+    def copy(self):
+        cp = self.__class__()
+        cp.gray = self.__gray
+        cp.rgb = self.__rgb
+        cp.cmyk = self.__cmyk
+        return cp
+
+    def __repr__(self):
+        rep = "<PDFGraphicStateColor"
+        if self.__gray is not None: rep += f' gray={self.__gray}'
+        if self.__rgb is not None: rep += f' rgb=[{",".join(map(str, self.__rgb))}]'
+        if self.__cmyk is not None: rep += f' cmyk=[{",".join(map(str, self.__cmyk))}]'
+        return rep + '/>'
+
 ##  PDFGraphicState
 ##
 class PDFGraphicState(object):
@@ -111,10 +168,11 @@ class PDFGraphicState(object):
         self.flatness = None
 
         # stroking color
-        self.scolor = None
+        self.scolor = PDFGraphicStateColor()
 
         # non stroking color
-        self.ncolor = None
+        self.ncolor = PDFGraphicStateColor()
+        
         return
 
     def copy(self):
@@ -126,17 +184,21 @@ class PDFGraphicState(object):
         obj.dash = self.dash
         obj.intent = self.intent
         obj.flatness = self.flatness
-        obj.scolor = self.scolor
-        obj.ncolor = self.ncolor
+        obj.scolor = self.scolor.copy()
+        obj.ncolor = self.ncolor.copy()
         return obj
 
     def __repr__(self):
         return ('<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, '
                 ' miterlimit=%r, dash=%r, intent=%r, flatness=%r, '
-                ' stroking color=%r, non stroking color=%r>' %
-                (self.linewidth, self.linecap, self.linejoin,
-                 self.miterlimit, self.dash, self.intent, self.flatness,
-                 self.scolor, self.ncolor))
+                ' stroking color=%r, non stroking color=%r'
+                '>' %
+                (
+                    self.linewidth, self.linecap, self.linejoin,
+                    self.miterlimit, self.dash, self.intent, self.flatness,
+                    str(self.scolor), str(self.ncolor)
+                 )
+        )
 
 
 ##  Resource Manager
@@ -277,7 +339,6 @@ class PDFContentParser(PSStackParser):
             else:
                 try:
                     j = self.buf.index(target[0], self.charpos)
-                    #print 'found', (0, self.buf[j:j+10])
                     data += self.buf[self.charpos:j+1]
                     self.charpos = j+1
                     i = 1
@@ -586,37 +647,37 @@ class PDFPageInterpreter(object):
 
     # setgray-stroking
     def do_G(self, gray):
-        self.graphicstate.scolor = gray
+        self.graphicstate.scolor.gray = gray
         #self.do_CS(LITERAL_DEVICE_GRAY)
         return
 
     # setgray-non-stroking
     def do_g(self, gray):
-        self.graphicstate.ncolor = gray
+        self.graphicstate.ncolor.gray = gray
         #self.do_cs(LITERAL_DEVICE_GRAY)
         return
 
     # setrgb-stroking
     def do_RG(self, r, g, b):
-        self.graphicstate.color = (r, g, b)
+        self.graphicstate.scolor.rgb = (r*255, g*255, b*255)
         #self.do_CS(LITERAL_DEVICE_RGB)
         return
 
     # setrgb-non-stroking
     def do_rg(self, r, g, b):
-        self.graphicstate.color = (r, g, b)
+        self.graphicstate.ncolor.rgb = (r*255, g*255, b*255)
         #self.do_cs(LITERAL_DEVICE_RGB)
         return
 
     # setcmyk-stroking
     def do_K(self, c, m, y, k):
-        self.graphicstate.color = (c, m, y, k)
+        self.graphicstate.scolor.cmyk = (c, m, y, k)
         #self.do_CS(LITERAL_DEVICE_CMYK)
         return
 
     # setcmyk-non-stroking
     def do_k(self, c, m, y, k):
-        self.graphicstate.color = (c, m, y, k)
+        self.graphicstate.ncolor.cmyk = (c, m, y, k)
         #self.do_cs(LITERAL_DEVICE_CMYK)
         return
 
@@ -737,7 +798,6 @@ class PDFPageInterpreter(object):
         (a, b, c, d, e, f) = self.textstate.matrix
         self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
         self.textstate.linematrix = (0, 0)
-        #print >>sys.stderr, 'Td(%r,%r): %r' % (tx, ty, self.textstate)
         return
 
     # text-move
@@ -746,7 +806,6 @@ class PDFPageInterpreter(object):
         self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
         self.textstate.leading = ty
         self.textstate.linematrix = (0, 0)
-        #print >>sys.stderr, 'TD(%r,%r): %r' % (tx, ty, self.textstate)
         return
 
     # textmatrix
@@ -764,7 +823,6 @@ class PDFPageInterpreter(object):
 
     # show-pos
     def do_TJ(self, seq):
-        #print >>sys.stderr, 'TJ(%r): %r' % (seq, self.textstate)
         if self.textstate.font is None:
             if settings.STRICT:
                 raise PDFInterpreterError('No font specified!')

@@ -154,7 +154,14 @@ class LTComponent(LTItem):
 ##
 class LTCurve(LTComponent):
 
-    def __init__(self, linewidth, pts, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
+    def __init__(self, linewidth, 
+                        pts, 
+                        stroke = False, 
+                        fill = False, 
+                        evenodd = False, 
+                        stroking_color = None, 
+                        fill_color = None
+                ):
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
         self.linewidth = linewidth
@@ -162,7 +169,7 @@ class LTCurve(LTComponent):
         self.fill = fill
         self.evenodd = evenodd
         self.stroking_color = stroking_color
-        self.non_stroking_color = non_stroking_color
+        self.fill_color = fill_color
         return
 
     def get_pts(self):
@@ -173,8 +180,8 @@ class LTCurve(LTComponent):
 ##
 class LTLine(LTCurve):
 
-    def __init__(self, linewidth, p0, p1, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
-        LTCurve.__init__(self, linewidth, [p0, p1], stroke, fill, evenodd, stroking_color, non_stroking_color)
+    def __init__(self, linewidth, p0, p1, stroke = False, fill = False, evenodd = False, stroking_color = None, fill_color = None):
+        LTCurve.__init__(self, linewidth, [p0, p1], stroke, fill, evenodd, stroking_color, fill_color)
         return
 
 
@@ -182,9 +189,9 @@ class LTLine(LTCurve):
 ##
 class LTRect(LTCurve):
 
-    def __init__(self, linewidth, bbox, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
+    def __init__(self, linewidth, bbox, stroke = False, fill = False, evenodd = False, stroking_color = None, fill_color = None):
         (x0, y0, x1, y1) = bbox
-        LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke, fill, evenodd, stroking_color, non_stroking_color)
+        LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke, fill, evenodd, stroking_color, fill_color)
         return
 
 
@@ -257,7 +264,7 @@ class LTChar(LTComponent, LTText):
             ty = descent + rise
             bll = (0, ty)
             bur = (self.adv, ty+height)
-        (a, b, c, d, e, f) = self.matrix
+        (a, b, c, d, _, _) = self.matrix
         self.upright = (0 < a*d*scaling and b*c <= 0)
         (x0, y0) = apply_matrix_pt(self.matrix, bll)
         (x1, y1) = apply_matrix_pt(self.matrix, bur)
