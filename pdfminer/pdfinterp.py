@@ -115,12 +115,12 @@ class PDFGraphicStateColor:
 
     @property
     def rgb(self):
-        if self.__rgb is not None: return [*self.__rgb]
+        if self.__rgb is not None: return self.__rgb
         else: raise self.ColorNotSet
 
     @property
     def cmyk(self):
-        if self.__cmyk is not None: return [*self.__cmyk]
+        if self.__cmyk is not None: return self.__cmyk
         else: raise self.ColorNotSet
 
     @property
@@ -149,9 +149,9 @@ class PDFGraphicStateColor:
 
     def __repr__(self):
         rep = "<PDFGraphicStateColor"
-        if self.__gray is not None: rep += f' gray={self.__gray}'
-        if self.__rgb is not None: rep += f' rgb=[{",".join(map(str, self.__rgb))}]'
-        if self.__cmyk is not None: rep += f' cmyk=[{",".join(map(str, self.__cmyk))}]'
+        if self.__gray is not None: rep += ' gray=%r' % str(self.__gray)
+        if self.__rgb is not None: rep += ' rgb=[%r]' % ",".join(map(str, self.__rgb))
+        if self.__cmyk is not None: rep += ' cmyk=[%r]' % ",".join(map(str, self.__cmyk))
         return rep + '/>'
 
 ##  PDFGraphicState

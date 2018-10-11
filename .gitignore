@@ -16,3 +16,4 @@ tests/*.xml
 tests/*.txt
 .idea/
 .tox/
+.vscode
