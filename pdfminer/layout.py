@@ -41,7 +41,8 @@ class LAParams(object):
                  boxes_flow=0.5,
                  cell_margin=0.5,
                  detect_vertical=False,
-                 all_texts=False):
+                 all_texts=False
+                 split_tables=False):
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin
@@ -50,11 +51,12 @@ class LAParams(object):
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
+        self.split_tables = split_tables
         return
 
     def __repr__(self):
-        return ('<LAParams: char_margin=%.1f, line_margin=%.1f, word_margin=%.1f, cell_margin=%.1f ,all_texts=%r>' %
-                (self.char_margin, self.line_margin, self.word_margin, self.cell_margin, self.all_texts))
+        return ('<LAParams: char_margin=%.1f, line_margin=%.1f, word_margin=%.1f, cell_margin=%.1f , all_texts=%r ,split_tables=%r>' %
+                (self.char_margin, self.line_margin, self.word_margin, self.cell_margin, self.all_texts, self.split_tables))
 
 
 ##  LTItem
