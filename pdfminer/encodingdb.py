@@ -12,9 +12,25 @@ STRIP_NAME = re.compile(r'[0-9]+')
 ##  name2unicode
 ##
 def name2unicode(name):
-    """Converts Adobe glyph names to Unicode numbers."""
+    """Converts Adobe glyph names to Unicode numbers
+    
+    Font cids that are mapped to names of the form /g123 seem to be characters
+    with no Unicode entry, such as when the font is being used to provide
+    symbols that might not be in Unicode. When this convention is used, the
+    font must provide a ToUnicode structure, or no Unicode mapping is possible.
+
+    If the name starts with 'uni', then the next four digits are hexadecimal,
+    for example /uni0020 signifies U+0020, a space.
+    """
     if name in glyphname2unicode:
         return glyphname2unicode[name]
+    if name.startswith('g'):
+        raise KeyError(name)
+    if name.startswith('uni'):
+        try:
+            return six.unichr(int(name[3:], 16))
+        except ValueError:  # Not hexadecimal
+            raise KeyError(name)
     m = STRIP_NAME.search(name)
     if not m:
         raise KeyError(name)
