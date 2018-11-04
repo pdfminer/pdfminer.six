@@ -488,6 +488,13 @@ class PDFFont(object):
         self.leading = num_value(descriptor.get('Leading', 0))
         self.bbox = list_value(descriptor.get('FontBBox', (0, 0, 0, 0)))
         self.hscale = self.vscale = .001
+
+        # PDF RM 9.8.1 specifies /Descent should always be a negative number.
+        # PScript5.dll seems to produce Descent with a positive number, but
+        # text analysis will be wrong if this is taken as correct. So force
+        # descent to negative.
+        if self.descent > 0:
+            self.descent = -self.descent
         return
 
     def __repr__(self):
@@ -503,9 +510,11 @@ class PDFFont(object):
         return bytearray(bytes)  # map(ord, bytes)
 
     def get_ascent(self):
+        """Ascent above the baseline, in text space units"""
         return self.ascent * self.vscale
 
     def get_descent(self):
+        """Descent below the baseline, in text space units; always negative"""
         return self.descent * self.vscale
 
     def get_width(self):
