@@ -8,5 +8,6 @@ install:
   - pip install six
   - pip install pycryptodome
   - pip install chardet
+  - pip install sortedcontainers
 script:
   nosetests --nologcapture
