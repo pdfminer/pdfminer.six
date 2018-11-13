@@ -37,8 +37,8 @@ Features
 How to use
 ----------
 
- * Install Python 2.7 or newer. Note that Python 2 support is dropped at
-  January, 2020.
+ * Install Python 3.4 or newer
+ * Install
 
     `pip install pdfminer.six`
 
