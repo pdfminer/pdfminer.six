@@ -1,11 +1,8 @@
 from setuptools import setup
-import sys
 
 import pdfminer as package
 
-requires = ['six', 'pycryptodome', 'sortedcontainers']
-if sys.version_info >= (3, 0):
-    requires.append('chardet')
+requires = ['six', 'pycryptodome', 'sortedcontainers', 'chardet']
 
 setup(
     name='pdfminer.six',
@@ -32,11 +29,10 @@ setup(
     ],
     classifiers=[
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3 :: Only',
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
