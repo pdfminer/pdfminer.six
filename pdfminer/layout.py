@@ -41,7 +41,7 @@ class LAParams(object):
                  boxes_flow=0.5,
                  cell_margin=0.5,
                  detect_vertical=False,
-                 all_texts=False
+                 all_texts=False,
                  split_tables=False):
         self.line_overlap = line_overlap
         self.char_margin = char_margin
