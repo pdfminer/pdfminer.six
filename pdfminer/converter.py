@@ -182,16 +182,17 @@ class PDFConverter(PDFLayoutAnalyzer):
 class TextConverter(PDFConverter):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
-                 showpageno=False, imagewriter=None):
+                 showpageno=False, imagewriter=None, erraction='ignore'):
         PDFConverter.__init__(self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams)
         self.showpageno = showpageno
         self.imagewriter = imagewriter
+        self.erraction = erraction
         return
 
     def write_text(self, text):
-        text = utils.compatible_encode_method(text, self.codec, 'ignore')
+        text = utils.compatible_encode_method(text, self.codec, self.erraction)
         if six.PY3 and self.outfp_binary:
-            text = text.encode()
+            text = text.encode(errors=self.erraction)
         self.outfp.write(text)
         return
 
