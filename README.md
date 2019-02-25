@@ -35,7 +35,7 @@ Features
 How to Install
 --------------
 
- * Install Python 2.7 or newer. (Python 3.x is supported in pdfminer.six)
+ * Install Python 2.7 or newer.
  * Install
 
     `pip install pdfminer.six`
