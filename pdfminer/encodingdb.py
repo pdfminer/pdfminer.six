@@ -6,7 +6,7 @@ from .latin_enc import ENCODING
 
 import six # Python 2+3 compatibility
 
-STRIP_NAME = re.compile(r'[0-9]+')
+STRIP_NAME = re.compile(r'[0-9A-Fa-f]+')
 
 
 ##  name2unicode
@@ -18,7 +18,7 @@ def name2unicode(name):
     m = STRIP_NAME.search(name)
     if not m:
         raise KeyError(name)
-    return six.unichr(int(m.group(0)))
+    return six.unichr(int(m.group(0), base=16))
 
 
 ##  EncodingDB
