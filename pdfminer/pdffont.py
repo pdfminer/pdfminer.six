@@ -16,6 +16,7 @@ from . import settings
 from .psparser import PSLiteral
 from .psparser import literal_name
 from .pdftypes import PDFException
+from .pdftypes import PDFStream
 from .pdftypes import resolve1
 from .pdftypes import int_value
 from .pdftypes import num_value
@@ -654,6 +655,17 @@ class PDFCIDFont(PDFFont):
             if strict:
                 raise PDFFontError('Encoding is unspecified')
             name = 'unknown'
+        if type(name) is PDFStream:
+            if 'CMapName' in name:
+                name = name.get('CMapName').name
+                if name == 'DLIdent-H':
+                    name = 'Identity-H'
+                elif name == 'DLIdent-V':
+                    name = 'Identity-V'
+            else:
+                if strict:
+                    raise PDFFontError('Encoding is unspecified')
+                name = 'unknown'
         try:
             self.cmap = CMapDB.get_cmap(name)
         except CMapDB.CMapNotFound as e:
