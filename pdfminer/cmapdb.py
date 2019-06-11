@@ -126,7 +126,8 @@ class IdentityCMap(CMapBase):
     def decode(self, code):
         n = len(code)//2
         if n:
-            return struct.unpack('>%dH' % n, code)
+            # return struct.unpack('>%dH' % n, code)
+            return struct_from.unpack('=%dH' % n, code)
         else:
             return ()
 
