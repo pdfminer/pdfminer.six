@@ -67,3 +67,7 @@ def test_name2unicode_notdef():
 def test_name2unicode_pua_ogoneksmall():
     """"Ogoneksmall" and "uniF6FB" both map to the string that corresponds to U+F6FB."""
     assert u'\uF6FB' == name2unicode('Ogoneksmall')
+
+
+def test_name2unicode_overflow_error():
+    name2unicode('226215240241240240240240')
