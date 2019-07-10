@@ -81,6 +81,12 @@ TODO
  * Performance improvements.
 
 
+Contributing
+------------
+
+Be sure to read the [contribution guidelines](https://github.com/pdfminer/pdfminer.six/blob/master/CONTRIBUTING.md). 
+
+
 Terms and Conditions
 --------------------
 
