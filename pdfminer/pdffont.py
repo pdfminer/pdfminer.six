@@ -697,7 +697,7 @@ class PDFCIDFont(PDFFont):
         PDFFont.__init__(self, descriptor, widths, default_width=default_width)
         return
 
-        @property
+    @property
     def cmap(self):
         return self._cmap
 
