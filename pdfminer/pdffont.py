@@ -649,29 +649,8 @@ class PDFCIDFont(PDFFont):
         self.cidsysteminfo = dict_value(spec.get('CIDSystemInfo', {}))
         self.cidcoding = '%s-%s' % (resolve1(self.cidsysteminfo.get('Registry', b'unknown')).decode("latin1"),
                                     resolve1(self.cidsysteminfo.get('Ordering', b'unknown')).decode("latin1"))
-        try:
-            name = literal_name(spec['Encoding'])
-        except KeyError:
-            if strict:
-                raise PDFFontError('Encoding is unspecified')
-            name = 'unknown'
-        if type(name) is PDFStream:
-            if 'CMapName' in name:
-                name = name.get('CMapName').name
-                if name == 'DLIdent-H':
-                    name = 'Identity-H'
-                elif name == 'DLIdent-V':
-                    name = 'Identity-V'
-            else:
-                if strict:
-                    raise PDFFontError('Encoding is unspecified')
-                name = 'unknown'
-        try:
-            self.cmap = CMapDB.get_cmap(name)
-        except CMapDB.CMapNotFound as e:
-            if strict:
-                raise PDFFontError(e)
-            self.cmap = CMap()
+        self.cmap = (spec, strict)
+
         try:
             descriptor = dict_value(spec['FontDescriptor'])
         except KeyError:
@@ -717,6 +696,41 @@ class PDFCIDFont(PDFFont):
             default_width = spec.get('DW', 1000)
         PDFFont.__init__(self, descriptor, widths, default_width=default_width)
         return
+
+        @property
+    def cmap(self):
+        return self._cmap
+
+    @cmap.setter
+    def cmap(self,values):
+        spec, strict = values
+        try:
+            spec_encoding = spec['Encoding']
+            if hasattr(spec_encoding, 'name'):
+                name = literal_name(spec['Encoding'])
+            else:
+                name = literal_name(spec_encoding['CMapName'])
+        except KeyError:
+            if strict:
+                raise PDFFontError('Encoding is unspecified')
+            name = 'unknown'
+        if type(name) is PDFStream:
+            if 'CMapName' in name:
+                name = name.get('CMapName').name
+                if name in('DLIdent-H','OneByteIdentityH','Identity-H') :
+                    name = 'Identity-H'
+                elif name in ('DLIdent-V','OneByteIdentityV','Identity-V'):
+                    name = 'Identity-V'
+            else:
+                if strict:
+                    raise PDFFontError('Encoding is unspecified')
+                name = 'unknown'
+        try:
+            self._cmap = CMapDB.get_cmap(name)
+        except CMapDB.CMapNotFound as e:
+            if strict:
+                raise PDFFontError(e)
+            self._cmap = CMap()
 
     def __repr__(self):
         return '<PDFCIDFont: basefont=%r, cidcoding=%r>' % (self.basefont, self.cidcoding)
