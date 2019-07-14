@@ -4,6 +4,8 @@ Tests based on the Adobe Glyph List Specification (https://github.com/adobe-type
 While not in the specification, lowercase unicode often occurs in pdf's. Therefore lowercase unittest variants are
 added.
 """
+from nose.tools import assert_raises
+
 from pdfminer.encodingdb import name2unicode
 
 
@@ -48,7 +50,7 @@ def test_name2unicode_uni_empty_string_long():
     expressed as D801 DC0C in UTF-16, specifically U+1040C. This character can be correctly mapped by using the
     glyph name "u1040C.
     """
-    assert u'' == name2unicode('uniD801DC0C')
+    assert_raises(KeyError, name2unicode, 'uniD801DC0C')
 
 
 def test_name2unicode_uni_empty_string_long_lowercase():
@@ -57,7 +59,7 @@ def test_name2unicode_uni_empty_string_long_lowercase():
     Neither D801 nor DC0C are in the appropriate set. This form cannot be used to map to the character which is
     expressed as D801 DC0C in UTF-16, specifically U+1040C. This character can be correctly mapped by using the
     glyph name "u1040C."""
-    assert u'' == name2unicode('uniD801DC0C')
+    assert_raises(KeyError, name2unicode, 'uniD801DC0C')
 
 
 def test_name2unicode_uni_pua():
@@ -102,12 +104,12 @@ def test_name2unicode_multiple_components_lowercase():
 
 def test_name2unicode_foo():
     """The name 'foo' maps to an empty string, because 'foo' is not in AGL, and because it does not start with a 'u.'"""
-    assert u'' == name2unicode('foo')
+    assert_raises(KeyError, name2unicode, 'foo')
 
 
 def test_name2unicode_notdef():
     """The name ".notdef" is reduced to an empty string (step 1) and mapped to an empty string (step 3)"""
-    assert u'' == name2unicode('.notdef')
+    assert_raises(KeyError, name2unicode, '.notdef')
 
 
 def test_name2unicode_pua_ogoneksmall():
@@ -116,4 +118,4 @@ def test_name2unicode_pua_ogoneksmall():
 
 
 def test_name2unicode_overflow_error():
-    name2unicode('226215240241240240240240')
+    assert_raises(KeyError, name2unicode, '226215240241240240240240')
