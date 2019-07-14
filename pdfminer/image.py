@@ -1,5 +1,4 @@
 
-from cStringIO import StringIO
 import struct
 import os
 import os.path
@@ -111,7 +110,7 @@ class ImageWriter(object):
             else:
                 fp.write(raw_data)
         elif is_jbig2:
-            input_stream = StringIO()
+            input_stream = BytesIO()
             input_stream.write(stream.get_data())
             input_stream.seek(0)
             reader = JBIG2StreamReader(input_stream)
