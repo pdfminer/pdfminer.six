@@ -97,7 +97,7 @@ class ImageWriter(object):
             path = os.path.join(self.outdir, name)
             img_index += 1
 
-        fp = file(path, 'wb')
+        fp = open(path, 'wb')
         if ext == '.jpg':
             raw_data = stream.get_rawdata()
             if LITERAL_DEVICE_CMYK in image.colorspace:
