@@ -35,7 +35,7 @@ def test_name2unicode_uni_with_sequence_of_digits_lowercase():
 
 
 def test_name2unicode_uni_empty_string():
-    """The name "uni20ac" has a single component, which is mapped to a €.
+    """The name "uni20ac" has a single component, which is mapped to a euro-sign.
 
     According to the specification this should be mapped to an empty string, but we also want to support lowercase
     hexadecimals
