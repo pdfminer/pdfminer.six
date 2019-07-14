@@ -1,5 +1,8 @@
 """
 Tests based on the Adobe Glyph List Specification (https://github.com/adobe-type-tools/agl-specification#2-the-mapping)
+
+While not in the specification, lowercase unicode often occurs in pdf's. Therefore lowercase unittest variants are
+added.
 """
 from pdfminer.encodingdb import name2unicode
 
@@ -14,14 +17,28 @@ def test_name2unicode_uni():
     assert u'\u013B' == name2unicode('uni013B')
 
 
+def test_name2unicode_uni_lowercase():
+    """The components "Lcommaaccent," "uni013B," and "u013B" all map to the string U+013B"""
+    assert u'\u013B' == name2unicode('uni013b')
+
+
 def test_name2unicode_uni_with_sequence_of_digits():
     """The name "uni20AC0308" has a single component, which is mapped to the string U+20AC U+0308"""
     assert u'\u20AC\u0308' == name2unicode('uni20AC0308')
 
 
+def test_name2unicode_uni_with_sequence_of_digits_lowercase():
+    """The name "uni20AC0308" has a single component, which is mapped to the string U+20AC U+0308"""
+    assert u'\u20AC\u0308' == name2unicode('uni20ac0308')
+
+
 def test_name2unicode_uni_empty_string():
-    """The name "uni20ac" has a single component, which is mapped to an empty string"""
-    assert u'' == name2unicode('uni20ac')
+    """The name "uni20ac" has a single component, which is mapped to a €.
+
+    According to the specification this should be mapped to an empty string, but we also want to support lowercase
+    hexadecimals
+    """
+    assert u'€' == name2unicode('uni20ac')
 
 
 def test_name2unicode_uni_empty_string_long():
@@ -34,9 +51,23 @@ def test_name2unicode_uni_empty_string_long():
     assert u'' == name2unicode('uniD801DC0C')
 
 
+def test_name2unicode_uni_empty_string_long_lowercase():
+    """The name "uniD801DC0C" has a single component, which is mapped to an empty string
+
+    Neither D801 nor DC0C are in the appropriate set. This form cannot be used to map to the character which is
+    expressed as D801 DC0C in UTF-16, specifically U+1040C. This character can be correctly mapped by using the
+    glyph name "u1040C."""
+    assert u'' == name2unicode('uniD801DC0C')
+
+
 def test_name2unicode_uni_pua():
     """"Ogoneksmall" and "uniF6FB" both map to the string that corresponds to U+F6FB."""
     assert u'\uF6FB' == name2unicode('uniF6FB')
+
+
+def test_name2unicode_uni_pua_lowercase():
+    """"Ogoneksmall" and "uniF6FB" both map to the string that corresponds to U+F6FB."""
+    assert u'\uF6FB' == name2unicode('unif6fb')
 
 
 def test_name2unicode_u_with_4_digits():
@@ -44,14 +75,29 @@ def test_name2unicode_u_with_4_digits():
     assert u'\u013B' == name2unicode('u013B')
 
 
+def test_name2unicode_u_with_4_digits_lowercase():
+    """The components "Lcommaaccent," "uni013B," and "u013B" all map to the string U+013B"""
+    assert u'\u013B' == name2unicode('u013b')
+
+
 def test_name2unicode_u_with_5_digits():
     """The name "u1040C" has a single component, which is mapped to the string U+1040C"""
     assert u'\U0001040C' == name2unicode('u1040C')
 
 
+def test_name2unicode_u_with_5_digits_lowercase():
+    """The name "u1040C" has a single component, which is mapped to the string U+1040C"""
+    assert u'\U0001040C' == name2unicode('u1040c')
+
+
 def test_name2unicode_multiple_components():
     """The name "Lcommaaccent_uni20AC0308_u1040C.alternate" is mapped to the string U+013B U+20AC U+0308 U+1040C"""
-    assert u'\u013B\u20AC\U0001040C' == name2unicode('Lcommaaccent_uni20AC0308_u1040C.alternate')
+    assert u'\u013B\u20AC\u0308\U0001040C' == name2unicode('Lcommaaccent_uni20AC0308_u1040C.alternate')
+
+
+def test_name2unicode_multiple_components_lowercase():
+    """The name "Lcommaaccent_uni20AC0308_u1040C.alternate" is mapped to the string U+013B U+20AC U+0308 U+1040C"""
+    assert u'\u013B\u20AC\u0308\U0001040C' == name2unicode('Lcommaaccent_uni20ac0308_u1040c.alternate')
 
 
 def test_name2unicode_foo():
