@@ -40,7 +40,7 @@ def test_name2unicode_uni_empty_string():
     According to the specification this should be mapped to an empty string, but we also want to support lowercase
     hexadecimals
     """
-    assert u'€' == name2unicode('uni20ac')
+    assert u'\u20ac' == name2unicode('uni20ac')
 
 
 def test_name2unicode_uni_empty_string_long():
