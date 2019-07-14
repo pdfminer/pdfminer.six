@@ -1,28 +1,53 @@
 
 import re
-from .psparser import PSLiteral
+
+import six  # Python 2+3 compatibility
+
 from .glyphlist import glyphname2unicode
 from .latin_enc import ENCODING
+from .psparser import PSLiteral
 
-import six # Python 2+3 compatibility
-
-STRIP_NAME = re.compile(r'[0-9]+')
-
-
-##  name2unicode
-##
-def name2unicode(name):
-    """Converts Adobe glyph names to Unicode numbers."""
-    if name in glyphname2unicode:
-        return glyphname2unicode[name]
-    m = STRIP_NAME.search(name)
-    if not m:
-        raise KeyError(name)
-    return six.unichr(int(m.group(0)))
+HEXADECIMAL = re.compile(r'[0-9a-fA-F]+')
 
 
-##  EncodingDB
-##
+def name2unicode(name: str):
+    """Converts Adobe glyph names to Unicode numbers.
+
+    Reference: https://github.com/adobe-type-tools/agl-specification#2-the-mapping
+
+    :returns unicode character if name resembles something, empty string if not
+    """
+    full_stop = u'\u002E'
+    name = name.split(full_stop)[0]
+    components = name.split('_')
+
+    if len(components) > 1:
+        return ''.join(map(name2unicode, components))
+
+    else:
+        if name in glyphname2unicode:
+            return glyphname2unicode.get(name)
+
+        elif name.startswith('uni'):
+            name_without_uni = name.strip('uni')
+            if HEXADECIMAL.match(name_without_uni) and len(name_without_uni) % 4 == 0:
+                unicode_digits = [int(name_without_uni[i:i + 4], base=16) for i in range(0, len(name_without_uni), 4)]
+                if any([55295 < digit < 57344 for digit in unicode_digits]):
+                    return ''
+                characters = map(six.unichr, unicode_digits)
+                return ''.join(characters)
+
+        elif name.startswith('u'):
+            name_without_u = name.strip('u')
+            if HEXADECIMAL.match(name_without_u) and 4 <= len(name_without_u) <= 6:
+                unicode_digit = int(name_without_u, base=16)
+                if 55295 < unicode_digit < 57344:
+                    return ''
+                return six.unichr(unicode_digit)
+
+    return ''
+
+
 class EncodingDB(object):
 
     std2unicode = {}
