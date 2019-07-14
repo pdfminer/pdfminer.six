@@ -1,34 +1,35 @@
 
-import sys
 import struct
+import sys
 from io import BytesIO
+
+import six  # Python 2+3 compatibility
+
+from . import settings
+from .cmapdb import CMap
 from .cmapdb import CMapDB
 from .cmapdb import CMapParser
 from .cmapdb import FileUnicodeMap
-from .cmapdb import CMap
 from .encodingdb import EncodingDB
 from .encodingdb import name2unicode
-from .psparser import PSStackParser
-from .psparser import PSEOF
-from .psparser import LIT
-from .psparser import KWD
-from . import settings
-from .psparser import PSLiteral
-from .psparser import literal_name
-from .pdftypes import PDFException
-from .pdftypes import resolve1
-from .pdftypes import int_value
-from .pdftypes import num_value
-from .pdftypes import list_value
-from .pdftypes import dict_value
-from .pdftypes import stream_value
 from .fontmetrics import FONT_METRICS
+from .pdftypes import PDFException
+from .pdftypes import dict_value
+from .pdftypes import int_value
+from .pdftypes import list_value
+from .pdftypes import num_value
+from .pdftypes import resolve1
+from .pdftypes import stream_value
+from .psparser import KWD
+from .psparser import LIT
+from .psparser import PSEOF
+from .psparser import PSLiteral
+from .psparser import PSStackParser
+from .psparser import literal_name
 from .utils import apply_matrix_norm
-from .utils import nunpack
 from .utils import choplist
 from .utils import isnumber
-
-import six #Python 2+3 compatibility
+from .utils import nunpack
 
 
 def get_widths(seq):
@@ -98,7 +99,6 @@ class Type1FontHeaderParser(PSStackParser):
     KEYWORD_ARRAY = KWD(b'array')
     KEYWORD_READONLY = KWD(b'readonly')
     KEYWORD_FOR = KWD(b'for')
-    KEYWORD_FOR = KWD(b'for')
 
     def __init__(self, data):
         PSStackParser.__init__(self, data)
@@ -106,6 +106,17 @@ class Type1FontHeaderParser(PSStackParser):
         return
 
     def get_encoding(self):
+        """Parse the font encoding
+
+        The Type1 font encoding maps character codes to character names. These character names could either be standard
+        Adobe glyph names, or character names associated with custom CharStrings for this font. A CharString is a
+        sequence of operations that describe how the character should be drawn.
+        Currently, this function returns '' (empty string) for character names that are associated with a CharStrings.
+
+        References: http://wwwimages.adobe.com/content/dam/Adobe/en/devnet/font/pdfs/T1_SPEC.pdf
+
+        :returns mapping of character identifiers (cid's) to unicode characters
+        """
         while 1:
             try:
                 (cid, name) = self.nextobject()
