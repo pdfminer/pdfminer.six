@@ -128,7 +128,14 @@ class Type1FontHeaderParser(PSStackParser):
 
 
 NIBBLES = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'e-', None, '-')
-
+CMAP_ENCODER = {
+    'DLIdent-H': 'Identity-H',
+    'OneByteIdentityH': 'Identity-H',
+    'Identity-H': 'Identity-H',
+    'DLIdent-V': 'Identity-V',
+    'OneByteIdentityV': 'Identity-V',
+    'Identity-V': 'Identity-V'
+}
 
 ##  CFFFont
 ##  (Format specified in Adobe Technical Note: #5176
@@ -649,7 +656,7 @@ class PDFCIDFont(PDFFont):
         self.cidsysteminfo = dict_value(spec.get('CIDSystemInfo', {}))
         self.cidcoding = '%s-%s' % (resolve1(self.cidsysteminfo.get('Registry', b'unknown')).decode("latin1"),
                                     resolve1(self.cidsysteminfo.get('Ordering', b'unknown')).decode("latin1"))
-        self.cmap = (spec, strict)
+        self.cmap_setter(spec, strict)
 
         try:
             descriptor = dict_value(spec['FontDescriptor'])
@@ -697,40 +704,42 @@ class PDFCIDFont(PDFFont):
         PDFFont.__init__(self, descriptor, widths, default_width=default_width)
         return
 
-    @property
-    def cmap(self):
-        return self._cmap
-
-    @cmap.setter
-    def cmap(self,values):
-        spec, strict = values
+    def cmap_setter(self, spec, strict):
+        """
+        For certain PDFs, Encoding Type isn't mentioned as an attribute of
+        Encoding but as an attribute of CMapName, where CMapName is an
+        attribure of spec['Encoding'].
+        The horizaontal/vertical modes are mentioned with diffrent name
+        such as 'DLIdent-H/V','OneByteIdentityH/V','Identity-H/V'
+        """
         try:
             spec_encoding = spec['Encoding']
             if hasattr(spec_encoding, 'name'):
-                name = literal_name(spec['Encoding'])
+                cmap_name = literal_name(spec['Encoding'])
             else:
-                name = literal_name(spec_encoding['CMapName'])
+                cmap_name = literal_name(spec_encoding['CMapName'])
         except KeyError:
             if strict:
                 raise PDFFontError('Encoding is unspecified')
-            name = 'unknown'
-        if type(name) is PDFStream:
-            if 'CMapName' in name:
-                name = name.get('CMapName').name
-                if name in('DLIdent-H','OneByteIdentityH','Identity-H') :
-                    name = 'Identity-H'
-                elif name in ('DLIdent-V','OneByteIdentityV','Identity-V'):
-                    name = 'Identity-V'
+            cmap_name = 'unknown'
+        if type(cmap_name) is PDFStream:
+            if 'CMapName' in cmap_name:
+                cmap_key = cmap_name.get('CMapName').cmap_name
+                try:
+                    cmap_name = CMAP_ENCODER[cmap_key]
+                except:
+                    cmap_name = cmap_key
+                    raise PDFFontError('Unidentified encoding mentioned. %s is not supported' % cmap_name)
             else:
                 if strict:
                     raise PDFFontError('Encoding is unspecified')
-                name = 'unknown'
+                cmap_name = 'unknown'
         try:
-            self._cmap = CMapDB.get_cmap(name)
+            self.cmap = CMapDB.get_cmap(cmap_name)
         except CMapDB.CMapNotFound as e:
             if strict:
                 raise PDFFontError(e)
-            self._cmap = CMap()
+            self.cmap = CMap()
 
     def __repr__(self):
         return '<PDFCIDFont: basefont=%r, cidcoding=%r>' % (self.basefont, self.cidcoding)
