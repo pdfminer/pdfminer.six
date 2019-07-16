@@ -1,4 +1,4 @@
-
+import logging
 import struct
 import sys
 from io import BytesIO
@@ -30,6 +30,8 @@ from .utils import apply_matrix_norm
 from .utils import choplist
 from .utils import isnumber
 from .utils import nunpack
+
+log = logging.getLogger(__name__)
 
 
 def get_widths(seq):
@@ -124,8 +126,8 @@ class Type1FontHeaderParser(PSStackParser):
                 break
             try:
                 self._cid2unicode[cid] = name2unicode(name)
-            except KeyError:
-                pass
+            except KeyError as e:
+                log.debug(str(e))
         return self._cid2unicode
 
     def do_keyword(self, pos, token):

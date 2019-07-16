@@ -9,6 +9,8 @@ from .psparser import PSLiteral
 
 HEXADECIMAL = re.compile(r'[0-9a-fA-F]+')
 
+log = logging.getLogger(__name__)
+
 
 def name2unicode(name):
     """Converts Adobe glyph names to Unicode numbers.
@@ -32,22 +34,32 @@ def name2unicode(name):
 
         elif name.startswith('uni'):
             name_without_uni = name.strip('uni')
+
             if HEXADECIMAL.match(name_without_uni) and len(name_without_uni) % 4 == 0:
                 unicode_digits = [int(name_without_uni[i:i + 4], base=16) for i in range(0, len(name_without_uni), 4)]
-                if any([55295 < digit < 57344 for digit in unicode_digits]):
-                    raise KeyError
+                for digit in unicode_digits:
+                    raise_key_error_for_invalid_unicode(digit)
                 characters = map(six.unichr, unicode_digits)
                 return ''.join(characters)
 
         elif name.startswith('u'):
             name_without_u = name.strip('u')
+
             if HEXADECIMAL.match(name_without_u) and 4 <= len(name_without_u) <= 6:
                 unicode_digit = int(name_without_u, base=16)
-                if 55295 < unicode_digit < 57344:
-                    raise KeyError
+                raise_key_error_for_invalid_unicode(unicode_digit)
                 return six.unichr(unicode_digit)
 
-    raise KeyError
+    raise KeyError('Could not convert unicode name "%s" to character because it does not match specification' % name)
+
+
+def raise_key_error_for_invalid_unicode(unicode_digit):
+    """Unicode values should not be in the range D800 through DFFF because that is used for surrogate pairs in UTF-16
+
+    :raises KeyError if unicode digit is invalid
+    """
+    if 55295 < unicode_digit < 57344:
+        raise KeyError('Unicode digit %d is invalid because it is in the range D800 through DFFF' % unicode_digit)
 
 
 class EncodingDB(object):
@@ -86,7 +98,7 @@ class EncodingDB(object):
                 elif isinstance(x, PSLiteral):
                     try:
                         cid2unicode[cid] = name2unicode(x.name)
-                    except KeyError:
-                        pass
+                    except KeyError as e:
+                        log.debug(str(e))
                     cid += 1
         return cid2unicode
