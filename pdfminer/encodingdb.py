@@ -1,4 +1,4 @@
-
+import logging
 import re
 
 import six  # Python 2+3 compatibility
@@ -20,8 +20,7 @@ def name2unicode(name):
 
     :returns unicode character if name resembles something, otherwise a KeyError
     """
-    full_stop = u'\u002E'
-    name = name.split(full_stop)[0]
+    name = name.split('.')[0]
     components = name.split('_')
 
     if len(components) > 1:
