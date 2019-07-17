@@ -8,13 +8,6 @@ from pdfminer.pdffont import PDFCIDFont
 from pdfminer.pdftypes import PDFStream
 from pdfminer.psparser import PSLiteral
 
-# 'DLIdent-H': 'Identity-H',
-# 'OneByteIdentityH': 'Identity-H',
-# 'Identity-H': 'Identity-H',
-# 'DLIdent-V': 'Identity-V',
-# 'OneByteIdentityV': 'Identity-V',
-# 'Identity-V': 'Identity-V'
-
 class TestPDFEncoding():
 
     def test_cmapname_onebyteidentityV(self):
