@@ -83,7 +83,7 @@ class CMap(CMapBase):
         assert isinstance(cmap, CMap), str(type(cmap))
 
         def copy(dst, src):
-            for (k, v) in src.iteritems():
+            for (k, v) in six.iteritems(src):
                 if isinstance(v, dict):
                     d = {}
                     dst[k] = d
@@ -110,7 +110,7 @@ class CMap(CMapBase):
         if code2cid is None:
             code2cid = self.code2cid
             code = ()
-        for (k, v) in sorted(code2cid.iteritems()):
+        for (k, v) in sorted(six.iteritems(code2cid)):
             c = code+(k,)
             if isinstance(v, int):
                 out.write('code %r = cid %d\n' % (c, v))
@@ -148,7 +148,7 @@ class UnicodeMap(CMapBase):
         return self.cid2unichr[cid]
 
     def dump(self, out=sys.stdout):
-        for (k, v) in sorted(self.cid2unichr.iteritems()):
+        for (k, v) in sorted(six.iteritems(self.cid2unichr)):
             out.write('cid %d = unicode %r\n' % (k, v))
         return
 
