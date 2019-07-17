@@ -128,14 +128,7 @@ class Type1FontHeaderParser(PSStackParser):
 
 
 NIBBLES = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'e-', None, '-')
-CMAP_ENCODER = {
-    'DLIdent-H': 'Identity-H',
-    'OneByteIdentityH': 'Identity-H',
-    'Identity-H': 'Identity-H',
-    'DLIdent-V': 'Identity-V',
-    'OneByteIdentityV': 'Identity-V',
-    'Identity-V': 'Identity-V'
-}
+IDENTITY_ENCODER = ('Identity-H', 'Identity-V')
 
 ##  CFFFont
 ##  (Format specified in Adobe Technical Note: #5176
@@ -724,21 +717,14 @@ class PDFCIDFont(PDFFont):
             cmap_name = 'unknown'
         if type(cmap_name) is PDFStream:
             if 'CMapName' in cmap_name:
-                cmap_key = cmap_name.get('CMapName').cmap_name
-                try:
-                    cmap_name = CMAP_ENCODER[cmap_key]
-                except:
-                    cmap_name = cmap_key
-                    raise PDFFontError('Unidentified encoding mentioned. %s is not supported' % cmap_name)
+                cmap_name = cmap_name.get('CMapName').name
             else:
                 if strict:
-                    raise PDFFontError('Encoding is unspecified')
+                    raise PDFFontError('CMapName unspecified for encoding')
                 cmap_name = 'unknown'
-        try:
+        if cmap_name in IDENTITY_ENCODER:
             self.cmap = CMapDB.get_cmap(cmap_name)
-        except CMapDB.CMapNotFound as e:
-            if strict:
-                raise PDFFontError(e)
+        else:
             self.cmap = CMap()
 
     def __repr__(self):
