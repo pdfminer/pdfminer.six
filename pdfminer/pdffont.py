@@ -114,7 +114,7 @@ def compute_fallback_font_metrics(FONT_METRICS):
                     res[k]=v
             yield res
     def selectBBoxMetrics():
-        for fd in FONT_METRICS.values()
+        for fd in FONT_METRICS.values():
             yield fd[0]['FontBBox']
     restMetrics = compute_stat(selectNumericMetrics())
     restMetrics['FontBBox'] = list(compute_stat(selectBBoxMetrics()).values())
