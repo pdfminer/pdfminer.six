@@ -96,7 +96,7 @@ def resolve_all(x, default=None):
     if isinstance(x, list):
         x = [resolve_all(v, default=default) for v in x]
     elif isinstance(x, dict):
-        for (k, v) in x.iteritems():
+        for (k, v) in six.iteritems(x):
             x[k] = resolve_all(v, default=default)
     return x
 
