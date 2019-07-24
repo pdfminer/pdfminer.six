@@ -44,6 +44,34 @@ class TestPDFEncoding():
         font = PDFCIDFont(None, spec)
         assert isinstance(font.cmap, IdentityCMap)
 
+    def test_encoding_identityH_as_PSLiteral_stream(self):
+        stream = PDFStream({'CMapName':PSLiteral('Identity-H')}, '')
+        spec = {'Encoding': stream}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_encoding_identityV_as_PSLiteral_stream(self):
+        stream = PDFStream({'CMapName':PSLiteral('Identity-V')}, '')
+        spec = {'Encoding': stream}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_encoding_identityH_as_stream(self):
+        stream = PDFStream({'CMapName':'Identity-H'}, '')
+        spec = {'Encoding': stream}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_encoding_identityV_as_stream(self):
+        stream = PDFStream({'CMapName':'Identity-V'}, '')
+        spec = {'Encoding': stream}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_font_without_spec(self):
+        font = PDFCIDFont(None, {})
+        assert isinstance(font.cmap, CMap)
+
 
 if __name__ == '__main__':
     nose.runmodule()

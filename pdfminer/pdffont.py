@@ -649,7 +649,7 @@ class PDFCIDFont(PDFFont):
         self.cidsysteminfo = dict_value(spec.get('CIDSystemInfo', {}))
         self.cidcoding = '%s-%s' % (resolve1(self.cidsysteminfo.get('Registry', b'unknown')).decode("latin1"),
                                     resolve1(self.cidsysteminfo.get('Ordering', b'unknown')).decode("latin1"))
-        self.cmap_setter(spec, strict)
+        self.cmap = self.get_cmap_from_spec(spec, strict)
 
         try:
             descriptor = dict_value(spec['FontDescriptor'])
@@ -697,7 +697,7 @@ class PDFCIDFont(PDFFont):
         PDFFont.__init__(self, descriptor, widths, default_width=default_width)
         return
 
-    def cmap_setter(self, spec, strict):
+    def get_cmap_from_spec(self, spec, strict):
         """
         For certain PDFs, Encoding Type isn't mentioned as an attribute of
         Encoding but as an attribute of CMapName, where CMapName is an
@@ -723,9 +723,9 @@ class PDFCIDFont(PDFFont):
                     raise PDFFontError('CMapName unspecified for encoding')
                 cmap_name = 'unknown'
         if cmap_name in IDENTITY_ENCODER:
-            self.cmap = CMapDB.get_cmap(cmap_name)
+            return CMapDB.get_cmap(cmap_name)
         else:
-            self.cmap = CMap()
+            return CMap()
 
     def __repr__(self):
         return '<PDFCIDFont: basefont=%r, cidcoding=%r>' % (self.basefont, self.cidcoding)
