@@ -128,7 +128,13 @@ class Type1FontHeaderParser(PSStackParser):
 
 
 NIBBLES = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'e-', None, '-')
-IDENTITY_ENCODER = ('Identity-H', 'Identity-V')
+IDENTITY_ENCODER = {'Identity-H':'Identity-H',
+                    'Identity-V':'Identity-V',
+                    'DLIdent-H':'Identity-H',
+                    'DLIdent-V':'Identity-V',
+                    'OneByteIdentityH':'OneByteIdentityH',
+                    'OneByteIdentityV':'OneByteIdentityV',
+                    }
 
 ##  CFFFont
 ##  (Format specified in Adobe Technical Note: #5176
@@ -723,7 +729,7 @@ class PDFCIDFont(PDFFont):
                     raise PDFFontError('CMapName unspecified for encoding')
                 cmap_name = 'unknown'
         if cmap_name in IDENTITY_ENCODER:
-            return CMapDB.get_cmap(cmap_name)
+            return CMapDB.get_cmap(IDENTITY_ENCODER[cmap_name])
         else:
             return CMap()
 

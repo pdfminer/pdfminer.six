@@ -131,6 +131,15 @@ class IdentityCMap(CMapBase):
             return ()
 
 
+class IdentityCMapByte(IdentityCMap):
+
+    def decode(self, code):
+        n = len(code)
+        if n:
+            return struct.unpack('>%dB' % n, code)
+        else:
+            return ()
+
 ##  UnicodeMap
 ##
 class UnicodeMap(CMapBase):
@@ -252,6 +261,10 @@ class CMapDB(object):
             return IdentityCMap(WMode=0)
         elif name == 'Identity-V':
             return IdentityCMap(WMode=1)
+        elif name == 'OneByteIdentityH':
+            return IdentityCMapByte(WMode=0)
+        elif name == 'OneByteIdentityV':
+            return IdentityCMapByte(WMode=1)
         try:
             return klass._cmap_cache[name]
         except KeyError:
