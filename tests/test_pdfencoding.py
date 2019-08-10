@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 
 import nose, logging, os
-from pdfminer.cmapdb import IdentityCMap, CMap
+from pdfminer.cmapdb import IdentityCMap, CMap, IdentityCMapByte
 from pdfminer.pdffont import PDFCIDFont
 from pdfminer.pdftypes import PDFStream
 from pdfminer.psparser import PSLiteral
@@ -14,13 +14,13 @@ class TestPDFEncoding():
         stream = PDFStream({'CMapName': PSLiteral('OneByteIdentityV')}, '')
         spec = {'Encoding': stream}
         font = PDFCIDFont(None, spec)
-        assert isinstance(font.cmap, CMap)
+        assert isinstance(font.cmap, IdentityCMapByte)
 
     def test_cmapname_onebyteidentityH(self):
         stream = PDFStream({'CMapName': PSLiteral('OneByteIdentityH')}, '')
         spec = {'Encoding': stream}
         font = PDFCIDFont(None, spec)
-        assert isinstance(font.cmap, CMap)
+        assert isinstance(font.cmap, IdentityCMapByte)
 
     def test_cmapname_V(self):
         stream = PDFStream({'CMapName': PSLiteral('V')}, '')
@@ -64,6 +64,40 @@ class TestPDFEncoding():
 
     def test_encoding_identityV_as_stream(self):
         stream = PDFStream({'CMapName':'Identity-V'}, '')
+        spec = {'Encoding': stream}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_encoding_DLIdentH(self):
+        spec = {'Encoding': PSLiteral('DLIdent-H')}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_encoding_DLIdentV(self):
+        spec = {'Encoding': PSLiteral('DLIdent-V')}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_encoding_DLIdentH_as_PSLiteral_stream(self):
+        stream = PDFStream({'CMapName':PSLiteral('DLIdent-H')}, '')
+        spec = {'Encoding': stream}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_encoding_DLIdentH_as_PSLiteral_stream(self):
+        stream = PDFStream({'CMapName':PSLiteral('DLIdent-V')}, '')
+        spec = {'Encoding': stream}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_encoding_DLIdentH_as_stream(self):
+        stream = PDFStream({'CMapName':'DLIdent-H'}, '')
+        spec = {'Encoding': stream}
+        font = PDFCIDFont(None, spec)
+        assert isinstance(font.cmap, IdentityCMap)
+
+    def test_encoding_DLIdentV_as_stream(self):
+        stream = PDFStream({'CMapName':'DLIdent-V'}, '')
         spec = {'Encoding': stream}
         font = PDFCIDFont(None, spec)
         assert isinstance(font.cmap, IdentityCMap)
