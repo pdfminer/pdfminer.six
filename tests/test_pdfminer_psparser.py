@@ -8,6 +8,8 @@ import nose
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 from pdfminer.psparser import *
 
 ##  Simplistic Test cases
@@ -92,13 +94,13 @@ func/a/b{(c)do*}def
 
     def test_1(self):
         tokens = self.get_tokens(self.TESTDATA)
-        logging.info(tokens)
+        logger.info(tokens)
         assert_equal(tokens, self.TOKENS)
         return
 
     def test_2(self):
         objs = self.get_objects(self.TESTDATA)
-        logging.info(objs)
+        logger.info(objs)
         assert_equal(objs, self.OBJS)
         return
 
