@@ -24,6 +24,7 @@ class TestDumpPDF():
         run('../samples/','simple1')
         run('../samples/','simple2')
         run('../samples/','simple3')
+        run('../samples/','sampleOneByteIdentityEncode')
 
     def test_2(self):
         run('../samples/nonfree/','dmca')

@@ -1,5 +1,3 @@
-
-
 """ Adobe character mapping (CMap) support.
 
 CMaps provide the mapping between character codes and Unicode
@@ -40,8 +38,6 @@ class CMapError(Exception):
     pass
 
 
-##  CMapBase
-##
 class CMapBase(object):
 
     debug = 0
@@ -67,8 +63,6 @@ class CMapBase(object):
         return
 
 
-##  CMap
-##
 class CMap(CMapBase):
 
     def __init__(self, **kwargs):
@@ -119,8 +113,6 @@ class CMap(CMapBase):
         return
 
 
-##  IdentityCMap
-##
 class IdentityCMap(CMapBase):
 
     def decode(self, code):
@@ -131,8 +123,16 @@ class IdentityCMap(CMapBase):
             return ()
 
 
-##  UnicodeMap
-##
+class IdentityCMapByte(IdentityCMap):
+
+    def decode(self, code):
+        n = len(code)
+        if n:
+            return struct.unpack('>%dB' % n, code)
+        else:
+            return ()
+
+
 class UnicodeMap(CMapBase):
 
     def __init__(self, **kwargs):
@@ -153,8 +153,6 @@ class UnicodeMap(CMapBase):
         return
 
 
-##  FileCMap
-##
 class FileCMap(CMap):
 
     def add_code2cid(self, code, cid):
@@ -173,8 +171,6 @@ class FileCMap(CMap):
         return
 
 
-##  FileUnicodeMap
-##
 class FileUnicodeMap(UnicodeMap):
 
     def add_cid2unichr(self, cid, code):
@@ -192,8 +188,6 @@ class FileUnicodeMap(UnicodeMap):
         return
 
 
-##  PyCMap
-##
 class PyCMap(CMap):
 
     def __init__(self, name, module):
@@ -204,8 +198,6 @@ class PyCMap(CMap):
         return
 
 
-##  PyUnicodeMap
-##
 class PyUnicodeMap(UnicodeMap):
 
     def __init__(self, name, module, vertical):
@@ -218,8 +210,6 @@ class PyUnicodeMap(UnicodeMap):
         return
 
 
-##  CMapDB
-##
 class CMapDB(object):
 
     _cmap_cache = {}
@@ -252,6 +242,10 @@ class CMapDB(object):
             return IdentityCMap(WMode=0)
         elif name == 'Identity-V':
             return IdentityCMap(WMode=1)
+        elif name == 'OneByteIdentityH':
+            return IdentityCMapByte(WMode=0)
+        elif name == 'OneByteIdentityV':
+            return IdentityCMapByte(WMode=1)
         try:
             return klass._cmap_cache[name]
         except KeyError:
@@ -271,8 +265,6 @@ class CMapDB(object):
         return umaps[vertical]
 
 
-##  CMapParser
-##
 class CMapParser(PSStackParser):
 
     def __init__(self, cmap, fp):
@@ -360,7 +352,6 @@ class CMapParser(PSStackParser):
                 s1 = nunpack(svar)
                 e1 = nunpack(evar)
                 vlen = len(svar)
-                #assert s1 <= e1, str((s1, e1))
                 for i in range(e1-s1+1):
                     x = sprefix+struct.pack('>L', s1+i)[-vlen:]
                     self.cmap.add_code2cid(x, cid+i)
@@ -387,7 +378,6 @@ class CMapParser(PSStackParser):
                         continue
                 s1 = nunpack(s)
                 e1 = nunpack(e)
-                #assert s1 <= e1, str((s1, e1))
                 if isinstance(code, list):
                     for i in range(e1-s1+1):
                         self.cmap.add_cid2unichr(s1+i, code[i])
@@ -422,17 +412,16 @@ class CMapParser(PSStackParser):
         return
 
 
-# test
 def main(argv):
     args = argv[1:]
     for fname in args:
         fp = open(fname, 'rb')
         cmap = FileUnicodeMap()
-        #cmap = FileCMap()
         CMapParser(cmap, fp).run()
         fp.close()
         cmap.dump()
     return
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
