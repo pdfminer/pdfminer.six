@@ -598,25 +598,25 @@ class PDFPageInterpreter(object):
 
     # setrgb-stroking
     def do_RG(self, r, g, b):
-        self.graphicstate.scolor = (r, g, b)
+        self.graphicstate.color = (r, g, b)
         #self.do_CS(LITERAL_DEVICE_RGB)
         return
 
     # setrgb-non-stroking
     def do_rg(self, r, g, b):
-        self.graphicstate.ncolor = (r, g, b)
+        self.graphicstate.color = (r, g, b)
         #self.do_cs(LITERAL_DEVICE_RGB)
         return
 
     # setcmyk-stroking
     def do_K(self, c, m, y, k):
-        self.graphicstate.scolor = (c, m, y, k)
+        self.graphicstate.color = (c, m, y, k)
         #self.do_CS(LITERAL_DEVICE_CMYK)
         return
 
     # setcmyk-non-stroking
     def do_k(self, c, m, y, k):
-        self.graphicstate.ncolor = (c, m, y, k)
+        self.graphicstate.color = (c, m, y, k)
         #self.do_cs(LITERAL_DEVICE_CMYK)
         return
 
