@@ -1,20 +1,20 @@
-#!/usr/bin/env python
-
-# -*- coding: utf-8 -*-
+import os
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 
-import logging
 import nose
-import os
 
 import tools.pdf2txt as pdf2txt
 
-path = os.path.dirname(os.path.abspath(__file__)) + '/'
+
+def full_path(relative_path_to_this_file):
+    this_file_dir = os.path.dirname(os.path.abspath(__file__))
+    abspath = os.path.abspath(os.path.join(this_file_dir, relative_path_to_this_file))
+    return abspath
 
 
 def run(datapath, filename, options=None):
-    i = path + datapath + filename + '.pdf'
-    o = path + filename + '.txt'
+    i = full_path(datapath + filename + '.pdf')
+    o = full_path(filename + '.txt')
     if options:
         s = 'pdf2txt -o%s %s %s' % (o, options, i)
     else:
@@ -78,12 +78,12 @@ class TestDumpImages(object):
 
         Regression test for: https://github.com/pdfminer/pdfminer.six/issues/131
         """
-        image_files = self.extract_images('../samples/nonfree/dmca.pdf')
+        image_files = self.extract_images(full_path('../samples/nonfree/dmca.pdf'))
         assert image_files[0].endswith('bmp')
 
     def test_nonfree_175(self):
         """Extract images of pdf containing jpg images"""
-        self.extract_images('../samples/nonfree/175.pdf')
+        self.extract_images(full_path('../samples/nonfree/175.pdf'))
 
 
 if __name__ == '__main__':
