@@ -1,5 +1,6 @@
 import os
-from tempfile import TemporaryDirectory, NamedTemporaryFile
+from shutil import rmtree
+from tempfile import NamedTemporaryFile, mkdtemp
 
 import nose
 
@@ -67,11 +68,12 @@ class TestDumpPDF():
 class TestDumpImages(object):
 
     def extract_images(self, input_file):
-        with TemporaryDirectory() as output_dir:
-            with NamedTemporaryFile() as output_file:
-                commands = ['-o', output_file.name, '--output-dir', output_dir, input_file]
-                pdf2txt.main(commands)
-                image_files = os.listdir(output_dir)
+        output_dir = mkdtemp()
+        with NamedTemporaryFile() as output_file:
+            commands = ['-o', output_file.name, '--output-dir', output_dir, input_file]
+            pdf2txt.main(commands)
+        image_files = os.listdir(output_dir)
+        rmtree(output_dir)
         return image_files
 
     def test_nonfree_dmca(self):
