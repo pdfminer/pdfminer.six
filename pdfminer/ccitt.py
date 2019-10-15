@@ -576,6 +576,7 @@ def ccittfaxdecode(data, params):
 # test
 def main(argv):
     if not argv[1:]:
+        import unittest
         return unittest.main()
 
     class Parser(CCITTG4Parser):
@@ -598,7 +599,7 @@ def main(argv):
             pygame.image.save(self.img, 'out.bmp')
             return
     for path in argv[1:]:
-        fp = file(path, 'rb')
+        fp = open(path, 'rb')
         (_, _, k, w, h, _) = path.split('.')
         parser = Parser(int(w))
         parser.feedbytes(fp.read())
