@@ -1,4 +1,4 @@
-
+import collections
 from .psparser import LIT
 
 import six #Python 2+3 compatibility
@@ -21,17 +21,20 @@ class PDFColorSpace(object):
         return '<PDFColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
 
 
-PREDEFINED_COLORSPACE = {}
-for (name, n) in six.iteritems({
-    'CalRGB': 3,
-    'CalGray': 1,
-    'Lab': 3,
-    'DeviceRGB': 3,
-    'DeviceCMYK': 4,
-    'DeviceGray': 1,
-    'Separation': 1,
-    'Indexed': 1,
-    'Pattern': 1,
-}) :
+if six.PY2:
+    PREDEFINED_COLORSPACE = {}
+else:
+    PREDEFINED_COLORSPACE = collections.OrderedDict()
+
+for (name, n) in [
+    ('DeviceGray', 1),  # default value first
+    ('CalRGB', 3),
+    ('CalGray', 1),
+    ('Lab', 3),
+    ('DeviceRGB', 3),
+    ('DeviceCMYK', 4),
+    ('Separation', 1),
+    ('Indexed', 1),
+    ('Pattern', 1),
+]:
     PREDEFINED_COLORSPACE[name]=PDFColorSpace(name, n)
-    

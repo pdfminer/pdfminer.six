@@ -26,6 +26,7 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import HTMLConverter, TextConverter
 from pdfminer.layout import LAParams
 
+import six #Python 2+3 compatibility
 
 # quote HTML metacharacters
 def q(x):
@@ -35,7 +36,7 @@ def q(x):
 Q = re.compile(r'[^a-zA-Z0-9_.-=]')
 def url(base, **kw):
     r = []
-    for (k,v) in kw.iteritems():
+    for (k,v) in six.iteritems(kw):
         v = Q.sub(lambda m: '%%%02X' % ord(m.group(0)), encoder(q(v), 'replace')[0])
         r.append('%s=%s' % (k, v))
     return base+'&'.join(r)
@@ -48,7 +49,7 @@ def convert(infp, outfp, path, codec='utf-8',
             maxpages=0, maxfilesize=0, pagenos=None,
             html=True):
     # save the input file.
-    src = file(path, 'wb')
+    src = open(path, 'wb')
     nbytes = 0
     while 1:
         data = infp.read(4096)
@@ -68,7 +69,7 @@ def convert(infp, outfp, path, codec='utf-8',
                                layoutmode='exact')
     else:
         device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
-    fp = file(path, 'rb')
+    fp = open(path, 'rb')
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages):
         interpreter.process_page(page)
