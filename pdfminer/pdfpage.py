@@ -10,8 +10,6 @@ from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument
 from .pdfdocument import PDFTextExtractionNotAllowed
 
-import six  # Python 2+3 compatibility
-
 log = logging.getLogger(__name__)
 
 # some predefined literals and keywords.

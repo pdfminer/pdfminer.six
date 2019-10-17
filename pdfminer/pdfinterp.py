@@ -30,8 +30,6 @@ from .utils import choplist
 from .utils import mult_matrix
 from .utils import MATRIX_IDENTITY
 
-import six  # Python 2+3 compatibility
-
 log = logging.getLogger(__name__)
 
 ##  Exceptions
@@ -269,7 +267,7 @@ class PDFContentParser(PSStackParser):
                 self.charpos += 1
                 if len(target) <= i and c.isspace():
                     i += 1
-                elif i < len(target) and c == (bytes((target[i],)) if six.PY3 else target[i]):
+                elif i < len(target) and c == (bytes((target[i],))):
                     i += 1
                 else:
                     i = 0

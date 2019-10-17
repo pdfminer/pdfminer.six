@@ -3,42 +3,32 @@ Miscellaneous Routines.
 """
 import struct
 
-import six
-
 # from sys import maxint as INF doesn't work anymore under Python3, but PDF still uses 32 bits ints
 INF = (1 << 31) - 1
 
-if six.PY3:
-    import chardet  # For str encoding detection in Py3
-
-    unicode = str
+import chardet  # For str encoding detection
 
 
 def make_compat_bytes(in_str):
-    """In Py2, does nothing. In Py3, converts to bytes, encoding to unicode."""
+    "Converts to bytes, encoding to unicode."
     assert isinstance(in_str, str), str(type(in_str))
     return in_str.encode()
 
 
 def make_compat_str(in_str):
-    """In Py2, does nothing. In Py3, converts to string, guessing encoding."""
-    assert isinstance(in_str, (bytes, str, unicode)), str(type(in_str))
-    if six.PY3 and isinstance(in_str, bytes):
+    """Converts to string, guessing encoding."""
+    assert isinstance(in_str, (bytes, str)), str(type(in_str))
+    if isinstance(in_str, bytes):
         enc = chardet.detect(in_str)
         in_str = in_str.decode(enc['encoding'])
     return in_str
 
 
 def compatible_encode_method(bytesorstring, encoding='utf-8', erraction='ignore'):
-    """When Py2 str.encode is called, it often means bytes.encode in Py3. This does either."""
-    if six.PY2:
-        assert isinstance(bytesorstring, (str, unicode)), str(type(bytesorstring))
-        return bytesorstring.encode(encoding, erraction)
-    if six.PY3:
-        if isinstance(bytesorstring, str):
-            return bytesorstring
-        assert isinstance(bytesorstring, bytes), str(type(bytesorstring))
-        return bytesorstring.decode(encoding, erraction)
+    if isinstance(bytesorstring, str):
+        return bytesorstring
+    assert isinstance(bytesorstring, bytes), str(type(bytesorstring))
+    return bytesorstring.decode(encoding, erraction)
 
 
 def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
@@ -51,8 +41,6 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     line0 = b'\x00' * columns
     for i in range(0, len(data), nbytes + 1):
         ft = data[i]
-        if six.PY2:
-            ft = ft[0]
         i += 1
         line1 = data[i:i + nbytes]
         line2 = b''
@@ -63,23 +51,17 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
             # PNG sub (UNTESTED)
             c = 0
             for b in line1:
-                if six.PY2:
-                    b = b[0]
                 c = (c + b) & 255
                 line2 += bytes((c,))
         elif ft == 2:
             # PNG up
             for (a, b) in zip(line0, line1):
-                if six.PY2:
-                    a, b = a[0], b[0]
                 c = (a + b) & 255
                 line2 += bytes((c,))
         elif ft == 3:
             # PNG average (UNTESTED)
             c = 0
             for (a, b) in zip(line0, line1):
-                if six.PY2:
-                    a, b = a[0], b[0]
                 c = ((c + a + b) // 2) & 255
                 line2 += bytes((c,))
         else:
@@ -255,7 +237,7 @@ def decode_text(s):
 
 def enc(x, codec='ascii'):
     """Encodes a string for SGML/XML/HTML"""
-    if six.PY3 and isinstance(x, bytes):
+    if isinstance(x, bytes):
         return ''
     x = x.replace('&', '&amp;').replace('>', '&gt;').replace('<', '&lt;').replace('"', '&quot;')
     if codec:

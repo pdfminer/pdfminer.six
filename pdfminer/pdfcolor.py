@@ -1,8 +1,6 @@
 import collections
 from .psparser import LIT
 
-import six #Python 2+3 compatibility
-
 ##  PDFColorSpace
 ##
 LITERAL_DEVICE_GRAY = LIT('DeviceGray')

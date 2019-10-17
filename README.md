@@ -1,7 +1,7 @@
 PDFMiner.six
 ============
 
-PDFMiner.six is a fork of PDFMiner using six for Python 2+3 compatibility
+PDFMiner.six is a fork of PDFMiner
 
 [![Build Status](https://travis-ci.org/pdfminer/pdfminer.six.svg?branch=master)](https://travis-ci.org/pdfminer/pdfminer.six) [![PyPI version](https://img.shields.io/pypi/v/pdfminer.six.svg)](https://pypi.python.org/pypi/pdfminer.six/)
 

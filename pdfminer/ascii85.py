@@ -7,8 +7,6 @@ This code is in the public domain.
 import re
 import struct
 
-import six #Python 2+3 compatibility
-
 
 # ascii85decode(data)
 def ascii85decode(data):

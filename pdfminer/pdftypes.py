@@ -12,8 +12,6 @@ from . import settings
 from .utils import apply_png_predictor
 from .utils import isnumber
 
-import six #Python 2+3 compatibility
-
 log = logging.getLogger(__name__)
 
 LITERAL_CRYPT = LIT('Crypt')

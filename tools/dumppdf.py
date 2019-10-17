@@ -19,11 +19,9 @@ from pdfminer.utils import isnumber
 
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
 def e(s):
-    if six.PY3 and isinstance(s,bytes):
+    if isinstance(s,bytes):
         s=str(s,'latin-1')
     return ESC_PAT.sub(lambda m:'&#%d;' % ord(m.group(0)), s)
-
-import six # Python 2+3 compatibility
 
 
 # dumpxml
@@ -263,9 +261,6 @@ def main(argv):
         elif k == '-E':
             extractdir = v
             proc = extractembedded
-
-    if six.PY2 and sys.stdin.encoding:
-        password = password.decode(sys.stdin.encoding)
 
     for fname in args:
         proc(outfp, fname, objids, pagenos, password=password,

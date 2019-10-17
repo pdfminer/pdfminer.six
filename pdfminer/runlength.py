@@ -5,8 +5,6 @@
 #  * public domain *
 #
 
-import six #Python 2+3 compatibility
-
 def rldecode(data):
     """
     RunLength decoder (Adobe version) implementation based on PDF Reference

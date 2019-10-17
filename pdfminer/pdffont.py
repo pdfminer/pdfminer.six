@@ -3,8 +3,6 @@ import struct
 import sys
 from io import BytesIO
 
-import six  # Python 2+3 compatibility
-
 from . import settings
 from .cmapdb import CMap
 from .cmapdb import CMapDB

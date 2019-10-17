@@ -4,7 +4,6 @@ This code is in the public domain.
 
 """
 
-import six # Python 2+3 compatibility
 ##  Arcfour
 ##
 class Arcfour:
