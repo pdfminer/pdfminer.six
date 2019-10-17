@@ -3,10 +3,7 @@ import struct
 import logging
 
 import six # Python 2+3 compatibility
-try:
-    import hashlib as md5
-except ImportError:
-    import md5
+import hashlib as md5
 try:
     from Crypto.Cipher import ARC4
     from Crypto.Cipher import AES
