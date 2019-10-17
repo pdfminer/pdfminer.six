@@ -34,6 +34,7 @@ setup(
         'layout analysis',
         'text mining',
     ],
+    python_requires='>=3.4',
     classifiers=[
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.4',
