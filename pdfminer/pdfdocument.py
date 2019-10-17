@@ -2,10 +2,7 @@ import re
 import struct
 import logging
 
-try:
-    import hashlib as md5
-except ImportError:
-    import md5
+import hashlib as md5
 try:
     from Crypto.Cipher import ARC4
     from Crypto.Cipher import AES
