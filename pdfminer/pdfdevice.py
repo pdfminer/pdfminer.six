@@ -1,5 +1,3 @@
-import six
-
 from .pdffont import PDFUnicodeNotDefined
 
 from . import utils

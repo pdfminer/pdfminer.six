@@ -264,12 +264,12 @@ class PDFContentParser(PSStackParser):
             self.fillbuf()
             if i:
                 c = self.buf[self.charpos]
-                c=six.int2byte(c)
+                c=bytes((c,))
                 data += c
                 self.charpos += 1
                 if len(target) <= i and c.isspace():
                     i += 1
-                elif i < len(target) and c == (six.int2byte(target[i]) if six.PY3 else target[i]):
+                elif i < len(target) and c == (bytes((target[i],))):
                     i += 1
                 else:
                     i = 0

@@ -2,7 +2,6 @@ import re
 import struct
 import logging
 
-import six # Python 2+3 compatibility
 try:
     import hashlib as md5
 except ImportError:
@@ -124,7 +123,7 @@ class PDFXRef(PDFBaseXRef):
                 (pos, genno, use) = f
                 if use != b'n':
                     continue
-                self.offsets[objid] = (None, long(pos) if six.PY2 else int(pos), int(genno))
+                self.offsets[objid] = (None, int(pos), int(genno))
         log.info('xref objects: %r', self.offsets)
         self.load_trailer(parser)
         return
@@ -177,8 +176,7 @@ class PDFXRefFallback(PDFXRef):
                 self.load_trailer(parser)
                 log.info('trailer: %r', self.trailer)
                 break
-            if six.PY3:
-                line=line.decode('latin-1') #default pdf encoding
+            line=line.decode('latin-1') #default pdf encoding
             m = self.PDFOBJ_CUE.match(line)
             if not m:
                 continue
@@ -340,7 +338,7 @@ class PDFStandardSecurityHandler:
             hash.update(self.docid[0])  # 3
             result = ARC4.new(key).encrypt(hash.digest())  # 4
             for i in range(1, 20):  # 5
-                k = b''.join(six.int2byte(c ^ i) for c in iter(key))
+                k = b''.join(bytes((c ^ i,)) for c in iter(key))
                 result = ARC4.new(k).encrypt(result)
             result += result  # 6
             return result
@@ -400,7 +398,7 @@ class PDFStandardSecurityHandler:
         else:
             user_password = self.o
             for i in range(19, -1, -1):
-                k = b''.join(six.int2byte(c ^ i) for c in iter(key))
+                k = b''.join(bytes((c ^ i,)) for c in iter(key))
                 user_password = ARC4.new(k).decrypt(user_password)
         return self.authenticate_user_password(user_password)
 
@@ -774,7 +772,7 @@ class PDFDocument:
         else:
             raise PDFNoValidXRef('Unexpected EOF')
         log.info('xref found: pos=%r', prev)
-        return long(prev) if six.PY2 else int(prev)
+        return int(prev)
 
     # read xref table
     def read_xref_from(self, parser, start, xrefs):

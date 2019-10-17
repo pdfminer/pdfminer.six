@@ -9,8 +9,6 @@ from .utils import bbox2str
 from .utils import matrix2str
 from .utils import apply_matrix_pt
 
-import six # Python 2+3 compatibility
-
 ##  IndexAssigner
 ##
 class IndexAssigner:

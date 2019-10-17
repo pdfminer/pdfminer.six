@@ -1,16 +1,9 @@
 #!/usr/bin/env python
 
 # -*- coding: utf-8 -*-
-import six
-
 import nose, logging, os
 
-if six.PY3:
-    from tools import dumppdf
-elif six.PY2:
-    import os, sys
-    sys.path.append(os.path.abspath(os.path.curdir))
-    import tools.dumppdf as dumppdf
+from tools import dumppdf
 
 path=os.path.dirname(os.path.abspath(__file__))+'/'
 
@@ -48,6 +41,6 @@ class TestDumpPDF():
         run('../samples/nonfree/','naacl06-shinyama','-t -a')
 
 if __name__ == '__main__':
-    #import logging,sys,os,six
+    #import logging,sys,os
     #logging.basicConfig(level=logging.DEBUG, filename='%s_%d.%d.log'%(os.path.basename(__file__),sys.version_info[0],sys.version_info[1]))
     nose.runmodule()

@@ -7,8 +7,6 @@ This code is in the public domain.
 import re
 import struct
 
-import six #Python 2+3 compatibility
-
 
 # ascii85decode(data)
 def ascii85decode(data):
@@ -25,7 +23,7 @@ def ascii85decode(data):
     n = b = 0
     out = b''
     for i in iter(data):
-        c=six.int2byte(i)
+        c=bytes((i,))
         if b'!' <= c and c <= b'u':
             n += 1
             b = b*85+(ord(c)-33)
@@ -60,7 +58,7 @@ def asciihexdecode(data):
     """
     def decode(x):
         i=int(x,16)
-        return six.int2byte(i)
+        return bytes((i,))
 
     out=b''
     for x in hex_re.findall(data):

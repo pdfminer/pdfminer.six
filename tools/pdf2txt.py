@@ -5,7 +5,6 @@ Converts PDF text content (though not images containing text) to plain text, htm
 """
 import argparse
 import logging
-import six
 import sys
 import pdfminer.settings
 pdfminer.settings.STRICT = False
@@ -107,9 +106,6 @@ def main(args=None):
     imagewriter = None
     if A.output_dir:
         imagewriter = ImageWriter(A.output_dir)
-
-    if six.PY2 and sys.stdin.encoding:
-        A.password = A.password.decode(sys.stdin.encoding)
 
     if A.output_type == "text" and A.outfile != "-":
         for override, alttype in (  (".htm",  "html"),

@@ -4,7 +4,6 @@ This code is in the public domain.
 
 """
 
-import six # Python 2+3 compatibility
 ##  Arcfour
 ##
 class Arcfour:
@@ -29,7 +28,7 @@ class Arcfour:
             j = (j+s[i]) % 256
             (s[i], s[j]) = (s[j], s[i])
             k = s[(s[i]+s[j]) % 256]
-            r += six.int2byte(c ^ k)
+            r += bytes((c ^ k,))
         (self.i, self.j) = (i, j)
         return r
     

@@ -6,7 +6,6 @@ try:
 except ImportError:
     import pickle as pickle
 import codecs
-import six
 
 
 ##  CMapConverter
@@ -59,8 +58,6 @@ class CMapConverter:
 
             def put(dmap, code, cid, force=False):
                 for b in code[:-1]:
-                    if six.PY2:
-                        b = ord(b)
                     if b in dmap:
                         dmap = dmap[b]
                     else:
@@ -68,8 +65,6 @@ class CMapConverter:
                         dmap[b] = d
                         dmap = d
                 b = code[-1]
-                if six.PY2:
-                    b = ord(b)
                 if force or ((b not in dmap) or dmap[b] == cid):
                     dmap[b] = cid
                 return

@@ -21,8 +21,6 @@ from .utils import enc
 from .utils import bbox2str
 from . import utils
 
-import six  # Python 2+3 compatibility
-
 log = logging.getLogger(__name__)
 
 
@@ -188,7 +186,7 @@ class TextConverter(PDFConverter):
 
     def write_text(self, text):
         text = utils.compatible_encode_method(text, self.codec, 'ignore')
-        if six.PY3 and self.outfp_binary:
+        if self.outfp_binary:
             text = text.encode()
         self.outfp.write(text)
         return

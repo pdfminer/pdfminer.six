@@ -28,8 +28,6 @@ from .utils import nunpack
 from .utils import choplist
 from .utils import isnumber
 
-import six #Python 2+3 compatibility
-
 
 def get_widths(seq):
     widths = {}
