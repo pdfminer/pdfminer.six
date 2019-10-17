@@ -40,7 +40,7 @@ class CMapError(Exception):
 
 ##  CMapBase
 ##
-class CMapBase(object):
+class CMapBase:
 
     debug = 0
 
@@ -94,7 +94,7 @@ class CMap(CMapBase):
     def decode(self, code):
         log.debug('decode: %r, %r', self, code)
         d = self.code2cid
-        for i in six.iterbytes(code):
+        for i in iter(code):
             if i in d:
                 d = d[i]
                 if isinstance(d, int):
@@ -184,7 +184,7 @@ class FileUnicodeMap(UnicodeMap):
             # Interpret as UTF-16BE.
             self.cid2unichr[cid] = code.decode('UTF-16BE', 'ignore')
         elif isinstance(code, int):
-            self.cid2unichr[cid] = six.unichr(code)
+            self.cid2unichr[cid] = chr(code)
         else:
             raise TypeError(code)
         return
@@ -218,7 +218,7 @@ class PyUnicodeMap(UnicodeMap):
 
 ##  CMapDB
 ##
-class CMapDB(object):
+class CMapDB:
 
     _cmap_cache = {}
     _umap_cache = {}

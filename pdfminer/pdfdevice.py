@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import six
 
 from .pdffont import PDFUnicodeNotDefined
@@ -8,7 +6,7 @@ from . import utils
 
 ##  PDFDevice
 ##
-class PDFDevice(object):
+class PDFDevice:
 
     def __init__(self, rsrcmgr):
         self.rsrcmgr = rsrcmgr
@@ -149,9 +147,9 @@ class TagExtractor(PDFDevice):
         font = textstate.font
         text = ''
         for obj in seq:
-            if isinstance(obj, six.text_type):
+            if isinstance(obj, str):
                 obj = utils.make_compat_bytes(obj)
-            if not isinstance(obj, six.binary_type):
+            if not isinstance(obj, bytes):
                 continue
             chars = font.decode(obj)
             for cid in chars:

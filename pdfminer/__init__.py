@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Fork of PDFMiner using six for Python 2+3 compatibility
 

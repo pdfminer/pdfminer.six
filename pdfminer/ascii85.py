@@ -24,7 +24,7 @@ def ascii85decode(data):
     """
     n = b = 0
     out = b''
-    for i in six.iterbytes(data):
+    for i in iter(data):
         c=six.int2byte(i)
         if b'!' <= c and c <= b'u':
             n += 1

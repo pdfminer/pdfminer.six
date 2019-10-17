@@ -79,7 +79,7 @@ def get_widths2(seq):
 
 ##  FontMetricsDB
 ##
-class FontMetricsDB(object):
+class FontMetricsDB:
 
     @classmethod
     def get_metrics(klass, fontname):
@@ -177,7 +177,7 @@ def getdict(data):
     return d
 
 
-class CFFFont(object):
+class CFFFont:
 
     STANDARD_STRINGS = (
       '.notdef', 'space', 'exclam', 'quotedbl', 'numbersign',
@@ -260,7 +260,7 @@ class CFFFont(object):
       'Light', 'Medium', 'Regular', 'Roman', 'Semibold',
     )
 
-    class INDEX(object):
+    class INDEX:
 
         def __init__(self, fp):
             self.fp = fp
@@ -373,7 +373,7 @@ class CFFFont(object):
 
 ##  TrueTypeFont
 ##
-class TrueTypeFont(object):
+class TrueTypeFont:
 
     class CMapNotFound(Exception):
         pass
@@ -472,7 +472,7 @@ LITERAL_TYPE1C = LIT('Type1C')
 
 
 # PDFFont
-class PDFFont(object):
+class PDFFont:
 
     def __init__(self, descriptor, widths, default_width=None):
         self.descriptor = descriptor
@@ -682,10 +682,10 @@ class PDFCIDFont(PDFFont):
         if self.vertical:
             # writing mode: vertical
             widths = get_widths2(list_value(spec.get('W2', [])))
-            self.disps = {cid: (vx, vy) for (cid, (_, (vx, vy))) in six.iteritems(widths)}
+            self.disps = {cid: (vx, vy) for (cid, (_, (vx, vy))) in widths.items()}
             (vy, w) = spec.get('DW2', [880, -1000])
             self.default_disp = (None, vy)
-            widths = {cid: w for (cid, (w, _)) in six.iteritems(widths)}
+            widths = {cid: w for (cid, (w, _)) in widths.items()}
             default_width = w
         else:
             # writing mode: horizontal

@@ -40,7 +40,7 @@ class PSValueError(PSException):
 
 ##  PSObject
 ##
-class PSObject(object):
+class PSObject:
 
     """Base class for all PS or PDF-related data types."""
 
@@ -95,7 +95,7 @@ class PSKeyword(PSObject):
 
 ##  PSSymbolTable
 ##
-class PSSymbolTable(object):
+class PSSymbolTable:
 
     """A utility class for storing PSLiteral/PSKeyword objects.
 
@@ -171,7 +171,7 @@ OCT_STRING = re.compile(br'[0-7]')
 ESC_STRING = {b'b': 8, b't': 9, b'n': 10, b'f': 12, b'r': 13, b'(': 40, b')': 41, b'\\': 92}
 
 
-class PSBaseParser(object):
+class PSBaseParser:
 
     """Most basic PostScript parser that performs only tokenization.
     """
@@ -573,7 +573,7 @@ class PSStackParser(PSBaseParser):
         while not self.results:
             (pos, token) = self.nexttoken()
             #print (pos,token), (self.curtype, self.curstack)
-            if isinstance(token, (six.integer_types, float, bool, six.string_types, six.binary_type, PSLiteral)):
+            if isinstance(token, ((int,), float, bool, (str,), bytes, PSLiteral)):
                 # normal token
                 self.push((pos, token))
             elif token == KEYWORD_ARRAY_BEGIN:
