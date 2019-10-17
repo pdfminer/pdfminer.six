@@ -30,7 +30,6 @@ from .utils import choplist
 from .utils import mult_matrix
 from .utils import MATRIX_IDENTITY
 
-import six  # Python 2+3 compatibility
 
 log = logging.getLogger(__name__)
 
@@ -384,7 +383,7 @@ class PDFPageInterpreter:
         # set some global states.
         self.scs = self.ncs = None
         if self.csmap:
-            self.scs = self.ncs = next(six.itervalues(self.csmap))
+            self.scs = self.ncs = next(iter(self.csmap.values()))
         return
 
     def push(self, obj):

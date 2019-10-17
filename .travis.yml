@@ -4,7 +4,6 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - pip install six
   - pip install pycryptodome
   - pip install chardet
   - pip install sortedcontainers

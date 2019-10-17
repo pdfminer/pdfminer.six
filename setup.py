@@ -2,7 +2,7 @@ from setuptools import setup
 
 import pdfminer as package
 
-requires = ['six', 'pycryptodome', 'sortedcontainers', 'chardet']
+requires = ['pycryptodome', 'sortedcontainers', 'chardet']
 
 setup(
     name='pdfminer.six',
