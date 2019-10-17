@@ -1,12 +1,8 @@
 import re
 import struct
 import logging
-
-import six
-try:
-    import hashlib as md5
-except ImportError:
-    import md5
+import six # Python 2+3 compatibility
+import hashlib as md5
 try:
     from Crypto.Cipher import ARC4
     from Crypto.Cipher import AES

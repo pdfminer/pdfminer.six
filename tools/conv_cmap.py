@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle as pickle
+import pickle as pickle
 import codecs
 import six
 
