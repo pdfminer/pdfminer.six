@@ -1,5 +1,3 @@
-
-
 """ Adobe character mapping (CMap) support.
 
 CMaps provide the mapping between character codes and Unicode

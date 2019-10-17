@@ -1,4 +1,3 @@
-
 import re
 from .psparser import PSLiteral
 from .glyphlist import glyphname2unicode

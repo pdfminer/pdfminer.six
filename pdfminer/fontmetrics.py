@@ -1,5 +1,3 @@
-
-
 """ Font metrics for the Adobe core 14 fonts.
 
 Font metrics are used to compute the boundary of each character

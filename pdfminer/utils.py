@@ -1,4 +1,3 @@
-
 """
 Miscellaneous Routines.
 """
@@ -278,12 +277,12 @@ def enc(x, codec='ascii'):
 
 def bbox2str(bbox):
     (x0, y0, x1, y1) = bbox
-    return '%.3f,%.3f,%.3f,%.3f' % (x0, y0, x1, y1)
+    return '{:.3f},{:.3f},{:.3f},{:.3f}'.format(x0, y0, x1, y1)
 
 
 def matrix2str(m):
     (a, b, c, d, e, f) = m
-    return '[%.2f,%.2f,%.2f,%.2f, (%.2f,%.2f)]' % (a, b, c, d, e, f)
+    return '[{:.2f},{:.2f},{:.2f},{:.2f}, ({:.2f},{:.2f})]'.format(a, b, c, d, e, f)
 
 def vecBetweenBoxes(obj1, obj2):
     """A distance function between two TextBoxes.

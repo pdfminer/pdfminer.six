@@ -1,4 +1,3 @@
-
 # CCITT Fax decoder
 #
 # Bugs: uncompressed mode untested.

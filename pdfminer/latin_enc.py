@@ -1,5 +1,3 @@
-
-
 """ Standard encoding tables used in PDF.
 
 This table is extracted from PDF Reference Manual 1.6, pp.925
