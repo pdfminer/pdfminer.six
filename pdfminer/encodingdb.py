@@ -1,8 +1,6 @@
 import logging
 import re
 
-import six  # Python 2+3 compatibility
-
 from .glyphlist import glyphname2unicode
 from .latin_enc import ENCODING
 from .psparser import PSLiteral

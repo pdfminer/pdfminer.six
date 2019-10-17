@@ -1,7 +1,6 @@
 import re
 import struct
 import logging
-import six # Python 2+3 compatibility
 import hashlib as md5
 try:
     from Crypto.Cipher import ARC4
@@ -127,11 +126,7 @@ class PDFXRef(PDFBaseXRef):
                 (pos, genno, use) = f
                 if use != b'n':
                     continue
-                if six.PY2:
-                    position = long(pos)  # noqa F821
-                else:
-                    position = int(pos)
-                self.offsets[objid] = None, position, int(genno)
+                self.offsets[objid] = (None, int(pos), int(genno))
         log.info('xref objects: %r', self.offsets)
         self.load_trailer(parser)
         return
@@ -182,8 +177,7 @@ class PDFXRefFallback(PDFXRef):
                 self.load_trailer(parser)
                 log.info('trailer: %r', self.trailer)
                 break
-            if six.PY3:
-                line = line.decode('latin-1')  # default pdf encoding
+            line=line.decode('latin-1') #default pdf encoding
             m = self.PDFOBJ_CUE.match(line)
             if not m:
                 continue
@@ -789,10 +783,7 @@ class PDFDocument:
         else:
             raise PDFNoValidXRef('Unexpected EOF')
         log.info('xref found: pos=%r', prev)
-        if six.PY2:
-            return long(prev)  # noqa F821
-        else:
-            return int(prev)
+        return int(prev)
 
     # read xref table
     def read_xref_from(self, parser, start, xrefs):

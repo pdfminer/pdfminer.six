@@ -3,7 +3,6 @@ import struct
 import sys
 from io import BytesIO
 
-import six
 
 from . import settings
 from .cmapdb import CMap

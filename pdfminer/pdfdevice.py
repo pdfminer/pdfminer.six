@@ -1,18 +1,10 @@
-import six
-
 from . import utils
 from .pdffont import PDFUnicodeNotDefined
 
 
-<<<<<<< HEAD
-class PDFDevice(object):
+class PDFDevice:
     """Translate the output of PDFPageInterpreter to the output that is needed
     """
-=======
-##  PDFDevice
-##
-class PDFDevice:
->>>>>>> Upgrade Python syntax with pyupgrade --py3-plus
 
     def __init__(self, rsrcmgr):
         self.rsrcmgr = rsrcmgr

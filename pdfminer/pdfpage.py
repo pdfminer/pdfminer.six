@@ -10,7 +10,6 @@ from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument
 from .pdfdocument import PDFTextExtractionNotAllowed
 
-import six
 
 log = logging.getLogger(__name__)
 

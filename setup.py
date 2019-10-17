@@ -10,7 +10,6 @@ setup(
     install_requires=[
         'chardet ; python_version > "3.0"',
         'pycryptodome',
-        'six',
         'sortedcontainers',
     ],
     extras_require={

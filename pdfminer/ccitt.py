@@ -14,8 +14,6 @@
 import sys
 import array
 
-import six  # Python 2+3 compatibility
-
 
 def get_bytes(data):
     yield from data

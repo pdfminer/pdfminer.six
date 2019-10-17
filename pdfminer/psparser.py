@@ -5,7 +5,6 @@
 import re
 import logging
 
-import six
 
 from . import settings
 from .utils import choplist
@@ -121,11 +120,10 @@ def literal_name(x):
             name = x
     else:
         name = x.name
-        if six.PY3:
-            try:
-                name = str(name, 'utf-8')
-            except Exception:
-                pass
+        try:
+            name = str(name,'utf-8')
+        except Exception:
+            pass
     return name
 
 
@@ -136,9 +134,7 @@ def keyword_name(x):
         else:
             name = x
     else:
-        name = x.name
-        if six.PY3:
-            name = str(name, 'utf-8', 'ignore')
+        name = str(x.name, 'utf-8', 'ignore')
     return name
 
 

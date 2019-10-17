@@ -5,8 +5,6 @@
 #  * public domain *
 #
 
-import six
-
 
 def rldecode(data):
     """

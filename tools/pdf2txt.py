@@ -183,9 +183,6 @@ def main(args=None):
     if A.pagenos:
         A.page_numbers = {int(x)-1 for x in A.pagenos.split(",")}
 
-    if six.PY2 and sys.stdin.encoding:
-        A.password = A.password.decode(sys.stdin.encoding)
-
     if A.output_type == "text" and A.outfile != "-":
         for override, alttype in OUTPUT_TYPES:
             if A.outfile.endswith(override):

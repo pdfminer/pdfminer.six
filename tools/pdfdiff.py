@@ -6,7 +6,7 @@ compares rwo pdf files.
 from pdfminer import high_level, layout
 import sys
 import logging
-import six
+import io
 import pdfminer.settings
 pdfminer.settings.STRICT = False
 
@@ -31,14 +31,15 @@ def compare(file1, file2, **kwargs):
                       "char_margin", "line_margin", "boxes_flow"):
             paramv = kwargs.get(param, None)
             if paramv is not None:
-                laparams[param] = paramv
-        kwargs['laparams'] = laparams
-    s1 = six.StringIO()
+
+    s1=io.StringIO()
     with open(file1, "rb") as fp:
-        high_level.extract_text_to_fp(fp, s1, **kwargs)
-    s2 = six.StringIO()
+        high_level.extract_text_to_fp(fp,s1, **kwargs)
+    
+    s2=io.StringIO()
     with open(file2, "rb") as fp:
         high_level.extract_text_to_fp(fp, s2, **kwargs)
+
     import difflib
     s1.seek(0)
     s2.seek(0)
@@ -125,9 +126,6 @@ def main(args=None):
         A.page_numbers = {x-1 for x in A.page_numbers}
     if A.pagenos:
         A.page_numbers = {int(x)-1 for x in A.pagenos.split(",")}
-
-    if six.PY2 and sys.stdin.encoding:
-        A.password = A.password.decode(sys.stdin.encoding)
 
     if A.output_type == "text" and A.outfile != "-":
         for override, alttype in ((".htm",  "html"),

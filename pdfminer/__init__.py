@@ -1,5 +1,5 @@
 """
-Fork of PDFMiner using six for Python 2+3 compatibility
+Fork of PDFMiner
 
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting and analyzing

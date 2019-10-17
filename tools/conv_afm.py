@@ -3,8 +3,6 @@
 import sys
 import fileinput
 
-import six
-
 
 def main(argv):
     fonts = {}

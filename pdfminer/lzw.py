@@ -1,5 +1,4 @@
 from io import BytesIO
-import six
 import logging
 
 
