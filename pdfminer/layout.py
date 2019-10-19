@@ -1,5 +1,4 @@
-from sortedcontainers import SortedListWithKey
-
+import heapq
 from .utils import INF
 from .utils import Plane
 from .utils import get_bound
@@ -603,9 +602,23 @@ class LTLayoutContainer(LTContainer):
                 yield box
         return
 
-    # group_textboxes: group textboxes hierarchically.
     def group_textboxes(self, laparams, boxes):
-        assert boxes, str((laparams, boxes))
+        """
+         Group textboxes hierarchically.
+
+         Get pair-wise distances, via dist func defined below, and then merge from the closest textbox pair. Once
+         obj1 and obj2 are merged / grouped, the resulting group is considered as a new object, and its distances to
+         other objects & groups are added to the process queue.
+
+         For performance reason, pair-wise distances and object pair info are maintained in a heap of
+         (idx, dist, id(obj1), id(obj2), obj1, obj2) tuples. It ensures quick access to the smallest element. Note that
+         since comparison operators, e.g., __lt__, are disabled for LTComponent, id(obj) has to appear before obj in
+         element tuples.
+
+        :param laparams: LAParams object.
+        :param boxes: All textbox objects to be grouped.
+        :return: a list that has only one element, the final top level textbox.
+        """
 
         def dist(obj1, obj2):
             """A distance function between two TextBoxes.
@@ -635,39 +648,36 @@ class LTLayoutContainer(LTContainer):
             objs = set(plane.find((x0, y0, x1, y1)))
             return objs.difference((obj1, obj2))
 
-        def key_obj(t):
-            (c,d,_,_) = t
-            return (c,d)
-
-        dists = SortedListWithKey(key=key_obj)
+        dists = []
         for i in range(len(boxes)):
             obj1 = boxes[i]
             for j in range(i+1, len(boxes)):
                 obj2 = boxes[j]
-                dists.add((0, dist(obj1, obj2), obj1, obj2))
+                dists.append((0, dist(obj1, obj2), id(obj1), id(obj2), obj1, obj2))
+        heapq.heapify(dists)
+
         plane = Plane(self.bbox)
         plane.extend(boxes)
-        while dists:
-            (c, d, obj1, obj2) = dists.pop(0)
-            if c == 0 and isany(obj1, obj2):
-                dists.add((1, d, obj1, obj2))
-                continue
-            if (isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or
-                isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL))):
-                group = LTTextGroupTBRL([obj1, obj2])
-            else:
-                group = LTTextGroupLRTB([obj1, obj2])
-            plane.remove(obj1)
-            plane.remove(obj2)
-            removed = [obj1, obj2]
-            to_remove = [ (c,d,obj1,obj2) for (c,d,obj1,obj2) in dists
-                      if (obj1 in removed or obj2 in removed) ]
-            for r in to_remove:
-                dists.remove(r)
-            for other in plane:
-                dists.add((0, dist(group, other), group, other))
-            plane.add(group)
-        assert len(plane) == 1, str(len(plane))
+        done = set()
+        while len(dists):
+            (c, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
+            if (id1 not in done) and (id2 not in done):
+                # Skip objects that have already been merged with their closest neighbour.
+                if c == 0 and isany(obj1, obj2):
+                    heapq.heappush(dists, (1, d, id1, id2, obj1, obj2))
+                    continue
+                if (isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or
+                    isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL))):
+                    group = LTTextGroupTBRL([obj1, obj2])
+                else:
+                    group = LTTextGroupLRTB([obj1, obj2])
+                plane.remove(obj1)
+                plane.remove(obj2)
+                done.update([id1, id2])
+
+                for other in plane:
+                    heapq.heappush(dists, (0, dist(group, other), id(group), id(other), group, other))
+                plane.add(group)
         return list(plane)
 
     def analyze(self, laparams):
