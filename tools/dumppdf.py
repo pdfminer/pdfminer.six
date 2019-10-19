@@ -122,8 +122,8 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
     fp = open(fname, 'rb')
     parser = PDFParser(fp)
     doc = PDFDocument(parser, password)
-    pages = dict((page.pageid, pageno) for (pageno, page)
-                 in enumerate(PDFPage.create_pages(doc), 1))
+    pages = {page.pageid: pageno for (pageno, page)
+             in enumerate(PDFPage.create_pages(doc), 1)}
 
     def resolve_dest(dest):
         if isinstance(dest, str):
@@ -153,7 +153,7 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
                         dest = resolve_dest(action['D'])
                         pageno = pages[dest[0].objid]
             s = e(title).encode('utf-8', 'xmlcharrefreplace')
-            outfp.write('<outline level="%r" title="%s">\n' % (level, s))
+            outfp.write('<outline level="{!r}" title="{}">\n'.format(level, s))
             if dest is not None:
                 outfp.write('<dest>')
                 dumpxml(outfp, dest)

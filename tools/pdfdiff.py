@@ -122,9 +122,9 @@ def main(args=None):
         logging.getLogger().setLevel(logging.DEBUG)
 
     if A.page_numbers:
-        A.page_numbers = set([x-1 for x in A.page_numbers])
+        A.page_numbers = {x-1 for x in A.page_numbers}
     if A.pagenos:
-        A.page_numbers = set([int(x)-1 for x in A.pagenos.split(",")])
+        A.page_numbers = {int(x)-1 for x in A.pagenos.split(",")}
 
     if six.PY2 and sys.stdin.encoding:
         A.password = A.password.decode(sys.stdin.encoding)

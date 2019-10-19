@@ -1,4 +1,3 @@
-
 import re
 import struct
 import logging
@@ -110,7 +109,8 @@ class PDFXRef(PDFBaseXRef):
                 break
             f = line.strip().split(b' ')
             if len(f) != 2:
-                error_msg = 'Trailer not found: %r: line=%r' % (parser, line)
+                error_msg = 'Trailer not found: {!r}: line={!r}'\
+                    .format(parser, line)
                 raise PDFNoValidXRef(error_msg)
             try:
                 if six.PY2:
@@ -118,7 +118,8 @@ class PDFXRef(PDFBaseXRef):
                 else:
                     (start, nobjs) = map(int, f)
             except ValueError:
-                error_msg = 'Invalid line: %r: line=%r' % (parser, line)
+                error_msg = 'Invalid line: {!r}: line={!r}'\
+                    .format(parser, line)
                 raise PDFNoValidXRef(error_msg)
             for objid in range(start, start+nobjs):
                 try:
@@ -127,8 +128,8 @@ class PDFXRef(PDFBaseXRef):
                     raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
                 f = line.strip().split(b' ')
                 if len(f) != 3:
-                    error_msg = 'Invalid XRef format: %r, line=%r' \
-                                % (parser, line)
+                    error_msg = 'Invalid XRef format: {!r}, line={!r}'\
+                        .format(parser, line)
                     raise PDFNoValidXRef(error_msg)
                 (pos, genno, use) = f
                 if use != b'n':
@@ -673,7 +674,8 @@ class PDFDocument(object):
                 objid1 = x[-2]
         # #### end hack around malformed pdf files
         if objid1 != objid:
-            raise PDFSyntaxError('objid mismatch: %r=%r' % (objid1, objid))
+            raise PDFSyntaxError('objid mismatch: {!r}={!r}'
+                                 .format(objid1, objid))
 
         if kwd != KWD(b'obj'):
             raise PDFSyntaxError('Invalid object spec: offset=%r' % pos)

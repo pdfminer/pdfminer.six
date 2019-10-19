@@ -285,7 +285,7 @@ class HTMLConverter(PDFConverter):
         return
 
     def write_footer(self):
-        page_links = ['<a href="#%s">%s</a>' % (i, i)
+        page_links = ['<a href="#{}">{}</a>'.format(i, i)
                       for i in range(1, self.pageno)]
         s = '<div style="position:absolute; top:0px;">Page: %s</div>\n' % \
             ', '.join(page_links)
@@ -385,8 +385,8 @@ class HTMLConverter(PDFConverter):
                 if self.showpageno:
                     self.write('<div style="position:absolute; top:%dpx;">' %
                                ((self._yoffset-item.y1)*self.scale))
-                    self.write('<a name="%s">Page %s</a></div>\n' % (
-                        item.pageid, item.pageid))
+                    self.write('<a name="{}">Page {}</a></div>\n'
+                               .format(item.pageid, item.pageid))
                 for child in item:
                     render(child)
                 if item.groups is not None:

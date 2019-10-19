@@ -1,5 +1,3 @@
-
-
 """ Python implementation of ASCII85/ASCIIHex decoder (Adobe version).
 
 This code is in the public domain.
@@ -47,9 +45,8 @@ def ascii85decode(data):
 
 
 # asciihexdecode(data)
-hex_re = re.compile(b'([a-f0-9]{2})', re.IGNORECASE)
-trail_re = re.compile(b'^(?:[a-f0-9]{2}|[ \t\n\r\f\v])*'
-                      b'([a-f0-9])[ \t\n\r\f\v>]*$', re.IGNORECASE)
+hex_re = re.compile(br'([a-f\d]{2})', re.IGNORECASE)
+trail_re = re.compile(br'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
 
 
 def asciihexdecode(data):

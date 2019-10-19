@@ -617,7 +617,7 @@ class PDFType1Font(PDFSimpleFont):
             firstchar = int_value(spec.get('FirstChar', 0))
             # lastchar = int_value(spec.get('LastChar', 255))
             widths = list_value(spec.get('Widths', [0]*256))
-            widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
+            widths = {i+firstchar: w for (i, w) in enumerate(widths)}
         PDFSimpleFont.__init__(self, descriptor, widths, spec)
         if 'Encoding' not in spec and 'FontFile' in descriptor:
             # try to recover the missing encoding info from the font file.
@@ -644,7 +644,7 @@ class PDFType3Font(PDFSimpleFont):
         firstchar = int_value(spec.get('FirstChar', 0))
         # lastchar = int_value(spec.get('LastChar', 0))
         widths = list_value(spec.get('Widths', [0]*256))
-        widths = dict((i+firstchar, w) for (i, w) in enumerate(widths))
+        widths = {i+firstchar: w for (i, w) in enumerate(widths)}
         if 'FontDescriptor' in spec:
             descriptor = dict_value(spec['FontDescriptor'])
         else:
@@ -674,7 +674,7 @@ class PDFCIDFont(PDFFont):
             self.cidsysteminfo.get('Registry', b'unknown')).decode("latin1")
         cid_ordering = resolve1(
             self.cidsysteminfo.get('Ordering', b'unknown')).decode("latin1")
-        self.cidcoding = '%s-%s' % (cid_registry, cid_ordering)
+        self.cidcoding = '{}-{}'.format(cid_registry, cid_ordering)
         self.cmap = self.get_cmap_from_spec(spec, strict)
 
         try:
@@ -710,11 +710,11 @@ class PDFCIDFont(PDFFont):
         if self.vertical:
             # writing mode: vertical
             widths = get_widths2(list_value(spec.get('W2', [])))
-            self.disps = dict((cid, (vx, vy)) for (cid, (_, (vx, vy)))
-                              in six.iteritems(widths))
+            self.disps = {cid: (vx, vy)
+                          for (cid, (_, (vx, vy))) in six.iteritems(widths)}
             (vy, w) = spec.get('DW2', [880, -1000])
             self.default_disp = (None, vy)
-            widths = dict((cid, w) for (cid, (w, _)) in six.iteritems(widths))
+            widths = {cid: w for (cid, (w, _)) in six.iteritems(widths)}
             default_width = w
         else:
             # writing mode: horizontal
@@ -756,8 +756,8 @@ class PDFCIDFont(PDFFont):
             return CMap()
 
     def __repr__(self):
-        return '<PDFCIDFont: basefont=%r, cidcoding=%r>' \
-               % (self.basefont, self.cidcoding)
+        return '<PDFCIDFont: basefont={!r}, cidcoding={!r}>'\
+            .format(self.basefont, self.cidcoding)
 
     def is_vertical(self):
         return self.vertical
