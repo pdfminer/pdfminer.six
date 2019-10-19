@@ -40,7 +40,7 @@ class PSValueError(PSException):
 
 ##  PSObject
 ##
-class PSObject(object):
+class PSObject:
 
     """Base class for all PS or PDF-related data types."""
 
@@ -95,7 +95,7 @@ class PSKeyword(PSObject):
 
 ##  PSSymbolTable
 ##
-class PSSymbolTable(object):
+class PSSymbolTable:
 
     """A utility class for storing PSLiteral/PSKeyword objects.
 
@@ -171,7 +171,7 @@ OCT_STRING = re.compile(br'[0-7]')
 ESC_STRING = {b'b': 8, b't': 9, b'n': 10, b'f': 12, b'r': 13, b'(': 40, b')': 41, b'\\': 92}
 
 
-class PSBaseParser(object):
+class PSBaseParser:
 
     """Most basic PostScript parser that performs only tokenization.
     """
@@ -372,7 +372,7 @@ class PSBaseParser(object):
             self.hex += c
             return i+1
         if self.hex:
-            self._curtoken += six.int2byte(int(self.hex, 16))
+            self._curtoken += bytes((int(self.hex, 16),))
         self._parse1 = self._parse_literal
         return i
 
@@ -457,11 +457,11 @@ class PSBaseParser(object):
             self.oct += c
             return i+1
         if self.oct:
-            self._curtoken += six.int2byte(int(self.oct, 8))
+            self._curtoken += bytes((int(self.oct, 8),))
             self._parse1 = self._parse_string
             return i
         if c in ESC_STRING:
-            self._curtoken += six.int2byte(ESC_STRING[c])
+            self._curtoken += bytes((ESC_STRING[c],))
         self._parse1 = self._parse_string
         return i+1
 
@@ -490,7 +490,7 @@ class PSBaseParser(object):
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        token = HEX_PAIR.sub(lambda m: six.int2byte(int(m.group(0), 16)),SPC.sub(b'', self._curtoken))
+        token = HEX_PAIR.sub(lambda m: bytes((int(m.group(0), 16),)),SPC.sub(b'', self._curtoken))
         self._add_token(token)
         self._parse1 = self._parse_main
         return j
@@ -573,7 +573,7 @@ class PSStackParser(PSBaseParser):
         while not self.results:
             (pos, token) = self.nexttoken()
             #print (pos,token), (self.curtype, self.curstack)
-            if isinstance(token, (six.integer_types, float, bool, six.string_types, six.binary_type, PSLiteral)):
+            if isinstance(token, ((int,), float, bool, (str,), bytes, PSLiteral)):
                 # normal token
                 self.push((pos, token))
             elif token == KEYWORD_ARRAY_BEGIN:

@@ -24,8 +24,8 @@ def ascii85decode(data):
     """
     n = b = 0
     out = b''
-    for i in six.iterbytes(data):
-        c=six.int2byte(i)
+    for i in iter(data):
+        c=bytes((i,))
         if b'!' <= c and c <= b'u':
             n += 1
             b = b*85+(ord(c)-33)
@@ -60,7 +60,7 @@ def asciihexdecode(data):
     """
     def decode(x):
         i=int(x,16)
-        return six.int2byte(i)
+        return bytes((i,))
 
     out=b''
     for x in hex_re.findall(data):

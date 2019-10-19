@@ -65,7 +65,7 @@ class TestDumpPDF():
         run('../samples/scancode/', 'patchelf')  # https://github.com/euske/pdfminer/issues/96
 
 
-class TestDumpImages(object):
+class TestDumpImages:
 
     def extract_images(self, input_file):
         output_dir = mkdtemp()

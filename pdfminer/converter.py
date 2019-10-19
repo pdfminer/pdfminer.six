@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 import re
 from .pdfdevice import PDFTextDevice
@@ -114,7 +113,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
     def render_char(self, matrix, font, fontsize, scaling, rise, cid, ncs, graphicstate):
         try:
             text = font.to_unichr(cid)
-            assert isinstance(text, six.text_type), str(type(text))
+            assert isinstance(text, str), str(type(text))
         except PDFUnicodeNotDefined:
             text = self.handle_undefined_char(font, cid)
         textwidth = font.char_width(cid)
@@ -169,7 +168,7 @@ class PDFConverter(PDFLayoutAnalyzer):
                 self.outfp_binary = False
             else:
                 try:
-                    self.outfp.write(u"é")
+                    self.outfp.write("é")
                     self.outfp_binary = False
                 except TypeError:
                     self.outfp_binary = True
@@ -431,7 +430,7 @@ class HTMLConverter(PDFConverter):
 ##
 class XMLConverter(PDFConverter):
 
-    CONTROL = re.compile(u'[\x00-\x08\x0b-\x0c\x0e-\x1f]')
+    CONTROL = re.compile('[\x00-\x08\x0b-\x0c\x0e-\x1f]')
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1,
                  laparams=None, imagewriter=None, stripcontrol=False):
@@ -461,7 +460,7 @@ class XMLConverter(PDFConverter):
 
     def write_text(self, text):
         if self.stripcontrol:
-            text = self.CONTROL.sub(u'', text)
+            text = self.CONTROL.sub('', text)
         self.write(enc(text, None))
         return
 

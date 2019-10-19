@@ -35,7 +35,7 @@ def main(argv):
             props[k] = tuple(map(float, f[1:5]))
     print ('# -*- python -*-')
     print ('FONT_METRICS = {')
-    for (fontname,(props,chars)) in six.iteritems(fonts):
+    for (fontname,(props,chars)) in fonts.items():
         print (' {!r}: {!r},'.format(fontname, (props,chars)))
     print ('}')
     return 0

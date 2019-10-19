@@ -13,7 +13,7 @@ import six # Python 2+3 compatibility
 
 ##  IndexAssigner
 ##
-class IndexAssigner(object):
+class IndexAssigner:
 
     def __init__(self, index=0):
         self.index = index
@@ -31,7 +31,7 @@ class IndexAssigner(object):
 
 ##  LAParams
 ##
-class LAParams(object):
+class LAParams:
 
     def __init__(self,
                  line_overlap=0.5,
@@ -57,7 +57,7 @@ class LAParams(object):
 
 ##  LTItem
 ##
-class LTItem(object):
+class LTItem:
 
     def analyze(self, laparams):
         """Perform the layout analysis."""
@@ -66,7 +66,7 @@ class LTItem(object):
 
 ##  LTText
 ##
-class LTText(object):
+class LTText:
 
     def __repr__(self):
         return ('<%s %r>' %

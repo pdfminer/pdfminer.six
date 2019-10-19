@@ -19,7 +19,7 @@ from pdfminer.utils import isnumber
 
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
 def e(s):
-    if six.PY3 and isinstance(s,six.binary_type):
+    if six.PY3 and isinstance(s,bytes):
         s=str(s,'latin-1')
     return ESC_PAT.sub(lambda m:'&#%d;' % ord(m.group(0)), s)
 
@@ -34,7 +34,7 @@ def dumpxml(out, obj, codec=None):
 
     if isinstance(obj, dict):
         out.write('<dict size="%d">\n' % len(obj))
-        for (k,v) in six.iteritems(obj):
+        for (k,v) in obj.items():
             out.write('<key>%s</key>\n' % k)
             out.write('<value>')
             dumpxml(out, v)
@@ -50,7 +50,7 @@ def dumpxml(out, obj, codec=None):
         out.write('</list>')
         return
 
-    if isinstance(obj, (six.string_types, six.binary_type)):
+    if isinstance(obj, ((str,), bytes)):
         out.write('<string size="%d">%s</string>' % (len(obj), e(obj)))
         return
 
@@ -183,7 +183,7 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
                 (filename))
         path = os.path.join(extractdir, filename)
         if os.path.exists(path):
-            raise IOError('file exists: %r' % path)
+            raise OSError('file exists: %r' % path)
         print >>sys.stderr, 'extracting: %r' % path
         out = file(path, 'wb')
         out.write(fileobj.get_data())

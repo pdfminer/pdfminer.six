@@ -14,7 +14,7 @@ def align32(x):
 
 ##  BMPWriter
 ##
-class BMPWriter(object):
+class BMPWriter:
 
     def __init__(self, fp, bits, width, height):
         self.fp = fp
@@ -58,7 +58,7 @@ class BMPWriter(object):
 
 ##  ImageWriter
 ##
-class ImageWriter(object):
+class ImageWriter:
 
     def __init__(self, outdir):
         self.outdir = outdir

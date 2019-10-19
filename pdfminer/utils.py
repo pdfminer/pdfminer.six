@@ -17,10 +17,7 @@ if six.PY3:
 def make_compat_bytes(in_str):
     """In Py2, does nothing. In Py3, converts to bytes, encoding to unicode."""
     assert isinstance(in_str, str), str(type(in_str))
-    if six.PY2:
-        return in_str
-    else:
-        return in_str.encode()
+    return in_str.encode()
 
 
 def make_compat_str(in_str):
@@ -55,7 +52,7 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     for i in range(0, len(data), nbytes + 1):
         ft = data[i]
         if six.PY2:
-            ft = six.byte2int(ft)
+            ft = ft[0]
         i += 1
         line1 = data[i:i + nbytes]
         line2 = b''
@@ -67,24 +64,24 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
             c = 0
             for b in line1:
                 if six.PY2:
-                    b = six.byte2int(b)
+                    b = b[0]
                 c = (c + b) & 255
-                line2 += six.int2byte(c)
+                line2 += bytes((c,))
         elif ft == 2:
             # PNG up
             for (a, b) in zip(line0, line1):
                 if six.PY2:
-                    a, b = six.byte2int(a), six.byte2int(b)
+                    a, b = a[0], b[0]
                 c = (a + b) & 255
-                line2 += six.int2byte(c)
+                line2 += bytes((c,))
         elif ft == 3:
             # PNG average (UNTESTED)
             c = 0
             for (a, b) in zip(line0, line1):
                 if six.PY2:
-                    a, b = six.byte2int(a), six.byte2int(b)
+                    a, b = a[0], b[0]
                 c = ((c + a + b) // 2) & 255
-                line2 += six.int2byte(c)
+                line2 += bytes((c,))
         else:
             # unsupported
             raise ValueError("Unsupported predictor value: %d" % ft)
@@ -130,7 +127,7 @@ def apply_matrix_norm(m, v):
 #  Utility functions
 
 def isnumber(x):
-    return isinstance(x, (six.integer_types, float))
+    return isinstance(x, ((int,), float))
 
 
 def uniq(objs):
@@ -212,7 +209,7 @@ def nunpack(s, default=0):
         raise TypeError('invalid length: %d' % l)
 
 
-PDFDocEncoding = ''.join(six.unichr(x) for x in (
+PDFDocEncoding = ''.join(chr(x) for x in (
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
     0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
     0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0017, 0x0017,
@@ -251,7 +248,7 @@ PDFDocEncoding = ''.join(six.unichr(x) for x in (
 def decode_text(s):
     """Decodes a PDFDocEncoding string to Unicode."""
     if s.startswith(b'\xfe\xff'):
-        return six.text_type(s[2:], 'utf-16be', 'ignore')
+        return str(s[2:], 'utf-16be', 'ignore')
     else:
         return ''.join(PDFDocEncoding[c] for c in s)
 
@@ -300,7 +297,7 @@ def vecBetweenBoxes(obj1, obj2):
         return max(0, iw), max(0, ih)
 
 
-class Plane(object):
+class Plane:
     """A set-like data structure for objects placed on a plane.
 
     Can efficiently find objects in a certain rectangular area.

@@ -39,7 +39,7 @@ def name2unicode(name):
                 unicode_digits = [int(name_without_uni[i:i + 4], base=16) for i in range(0, len(name_without_uni), 4)]
                 for digit in unicode_digits:
                     raise_key_error_for_invalid_unicode(digit)
-                characters = map(six.unichr, unicode_digits)
+                characters = map(chr, unicode_digits)
                 return ''.join(characters)
 
         elif name.startswith('u'):
@@ -48,7 +48,7 @@ def name2unicode(name):
             if HEXADECIMAL.match(name_without_u) and 4 <= len(name_without_u) <= 6:
                 unicode_digit = int(name_without_u, base=16)
                 raise_key_error_for_invalid_unicode(unicode_digit)
-                return six.unichr(unicode_digit)
+                return chr(unicode_digit)
 
     raise KeyError('Could not convert unicode name "%s" to character because it does not match specification' % name)
 
@@ -62,7 +62,7 @@ def raise_key_error_for_invalid_unicode(unicode_digit):
         raise KeyError('Unicode digit %d is invalid because it is in the range D800 through DFFF' % unicode_digit)
 
 
-class EncodingDB(object):
+class EncodingDB:
 
     std2unicode = {}
     mac2unicode = {}
