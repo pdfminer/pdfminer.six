@@ -75,7 +75,7 @@ def get_widths2(seq):
     return widths
 
 
-class FontMetricsDB(object):
+class FontMetricsDB:
 
     @classmethod
     def get_metrics(cls, fontname):
@@ -191,7 +191,7 @@ def getdict(data):
     return d
 
 
-class CFFFont(object):
+class CFFFont:
 
     STANDARD_STRINGS = (
       '.notdef', 'space', 'exclam', 'quotedbl', 'numbersign',
@@ -274,7 +274,7 @@ class CFFFont(object):
       'Light', 'Medium', 'Regular', 'Roman', 'Semibold',
     )
 
-    class INDEX(object):
+    class INDEX:
 
         def __init__(self, fp):
             self.fp = fp
@@ -385,7 +385,7 @@ class CFFFont(object):
         return self.string_index[sid-len(self.STANDARD_STRINGS)]
 
 
-class TrueTypeFont(object):
+class TrueTypeFont:
 
     class CMapNotFound(Exception):
         pass
@@ -470,7 +470,7 @@ class TrueTypeFont(object):
                 assert False, str(('Unhandled', fmttype))
         # create unicode map
         unicode_map = FileUnicodeMap()
-        for (char, gid) in six.iteritems(char2gid):
+        for (char, gid) in char2gid.items():
             unicode_map.add_cid2unichr(gid, char)
         return unicode_map
 
@@ -487,7 +487,7 @@ LITERAL_STANDARD_ENCODING = LIT('StandardEncoding')
 LITERAL_TYPE1C = LIT('Type1C')
 
 
-class PDFFont(object):
+class PDFFont:
 
     def __init__(self, descriptor, widths, default_width=None):
         self.descriptor = descriptor
@@ -711,10 +711,10 @@ class PDFCIDFont(PDFFont):
             # writing mode: vertical
             widths = get_widths2(list_value(spec.get('W2', [])))
             self.disps = {cid: (vx, vy)
-                          for (cid, (_, (vx, vy))) in six.iteritems(widths)}
+                          for (cid, (_, (vx, vy))) in widths.items()}
             (vy, w) = spec.get('DW2', [880, -1000])
             self.default_disp = (None, vy)
-            widths = {cid: w for (cid, (w, _)) in six.iteritems(widths)}
+            widths = {cid: w for (cid, (w, _)) in widths.items()}
             default_width = w
         else:
             # writing mode: horizontal

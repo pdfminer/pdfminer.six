@@ -69,7 +69,7 @@ LITERAL_XREF = LIT('XRef')
 LITERAL_CATALOG = LIT('Catalog')
 
 
-class PDFBaseXRef(object):
+class PDFBaseXRef:
 
     def get_trailer(self):
         raise NotImplementedError
@@ -113,10 +113,7 @@ class PDFXRef(PDFBaseXRef):
                     .format(parser, line)
                 raise PDFNoValidXRef(error_msg)
             try:
-                if six.PY2:
-                    (start, nobjs) = map(long, f)  # noqa F821
-                else:
-                    (start, nobjs) = map(int, f)
+                (start, nobjs) = map(int, f)
             except ValueError:
                 error_msg = 'Invalid line: {!r}: line={!r}'\
                     .format(parser, line)
@@ -161,7 +158,7 @@ class PDFXRef(PDFBaseXRef):
         return self.trailer
 
     def get_objids(self):
-        return six.iterkeys(self.offsets)
+        return self.offsets.keys()
 
     def get_pos(self, objid):
         try:
@@ -296,7 +293,7 @@ class PDFXRefStream(PDFBaseXRef):
             raise KeyError(objid)
 
 
-class PDFStandardSecurityHandler(object):
+class PDFStandardSecurityHandler:
 
     PASSWORD_PADDING = (b'(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08'
                         b'..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz')
@@ -351,7 +348,7 @@ class PDFStandardSecurityHandler(object):
             hash.update(self.docid[0])  # 3
             result = ARC4.new(key).encrypt(hash.digest())  # 4
             for i in range(1, 20):  # 5
-                k = b''.join(six.int2byte(c ^ i) for c in six.iterbytes(key))
+                k = b''.join(bytes((c ^ i,)) for c in iter(key))
                 result = ARC4.new(k).encrypt(result)
             result += result  # 6
             return result
@@ -411,7 +408,7 @@ class PDFStandardSecurityHandler(object):
         else:
             user_password = self.o
             for i in range(19, -1, -1):
-                k = b''.join(six.int2byte(c ^ i) for c in six.iterbytes(key))
+                k = b''.join(bytes((c ^ i,)) for c in iter(key))
                 user_password = ARC4.new(k).decrypt(user_password)
         return self.authenticate_user_password(user_password)
 
@@ -431,7 +428,7 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
     supported_revisions = (4,)
 
     def init_params(self):
-        super(PDFStandardSecurityHandlerV4, self).init_params()
+        super().init_params()
         self.length = 128
         self.cf = dict_value(self.param.get('CF'))
         self.stmf = literal_name(self.param['StmF'])
@@ -487,7 +484,7 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
     supported_revisions = (5,)
 
     def init_params(self):
-        super(PDFStandardSecurityHandlerV5, self).init_params()
+        super().init_params()
         self.length = 256
         self.oe = str_value(self.param['OE'])
         self.ue = str_value(self.param['UE'])
@@ -530,7 +527,7 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
             .decrypt(data[16:])
 
 
-class PDFDocument(object):
+class PDFDocument:
     """PDFDocument object represents a PDF document.
 
     Since a PDF file can be very big, normally it is not loaded at
@@ -736,11 +733,9 @@ class PDFDocument(object):
                     se = entry.get('SE')
                     yield (level, title, dest, action, se)
             if 'First' in entry and 'Last' in entry:
-                for x in search(entry['First'], level+1):
-                    yield x
+                yield from search(entry['First'], level+1)
             if 'Next' in entry:
-                for x in search(entry['Next'], level):
-                    yield x
+                yield from search(entry['Next'], level)
             return
         return search(self.catalog['Outlines'], 0)
 

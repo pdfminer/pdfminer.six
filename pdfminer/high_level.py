@@ -1,5 +1,6 @@
 """Functions that can be used for the most common use-cases for pdfminer.six"""
 
+
 import logging
 import sys
 

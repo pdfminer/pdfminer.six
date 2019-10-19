@@ -19,8 +19,7 @@ LITERAL_PAGE = LIT('Page')
 LITERAL_PAGES = LIT('Pages')
 
 
-class PDFPage(object):
-
+class PDFPage:
     """An object that holds the information about a page.
 
     A PDFPage object is merely a convenience class that has a set
@@ -85,7 +84,7 @@ class PDFPage(object):
             else:
                 objid = obj.objid
                 tree = dict_value(obj).copy()
-            for (k, v) in six.iteritems(parent):
+            for (k, v) in parent.items():
                 if k in cls.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
 
@@ -96,8 +95,7 @@ class PDFPage(object):
             if tree_type is LITERAL_PAGES and 'Kids' in tree:
                 log.info('Pages: Kids=%r', tree['Kids'])
                 for c in list_value(tree['Kids']):
-                    for x in search(c, tree):
-                        yield x
+                    yield from search(c, tree)
             elif tree_type is LITERAL_PAGE:
                 log.info('Page: %r', tree)
                 yield (objid, tree)

@@ -38,7 +38,7 @@ class CMapError(Exception):
     pass
 
 
-class CMapBase(object):
+class CMapBase:
 
     debug = 0
 
@@ -77,7 +77,7 @@ class CMap(CMapBase):
         assert isinstance(cmap, CMap), str(type(cmap))
 
         def copy(dst, src):
-            for (k, v) in six.iteritems(src):
+            for (k, v) in src.items():
                 if isinstance(v, dict):
                     d = {}
                     dst[k] = d
@@ -90,7 +90,7 @@ class CMap(CMapBase):
     def decode(self, code):
         log.debug('decode: %r, %r', self, code)
         d = self.code2cid
-        for i in six.iterbytes(code):
+        for i in iter(code):
             if i in d:
                 d = d[i]
                 if isinstance(d, int):
@@ -104,7 +104,7 @@ class CMap(CMapBase):
         if code2cid is None:
             code2cid = self.code2cid
             code = ()
-        for (k, v) in sorted(six.iteritems(code2cid)):
+        for (k, v) in sorted(code2cid.items()):
             c = code+(k,)
             if isinstance(v, int):
                 out.write('code %r = cid %d\n' % (c, v))
@@ -148,7 +148,7 @@ class UnicodeMap(CMapBase):
         return self.cid2unichr[cid]
 
     def dump(self, out=sys.stdout):
-        for (k, v) in sorted(six.iteritems(self.cid2unichr)):
+        for (k, v) in sorted(self.cid2unichr.items()):
             out.write('cid %d = unicode %r\n' % (k, v))
         return
 
@@ -183,7 +183,7 @@ class FileUnicodeMap(UnicodeMap):
             # Interpret as UTF-16BE.
             self.cid2unichr[cid] = code.decode('UTF-16BE', 'ignore')
         elif isinstance(code, int):
-            self.cid2unichr[cid] = six.unichr(code)
+            self.cid2unichr[cid] = chr(code)
         else:
             raise TypeError(code)
         return
@@ -211,7 +211,7 @@ class PyUnicodeMap(UnicodeMap):
         return
 
 
-class CMapDB(object):
+class CMapDB:
 
     _cmap_cache = {}
     _umap_cache = {}

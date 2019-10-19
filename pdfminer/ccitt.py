@@ -16,18 +16,12 @@ import array
 
 import six  # Python 2+3 compatibility
 
-if six.PY3:
-    def get_bytes(data):
-        for byte in data:
-            yield byte
-else:
-    def get_bytes(data):
-        for char in data:
-            yield ord(char)
+
+def get_bytes(data):
+    yield from data
 
 
-class BitParser(object):
-
+class BitParser:
     def __init__(self):
         self._pos = 0
         return

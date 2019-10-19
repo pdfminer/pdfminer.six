@@ -64,7 +64,7 @@ class TestDumpPDF():
         run('scancode/patchelf.pdf')
 
 
-class TestDumpImages(object):
+class TestDumpImages:
 
     @staticmethod
     def extract_images(input_file):
