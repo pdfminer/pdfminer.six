@@ -1,5 +1,3 @@
-from sortedcontainers import SortedListWithKey
-
 from .utils import INF
 from .utils import Plane
 from .utils import get_bound
@@ -635,22 +633,18 @@ class LTLayoutContainer(LTContainer):
             objs = set(plane.find((x0, y0, x1, y1)))
             return objs.difference((obj1, obj2))
 
-        def key_obj(t):
-            (c,d,_,_) = t
-            return (c,d)
-
-        dists = SortedListWithKey(key=key_obj)
+        dists = []
         for i in range(len(boxes)):
             obj1 = boxes[i]
             for j in range(i+1, len(boxes)):
                 obj2 = boxes[j]
-                dists.add((0, dist(obj1, obj2), obj1, obj2))
+                dists.append((0, dist(obj1, obj2), obj1, obj2, id(obj1), id(obj2)))
         plane = Plane(self.bbox)
         plane.extend(boxes)
         while dists:
-            (c, d, obj1, obj2) = dists.pop(0)
+            (c, d, obj1, obj2, id1, id2) = dists.pop(0)
             if c == 0 and isany(obj1, obj2):
-                dists.add((1, d, obj1, obj2))
+                dists.append((1, d, obj1, obj2, id1, id2))
                 continue
             if (isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or
                 isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL))):
@@ -659,13 +653,11 @@ class LTLayoutContainer(LTContainer):
                 group = LTTextGroupLRTB([obj1, obj2])
             plane.remove(obj1)
             plane.remove(obj2)
-            removed = [obj1, obj2]
-            to_remove = [ (c,d,obj1,obj2) for (c,d,obj1,obj2) in dists
-                      if (obj1 in removed or obj2 in removed) ]
-            for r in to_remove:
-                dists.remove(r)
+            removed = [id1, id2]
+            dists = [ ele for ele in dists
+                      if ((ele[-1] not in removed) and (ele[-2] not in removed)) ]
             for other in plane:
-                dists.add((0, dist(group, other), group, other))
+                dists.append((0, dist(group, other), group, other, id(group), id(other)))
             plane.add(group)
         assert len(plane) == 1, str(len(plane))
         return list(plane)
