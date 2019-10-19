@@ -17,9 +17,9 @@ def run(datapath, filename, options=None):
     i = full_path(datapath + filename + '.pdf')
     o = full_path(filename + '.txt')
     if options:
-        s = 'pdf2txt -o%s %s %s' % (o, options, i)
+        s = 'pdf2txt -o{} {} {}'.format(o, options, i)
     else:
-        s = 'pdf2txt -o%s %s' % (o, i)
+        s = 'pdf2txt -o{} {}'.format(o, i)
     pdf2txt.main(s.split(' ')[1:])
 
 

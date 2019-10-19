@@ -1,4 +1,3 @@
-
 import logging
 from . import settings
 from .psparser import LIT
@@ -73,9 +72,9 @@ class PDFPage(object):
         return
 
     def __repr__(self):
-        return '<PDFPage: Resources=%r, MediaBox=%r>' % (self.resources, self.mediabox)
+        return '<PDFPage: Resources={!r}, MediaBox={!r}>'.format(self.resources, self.mediabox)
 
-    INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
+    INHERITABLE_ATTRS = {'Resources', 'MediaBox', 'CropBox', 'Rotate'}
 
     @classmethod
     def create_pages(klass, document):

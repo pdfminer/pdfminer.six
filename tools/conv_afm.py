@@ -36,7 +36,7 @@ def main(argv):
     print ('# -*- python -*-')
     print ('FONT_METRICS = {')
     for (fontname,(props,chars)) in six.iteritems(fonts):
-        print (' %r: %r,' % (fontname, (props,chars)))
+        print (' {!r}: {!r},'.format(fontname, (props,chars)))
     print ('}')
     return 0
 

@@ -1,5 +1,3 @@
-
-
 """ Python implementation of Rijndael encryption algorithm.
 
 This code is in the public domain.

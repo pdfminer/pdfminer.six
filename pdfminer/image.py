@@ -1,4 +1,3 @@
-
 import struct
 import os
 import os.path

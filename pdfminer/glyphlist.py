@@ -1,5 +1,3 @@
-
-
 """ Mappings from Adobe glyph names to Unicode characters.
 
 In some CMap tables, Adobe glyph names are used for specifying

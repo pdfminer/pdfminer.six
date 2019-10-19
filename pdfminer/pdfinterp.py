@@ -1,4 +1,3 @@
-
 import re
 import logging
 from io import BytesIO
@@ -305,7 +304,7 @@ class PDFContentParser(PSStackParser):
                 (_, objs) = self.end_type('inline')
                 if len(objs) % 2 != 0:
                     raise PSTypeError('Invalid dictionary construct: %r' % objs)
-                d = dict((literal_name(k), v) for (k, v) in choplist(2, objs))
+                d = {literal_name(k): v for (k, v) in choplist(2, objs)}
                 (pos, data) = self.get_inline_data(pos+len(b'ID '))
                 obj = PDFStream(d, data)
                 self.push((pos, obj))

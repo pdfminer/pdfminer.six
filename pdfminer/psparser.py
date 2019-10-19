@@ -130,7 +130,7 @@ KEYWORD_DICT_END = KWD(b'>>')
 def literal_name(x):
     if not isinstance(x, PSLiteral):
         if settings.STRICT:
-            raise PSTypeError('Literal required: %r' % (x,))
+            raise PSTypeError('Literal required: {!r}'.format(x))
         else:
             name=x
     else:
@@ -555,7 +555,7 @@ class PSStackParser(PSBaseParser):
 
     def end_type(self, type):
         if self.curtype != type:
-            raise PSTypeError('Type mismatch: %r != %r' % (self.curtype, type))
+            raise PSTypeError('Type mismatch: {!r} != {!r}'.format(self.curtype, type))
         objs = [obj for (_, obj) in self.curstack]
         (pos, self.curtype, self.curstack) = self.context.pop()
         log.debug('end_type: pos=%r, type=%r, objs=%r', pos, type, objs)
@@ -596,7 +596,7 @@ class PSStackParser(PSBaseParser):
                     if len(objs) % 2 != 0:
                         raise PSSyntaxError('Invalid dictionary construct: %r' % objs)
                     # construct a Python dictionary.
-                    d = dict((literal_name(k), v) for (k, v) in choplist(2, objs) if v is not None)
+                    d = {literal_name(k): v for (k, v) in choplist(2, objs) if v is not None}
                     self.push((pos, d))
                 except PSTypeError:
                     if settings.STRICT:

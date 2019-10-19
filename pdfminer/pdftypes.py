@@ -1,4 +1,3 @@
-
 import zlib
 import logging
 from .lzw import lzwdecode
@@ -259,7 +258,7 @@ class PDFStream(PDFObject):
                     data = zlib.decompress(data)
                 except zlib.error as e:
                     if settings.STRICT:
-                        raise PDFException('Invalid zlib bytes: %r, %r' % (e, data))
+                        raise PDFException('Invalid zlib bytes: {!r}, {!r}'.format(e, data))
                     data = b''
             elif f in LITERALS_LZW_DECODE:
                 data = lzwdecode(data)
