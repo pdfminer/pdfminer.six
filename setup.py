@@ -13,6 +13,7 @@ setup(
         'six',
         'sortedcontainers',
     ],
+    extras_require={"dev": ["nose", "tox"]},
     description='PDF parser and analyzer',
     long_description=package.__doc__,
     license='MIT/X',
