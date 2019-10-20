@@ -30,3 +30,20 @@ Any contribution is appreciated! You might want to:
 * Code changes should conform to PEP8 coding style (with a line-width of 120). Existing code may stay as it is. 
 * New features should be well documented using docstrings.
 * Check spelling and grammar.
+
+## Dev setup
+
+```sh
+# Clone the repo
+git clone https://github.com/pdfminer/pdfminer.six
+cd pdfminer.six
+
+# Install dev dependencies
+pip install -e .[dev]
+
+# Run tests on all Python versions
+tox
+
+# Run tests on a single version
+tox -e py36
+```
