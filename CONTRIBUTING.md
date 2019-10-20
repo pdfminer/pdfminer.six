@@ -26,7 +26,7 @@ Any contribution is appreciated! You might want to:
 * Pull requests should be merged to develop, not master. This ensures that master always equals the released verion.  
 * Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case 
   of features, this will show that your code works correctly.
-* Code should work for Python 2.7 and Python 3.x (for now).
+* Code should work for Python 3.4+.
 * Code changes should conform to PEP8 coding style (with a line-width of 120). Existing code may stay as it is. 
 * New features should be well documented using docstrings.
 * Check spelling and grammar.
