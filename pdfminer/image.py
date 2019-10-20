@@ -74,7 +74,7 @@ class ImageWriter(object):
         if len(filters) == 1 and filters[0][0] in LITERALS_DCT_DECODE:
             ext = '.jpg'
         elif (image.bits == 1 or
-              image.bits == 8 and image.colorspace in (LITERAL_DEVICE_RGB, LITERAL_DEVICE_GRAY)):
+              image.bits == 8 and (LITERAL_DEVICE_RGB in image.colorspace or LITERAL_DEVICE_GRAY in image.colorspace)):
             ext = '.%dx%d.bmp' % (width, height)
         else:
             ext = '.%d.%dx%d.img' % (image.bits, width, height)
@@ -101,7 +101,7 @@ class ImageWriter(object):
             for y in range(height):
                 bmp.write_line(y, data[i:i+width])
                 i += width
-        elif image.bits == 8 and image.colorspace is LITERAL_DEVICE_RGB:
+        elif image.bits == 8 and LITERAL_DEVICE_RGB in image.colorspace:
             bmp = BMPWriter(fp, 24, width, height)
             data = stream.get_data()
             i = 0
@@ -109,7 +109,7 @@ class ImageWriter(object):
             for y in range(height):
                 bmp.write_line(y, data[i:i+width])
                 i += width
-        elif image.bits == 8 and image.colorspace is LITERAL_DEVICE_GRAY:
+        elif image.bits == 8 and LITERAL_DEVICE_GRAY in image.colorspace:
             bmp = BMPWriter(fp, 8, width, height)
             data = stream.get_data()
             i = 0
