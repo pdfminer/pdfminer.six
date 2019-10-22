@@ -59,6 +59,7 @@ def mask_value(mask, value):
 
 
 class JBIG2StreamReader(object):
+    """Read segments from a JBIG2 byte stream"""
 
     def __init__(self, stream):
         self.stream = stream
@@ -160,6 +161,7 @@ class JBIG2StreamReader(object):
 
 
 class JBIG2StreamWriter(object):
+    """Write JBIG2 segments to a file in JBIG2 format"""
 
     def __init__(self, stream):
         self.stream = stream
