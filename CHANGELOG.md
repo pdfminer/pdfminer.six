@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-Nothing yet
+### Added
+- Support for extracting JBIG2 encoded images ([#311](https://github.com/pdfminer/pdfminer.six/pull/311) and [#46](https://github.com/pdfminer/pdfminer.six/pull/46))
 
 ## [20191020] - 2019-10-20
 
@@ -27,7 +28,7 @@ Nothing yet
 - Allow for bounding boxes with zero height or width by removing assertion ([#246](https://github.com/pdfminer/pdfminer.six/pull/246))
 
 ### Changed
-- All dependencies are managed in `setup.py` ([#306](https://github.com/pdfminer/pdfminer.six/pull/306), [#219](https://github.com/pdfminer/pdfminer.six/pull/219))
+- All dependencies are managed in `setup.py` ([#306](https://github.com/pdfminer/pdfminer.six/pull/306) and [#219](https://github.com/pdfminer/pdfminer.six/pull/219))
 
 ## [20181108] - 2018-11-08
 
