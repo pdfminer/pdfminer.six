@@ -1,18 +1,19 @@
 from setuptools import setup
-import sys
 
 import pdfminer as package
-
-requires = ['six', 'pycryptodome', 'sortedcontainers']
-if sys.version_info >= (3, 0):
-    requires.append('chardet')
 
 setup(
     name='pdfminer.six',
     version=package.__version__,
     packages=['pdfminer'],
     package_data={'pdfminer': ['cmap/*.pickle.gz']},
-    install_requires=requires,
+    install_requires=[
+        'chardet ; python_version > "3.0"',
+        'pycryptodome',
+        'six',
+        'sortedcontainers',
+    ],
+    extras_require={"dev": ["nose", "tox"]},
     description='PDF parser and analyzer',
     long_description=package.__doc__,
     license='MIT/X',
