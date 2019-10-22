@@ -57,5 +57,14 @@ class TestDumpPDF():
     def test_10(self):
         run('../samples/scancode/','patchelf') # https://github.com/euske/pdfminer/issues/96
 
+    def test_contrib_matplotlib(self):
+        """Test a pdf with Type3 font"""
+        run('../samples/contrib/', 'matplotlib')
+
+    def test_nonfree_cmp_itext_logo(self):
+        """Test a pdf with Type3 font"""
+        run('../samples/nonfree/', 'cmp_itext_logo')
+
+
 if __name__ == '__main__':
     nose.runmodule()
