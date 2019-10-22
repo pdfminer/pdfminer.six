@@ -1,12 +1,21 @@
 #!/usr/bin/env python
 
 # -*- coding: utf-8 -*-
+from shutil import rmtree
+from tempfile import mkdtemp, NamedTemporaryFile
 
 import nose, logging, os
 
 import tools.pdf2txt as pdf2txt
 
 path=os.path.dirname(os.path.abspath(__file__))+'/'
+
+
+def full_path(relative_path_to_this_file):
+    this_file_dir = os.path.dirname(os.path.abspath(__file__))
+    abspath = os.path.abspath(os.path.join(this_file_dir, relative_path_to_this_file))
+    return abspath
+
 
 def run(datapath,filename,options=None):
     i=path+datapath+filename+'.pdf'
@@ -56,6 +65,28 @@ class TestDumpPDF():
 
     def test_10(self):
         run('../samples/scancode/','patchelf') # https://github.com/euske/pdfminer/issues/96
+
+
+class TestDumpImages(object):
+
+    @staticmethod
+    def extract_images(input_file):
+        output_dir = mkdtemp()
+        with NamedTemporaryFile() as output_file:
+            commands = ['-o', output_file.name, '--output-dir', output_dir, input_file]
+            pdf2txt.main(commands)
+        image_files = os.listdir(output_dir)
+        rmtree(output_dir)
+        return image_files
+
+    def test_jbig2_image_export(self):
+        """Extract images of pdf containing jbig2 images
+
+        Feature test for: https://github.com/pdfminer/pdfminer.six/pull/46
+        """
+        image_files = self.extract_images(full_path('../samples/contrib/pdf-with-jbig2.pdf'))
+        assert image_files[0].endswith('.jb2')
+
 
 if __name__ == '__main__':
     nose.runmodule()
