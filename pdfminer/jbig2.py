@@ -12,7 +12,6 @@ SEG_STRUCT = [
 ]
 
 # segment header literals
-
 HEADER_FLAG_DEFERRED = 0b10000000
 HEADER_FLAG_PAGE_ASSOC_LONG = 0b01000000
 
@@ -25,22 +24,23 @@ REF_COUNT_LONG = 7
 DATA_LEN_UNKNOWN = 0xffffffff
 
 # segment types
-
 SEG_TYPE_IMMEDIATE_GEN_REGION = 38
 SEG_TYPE_END_OF_PAGE = 49
 SEG_TYPE_END_OF_FILE = 50
 
 # file literals
-
 FILE_HEADER_ID = b'\x97\x4A\x42\x32\x0D\x0A\x1A\x0A'
 FILE_HEAD_FLAG_SEQUENTIAL = 0b00000001
 FILE_HEAD_FLAG_PAGES_UNKNOWN = 0b00000010
 
+
 def bit_set(bit_pos, value):
     return bool((value >> bit_pos) & 1)
 
+
 def check_flag(flag, value):
     return bool(flag & value)
+
 
 def masked_value(mask, value):
     for bit_pos in range(0, 31):
@@ -49,8 +49,10 @@ def masked_value(mask, value):
 
     raise Exception("Invalid mask or value")
 
+
 def dump(bin_string):
     return map(lambda x: x.encode('hex'), bin_string)
+
 
 def mask_value(mask, value):
     for bit_pos in range(0, 31):
@@ -127,7 +129,7 @@ class JBIG2StreamReader(object):
             field += self.stream.read(3)
             [ref_count] = unpack(">L", field)
             ref_count = masked_value(REF_COUNT_LONG_MASK, ref_count)
-            ret_bytes_count = int(math.ceil((ref_count+1)/8))
+            ret_bytes_count = int(math.ceil((ref_count + 1) / 8))
             for ret_byte_index in range(ret_bytes_count):
                 [ret_byte] = unpack(">B", self.stream.read(1))
                 for bit_pos in range(7):
@@ -162,8 +164,8 @@ class JBIG2StreamReader(object):
 
     def parse_data_length(self, segment, length, field):
         if length:
-            if (segment["flags"]["type"] == SEG_TYPE_IMMEDIATE_GEN_REGION)\
-                and (length == DATA_LEN_UNKNOWN):
+            if (segment["flags"]["type"] == SEG_TYPE_IMMEDIATE_GEN_REGION) \
+                    and (length == DATA_LEN_UNKNOWN):
 
                 raise NotImplementedError(
                     "Working with unknown segment length "
@@ -197,7 +199,7 @@ class JBIG2StreamWriter(object):
 
                 if segment["flags"]["type"] == SEG_TYPE_END_OF_PAGE:
                     current_page = None
-                elif seg_page:                
+                elif seg_page:
                     current_page = seg_page
 
         if fix_last_page and current_page and (seg_num is not None):
@@ -221,7 +223,7 @@ class JBIG2StreamWriter(object):
         for segment in segments:
             seg_num = segment["number"]
 
-        eof_segment = self.get_eof_segment(seg_num+1)
+        eof_segment = self.get_eof_segment(seg_num + 1)
         data = self.encode_segment(eof_segment)
 
         self.stream.write(data)
@@ -253,7 +255,6 @@ class JBIG2StreamWriter(object):
             flags |= HEADER_FLAG_PAGE_ASSOC_LONG \
                 if segment.get("page", 0) > 255 else flags
 
-
         flags |= mask_value(SEG_TYPE_MASK, value["type"])
 
         return pack(">B", flags)
@@ -267,11 +268,10 @@ class JBIG2StreamWriter(object):
         if ref_count <= 4:
             flags_byte = mask_value(REF_COUNT_SHORT_MASK, ref_count)
             for ref_index, ref_retain in enumerate(retain_segments):
-
                 flags_byte |= 1 << ref_index
             flags.append(flags_byte)
         else:
-            bytes_count = math.ceil((ref_count + 1)/8)
+            bytes_count = math.ceil((ref_count + 1) / 8)
             flags_format = ">L" + ("B" * bytes_count)
             flags_dword = mask_value(
                 REF_COUNT_SHORT_MASK,
@@ -281,12 +281,12 @@ class JBIG2StreamWriter(object):
 
             for byte_index in range(bytes_count):
                 ret_byte = 0
-                ret_part = retain_segments[byte_index*8:byte_index*8+8]
+                ret_part = retain_segments[byte_index * 8:byte_index * 8 + 8]
                 for bit_pos, ret_seg in enumerate(ret_part):
                     ret_byte |= 1 << bit_pos if ret_seg else ret_byte
 
                 flags.append(ret_byte)
-            
+
         ref_segments = value.get("ref_segments", [])
 
         seg_num = segment["number"]
