@@ -112,5 +112,14 @@ class TestDumpImages(object):
         assert image_files[0].endswith('.jb2')
 
 
+    def test_contrib_matplotlib(self):
+        """Test a pdf with Type3 font"""
+        run('../samples/contrib/', 'matplotlib')
+
+    def test_nonfree_cmp_itext_logo(self):
+        """Test a pdf with Type3 font"""
+        run('../samples/nonfree/', 'cmp_itext_logo')
+
+
 if __name__ == '__main__':
     nose.runmodule()
