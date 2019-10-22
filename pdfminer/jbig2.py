@@ -50,10 +50,6 @@ def masked_value(mask, value):
     raise Exception("Invalid mask or value")
 
 
-def dump(bin_string):
-    return map(lambda x: x.encode('hex'), bin_string)
-
-
 def mask_value(mask, value):
     for bit_pos in range(0, 31):
         if bit_set(bit_pos, mask):
@@ -87,20 +83,6 @@ class JBIG2StreamReader(object):
 
             if not segment.get("_error"):
                 segments.append(segment)
-        return segments
-
-    def read_file(self):
-        # reading header
-        id_str = self.stream.read(len(FILE_HEADER_ID))
-        if id_str != FILE_HEADER_ID:
-            raise Exception("JBIG2 file header is corrupted")
-        [file_flags] = unpack(">B", self.stream.read(1))
-        if not check_flag(FILE_HEAD_FLAG_PAGES_UNKNOWN, file_flags):
-            page_count = unpack(">L", self.stream.read(4))
-
-        # reading segments
-        segments = self.get_segments()
-
         return segments
 
     def is_eof(self):
