@@ -127,7 +127,7 @@ class JBIG2StreamReader(object):
             field += self.stream.read(3)
             [ref_count] = unpack(">L", field)
             ref_count = masked_value(REF_COUNT_LONG_MASK, ref_count)
-            ret_bytes_count = int(ceil((ref_count+1)/8))
+            ret_bytes_count = int(math.ceil((ref_count+1)/8))
             for ret_byte_index in range(ret_bytes_count):
                 [ret_byte] = unpack(">B", self.stream.read(1))
                 for bit_pos in range(7):
