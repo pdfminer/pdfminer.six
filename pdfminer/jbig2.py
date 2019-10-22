@@ -32,7 +32,7 @@ SEG_TYPE_END_OF_FILE = 50
 
 # file literals
 
-FILE_HEADER_ID = '\x97\x4A\x42\x32\x0D\x0A\x1A\x0A'
+FILE_HEADER_ID = b'\x97\x4A\x42\x32\x0D\x0A\x1A\x0A'
 FILE_HEAD_FLAG_SEQUENTIAL = 0b00000001
 FILE_HEAD_FLAG_PAGES_UNKNOWN = 0b00000010
 
@@ -102,7 +102,7 @@ class JBIG2StreamReader(object):
         return segments
 
     def is_eof(self):
-        if self.stream.read(1) == '':
+        if self.stream.read(1) == b'':
             return True
         else:
             self.stream.seek(-1, os.SEEK_CUR)
@@ -230,7 +230,7 @@ class JBIG2StreamWriter(object):
         return data_len
 
     def encode_segment(self, segment):
-        data = ''
+        data = b''
         for field_format, name in SEG_STRUCT:
             value = segment.get(name)
             encoder = getattr(self, "encode_%s" % name, None)
@@ -271,7 +271,7 @@ class JBIG2StreamWriter(object):
                 flags_byte |= 1 << ref_index
             flags.append(flags_byte)
         else:
-            bytes_count = ceil((ref_count + 1)/8)
+            bytes_count = math.ceil((ref_count + 1)/8)
             flags_format = ">L" + ("B" * bytes_count)
             flags_dword = mask_value(
                 REF_COUNT_SHORT_MASK,
@@ -314,7 +314,7 @@ class JBIG2StreamWriter(object):
             'flags': {'deferred': False, 'type': SEG_TYPE_END_OF_PAGE},
             'number': seg_number,
             'page_assoc': page_number,
-            'raw_data': '',
+            'raw_data': b'',
             'retention_flags': {
                 'ref_count': 0,
                 'ref_segments': [],
@@ -328,7 +328,7 @@ class JBIG2StreamWriter(object):
             'flags': {'deferred': False, 'type': SEG_TYPE_END_OF_FILE},
             'number': seg_number,
             'page_assoc': 0,
-            'raw_data': '',
+            'raw_data': b'',
             'retention_flags': {
                 'ref_count': 0,
                 'ref_segments': [],
