@@ -9,7 +9,7 @@ This code is in the public domain.
 import re
 import struct
 
-import six #Python 2+3 compatibility
+import six  # Python 2+3 compatibility
 
 
 # ascii85decode(data)
@@ -27,7 +27,7 @@ def ascii85decode(data):
     n = b = 0
     out = b''
     for i in six.iterbytes(data):
-        c=six.int2byte(i)
+        c = six.int2byte(i)
         if b'!' <= c and c <= b'u':
             n += 1
             b = b*85+(ord(c)-33)
@@ -45,6 +45,7 @@ def ascii85decode(data):
             break
     return out
 
+
 # asciihexdecode(data)
 hex_re = re.compile(b'([a-f\d]{2})', re.IGNORECASE)
 trail_re = re.compile(b'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
@@ -61,14 +62,14 @@ def asciihexdecode(data):
     will behave as if a 0 followed the last digit.
     """
     def decode(x):
-        i=int(x,16)
+        i = int(x, 16)
         return six.int2byte(i)
 
-    out=b''
+    out = b''
     for x in hex_re.findall(data):
-        out+=decode(x)
+        out += decode(x)
 
     m = trail_re.search(data)
     if m:
-        out+=decode(m.group(1)+b'0')
+        out += decode(m.group(1)+b'0')
     return out

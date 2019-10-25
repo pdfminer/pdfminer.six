@@ -3,17 +3,19 @@
 #
 # Bugs: uncompressed mode untested.
 #
-#  cf.
-#   ITU-T Recommendation T.4
-#     "Standardization of Group 3 facsimile terminals for document transmission"
-#   ITU-T Recommendation T.6
-#     "FACSIMILE CODING SCHEMES AND CODING CONTROL FUNCTIONS FOR GROUP 4 FACSIMILE APPARATUS"
+# cf.
+#  ITU-T Recommendation T.4
+#    "Standardization of Group 3 facsimile terminals
+#    for document transmission"
+#  ITU-T Recommendation T.6
+#    "FACSIMILE CODING SCHEMES AND CODING CONTROL FUNCTIONS
+#    FOR GROUP 4 FACSIMILE APPARATUS"
 
 
 import sys
 import array
 
-import six  #Python 2+3 compatibility
+import six  # Python 2+3 compatibility
 
 if six.PY3:
     def get_bytes(data):
@@ -25,8 +27,6 @@ else:
             yield ord(char)
 
 
-##  BitParser
-##
 class BitParser(object):
 
     def __init__(self):
@@ -68,8 +68,6 @@ class BitParser(object):
         return
 
 
-##  CCITTG4Parser
-##
 class CCITTG4Parser(BitParser):
 
     MODE = [None, None]
@@ -93,85 +91,85 @@ class CCITTG4Parser(BitParser):
     BitParser.add(MODE, 'e', '000000000001000000000001')
 
     WHITE = [None, None]
-    BitParser.add(WHITE, 0   , '00110101')
-    BitParser.add(WHITE, 1   , '000111')
-    BitParser.add(WHITE, 2   , '0111')
-    BitParser.add(WHITE, 3   , '1000')
-    BitParser.add(WHITE, 4   , '1011')
-    BitParser.add(WHITE, 5   , '1100')
-    BitParser.add(WHITE, 6   , '1110')
-    BitParser.add(WHITE, 7   , '1111')
-    BitParser.add(WHITE, 8   , '10011')
-    BitParser.add(WHITE, 9   , '10100')
-    BitParser.add(WHITE, 10  , '00111')
-    BitParser.add(WHITE, 11  , '01000')
-    BitParser.add(WHITE, 12  , '001000')
-    BitParser.add(WHITE, 13  , '000011')
-    BitParser.add(WHITE, 14  , '110100')
-    BitParser.add(WHITE, 15  , '110101')
-    BitParser.add(WHITE, 16  , '101010')
-    BitParser.add(WHITE, 17  , '101011')
-    BitParser.add(WHITE, 18  , '0100111')
-    BitParser.add(WHITE, 19  , '0001100')
-    BitParser.add(WHITE, 20  , '0001000')
-    BitParser.add(WHITE, 21  , '0010111')
-    BitParser.add(WHITE, 22  , '0000011')
-    BitParser.add(WHITE, 23  , '0000100')
-    BitParser.add(WHITE, 24  , '0101000')
-    BitParser.add(WHITE, 25  , '0101011')
-    BitParser.add(WHITE, 26  , '0010011')
-    BitParser.add(WHITE, 27  , '0100100')
-    BitParser.add(WHITE, 28  , '0011000')
-    BitParser.add(WHITE, 29  , '00000010')
-    BitParser.add(WHITE, 30  , '00000011')
-    BitParser.add(WHITE, 31  , '00011010')
-    BitParser.add(WHITE, 32  , '00011011')
-    BitParser.add(WHITE, 33  , '00010010')
-    BitParser.add(WHITE, 34  , '00010011')
-    BitParser.add(WHITE, 35  , '00010100')
-    BitParser.add(WHITE, 36  , '00010101')
-    BitParser.add(WHITE, 37  , '00010110')
-    BitParser.add(WHITE, 38  , '00010111')
-    BitParser.add(WHITE, 39  , '00101000')
-    BitParser.add(WHITE, 40  , '00101001')
-    BitParser.add(WHITE, 41  , '00101010')
-    BitParser.add(WHITE, 42  , '00101011')
-    BitParser.add(WHITE, 43  , '00101100')
-    BitParser.add(WHITE, 44  , '00101101')
-    BitParser.add(WHITE, 45  , '00000100')
-    BitParser.add(WHITE, 46  , '00000101')
-    BitParser.add(WHITE, 47  , '00001010')
-    BitParser.add(WHITE, 48  , '00001011')
-    BitParser.add(WHITE, 49  , '01010010')
-    BitParser.add(WHITE, 50  , '01010011')
-    BitParser.add(WHITE, 51  , '01010100')
-    BitParser.add(WHITE, 52  , '01010101')
-    BitParser.add(WHITE, 53  , '00100100')
-    BitParser.add(WHITE, 54  , '00100101')
-    BitParser.add(WHITE, 55  , '01011000')
-    BitParser.add(WHITE, 56  , '01011001')
-    BitParser.add(WHITE, 57  , '01011010')
-    BitParser.add(WHITE, 58  , '01011011')
-    BitParser.add(WHITE, 59  , '01001010')
-    BitParser.add(WHITE, 60  , '01001011')
-    BitParser.add(WHITE, 61  , '00110010')
-    BitParser.add(WHITE, 62  , '00110011')
-    BitParser.add(WHITE, 63  , '00110100')
-    BitParser.add(WHITE, 64  , '11011')
-    BitParser.add(WHITE, 128 , '10010')
-    BitParser.add(WHITE, 192 , '010111')
-    BitParser.add(WHITE, 256 , '0110111')
-    BitParser.add(WHITE, 320 , '00110110')
-    BitParser.add(WHITE, 384 , '00110111')
-    BitParser.add(WHITE, 448 , '01100100')
-    BitParser.add(WHITE, 512 , '01100101')
-    BitParser.add(WHITE, 576 , '01101000')
-    BitParser.add(WHITE, 640 , '01100111')
-    BitParser.add(WHITE, 704 , '011001100')
-    BitParser.add(WHITE, 768 , '011001101')
-    BitParser.add(WHITE, 832 , '011010010')
-    BitParser.add(WHITE, 896 , '011010011')
-    BitParser.add(WHITE, 960 , '011010100')
+    BitParser.add(WHITE, 0, '00110101')
+    BitParser.add(WHITE, 1, '000111')
+    BitParser.add(WHITE, 2, '0111')
+    BitParser.add(WHITE, 3, '1000')
+    BitParser.add(WHITE, 4, '1011')
+    BitParser.add(WHITE, 5, '1100')
+    BitParser.add(WHITE, 6, '1110')
+    BitParser.add(WHITE, 7, '1111')
+    BitParser.add(WHITE, 8, '10011')
+    BitParser.add(WHITE, 9, '10100')
+    BitParser.add(WHITE, 10, '00111')
+    BitParser.add(WHITE, 11, '01000')
+    BitParser.add(WHITE, 12, '001000')
+    BitParser.add(WHITE, 13, '000011')
+    BitParser.add(WHITE, 14, '110100')
+    BitParser.add(WHITE, 15, '110101')
+    BitParser.add(WHITE, 16, '101010')
+    BitParser.add(WHITE, 17, '101011')
+    BitParser.add(WHITE, 18, '0100111')
+    BitParser.add(WHITE, 19, '0001100')
+    BitParser.add(WHITE, 20, '0001000')
+    BitParser.add(WHITE, 21, '0010111')
+    BitParser.add(WHITE, 22, '0000011')
+    BitParser.add(WHITE, 23, '0000100')
+    BitParser.add(WHITE, 24, '0101000')
+    BitParser.add(WHITE, 25, '0101011')
+    BitParser.add(WHITE, 26, '0010011')
+    BitParser.add(WHITE, 27, '0100100')
+    BitParser.add(WHITE, 28, '0011000')
+    BitParser.add(WHITE, 29, '00000010')
+    BitParser.add(WHITE, 30, '00000011')
+    BitParser.add(WHITE, 31, '00011010')
+    BitParser.add(WHITE, 32, '00011011')
+    BitParser.add(WHITE, 33, '00010010')
+    BitParser.add(WHITE, 34, '00010011')
+    BitParser.add(WHITE, 35, '00010100')
+    BitParser.add(WHITE, 36, '00010101')
+    BitParser.add(WHITE, 37, '00010110')
+    BitParser.add(WHITE, 38, '00010111')
+    BitParser.add(WHITE, 39, '00101000')
+    BitParser.add(WHITE, 40, '00101001')
+    BitParser.add(WHITE, 41, '00101010')
+    BitParser.add(WHITE, 42, '00101011')
+    BitParser.add(WHITE, 43, '00101100')
+    BitParser.add(WHITE, 44, '00101101')
+    BitParser.add(WHITE, 45, '00000100')
+    BitParser.add(WHITE, 46, '00000101')
+    BitParser.add(WHITE, 47, '00001010')
+    BitParser.add(WHITE, 48, '00001011')
+    BitParser.add(WHITE, 49, '01010010')
+    BitParser.add(WHITE, 50, '01010011')
+    BitParser.add(WHITE, 51, '01010100')
+    BitParser.add(WHITE, 52, '01010101')
+    BitParser.add(WHITE, 53, '00100100')
+    BitParser.add(WHITE, 54, '00100101')
+    BitParser.add(WHITE, 55, '01011000')
+    BitParser.add(WHITE, 56, '01011001')
+    BitParser.add(WHITE, 57, '01011010')
+    BitParser.add(WHITE, 58, '01011011')
+    BitParser.add(WHITE, 59, '01001010')
+    BitParser.add(WHITE, 60, '01001011')
+    BitParser.add(WHITE, 61, '00110010')
+    BitParser.add(WHITE, 62, '00110011')
+    BitParser.add(WHITE, 63, '00110100')
+    BitParser.add(WHITE, 64, '11011')
+    BitParser.add(WHITE, 128, '10010')
+    BitParser.add(WHITE, 192, '010111')
+    BitParser.add(WHITE, 256, '0110111')
+    BitParser.add(WHITE, 320, '00110110')
+    BitParser.add(WHITE, 384, '00110111')
+    BitParser.add(WHITE, 448, '01100100')
+    BitParser.add(WHITE, 512, '01100101')
+    BitParser.add(WHITE, 576, '01101000')
+    BitParser.add(WHITE, 640, '01100111')
+    BitParser.add(WHITE, 704, '011001100')
+    BitParser.add(WHITE, 768, '011001101')
+    BitParser.add(WHITE, 832, '011010010')
+    BitParser.add(WHITE, 896, '011010011')
+    BitParser.add(WHITE, 960, '011010100')
     BitParser.add(WHITE, 1024, '011010101')
     BitParser.add(WHITE, 1088, '011010110')
     BitParser.add(WHITE, 1152, '011010111')
@@ -199,85 +197,85 @@ class CCITTG4Parser(BitParser):
     BitParser.add(WHITE, 2560, '000000011111')
 
     BLACK = [None, None]
-    BitParser.add(BLACK, 0   , '0000110111')
-    BitParser.add(BLACK, 1   , '010')
-    BitParser.add(BLACK, 2   , '11')
-    BitParser.add(BLACK, 3   , '10')
-    BitParser.add(BLACK, 4   , '011')
-    BitParser.add(BLACK, 5   , '0011')
-    BitParser.add(BLACK, 6   , '0010')
-    BitParser.add(BLACK, 7   , '00011')
-    BitParser.add(BLACK, 8   , '000101')
-    BitParser.add(BLACK, 9   , '000100')
-    BitParser.add(BLACK, 10  , '0000100')
-    BitParser.add(BLACK, 11  , '0000101')
-    BitParser.add(BLACK, 12  , '0000111')
-    BitParser.add(BLACK, 13  , '00000100')
-    BitParser.add(BLACK, 14  , '00000111')
-    BitParser.add(BLACK, 15  , '000011000')
-    BitParser.add(BLACK, 16  , '0000010111')
-    BitParser.add(BLACK, 17  , '0000011000')
-    BitParser.add(BLACK, 18  , '0000001000')
-    BitParser.add(BLACK, 19  , '00001100111')
-    BitParser.add(BLACK, 20  , '00001101000')
-    BitParser.add(BLACK, 21  , '00001101100')
-    BitParser.add(BLACK, 22  , '00000110111')
-    BitParser.add(BLACK, 23  , '00000101000')
-    BitParser.add(BLACK, 24  , '00000010111')
-    BitParser.add(BLACK, 25  , '00000011000')
-    BitParser.add(BLACK, 26  , '000011001010')
-    BitParser.add(BLACK, 27  , '000011001011')
-    BitParser.add(BLACK, 28  , '000011001100')
-    BitParser.add(BLACK, 29  , '000011001101')
-    BitParser.add(BLACK, 30  , '000001101000')
-    BitParser.add(BLACK, 31  , '000001101001')
-    BitParser.add(BLACK, 32  , '000001101010')
-    BitParser.add(BLACK, 33  , '000001101011')
-    BitParser.add(BLACK, 34  , '000011010010')
-    BitParser.add(BLACK, 35  , '000011010011')
-    BitParser.add(BLACK, 36  , '000011010100')
-    BitParser.add(BLACK, 37  , '000011010101')
-    BitParser.add(BLACK, 38  , '000011010110')
-    BitParser.add(BLACK, 39  , '000011010111')
-    BitParser.add(BLACK, 40  , '000001101100')
-    BitParser.add(BLACK, 41  , '000001101101')
-    BitParser.add(BLACK, 42  , '000011011010')
-    BitParser.add(BLACK, 43  , '000011011011')
-    BitParser.add(BLACK, 44  , '000001010100')
-    BitParser.add(BLACK, 45  , '000001010101')
-    BitParser.add(BLACK, 46  , '000001010110')
-    BitParser.add(BLACK, 47  , '000001010111')
-    BitParser.add(BLACK, 48  , '000001100100')
-    BitParser.add(BLACK, 49  , '000001100101')
-    BitParser.add(BLACK, 50  , '000001010010')
-    BitParser.add(BLACK, 51  , '000001010011')
-    BitParser.add(BLACK, 52  , '000000100100')
-    BitParser.add(BLACK, 53  , '000000110111')
-    BitParser.add(BLACK, 54  , '000000111000')
-    BitParser.add(BLACK, 55  , '000000100111')
-    BitParser.add(BLACK, 56  , '000000101000')
-    BitParser.add(BLACK, 57  , '000001011000')
-    BitParser.add(BLACK, 58  , '000001011001')
-    BitParser.add(BLACK, 59  , '000000101011')
-    BitParser.add(BLACK, 60  , '000000101100')
-    BitParser.add(BLACK, 61  , '000001011010')
-    BitParser.add(BLACK, 62  , '000001100110')
-    BitParser.add(BLACK, 63  , '000001100111')
-    BitParser.add(BLACK, 64  , '0000001111')
-    BitParser.add(BLACK, 128 , '000011001000')
-    BitParser.add(BLACK, 192 , '000011001001')
-    BitParser.add(BLACK, 256 , '000001011011')
-    BitParser.add(BLACK, 320 , '000000110011')
-    BitParser.add(BLACK, 384 , '000000110100')
-    BitParser.add(BLACK, 448 , '000000110101')
-    BitParser.add(BLACK, 512 , '0000001101100')
-    BitParser.add(BLACK, 576 , '0000001101101')
-    BitParser.add(BLACK, 640 , '0000001001010')
-    BitParser.add(BLACK, 704 , '0000001001011')
-    BitParser.add(BLACK, 768 , '0000001001100')
-    BitParser.add(BLACK, 832 , '0000001001101')
-    BitParser.add(BLACK, 896 , '0000001110010')
-    BitParser.add(BLACK, 960 , '0000001110011')
+    BitParser.add(BLACK, 0, '0000110111')
+    BitParser.add(BLACK, 1, '010')
+    BitParser.add(BLACK, 2, '11')
+    BitParser.add(BLACK, 3, '10')
+    BitParser.add(BLACK, 4, '011')
+    BitParser.add(BLACK, 5, '0011')
+    BitParser.add(BLACK, 6, '0010')
+    BitParser.add(BLACK, 7, '00011')
+    BitParser.add(BLACK, 8, '000101')
+    BitParser.add(BLACK, 9, '000100')
+    BitParser.add(BLACK, 10, '0000100')
+    BitParser.add(BLACK, 11, '0000101')
+    BitParser.add(BLACK, 12, '0000111')
+    BitParser.add(BLACK, 13, '00000100')
+    BitParser.add(BLACK, 14, '00000111')
+    BitParser.add(BLACK, 15, '000011000')
+    BitParser.add(BLACK, 16, '0000010111')
+    BitParser.add(BLACK, 17, '0000011000')
+    BitParser.add(BLACK, 18, '0000001000')
+    BitParser.add(BLACK, 19, '00001100111')
+    BitParser.add(BLACK, 20, '00001101000')
+    BitParser.add(BLACK, 21, '00001101100')
+    BitParser.add(BLACK, 22, '00000110111')
+    BitParser.add(BLACK, 23, '00000101000')
+    BitParser.add(BLACK, 24, '00000010111')
+    BitParser.add(BLACK, 25, '00000011000')
+    BitParser.add(BLACK, 26, '000011001010')
+    BitParser.add(BLACK, 27, '000011001011')
+    BitParser.add(BLACK, 28, '000011001100')
+    BitParser.add(BLACK, 29, '000011001101')
+    BitParser.add(BLACK, 30, '000001101000')
+    BitParser.add(BLACK, 31, '000001101001')
+    BitParser.add(BLACK, 32, '000001101010')
+    BitParser.add(BLACK, 33, '000001101011')
+    BitParser.add(BLACK, 34, '000011010010')
+    BitParser.add(BLACK, 35, '000011010011')
+    BitParser.add(BLACK, 36, '000011010100')
+    BitParser.add(BLACK, 37, '000011010101')
+    BitParser.add(BLACK, 38, '000011010110')
+    BitParser.add(BLACK, 39, '000011010111')
+    BitParser.add(BLACK, 40, '000001101100')
+    BitParser.add(BLACK, 41, '000001101101')
+    BitParser.add(BLACK, 42, '000011011010')
+    BitParser.add(BLACK, 43, '000011011011')
+    BitParser.add(BLACK, 44, '000001010100')
+    BitParser.add(BLACK, 45, '000001010101')
+    BitParser.add(BLACK, 46, '000001010110')
+    BitParser.add(BLACK, 47, '000001010111')
+    BitParser.add(BLACK, 48, '000001100100')
+    BitParser.add(BLACK, 49, '000001100101')
+    BitParser.add(BLACK, 50, '000001010010')
+    BitParser.add(BLACK, 51, '000001010011')
+    BitParser.add(BLACK, 52, '000000100100')
+    BitParser.add(BLACK, 53, '000000110111')
+    BitParser.add(BLACK, 54, '000000111000')
+    BitParser.add(BLACK, 55, '000000100111')
+    BitParser.add(BLACK, 56, '000000101000')
+    BitParser.add(BLACK, 57, '000001011000')
+    BitParser.add(BLACK, 58, '000001011001')
+    BitParser.add(BLACK, 59, '000000101011')
+    BitParser.add(BLACK, 60, '000000101100')
+    BitParser.add(BLACK, 61, '000001011010')
+    BitParser.add(BLACK, 62, '000001100110')
+    BitParser.add(BLACK, 63, '000001100111')
+    BitParser.add(BLACK, 64, '0000001111')
+    BitParser.add(BLACK, 128, '000011001000')
+    BitParser.add(BLACK, 192, '000011001001')
+    BitParser.add(BLACK, 256, '000001011011')
+    BitParser.add(BLACK, 320, '000000110011')
+    BitParser.add(BLACK, 384, '000000110100')
+    BitParser.add(BLACK, 448, '000000110101')
+    BitParser.add(BLACK, 512, '0000001101100')
+    BitParser.add(BLACK, 576, '0000001101101')
+    BitParser.add(BLACK, 640, '0000001001010')
+    BitParser.add(BLACK, 704, '0000001001011')
+    BitParser.add(BLACK, 768, '0000001001100')
+    BitParser.add(BLACK, 832, '0000001001101')
+    BitParser.add(BLACK, 896, '0000001110010')
+    BitParser.add(BLACK, 960, '0000001110011')
     BitParser.add(BLACK, 1024, '0000001110100')
     BitParser.add(BLACK, 1088, '0000001110101')
     BitParser.add(BLACK, 1152, '0000001110110')
@@ -434,7 +432,7 @@ class CCITTG4Parser(BitParser):
         return
 
     def output_line(self, y, bits):
-        print (y, ''.join(str(b) for b in bits))
+        print(y, ''.join(str(b) for b in bits))
         return
 
     def _reset_line(self):
@@ -454,8 +452,9 @@ class CCITTG4Parser(BitParser):
         return
 
     def _do_vertical(self, dx):
-        #print '* vertical(%d): curpos=%r, color=%r' % (dx, self._curpos, self._color)
-        #print '  refline:', self._get_refline(self._curpos+1)
+        # print '* vertical(%d): curpos=%r, color=%r' % (dx, self._curpos,
+        # self._color)
+        # print '  refline:', self._get_refline(self._curpos+1)
         x1 = self._curpos+1
         while 1:
             if x1 == 0:
@@ -481,8 +480,8 @@ class CCITTG4Parser(BitParser):
         return
 
     def _do_pass(self):
-        #print '* pass: curpos=%r, color=%r' % (self._curpos, self._color)
-        #print '  refline:', self._get_refline(self._curpos+1)
+        # print '* pass: curpos=%r, color=%r' % (self._curpos, self._color)
+        # print '  refline:', self._get_refline(self._curpos+1)
         x1 = self._curpos+1
         while 1:
             if x1 == 0:
@@ -510,7 +509,8 @@ class CCITTG4Parser(BitParser):
         return
 
     def _do_horizontal(self, n1, n2):
-        #print '* horizontal(%d,%d): curpos=%r, color=%r' % (n1, n2, self._curpos, self._color)
+        # print '* horizontal(%d,%d): curpos=%r, color=%r'
+        # % (n1, n2, self._curpos, self._color)
         if self._curpos < 0:
             self._curpos = 0
         x = self._curpos
@@ -528,14 +528,12 @@ class CCITTG4Parser(BitParser):
         return
 
     def _do_uncompressed(self, bits):
-        #print '* uncompressed(%r): curpos=%r' % (bits, self._curpos)
+        # print '* uncompressed(%r): curpos=%r' % (bits, self._curpos)
         for c in bits:
             self._curline[self._curpos] = int(c)
             self._curpos += 1
             self._flush_line()
         return
-
-
 
 
 class CCITTFaxDecoder(CCITTG4Parser):
@@ -606,6 +604,7 @@ def main(argv):
         parser.close()
         fp.close()
     return
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
