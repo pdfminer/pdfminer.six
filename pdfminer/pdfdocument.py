@@ -671,7 +671,6 @@ class PDFDocument(object):
 
     # can raise PDFObjectNotFound
     def getobj(self, objid):
-        assert objid != 0
         if not self.xrefs:
             raise PDFException('PDFDocument is not initialized')
         log.debug('getobj: objid=%r', objid)
