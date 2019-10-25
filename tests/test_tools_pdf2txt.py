@@ -13,6 +13,7 @@ def full_path(relative_path_to_this_file):
     return abspath
 
 
+
 def run(datapath, filename, options=None):
     i = full_path(datapath + filename + '.pdf')
     o = full_path(filename + '.txt')
@@ -87,6 +88,37 @@ class TestDumpImages(object):
     def test_nonfree_175(self):
         """Extract images of pdf containing jpg images"""
         self.extract_images(full_path('../samples/nonfree/175.pdf'))
+
+
+
+class TestDumpImages(object):
+
+    @staticmethod
+    def extract_images(input_file):
+        output_dir = mkdtemp()
+        with NamedTemporaryFile() as output_file:
+            commands = ['-o', output_file.name, '--output-dir', output_dir, input_file]
+            pdf2txt.main(commands)
+        image_files = os.listdir(output_dir)
+        rmtree(output_dir)
+        return image_files
+
+    def test_jbig2_image_export(self):
+        """Extract images of pdf containing jbig2 images
+
+        Feature test for: https://github.com/pdfminer/pdfminer.six/pull/46
+        """
+        image_files = self.extract_images(full_path('../samples/contrib/pdf-with-jbig2.pdf'))
+        assert image_files[0].endswith('.jb2')
+
+
+    def test_contrib_matplotlib(self):
+        """Test a pdf with Type3 font"""
+        run('../samples/contrib/', 'matplotlib')
+
+    def test_nonfree_cmp_itext_logo(self):
+        """Test a pdf with Type3 font"""
+        run('../samples/nonfree/', 'cmp_itext_logo')
 
 
 if __name__ == '__main__':

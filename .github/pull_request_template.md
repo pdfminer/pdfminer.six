@@ -10,7 +10,8 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 
 **Checklist**
 
-- [ ] I have optimized the code at least one time after creating the initial version
-- [ ] I have added docstrings to newly created methods and classes
-- [ ] I have updated the README.md and other documentation, or I am sure that this is not necessary
 - [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] I have updated the [README.md](../README.md) and other documentation, or I am sure that this is not necessary
+- [ ] I have added a consice human-readable description of the change to [CHANGELOG.md](../CHANGELOG.md)
+- [ ] I have added docstrings to newly created methods and classes
+- [ ] I have optimized the code at least one time after creating the initial version
