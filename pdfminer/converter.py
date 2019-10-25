@@ -284,7 +284,7 @@ class HTMLConverter(PDFConverter):
         return
 
     def write_footer(self):
-        self.write('<div style="position:absolute; top:0px;">Page: %s</div>\n' %
+        self.write('<div style="position:absolute; top:0pt;">Page: %s</div>\n' %
                    ', '.join('<a href="#%s">%s</a>' % (i, i) for i in range(1, self.pageno)))
         self.write('</body></html>\n')
         return
@@ -297,7 +297,7 @@ class HTMLConverter(PDFConverter):
         color = self.rect_colors.get(color)
         if color is not None:
             self.write('<span style="position:absolute; border: %s %dpx solid; '
-                       'left:%dpx; top:%dpx; width:%dpx; height:%dpx;"></span>\n' %
+                       'left:%dpt; top:%dpt; width:%dpt; height:%dpt;"></span>\n' %
                        (color, borderwidth,
                         x*self.scale, (self._yoffset-y)*self.scale,
                         w*self.scale, h*self.scale))
@@ -310,7 +310,7 @@ class HTMLConverter(PDFConverter):
     def place_image(self, item, borderwidth, x, y, w, h):
         if self.imagewriter is not None:
             name = self.imagewriter.export_image(item)
-            self.write('<img src="%s" border="%d" style="position:absolute; left:%dpx; top:%dpx;" '
+            self.write('<img src="%s" border="%d" style="position:absolute; left:%dpt; top:%dpt;" '
                        'width="%d" height="%d" />\n' %
                        (enc(name, None), borderwidth,
                         x*self.scale, (self._yoffset-y)*self.scale,
@@ -320,7 +320,7 @@ class HTMLConverter(PDFConverter):
     def place_text(self, color, text, x, y, size):
         color = self.text_colors.get(color)
         if color is not None:
-            self.write('<span style="position:absolute; color:%s; left:%dpx; top:%dpx; font-size:%dpx;">' %
+            self.write('<span style="position:absolute; color:%s; left:%dpt; top:%dpt; font-size:%dpx;">' %
                        (color, x*self.scale, (self._yoffset-y)*self.scale, size*self.scale*self.fontscale))
             self.write_text(text)
             self.write('</span>\n')
@@ -329,8 +329,8 @@ class HTMLConverter(PDFConverter):
     def begin_div(self, color, borderwidth, x, y, w, h, writing_mode=False):
         self._fontstack.append(self._font)
         self._font = None
-        self.write('<div style="position:absolute; border: %s %dpx solid; writing-mode:%s; '
-                   'left:%dpx; top:%dpx; width:%dpx; height:%dpx;">' %
+        self.write('<div style="position:absolute; border: %s %dpt solid; writing-mode:%s; '
+                   'left:%dpt; top:%dpt; width:%dpt; height:%dpt;">' %
                    (color, borderwidth, writing_mode,
                     x*self.scale, (self._yoffset-y)*self.scale,
                     w*self.scale, h*self.scale))
@@ -371,7 +371,7 @@ class HTMLConverter(PDFConverter):
                 self._yoffset += item.y1
                 self.place_border('page', 1, item)
                 if self.showpageno:
-                    self.write('<div style="position:absolute; top:%dpx;">' %
+                    self.write('<div style="position:absolute; top:%dpt;">' %
                                ((self._yoffset-item.y1)*self.scale))
                     self.write('<a name="%s">Page %s</a></div>\n' % (item.pageid, item.pageid))
                 for child in item:
