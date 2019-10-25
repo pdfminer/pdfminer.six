@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-Nothing yet
+### Fixed
+- Unhandled AssertionError when dumping pdf containing reference to object id 0 ([#318](https://github.com/pdfminer/pdfminer.six/pull/318))
 
 ## [20191020] - 2019-10-20
 
