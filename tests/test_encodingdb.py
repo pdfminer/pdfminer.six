@@ -1,5 +1,5 @@
-"""
-Tests based on the Adobe Glyph List Specification (https://github.com/adobe-type-tools/agl-specification#2-the-mapping)
+"""Tests based on the Adobe Glyph List Specification
+See: https://github.com/adobe-type-tools/agl-specification#2-the-mapping
 
 While not in the specification, lowercase unicode often occurs in pdf's. Therefore lowercase unittest variants are
 added.

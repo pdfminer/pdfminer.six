@@ -23,9 +23,10 @@ Features
 
  * Written entirely in Python.
  * Parse, analyze, and convert PDF documents.
- * PDF-1.7 specification support. (well, almost)
+ * PDF-1.7 specification support. (well, almost).
  * CJK languages and vertical writing scripts support.
  * Various font types (Type1, TrueType, Type3, and CID) support.
+ * Support for extracting images (JPG, JBIG2 and Bitmaps).
  * Basic encryption (RC4) support.
  * Outline (TOC) extraction.
  * Tagged contents extraction.

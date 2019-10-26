@@ -2,9 +2,12 @@ from io import BytesIO
 
 import logging
 
+
+logger = logging.getLogger(__name__)
+
+
 class CorruptDataError(Exception):
     pass
-
 
 ##  LZWDecoder
 ##
@@ -87,7 +90,7 @@ class LZWDecoder:
                 # just ignore corrupt data and stop yielding there
                 break
             yield x
-            logging.debug('nbits=%d, code=%d, output=%r, table=%r' %
+            logger.debug('nbits=%d, code=%d, output=%r, table=%r' %
                           (self.nbits, code, x, self.table[258:]))
         return
 
