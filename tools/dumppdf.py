@@ -1,13 +1,7 @@
-#!/usr/bin/env python
-
-#
-# dumppdf.py - dump pdf contents in XML format.
-#
-#  usage: dumppdf.py [options] [files ...]
-#  options:
-#    -i objid : object id
-#
+"""Extract pdf structure in XML format"""
 import sys, os.path, re, logging
+from argparse import ArgumentParser
+
 from pdfminer.psparser import PSKeyword, PSLiteral, LIT
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines
@@ -184,8 +178,8 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
         path = os.path.join(extractdir, filename)
         if os.path.exists(path):
             raise IOError('file exists: %r' % path)
-        print >>sys.stderr, 'extracting: %r' % path
-        out = file(path, 'wb')
+        print('extracting: %r' % path, file=sys.stderr)
+        out = open(path, 'wb')
         out.write(fileobj.get_data())
         out.close()
         return
@@ -230,46 +224,106 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
     return
 
 
-# main
-def main(argv):
-    import getopt
-    def usage():
-        print ('usage: %s [-d] [-a] [-p pageid] [-P password] [-r|-b|-t] [-T] [-E directory] [-i objid] file ...' % argv[0])
-        return 100
-    try:
-        (opts, args) = getopt.getopt(argv[1:], 'dap:P:rbtTE:i:o:')
-    except getopt.GetoptError:
-        return usage()
-    if not args: return usage()
-    objids = []
-    pagenos = set()
-    codec = None
-    password = ''
-    dumpall = False
-    proc = dumppdf
-    outfp = sys.stdout
-    extractdir = None
-    for (k, v) in opts:
-        if k == '-d': logging.getLogger().setLevel(logging.DEBUG)
-        elif k == '-o': outfp = open(v, 'w')
-        elif k == '-i': objids.extend( int(x) for x in v.split(',') )
-        elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
-        elif k == '-P': password = v
-        elif k == '-a': dumpall = True
-        elif k == '-r': codec = 'raw'
-        elif k == '-b': codec = 'binary'
-        elif k == '-t': codec = 'text'
-        elif k == '-T': proc = dumpoutline
-        elif k == '-E':
-            extractdir = v
-            proc = extractembedded
+def create_parser():
+    parser = ArgumentParser(description=__doc__, add_help=True)
+    parser.add_argument('files', type=str, default=None, nargs='+',
+                        help='One or more paths to PDF files.')
 
+    parser.add_argument(
+        '-d', '--debug', default=False, action='store_true',
+        help='Use debug logging level.')
+    procedure_parser = parser.add_mutually_exclusive_group()
+    procedure_parser.add_argument(
+        '-T', '--extract-toc', default=False, action='store_true',
+        help='Extract structure of outline')
+    procedure_parser.add_argument(
+        '-E', '--extract-embedded', type=str,
+        help='Extract embedded files')
+
+    parse_params = parser.add_argument_group(
+        'Parser', description='Used during PDF parsing')
+    parse_params.add_argument(
+        '-p', '--page-numbers', default=None, nargs='+',
+        help='A space-seperated list of page numbers to parse.')
+    parse_params.add_argument(
+        '-i', '--objects', type=str,
+        help='Comma separated list of object numbers to extract')
+    parse_params.add_argument(
+        '-a', '--dump-all', default=False, action='store_true',
+        help='If the structure of all objects should be extracted')
+    parse_params.add_argument(
+        '-P', '--password', type=str, default='',
+        help='The password to use for decrypting PDF file.')
+
+    output_params = parser.add_argument_group(
+        'Output', description='Used during output generation.')
+    output_params.add_argument(
+        '-o', '--outfile', type=str, default='-',
+        help='Path to file where output is written. Or "-" (default) to '
+             'write to stdout.')
+    codec_parser = output_params.add_mutually_exclusive_group()
+    codec_parser.add_argument(
+        '-r', '--raw-stream', default=False, action='store_true',
+        help='Write stream objects without encoding')
+    codec_parser.add_argument(
+        '-b', '--binary-stream', default=False, action='store_true',
+        help='Write stream objects with binary encoding')
+    codec_parser.add_argument(
+        '-t', '--text-stream', default=False, action='store_true',
+        help='Write stream objects as plain text')
+
+    return parser
+
+
+def main(argv=None):
+    parser = create_parser()
+    args = parser.parse_args(args=argv)
+
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    if args.outfile == '-':
+        outfp = sys.stdout
+    else:
+        outfp = open(args.outfile, 'w')
+
+    if args.objects:
+        objids = [int(x) for x in args.objects.split(',')]
+    else:
+        objids = []
+
+    if args.page_numbers:
+        pagenos = {int(x)-1 for x in args.page_numbers.split(',')}
+    else:
+        pagenos = set()
+
+    password = args.password
     if six.PY2 and sys.stdin.encoding:
         password = password.decode(sys.stdin.encoding)
 
-    for fname in args:
+    if args.raw_stream:
+        codec = 'raw'
+    elif args.binary_stream:
+        codec = 'binary'
+    elif args.text_stream:
+        codec = 'text'
+    else:
+        codec = None
+
+    if args.extract_toc:
+        extractdir = None
+        proc = dumpoutline
+    elif args.extract_embedded:
+        extractdir = args.extract_embedded
+        proc = extractembedded
+    else:
+        extractdir = None
+        proc = dumppdf
+
+    for fname in args.files:
         proc(outfp, fname, objids, pagenos, password=password,
-             dumpall=dumpall, codec=codec, extractdir=extractdir)
+             dumpall=args.dump_all, codec=codec, extractdir=extractdir)
     outfp.close()
 
-if __name__ == '__main__': sys.exit(main(sys.argv))
+if __name__ == '__main__':
+    sys.exit(main())
