@@ -262,7 +262,7 @@ def create_parser():
         '-i', '--objects', type=str,
         help='Comma separated list of object numbers to extract')
     parse_params.add_argument(
-        '-a', '--dump-all', default=False, action='store_true',
+        '-a', '--all', default=False, action='store_true',
         help='If the structure of all objects should be extracted')
     parse_params.add_argument(
         '-P', '--password', type=str, default='',
@@ -337,7 +337,7 @@ def main(argv=None):
 
     for fname in args.files:
         proc(outfp, fname, objids, pagenos, password=password,
-             dumpall=args.dump_all, codec=codec, extractdir=extractdir)
+             dumpall=args.all, codec=codec, extractdir=extractdir)
     outfp.close()
 
 
