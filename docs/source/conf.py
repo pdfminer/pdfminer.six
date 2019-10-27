@@ -31,6 +31,7 @@ release = '20191020'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinxarg.ext'
 ]
 
 # Root rst file
