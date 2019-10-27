@@ -291,7 +291,7 @@ def create_parser():
 def main(argv=None):
     parser = create_parser()
     args = parser.parse_args(args=argv)
-1
+
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
