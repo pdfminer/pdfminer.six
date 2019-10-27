@@ -243,8 +243,13 @@ def create_parser():
     parse_params = parser.add_argument_group(
         'Parser', description='Used during PDF parsing')
     parse_params.add_argument(
-        '-p', '--page-numbers', default=None, nargs='+',
-        help='A space-seperated list of page numbers to parse.')
+        "--page-numbers", type=int, default=None, nargs="+",
+        help="A space-seperated list of page numbers to parse.")
+    parse_params.add_argument(
+        "-p", "--pagenos", type=str,
+        help="A comma-separated list of page numbers to parse. Included for "
+             "legacy applications, use --page-numbers for more idiomatic "
+             "argument entry.")
     parse_params.add_argument(
         '-i', '--objects', type=str,
         help='Comma separated list of object numbers to extract')
@@ -293,7 +298,9 @@ def main(argv=None):
         objids = []
 
     if args.page_numbers:
-        pagenos = {int(x)-1 for x in args.page_numbers.split(',')}
+        pagenos = {x-1 for x in args.page_numbers}
+    elif args.pagenos:
+        pagenos = {int(x)-1 for x in args.pagenos.split(',')}
     else:
         pagenos = set()
 
