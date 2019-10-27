@@ -3,4 +3,7 @@
 Using dumppdf.py
 ================
 
-How to use dumppdf.py
+.. argparse::
+    :module: tools.dumppdf
+    :func: create_parser
+    :prog: python tools/dumppdf.py
