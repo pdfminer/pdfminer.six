@@ -7,3 +7,4 @@ Using pdf2txt.py
     :module: tools.pdf2txt
     :func: maketheparser
     :prog: python tools/pdf2txt.py
+
