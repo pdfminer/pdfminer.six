@@ -107,7 +107,7 @@ def dumpallobjs(out, doc, codec=None):
                 dumpxml(out, obj, codec=codec)
                 out.write('\n</object>\n\n')
             except PDFObjectNotFound as e:
-                print('not found: %r' % e, file=sys.stderr)
+                print('not found: %r' % e)
     dumptrailers(out, doc)
     out.write('</pdf>')
     return
@@ -186,7 +186,7 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
         path = os.path.join(extractdir, filename)
         if os.path.exists(path):
             raise IOError('file exists: %r' % path)
-        print('extracting: %r' % path, file=sys.stderr)
+        print('extracting: %r' % path)
         out = open(path, 'wb')
         out.write(fileobj.get_data())
         out.close()
