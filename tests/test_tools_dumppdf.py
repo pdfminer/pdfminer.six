@@ -8,10 +8,10 @@ def run(filename, options=None):
     absolute_path = absolute_sample_path(filename)
     with NamedTemporaryFile() as output_file:
         if options:
-            s = 'dumppdf -o%s %s %s' % (output_file.name, options, absolute_path)
+            s = 'dumppdf -o %s %s %s' % (output_file.name, options, absolute_path)
         else:
-            s = 'dumppdf -o%s %s' % (output_file.name, absolute_path)
-        dumppdf.main(s.split(' '))
+            s = 'dumppdf -o %s %s' % (output_file.name, absolute_path)
+        dumppdf.main(s.split(' ')[1:])
 
 
 class TestDumpPDF():

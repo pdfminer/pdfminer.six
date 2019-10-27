@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Unhandled AssertionError when dumping pdf containing reference to object id 0 ([#318](https://github.com/pdfminer/pdfminer.six/pull/318))
 
+### Changed
+- Using argparse instead of getopt for command line interface of dumppdf.py ([#321](https://github.com/pdfminer/pdfminer.six/pull/321))
+
 ### Removed
 - Files for external applications such as django, cgi and pyinstaller ([#314](https://github.com/pdfminer/pdfminer.six/issues/314))
 
