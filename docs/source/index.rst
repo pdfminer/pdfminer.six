@@ -93,9 +93,11 @@ Use high-level API
 ##################
 
 The command line tool pdf2txt.py is just a wrapper around the high-level API
-of pdfminer.six. It currently consists of only a single method.
+of pdfminer.six. It currently consists of only a single method, but more will
+be added in the future.
 
 ::
+
     from pdfminer.high_level import extract_text_to_fp
     from pdfminer.layout import LAParams
 
