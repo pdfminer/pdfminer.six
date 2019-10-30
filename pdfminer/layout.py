@@ -603,8 +603,7 @@ class LTLayoutContainer(LTContainer):
         return
 
     def group_textboxes(self, laparams, boxes):
-        """
-         Group textboxes hierarchically.
+        """Group textboxes hierarchically.
 
          Get pair-wise distances, via dist func defined below, and then merge from the closest textbox pair. Once
          obj1 and obj2 are merged / grouped, the resulting group is considered as a new object, and its distances to
@@ -639,8 +638,7 @@ class LTLayoutContainer(LTContainer):
             return ((x1-x0)*(y1-y0) - obj1.width*obj1.height - obj2.width*obj2.height)
 
         def isany(obj1, obj2):
-            """Check if there's any other object between obj1 and obj2.
-            """
+            """Check if there's any other object between obj1 and obj2."""
             x0 = min(obj1.x0, obj2.x0)
             y0 = min(obj1.y0, obj2.y0)
             x1 = max(obj1.x1, obj2.x1)
@@ -653,21 +651,21 @@ class LTLayoutContainer(LTContainer):
             obj1 = boxes[i]
             for j in range(i+1, len(boxes)):
                 obj2 = boxes[j]
-                dists.append((0, dist(obj1, obj2), id(obj1), id(obj2), obj1, obj2))
+                dists.append((True, dist(obj1, obj2), id(obj1), id(obj2), obj1, obj2))
         heapq.heapify(dists)
 
         plane = Plane(self.bbox)
         plane.extend(boxes)
         done = set()
-        while len(dists):
-            (c, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
+        while len(dists) > 0:
+            (is_first, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
+            # Skip objects that are already merged
             if (id1 not in done) and (id2 not in done):
-                # Skip objects that have already been merged with their closest neighbour.
-                if c == 0 and isany(obj1, obj2):
-                    heapq.heappush(dists, (1, d, id1, id2, obj1, obj2))
+                if is_first and isany(obj1, obj2):
+                    heapq.heappush(dists, (False, d, id1, id2, obj1, obj2))
                     continue
-                if (isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or
-                    isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL))):
+                if isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or \
+                        isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL)):
                     group = LTTextGroupTBRL([obj1, obj2])
                 else:
                     group = LTTextGroupLRTB([obj1, obj2])
@@ -676,7 +674,7 @@ class LTLayoutContainer(LTContainer):
                 done.update([id1, id2])
 
                 for other in plane:
-                    heapq.heappush(dists, (0, dist(group, other), id(group), id(other), group, other))
+                    heapq.heappush(dists, (False, dist(group, other), id(group), id(other), group, other))
                 plane.add(group)
         return list(plane)
 
