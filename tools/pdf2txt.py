@@ -7,11 +7,14 @@ import argparse
 import logging
 import six
 import sys
+
 import pdfminer.settings
 pdfminer.settings.STRICT = False
 import pdfminer.high_level
 import pdfminer.layout
 from pdfminer.image import ImageWriter
+
+logging.basicConfig()
 
 
 def extract_text(files=[], outfile='-',

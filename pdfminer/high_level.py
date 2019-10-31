@@ -4,6 +4,7 @@ Functions that encapsulate "usual" use-cases for pdfminer, for use making
 bundled scripts and for using pdfminer as a module for routine tasks.
 """
 
+import logging
 import six
 import sys
 
@@ -49,6 +50,9 @@ def extract_text_to_fp(inf, outfp,
             'that moment pdfminer.six will stop supporting Python 2. Please '
             'upgrade to Python 3. For more information see '
             'https://github.com/pdfminer/pdfminer .six/issues/194')
+
+    if debug:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     if six.PY2 and sys.stdin.encoding:
         password = password.decode(sys.stdin.encoding)
