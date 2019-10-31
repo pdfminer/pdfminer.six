@@ -11,6 +11,8 @@ pdfminer.settings.STRICT = False
 import pdfminer.high_level
 import pdfminer.layout
 
+logging.basicConfig()
+
 
 def compare(file1, file2, **kwargs):
     if '_py2_no_more_posargs' in kwargs is not None:
@@ -89,9 +91,11 @@ def main(args=None):
     P.add_argument("-O", "--output-dir", default=None, help="Output directory for images")
     P.add_argument("-C", "--disable-caching", default=False, action="store_true", help="Disable caching")
     P.add_argument("-S", "--strip-control", default=False, action="store_true", help="Strip control in XML mode")
-    
 
     A = P.parse_args(args=args)
+
+    if A.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     if A.page_numbers:
         A.page_numbers = set([x-1 for x in A.page_numbers])
