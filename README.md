@@ -16,6 +16,7 @@ PDF parser that can be used for other purposes than text analysis.
 
  * Webpage: https://github.com/pdfminer/
  * Download (PyPI): https://pypi.python.org/pypi/pdfminer.six/
+ * Documentation: https://pdfminer-docs.readthedocs.io/index.html
 
 
 Features
