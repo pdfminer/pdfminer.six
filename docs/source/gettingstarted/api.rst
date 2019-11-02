@@ -10,8 +10,6 @@ For example, to read text from a PDF and print it on the command line:
 
 .. testsetup::
 
-    import os
-    os.chdir('..')
     from pdfminer.high_level import extract_text_to_fp
 
 .. doctest::
