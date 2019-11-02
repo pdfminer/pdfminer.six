@@ -92,14 +92,13 @@ def maketheparser():
     la_params.add_argument("--word-margin", "-W", type=float, default=0.1,
                            help="If two words are are closer together than this margin they are considered to be part "
                                 "of the same line. A space is added in between for readability. The margin is "
-                                "specified "
-                                "relative to the width of the word.")
+                                "specified relative to the width of the word.")
     la_params.add_argument("--line-margin", "-L", type=float, default=0.5,
                            help="If two lines are are close together they are considered to be part of the same "
                                 "paragraph. The margin is specified relative to the height of a line.")
     la_params.add_argument("--boxes-flow", "-F", type=float, default=0.5,
                            help="Specifies how much a horizontal and vertical position of a text matters when "
-                                "determining a text order. The value should be within the range of -1.0 (only "
+                                "determining the order of lines. The value should be within the range of -1.0 (only "
                                 "horizontal position matters) to +1.0 (only vertical position matters).")
     la_params.add_argument("--all-texts", "-A", default=True, action="store_true",
                            help="If layout analysis should be performed on text in figures.")
