@@ -1,7 +1,7 @@
 .. _api:
 
 Get started using the high-level functions
-==========================================
+******************************************
 
 The high-level API can be used to do common tasks. Currently it contains a
 single function `extract_text_to_fp` for reading text from a PDF file.
@@ -36,7 +36,10 @@ Or to convert it to html and use layout analysis:
 
 
 API documentation
------------------
+=================
+
+extract_text_to_fp
+------------------
 
 .. currentmodule:: pdfminer.high_level
 .. autofunction:: extract_text_to_fp

@@ -1,5 +1,5 @@
 Welcome to pdfminer.six's documentation!
-========================================
+****************************************
 
 .. image:: https://travis-ci.org/pdfminer/pdfminer.six.svg?branch=master
     :target: https://travis-ci.org/pdfminer/pdfminer.six
@@ -19,16 +19,16 @@ pdfminer.six is a python package for extracting information from PDF documents.
 Check out the source on `github <https://github.com/pdfminer/pdfminer.six>`_.
 
 Content
--------
+=======
 
 .. toctree::
     :maxdepth: 2
 
-    gettingstarted
+    gettingstarted/index
 
 
 Features
---------
+========
 
 * Parse all objects from a PDF document into Python objects.
 * Analyze and group text in a human-readable way.
@@ -41,12 +41,10 @@ Features
 * Support for basic encryption (RC4).
 
 
-Getting started
----------------
+Installation instructions
+=========================
 
-pdfminer.six can be used on the command line, using the high-level API
-or using the composable API. But, before using it, you must install it
-using Python 2.7 or newer.
+Before using it, you must install it using Python 2.7 or newer.
 
 ::
 
@@ -55,7 +53,7 @@ using Python 2.7 or newer.
 Note that Python 2.7 support is dropped at January, 2020.
 
 Common use-cases
-################
+----------------
 
 * :ref:`commandline` if you just want to extract text from a pdf once.
 * :ref:`api` if you want to integrate pdfminer.six with your Python code.
@@ -64,7 +62,7 @@ Common use-cases
 
 
 Contributing
-------------
+============
 
 We welcome any contributors to pdfminer.six! But, before doing anything, take
 a look at the `contribution guide
