@@ -18,11 +18,10 @@ from .image import ImageWriter
 
 
 def extract_text_to_fp(inf, outfp,
-                    _py2_no_more_posargs=None,  # Bloody Python2 needs a shim
                     output_type='text', codec='utf-8', laparams = None,
                     maxpages=0, page_numbers=None, password="", scale=1.0, rotation=0,
                     layoutmode='normal', output_dir=None, strip_control=False,
-                    debug=False, disable_caching=False, **other):
+                    debug=False, disable_caching=False, **kwargs):
     """
     Parses text from inf-file and writes to outfp file-like object.
     Takes loads of optional arguments but the defaults are somewhat sane.
@@ -44,6 +43,13 @@ def extract_text_to_fp(inf, outfp,
     debug: Output more logging data
     disable_caching: Does what it says on the tin
     """
+    if '_py2_no_more_posargs' in kwargs is not None:
+        raise DeprecationWarning(
+            'The `_py2_no_more_posargs will be removed on January, 2020. At '
+            'that moment pdfminer.six will stop supporting Python 2. Please '
+            'upgrade to Python 3. For more information see '
+            'https://github.com/pdfminer/pdfminer .six/issues/194')
+
     if six.PY2 and sys.stdin.encoding:
         password = password.decode(sys.stdin.encoding)
 
