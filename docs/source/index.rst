@@ -24,7 +24,9 @@ Content
 .. toctree::
     :maxdepth: 2
 
-    gettingstarted/index
+    tutorials/index
+    api/index
+    topics/index
 
 
 Features
@@ -55,10 +57,11 @@ Note that Python 2.7 support is dropped at January, 2020.
 Common use-cases
 ----------------
 
-* :ref:`commandline` if you just want to extract text from a pdf once.
-* :ref:`api` if you want to integrate pdfminer.six with your Python code.
-* :ref:`composable` when you want to tailor the behavior of pdfminer.six to
-  your needs.
+* :ref:`tutorial_commandline` if you just want to extract text from a pdf once.
+* :ref:`tutorial_highlevel` if you want to integrate pdfminer.six with your
+  Python code.
+* :ref:`tutorial_composable` when you want to tailor the behavior of
+  pdfmine.six to your needs.
 
 
 Contributing

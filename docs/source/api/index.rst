@@ -1,9 +1,9 @@
-Getting started
-***************
+API documentation
+*****************
 
 .. toctree::
     :maxdepth: 2
 
     commandline
-    api
+    highlevel
     composable

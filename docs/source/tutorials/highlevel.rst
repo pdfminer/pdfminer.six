@@ -1,10 +1,10 @@
-.. _api:
+.. _tutorial_highlevel:
 
 Get started using the high-level functions
 ******************************************
 
 The high-level API can be used to do common tasks. Currently it contains a
-single function `extract_text_to_fp` for reading text from a PDF file.
+single function :ref:`api_extract_text_to_fp` for reading text from a PDF file.
 
 For example, to read text from a PDF and print it on the command line:
 
@@ -31,13 +31,3 @@ Or to convert it to html and use layout analysis:
     >>> with open('samples/simple1.pdf', 'rb') as fin:
     ...     extract_text_to_fp(fin, output_string, laparams=LAParams(),
     ...                        output_type='html', codec=None)
-
-
-API documentation
-=================
-
-extract_text_to_fp
-------------------
-
-.. currentmodule:: pdfminer.high_level
-.. autofunction:: extract_text_to_fp

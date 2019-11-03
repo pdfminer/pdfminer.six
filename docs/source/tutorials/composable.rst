@@ -1,4 +1,4 @@
-.. _composable:
+.. _tutorial_composable:
 
 Get started using the composable components API
 ***********************************************

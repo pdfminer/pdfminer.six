@@ -318,9 +318,8 @@ class PDFContentParser(PSStackParser):
         return
 
 
-##  Interpreter
-##
 class PDFPageInterpreter(object):
+    """Processor for the content of a PDF page"""
 
     def __init__(self, rsrcmgr, device):
         self.rsrcmgr = rsrcmgr
