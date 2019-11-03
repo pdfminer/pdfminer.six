@@ -14,7 +14,7 @@ Welcome to pdfminer.six's documentation!
     :alt: gitter badge
 
 
-pdfminer.six is a python package for extracting information from PDF documents.
+Pdfminer.six is a python package for extracting information from PDF documents.
 
 Check out the source on `github <https://github.com/pdfminer/pdfminer.six>`_.
 

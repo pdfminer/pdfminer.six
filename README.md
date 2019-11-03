@@ -1,4 +1,4 @@
-Pdfminer.six
+pdfminer.six
 ============
 
 [![Build Status](https://travis-ci.org/pdfminer/pdfminer.six.svg?branch=master)](https://travis-ci.org/pdfminer/pdfminer.six)
