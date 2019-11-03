@@ -1,13 +1,14 @@
-PDFMiner.six
+Pdfminer.six
 ============
 
-PDFMiner.six is a fork of PDFMiner using six for Python 2+3 compatibility
+[![Build Status](https://travis-ci.org/pdfminer/pdfminer.six.svg?branch=master)](https://travis-ci.org/pdfminer/pdfminer.six)
+[![PyPI version](https://img.shields.io/pypi/v/pdfminer.six.svg)](https://pypi.python.org/pypi/pdfminer.six/)
+[![gitter](https://badges.gitter.im/pdfminer-six/Lobby.svg)](https://gitter.im/pdfminer-six/Lobby?utm_source=badge&utm_medium)
 
-[![Build Status](https://travis-ci.org/pdfminer/pdfminer.six.svg?branch=master)](https://travis-ci.org/pdfminer/pdfminer.six) [![PyPI version](https://img.shields.io/pypi/v/pdfminer.six.svg)](https://pypi.python.org/pypi/pdfminer.six/)
-
-PDFMiner is a tool for extracting information from PDF documents.
+Pdfminer.six is an community maintained fork of the original PDFMiner. It is a
+tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting
-and analyzing text data. PDFMiner allows one to obtain
+and analyzing text data. Pdfminer.six allows one to obtain
 the exact location of text in a page, as well as
 other information such as fonts or lines.
 It includes a PDF converter that can transform PDF files
@@ -33,45 +34,20 @@ Features
  * Automatic layout analysis.
 
 
-How to Install
---------------
+How to use
+----------
 
- * Install Python 2.7 or newer.
- * Install
+ * Install Python 2.7 or newer. Note that Python 2 support is dropped at
+  January, 2020.
 
     `pip install pdfminer.six`
 
- * Run the following test:
+ * Use command-line interface to extract text from pdf:
 
-    `pdf2txt.py samples/simple1.pdf`
-
-
-Command Line Tools
-------------------
-
-PDFMiner comes with two handy tools:
-pdf2txt.py and dumppdf.py.
-
-**pdf2txt.py**
-
-pdf2txt.py extracts text contents from a PDF file.
-It extracts all the text that are to be rendered programmatically,
-i.e. text represented as ASCII or Unicode strings.
-It cannot recognize text drawn as images that would require optical character recognition.
-It also extracts the corresponding locations, font names, font sizes, writing
-direction (horizontal or vertical) for each text portion.
-You need to provide a password for protected PDF documents when its access is restricted.
-You cannot extract any text from a PDF document which does not have extraction permission.
-
-(For details, refer to /docs/index.html.)
-
-**dumppdf.py**
-
-dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format.
-This program is primarily for debugging purposes,
-but it's also possible to extract some meaningful contents (e.g. images).
-
-(For details, refer to /docs/index.html.)
+    `python pdf2txt.py samples/simple1.pdf`
+    
+* Check out more examples and documentation on
+[Read the Docs](https://pdfminersix.readthedocs.io).
 
 
 Contributing
