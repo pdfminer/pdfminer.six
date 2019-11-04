@@ -92,7 +92,7 @@ def extract_text_to_fp(inf, outfp,
     device.close()
 
 
-def pdf_to_text(pdf_file, password="", page_numbers=set(), maxpages=0,
+def extract_text(pdf_file, password="", page_numbers=set(), maxpages=0,
                 caching=True, codec="utf-8"):
     """
     Parses and returns the text contained in a PDF file.
