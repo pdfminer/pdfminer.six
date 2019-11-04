@@ -92,8 +92,8 @@ def extract_text_to_fp(inf, outfp,
     device.close()
 
 
-def extract_text(pdf_file, password="", page_numbers=set(), maxpages=0,
-                caching=True, codec="utf-8"):
+def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
+                 caching=True, codec='utf-8'):
     """
     Parses and returns the text contained in a PDF file.
     Takes loads of optional arguments but the defaults are somewhat sane.
