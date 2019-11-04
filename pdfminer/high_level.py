@@ -6,6 +6,7 @@ bundled scripts and for using pdfminer as a module for routine tasks.
 
 import six
 import sys
+from io import StringIO
 
 from .pdfdocument import PDFDocument
 from .pdfparser import PDFParser
@@ -15,6 +16,7 @@ from .pdfpage import PDFPage
 from .converter import XMLConverter, HTMLConverter, TextConverter
 from .cmapdb import CMapDB
 from .image import ImageWriter
+from .layout import LAParams
 
 
 def extract_text_to_fp(inf, outfp,
@@ -88,3 +90,46 @@ def extract_text_to_fp(inf, outfp,
         interpreter.process_page(page)    
 
     device.close()
+
+
+def pdf_to_text(pdf_file, password="", page_numbers=set(), maxpages=0,
+                caching=True, codec="utf-8"):
+    """
+    Parses and returns the text contained in a PDF file.
+    Takes loads of optional arguments but the defaults are somewhat sane.
+    Returns a string containing all of the text extracted.
+
+    pdf_file: the path to the PDF file to be worked on
+    password: For encrypted PDFs, the password to decrypt.
+    page_numbers: zero-indexed page numbers to operate on.
+    maxpages: How many pages to stop parsing after
+    disable_caching: Does what it says on the tin
+    codec: Text decoding codec
+    """
+
+    rsrcmgr = PDFResourceManager()
+    retstr = StringIO()
+    laparams = LAParams()
+    device = TextConverter(
+        rsrcmgr, retstr, codec=codec, laparams=laparams
+    )
+    fp = open(pdf_file, "rb")
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+
+    for page in PDFPage.get_pages(
+        fp,
+        page_numbers,
+        maxpages=maxpages,
+        password=password,
+        caching=caching,
+        check_extractable=True,
+    ):
+        interpreter.process_page(page)
+
+    text = retstr.getvalue()
+
+    fp.close()
+    device.close()
+    retstr.close()
+
+    return text
