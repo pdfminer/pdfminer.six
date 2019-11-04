@@ -3,7 +3,16 @@
 Composable API
 **************
 
+.. _api_laparams:
+
+LAParams
+========
+
+.. currentmodule:: pdfminer.layout
+.. autoclass:: LAParams
+
 Todo:
+=====
 
 - `PDFDevice`
     - `TextConverter`

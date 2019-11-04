@@ -20,8 +20,8 @@ interactive elements and higher-level application data. A PDF file contains
 the objects making up a PDF document along with associated structural
 information, all represented as a single self-contained sequence of bytes. [1]_
 
-Layout analysis
-===============
+Layout analysis algorithm
+=========================
 
 PDFMiner attempts to reconstruct some of those structures by using heuristics
 on the positioning of characters. This works well for sentences and
@@ -38,12 +38,16 @@ of layout objects on a PDF page.
 
     The output of the layout analysis is a hierarchy of layout objects.
 
+
+The output of the layout analysis heavily depends on a couple of parameters.
+All these parameters are part of the :ref:`api_laparams` class.
+
 Grouping characters into words and lines
 ----------------------------------------
 
 The first step in going from characters to text is to group characters in a
 meaningful way. Each character has an x-coordinate and a y-coordinate for its
-bottom-left corner and upper-right corner, i.e. its bounding box.  pdfminer
+bottom-left corner and upper-right corner, i.e. its bounding box. Pdfminer
 .six uses these bounding boxes to decide which characters belong together.
 
 Characters that are both horizontally and vertically close are grouped. How
@@ -70,12 +74,56 @@ relative to the maximum width or height of the new character. Having a larger
 more often. Note that the `word_margin` should be smaller than the
 `char_margin` otherwise all the characters are seperated by a space.
 
+The result of this stage is a list of lines. Each line consists a list of
+characters. These characters either original `LTChar` characters that
+originate from the PDF file, or inserted `LTAnno` characters that
+represent spaces between words or newlines at the end of each line.
+
 Grouping lines into boxes
 -------------------------
+
+The second step is grouping lines in a meaningful way. Each line has a
+bounding box that is determined by the bounding boxes of the characters that
+it contains. Like grouping characters, pdfminer.six uses the bounding boxes
+to group the lines.
+
+Lines that are both horizontally overlapping and vertically close are grouped.
+How vertically close the lines should be is determined by the `line_margin`.
+This margin is specified relative to the height of the bounding box. Lines
+are close if the gap between the tops (see L :sub:`1` in the figure) and bottoms
+(see L :sub:`2`) in the figure) of the bounding boxes are closer together
+than the absolute line margin, i.e. the `line_margin` multiplied by the
+height of the bounding box.
+
+.. raw:: html
+    :file: ../_static/layout_analysis_group_lines.html
+
+The result of this stage is a list of text boxes. Each box consist of a list
+of lines.
 
 Grouping textboxes hierarchically
 ---------------------------------
 
+the last step is to group the text boxes in a meaningful way. This step
+repeatedly merges the two text boxes that are closest to each other.
+
+The closeness of bounding boxes is computed as the area that is between the
+two text boxes (the blue area in the figure). In other words, it is the area of
+the bounding box that surrounds both lines, minus the area of the bounding
+boxes of the individual lines.
+
+.. raw:: html
+    :file: ../_static/layout_analysis_group_boxes.html
+
+
+Working with rotated characters
+===============================
+
+The algorithm described above assumes that all characters have the same
+orientation. However, any writing direction is possible in a PDF. To
+accommodate for this, pdfminer.six allows to detect vertical writing with the
+`detect_vertical` parameter. This will apply all the grouping steps as if the
+pdf was rotated 90 (or 270) degrees
 
 References
 ==========

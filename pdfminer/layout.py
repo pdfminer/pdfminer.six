@@ -1,14 +1,14 @@
 import heapq
+
 from .utils import INF
 from .utils import Plane
-from .utils import get_bound
-from .utils import uniq
-from .utils import fsplit
-from .utils import bbox2str
-from .utils import matrix2str
 from .utils import apply_matrix_pt
+from .utils import bbox2str
+from .utils import fsplit
+from .utils import get_bound
+from .utils import matrix2str
+from .utils import uniq
 
-import six # Python 2+3 compatibility
 
 class IndexAssigner(object):
 
@@ -27,7 +27,32 @@ class IndexAssigner(object):
 
 
 class LAParams(object):
-    """Parameters for layout analysis"""
+    """Parameters for layout analysis
+
+    :param line_overlap: If two characters have more overlap than this they
+        are considered to be on the same line. The overlap is specified
+        relative to the minimum height of both characters.
+    :param char_margin: If two characters are closer together than this
+        margin they are considered to be part of the same word. If
+        characters are on the same line but not part of the same word, an
+        intermediate space is inserted. The margin is specified relative to
+        the width of the character.
+    :param word_margin: If two words are are closer together than this
+        margin they are considered to be part of the same line. A space is
+        added in between for readability. The margin is specified relative
+        to the width of the word.
+    :param line_margin: If two lines are are close together they are
+        considered to be part of the same paragraph. The margin is
+        specified relative to the height of a line.
+    :param boxes_flow: Specifies how much a horizontal and vertical position
+        of a text matters when determining the order of lines. The value
+        should be within the range of -1.0 (only horizontal position
+        matters) to +1.0 (only vertical position matters).
+    :param detect_vertical: If vertical text should be considered during
+        layout analysis
+    :param all_texts: If layout analysis should be performed on text in
+        figures.
+    """
 
     def __init__(self,
                  line_overlap=0.5,
@@ -37,31 +62,6 @@ class LAParams(object):
                  boxes_flow=0.5,
                  detect_vertical=False,
                  all_texts=False):
-        """
-        :param line_overlap: If two characters have more overlap than this they
-            are considered to be on the same line. The overlap is specified
-            relative to the minimum height of both characters.
-        :param char_margin: If two characters are closer together than this
-            margin they are considered to be part of the same word. If
-            characters are on the same line but not part of the same word, an
-            intermediate space is inserted. The margin is specified relative to
-            the width of the character.
-        :param word_margin: If two words are are closer together than this
-            margin they are considered to be part of the same line. A space is
-            added in between for readability. The margin is specified relative
-            to the width of the word.
-        :param line_margin: If two lines are are close together they are
-            considered to be part of the same paragraph. The margin is
-            specified relative to the height of a line.
-        :param boxes_flow: Specifies how much a horizontal and vertical position
-            of a text matters when determining the order of lines. The value
-            should be within the range of -1.0 (only horizontal position
-            matters) to +1.0 (only vertical position matters).
-        :param detect_vertical: If vertical text should be considered during
-            layout analysis
-        :param all_texts: If layout analysis should be performed on text in
-            figures.
-        """
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin

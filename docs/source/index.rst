@@ -25,8 +25,8 @@ Content
     :maxdepth: 2
 
     tutorials/index
-    api/index
     topics/index
+    api/index
 
 
 Features
