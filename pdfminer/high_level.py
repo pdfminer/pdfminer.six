@@ -99,12 +99,12 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
     Takes loads of optional arguments but the defaults are somewhat sane.
     Returns a string containing all of the text extracted.
 
-    pdf_file: the path to the PDF file to be worked on
-    password: For encrypted PDFs, the password to decrypt.
-    page_numbers: zero-indexed page numbers to operate on.
-    maxpages: How many pages to stop parsing after
-    disable_caching: Does what it says on the tin
-    codec: Text decoding codec
+    :param pdf_file: Path to the PDF file to be worked on
+    :param password: For encrypted PDFs, the password to decrypt.
+    :param page_numbers: List of zero-indexed page numbers to extract.
+    :param maxpages: The maximum number of pages to parse
+    :param caching: If resources should be cached
+    :param codec: Text decoding codec
     """
     with open(pdf_file, "rb") as fp, StringIO() as retstr:
         rsrcmgr = PDFResourceManager()
