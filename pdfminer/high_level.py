@@ -93,7 +93,7 @@ def extract_text_to_fp(inf, outfp,
 
 
 def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
-                 caching=True, codec='utf-8'):
+                 caching=True, codec='utf-8', laparams=None):
     """
     Parses and returns the text contained in a PDF file.
     Takes loads of optional arguments but the defaults are somewhat sane.
@@ -105,10 +105,10 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
     :param maxpages: The maximum number of pages to parse
     :param caching: If resources should be cached
     :param codec: Text decoding codec
+    :param laparams: LAParams object from pdfminer.layout.
     """
     with open(pdf_file, "rb") as fp, StringIO() as retstr:
         rsrcmgr = PDFResourceManager()
-        laparams = LAParams()
         device = TextConverter(
             rsrcmgr, retstr, codec=codec, laparams=laparams
         )
