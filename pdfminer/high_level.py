@@ -106,30 +106,23 @@ def extract_text(pdf_file, password="", page_numbers=set(), maxpages=0,
     disable_caching: Does what it says on the tin
     codec: Text decoding codec
     """
+    with open(pdf_file, "rb") as fp, StringIO() as retstr:
+        rsrcmgr = PDFResourceManager()
+        laparams = LAParams()
+        device = TextConverter(
+            rsrcmgr, retstr, codec=codec, laparams=laparams
+        )
+        interpreter = PDFPageInterpreter(rsrcmgr, device)
 
-    rsrcmgr = PDFResourceManager()
-    retstr = StringIO()
-    laparams = LAParams()
-    device = TextConverter(
-        rsrcmgr, retstr, codec=codec, laparams=laparams
-    )
-    fp = open(pdf_file, "rb")
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
+        for page in PDFPage.get_pages(
+            fp,
+            page_numbers,
+            maxpages=maxpages,
+            password=password,
+            caching=caching,
+            check_extractable=True,
+        ):
+            interpreter.process_page(page)
 
-    for page in PDFPage.get_pages(
-        fp,
-        page_numbers,
-        maxpages=maxpages,
-        password=password,
-        caching=caching,
-        check_extractable=True,
-    ):
-        interpreter.process_page(page)
-
-    text = retstr.getvalue()
-
-    fp.close()
-    device.close()
-    retstr.close()
-
-    return text
+        return retstr.getvalue() 
+    
