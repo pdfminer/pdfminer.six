@@ -11,14 +11,13 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 
 
-def extract_text_to_fp(inf, outfp, _py2_no_more_posargs=None,
-                       output_type='text', codec='utf-8', laparams=None,
-                       maxpages=0, page_numbers=None, password="", scale=1.0,
-                       rotation=0,
-                       layoutmode='normal', output_dir=None,
-                       strip_control=False,
-                       debug=False, disable_caching=False, **ignored):
-    """Parses text from inf-file and writes to outfp file-like object.
+def extract_text_to_fp(inf, outfp,
+                    output_type='text', codec='utf-8', laparams = None,
+                    maxpages=0, page_numbers=None, password="", scale=1.0, rotation=0,
+                    layoutmode='normal', output_dir=None, strip_control=False,
+                    debug=False, disable_caching=False, **kwargs):
+    """
+    Parses text from inf-file and writes to outfp file-like object.
     Takes loads of optional arguments but the defaults are somewhat sane.
     Beware laparams: Including an empty LAParams is not the same as passing None!
     Returns nothing, acting as it does on two streams. Use StringIO to get strings.
@@ -26,7 +25,6 @@ def extract_text_to_fp(inf, outfp, _py2_no_more_posargs=None,
     :param inf: a file-like object to read PDF structure from, such as a
         file handler (using the builtin `open()` function) or a `BytesIO`.
     :param outfp: a file-like object to write the text to.
-    :param _py2_no_more_posargs: Bloody Python2 needs a shim
     :param output_type: May be 'text', 'xml', 'html', 'tag'. Only 'text' works properly.
     :param codec: Text decoding codec
     :param laparams: An LAParams object from pdfminer.layout. Default is None but may not layout correctly.
@@ -43,6 +41,13 @@ def extract_text_to_fp(inf, outfp, _py2_no_more_posargs=None,
     :param other:
     :return:
     """
+    if '_py2_no_more_posargs' in kwargs is not None:
+        raise DeprecationWarning(
+            'The `_py2_no_more_posargs will be removed on January, 2020. At '
+            'that moment pdfminer.six will stop supporting Python 2. Please '
+            'upgrade to Python 3. For more information see '
+            'https://github.com/pdfminer/pdfminer .six/issues/194')
+
     if six.PY2 and sys.stdin.encoding:
         password = password.decode(sys.stdin.encoding)
 
