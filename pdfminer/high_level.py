@@ -107,11 +107,13 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
     :param codec: Text decoding codec
     :param laparams: LAParams object from pdfminer.layout.
     """
-    with open(pdf_file, "rb") as fp, StringIO() as retstr:
+    if laparams is None:
+        laparams = LAParams()
+
+    with open(pdf_file, "rb") as fp, StringIO() as output_string:
         rsrcmgr = PDFResourceManager()
-        device = TextConverter(
-            rsrcmgr, retstr, codec=codec, laparams=laparams
-        )
+        device = TextConverter(rsrcmgr, output_string, codec=codec,
+                               laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
         for page in PDFPage.get_pages(
@@ -124,5 +126,5 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
         ):
             interpreter.process_page(page)
 
-        return retstr.getvalue() 
+        return output_string.getvalue()
     
