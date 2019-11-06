@@ -11,28 +11,34 @@ pdfminer.settings.STRICT = False
 import pdfminer.high_level
 import pdfminer.layout
 
-def compare(file1,file2,**args):
-    if args.get('_py2_no_more_posargs',None) is not None:
-        raise ValueError("Too many positional arguments passed.")
+logging.basicConfig()
 
+
+def compare(file1, file2, **kwargs):
+    if '_py2_no_more_posargs' in kwargs is not None:
+        raise DeprecationWarning(
+            'The `_py2_no_more_posargs will be removed on January, 2020. At '
+            'that moment pdfminer.six will stop supporting Python 2. Please '
+            'upgrade to Python 3. For more information see '
+            'https://github.com/pdfminer/pdfminer .six/issues/194')
 
     # If any LAParams group arguments were passed, create an LAParams object and
     # populate with given args. Otherwise, set it to None.
-    if args.get('laparams',None) is None:
+    if kwargs.get('laparams', None) is None:
         laparams = pdfminer.layout.LAParams()
         for param in ("all_texts", "detect_vertical", "word_margin", "char_margin", "line_margin", "boxes_flow"):
-            paramv = args.get(param, None)
+            paramv = kwargs.get(param, None)
             if paramv is not None:
                 laparams[param]=paramv
-        args['laparams']=laparams
+        kwargs['laparams']=laparams
                 
     s1=six.StringIO()
     with open(file1, "rb") as fp:
-        pdfminer.high_level.extract_text_to_fp(fp,s1, **args)
+        pdfminer.high_level.extract_text_to_fp(fp, s1, **kwargs)
     
     s2=six.StringIO()
     with open(file2, "rb") as fp:
-        pdfminer.high_level.extract_text_to_fp(fp,s2, **args)
+        pdfminer.high_level.extract_text_to_fp(fp, s2, **kwargs)
     
     import difflib
     s1.seek(0)
@@ -41,12 +47,12 @@ def compare(file1,file2,**args):
     
     import os.path
     try:
-        extension = os.path.splitext(args['outfile'])[1][1:4]
+        extension = os.path.splitext(kwargs['outfile'])[1][1:4]
         if extension.lower()=='htm':
             return difflib.HtmlDiff().make_file(s1,s2)
     except KeyError:
         pass
-    return difflib.unified_diff(s1,s2,n=args['context_lines'])
+    return difflib.unified_diff(s1, s2, n=kwargs['context_lines'])
 
 
 # main
@@ -85,9 +91,11 @@ def main(args=None):
     P.add_argument("-O", "--output-dir", default=None, help="Output directory for images")
     P.add_argument("-C", "--disable-caching", default=False, action="store_true", help="Disable caching")
     P.add_argument("-S", "--strip-control", default=False, action="store_true", help="Strip control in XML mode")
-    
 
     A = P.parse_args(args=args)
+
+    if A.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     if A.page_numbers:
         A.page_numbers = set([x-1 for x in A.page_numbers])
