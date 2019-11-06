@@ -9,7 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Support for extracting JBIG2 encoded images ([#311](https://github.com/pdfminer/pdfminer.six/pull/311) and [#46](https://github.com/pdfminer/pdfminer.six/pull/46))
 
 ### Fixed
-- Unhandled AssertionError when dumping pdf containing reference to object id 0 ([#318](https://github.com/pdfminer/pdfminer.six/pull/318))
+- Unhandled AssertionError when dumping pdf containing reference to object id 0 
+ ([#318](https://github.com/pdfminer/pdfminer.six/pull/318))
+- Debug flag actually changes logging level to debug for pdf2txt.py and
+ dumppdf.py ([#325](https://github.com/pdfminer/pdfminer.six/pull/325))
 
 ### Changed
 - Using argparse instead of getopt for command line interface of dumppdf.py ([#321](https://github.com/pdfminer/pdfminer.six/pull/321))
