@@ -1,14 +1,10 @@
-import os
 import unittest
-import sys
-
-sys.path.append("..")
 
 from helpers import absolute_sample_path
 from pdfminer.high_level import extract_text
 
 
-def run(sample_path, options=None):
+def run(sample_path):
     absolute_path = absolute_sample_path(sample_path)
     s = extract_text(absolute_path)
     return s
