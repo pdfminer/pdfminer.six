@@ -1,17 +1,44 @@
+.. testsetup::
+
+    import sys
+    from pdfminer.high_level import extract_text_to_fp, extract_text
+
 .. _tutorial_highlevel:
 
 Get started using the high-level functions
 ******************************************
 
-The high-level API can be used to do common tasks. Currently it contains a
-single function :ref:`api_extract_text_to_fp` for reading text from a PDF file.
+The high-level API can be used to do common tasks.
 
-For example, to read text from a PDF and print it on the command line:
+The most simple way to extract text from a PDF is to use
+:ref:`api_extract_text`:
 
-.. testsetup::
+.. doctest::
 
-    import sys
-    from pdfminer.high_level import extract_text_to_fp
+    >>> text = extract_text('samples/simple1.pdf')
+    >>> print(repr(text))
+    'Hello \n\nWorld\n\nWorld\n\nHello \n\nH e l l o  \n\nH e l l o  \n\nW o r l d\n\nW o r l d\n\n\x0c'
+    >>> print(text)
+    ... # doctest: +NORMALIZE_WHITESPACE
+    Hello
+    <BLANKLINE>
+    World
+    <BLANKLINE>
+    World
+    <BLANKLINE>
+    Hello
+    <BLANKLINE>
+    H e l l o
+    <BLANKLINE>
+    H e l l o
+    <BLANKLINE>
+    W o r l d
+    <BLANKLINE>
+    W o r l d
+    <BLANKLINE>
+
+
+To read text from a PDF and print it on the command line:
 
 .. doctest::
 
