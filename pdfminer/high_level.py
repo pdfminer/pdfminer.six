@@ -1,28 +1,20 @@
 """Functions that can be used for the most common use-cases for pdfminer.six"""
  
 import logging
-import six
 import sys
+
+import six
 
 # Conditional import because python 2 is stupid
 if sys.version_info > (3, 0):
     from io import StringIO
 else:
     from io import BytesIO as StringIO
-    
-from pdfminer.converter import XMLConverter, HTMLConverter, TextConverter
-from pdfminer.image import ImageWriter
-from pdfminer.pdfdevice import TagExtractor
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.pdfpage import PDFPage
 
-from .pdfdocument import PDFDocument
-from .pdfparser import PDFParser
 from .pdfinterp import PDFResourceManager, PDFPageInterpreter
-from .pdfdevice import PDFDevice, TagExtractor
+from .pdfdevice import TagExtractor
 from .pdfpage import PDFPage
 from .converter import XMLConverter, HTMLConverter, TextConverter
-from .cmapdb import CMapDB
 from .image import ImageWriter
 from .layout import LAParams
 
