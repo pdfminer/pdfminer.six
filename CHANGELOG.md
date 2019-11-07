@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+Nothing yet
+
+## [20191107] - 2019-11-07
+
 ### Deprecated
 - The argument `_py2_no_more_posargs` because Python2 is removed on January
 , 2020 ([#328](https://github.com/pdfminer/pdfminer.six/pull/328) and 
