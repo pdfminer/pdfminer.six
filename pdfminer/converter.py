@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import re
+import sys
 from .pdfdevice import PDFTextDevice
 from .pdffont import PDFUnicodeNotDefined
 from .layout import LTContainer
@@ -271,6 +272,8 @@ class HTMLConverter(PDFConverter):
     def write(self, text):
         if self.codec:
             text = text.encode(self.codec)
+        if sys.version_info < (3, 0):
+            text = str(text)
         self.outfp.write(text)
         return
 
