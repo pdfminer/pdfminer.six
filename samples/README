@@ -20,6 +20,17 @@ jo.pdf:
   (File generated from jo.tex by LaTeX and dvi2pdfm)
 
 --
+contrib/matplotlib.pdf
+  Copyright 2018, James R Barlow
+  Example file created in matplotlib to add a Type3 font to the samples
+  Released under the terms of the "LICENSE" file
+
+--
+nonfree/cmp_itext_logo.pdf
+  Bruno Lowagie
+  "iText Logo - Type 3 font"
+  http://gitlab.itextsupport.com/itext/sandbox/raw/master/cmpfiles/fonts/cmp_itext_logo.pdf
+
 nonfree/dmca.pdf: 
   U.S. Copyright Office
   The Digital Millenium Copyright Act

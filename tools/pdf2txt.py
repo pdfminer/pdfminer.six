@@ -1,29 +1,30 @@
-#!/usr/bin/env python
-
-"""
-Converts PDF text content (though not images containing text) to plain text, html, xml or "tags".
-"""
+"""A command line tool for extracting text and images from PDF and output it to plain text, html, xml or tags."""
 import argparse
 import logging
-import six
 import sys
-import pdfminer.settings
-pdfminer.settings.STRICT = False
+import six
+
 import pdfminer.high_level
 import pdfminer.layout
 from pdfminer.image import ImageWriter
 
+logging.basicConfig()
+
 
 def extract_text(files=[], outfile='-',
-            _py2_no_more_posargs=None,  # Bloody Python2 needs a shim
             no_laparams=False, all_texts=None, detect_vertical=None, # LAParams
             word_margin=None, char_margin=None, line_margin=None, boxes_flow=None, # LAParams
             output_type='text', codec='utf-8', strip_control=False,
             maxpages=0, page_numbers=None, password="", scale=1.0, rotation=0,
             layoutmode='normal', output_dir=None, debug=False,
-            disable_caching=False, **other):
-    if _py2_no_more_posargs is not None:
-        raise ValueError("Too many positional arguments passed.")
+            disable_caching=False, **kwargs):
+    if '_py2_no_more_posargs' in kwargs is not None:
+        raise DeprecationWarning(
+            'The `_py2_no_more_posargs will be removed on January, 2020. At '
+            'that moment pdfminer.six will stop supporting Python 2. Please '
+            'upgrade to Python 3. For more information see '
+            'https://github.com/pdfminer/pdfminer .six/issues/194')
+
     if not files:
         raise ValueError("Must provide files to work upon!")
 
@@ -66,28 +67,68 @@ def extract_text(files=[], outfile='-',
 
 def maketheparser():
     parser = argparse.ArgumentParser(description=__doc__, add_help=True)
-    parser.add_argument("files", type=str, default=None, nargs="+", help="File to process.")
-    parser.add_argument("-d", "--debug", default=False, action="store_true", help="Debug output.")
-    parser.add_argument("-p", "--pagenos", type=str, help="Comma-separated list of page numbers to parse. Included for legacy applications, use --page-numbers for more idiomatic argument entry.")
-    parser.add_argument("--page-numbers", type=int, default=None, nargs="+", help="Alternative to --pagenos with space-separated numbers; supercedes --pagenos where it is used.")
-    parser.add_argument("-m", "--maxpages", type=int, default=0, help="Maximum pages to parse")
-    parser.add_argument("-P", "--password", type=str, default="", help="Decryption password for PDF")
-    parser.add_argument("-o", "--outfile", type=str, default="-", help="Output file (default \"-\" is stdout)")
-    parser.add_argument("-t", "--output_type", type=str, default="text", help="Output type: text|html|xml|tag (default is text)")
-    parser.add_argument("-c", "--codec", type=str, default="utf-8", help="Text encoding")
-    parser.add_argument("-s", "--scale", type=float, default=1.0, help="Scale")
-    parser.add_argument("-A", "--all-texts", default=None, action="store_true", help="LAParams all texts")
-    parser.add_argument("-V", "--detect-vertical", default=None, action="store_true", help="LAParams detect vertical")
-    parser.add_argument("-W", "--word-margin", type=float, default=None, help="LAParams word margin")
-    parser.add_argument("-M", "--char-margin", type=float, default=None, help="LAParams char margin")
-    parser.add_argument("-L", "--line-margin", type=float, default=None, help="LAParams line margin")
-    parser.add_argument("-F", "--boxes-flow", type=float, default=None, help="LAParams boxes flow")
-    parser.add_argument("-Y", "--layoutmode", default="normal", type=str, help="HTML Layout Mode")
-    parser.add_argument("-n", "--no-laparams", default=False, action="store_true", help="Pass None as LAParams")
-    parser.add_argument("-R", "--rotation", default=0, type=int, help="Rotation")
-    parser.add_argument("-O", "--output-dir", default=None, help="Output directory for images")
-    parser.add_argument("-C", "--disable-caching", default=False, action="store_true", help="Disable caching")
-    parser.add_argument("-S", "--strip-control", default=False, action="store_true", help="Strip control in XML mode")
+    parser.add_argument("files", type=str, default=None, nargs="+", help="One or more paths to PDF files.")
+
+    parser.add_argument("--debug", "-d", default=False, action="store_true",
+                        help="Use debug logging level.")
+    parser.add_argument("--disable-caching", "-C", default=False, action="store_true",
+                        help="If caching or resources, such as fonts, should be disabled.")
+
+    parse_params = parser.add_argument_group('Parser', description='Used during PDF parsing')
+    parse_params.add_argument("--page-numbers", type=int, default=None, nargs="+",
+                              help="A space-seperated list of page numbers to parse.")
+    parse_params.add_argument("--pagenos", "-p", type=str,
+                              help="A comma-separated list of page numbers to parse. Included for legacy applications, "
+                                   "use --page-numbers for more idiomatic argument entry.")
+    parse_params.add_argument("--maxpages", "-m", type=int, default=0,
+                              help="The maximum number of pages to parse.")
+    parse_params.add_argument("--password", "-P", type=str, default="",
+                              help="The password to use for decrypting PDF file.")
+    parse_params.add_argument("--rotation", "-R", default=0, type=int,
+                              help="The number of degrees to rotate the PDF before other types of processing.")
+
+    la_params = parser.add_argument_group('Layout analysis', description='Used during layout analysis.')
+    la_params.add_argument("--no-laparams", "-n", default=False, action="store_true",
+                           help="If layout analysis parameters should be ignored.")
+    la_params.add_argument("--detect-vertical", "-V", default=False, action="store_true",
+                           help="If vertical text should be considered during layout analysis")
+    la_params.add_argument("--char-margin", "-M", type=float, default=2.0,
+                           help="If two characters are closer together than this margin they are considered to be part "
+                                "of the same word. The margin is specified relative to the width of the character.")
+    la_params.add_argument("--word-margin", "-W", type=float, default=0.1,
+                           help="If two words are are closer together than this margin they are considered to be part "
+                                "of the same line. A space is added in between for readability. The margin is "
+                                "specified relative to the width of the word.")
+    la_params.add_argument("--line-margin", "-L", type=float, default=0.5,
+                           help="If two lines are are close together they are considered to be part of the same "
+                                "paragraph. The margin is specified relative to the height of a line.")
+    la_params.add_argument("--boxes-flow", "-F", type=float, default=0.5,
+                           help="Specifies how much a horizontal and vertical position of a text matters when "
+                                "determining the order of lines. The value should be within the range of -1.0 (only "
+                                "horizontal position matters) to +1.0 (only vertical position matters).")
+    la_params.add_argument("--all-texts", "-A", default=True, action="store_true",
+                           help="If layout analysis should be performed on text in figures.")
+
+    output_params = parser.add_argument_group('Output', description='Used during output generation.')
+    output_params.add_argument("--outfile", "-o", type=str, default="-",
+                               help="Path to file where output is written. Or \"-\" (default) to write to stdout.")
+    output_params.add_argument("--output_type", "-t", type=str, default="text",
+                               help="Type of output to generate {text,html,xml,tag}.")
+    output_params.add_argument("--codec", "-c", type=str, default="utf-8",
+                               help="Text encoding to use in output file.")
+    output_params.add_argument("--output-dir", "-O", default=None,
+                               help="The output directory to put extracted images in. If not given, images are not "
+                                    "extracted.")
+    output_params.add_argument("--layoutmode", "-Y", default="normal", type=str,
+                               help="Type of layout to use when generating html {normal,exact,loose}. If normal, "
+                                    "each line is positioned separately in the html. If exact, each character is "
+                                    "positioned separately in the html. If loose, same result as normal but with an "
+                                    "additional newline after each text line. Only used when output_type is html.")
+    output_params.add_argument("--scale", "-s", type=float, default=1.0,
+                               help="The amount of zoom to use when generating html file. Only used when output_type "
+                                    "is html.")
+    output_params.add_argument("--strip-control", "-S", default=False, action="store_true",
+                               help="Remove control statement from text. Only used when output_type is xml.")
     return parser
 
 

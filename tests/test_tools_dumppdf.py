@@ -1,53 +1,37 @@
-#!/usr/bin/env python
+from tempfile import NamedTemporaryFile
 
-# -*- coding: utf-8 -*-
-import six
+from helpers import absolute_sample_path
+from tools import dumppdf
 
-import nose, logging, os
 
-if six.PY3:
-    from tools import dumppdf
-elif six.PY2:
-    import os, sys
-    sys.path.append(os.path.abspath(os.path.curdir))
-    import tools.dumppdf as dumppdf
+def run(filename, options=None):
+    absolute_path = absolute_sample_path(filename)
+    with NamedTemporaryFile() as output_file:
+        if options:
+            s = 'dumppdf -o %s %s %s' % (output_file.name, options, absolute_path)
+        else:
+            s = 'dumppdf -o %s %s' % (output_file.name, absolute_path)
+        dumppdf.main(s.split(' ')[1:])
 
-path=os.path.dirname(os.path.abspath(__file__))+'/'
-
-def run(datapath,filename,options=None):
-    i=path+datapath+filename+'.pdf'
-    o=path+filename+'.xml'
-    if options:
-        s='dumppdf -o%s %s %s'%(o,options,i)
-    else:
-         s='dumppdf -o%s %s'%(o,i)
-    dumppdf.main(s.split(' '))
 
 class TestDumpPDF():
-    
-
     def test_1(self):
-        run('../samples/','jo','-t -a')
-        run('../samples/','simple1','-t -a')
-        run('../samples/','simple2','-t -a')
-        run('../samples/','simple3','-t -a')
-        
+        run('jo.pdf', '-t -a')
+        run('simple1.pdf', '-t -a')
+        run('simple2.pdf', '-t -a')
+        run('simple3.pdf', '-t -a')
+
     def test_2(self):
-        run('../samples/nonfree/','dmca','-t -a')
-        
+        run('nonfree/dmca.pdf', '-t -a')
+
     def test_3(self):
-        run('../samples/nonfree/','f1040nr')
+        run('nonfree/f1040nr.pdf')
 
     def test_4(self):
-        run('../samples/nonfree/','i1040nr')
-        
-    def test_5(self):
-        run('../samples/nonfree/','kampo','-t -a')
-        
-    def test_6(self):
-        run('../samples/nonfree/','naacl06-shinyama','-t -a')
+        run('nonfree/i1040nr.pdf')
 
-if __name__ == '__main__':
-    #import logging,sys,os,six
-    #logging.basicConfig(level=logging.DEBUG, filename='%s_%d.%d.log'%(os.path.basename(__file__),sys.version_info[0],sys.version_info[1]))
-    nose.runmodule()
+    def test_5(self):
+        run('nonfree/kampo.pdf', '-t -a')
+
+    def test_6(self):
+        run('nonfree/naacl06-shinyama.pdf', '-t -a')

@@ -1,7 +1,7 @@
 from nose.tools import assert_equal
 
 from pdfminer.layout import LTComponent
-from pdfminer.utils import make_compat_str, Plane
+from pdfminer.utils import Plane
 
 
 class TestPlane(object):

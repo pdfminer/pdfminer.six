@@ -13,7 +13,10 @@ setup(
         'six',
         'sortedcontainers',
     ],
-    extras_require={"dev": ["nose", "tox"]},
+    extras_require={
+        "dev": ["nose", "tox"],
+        "docs": ["sphinx", "sphinx-argparse"],
+    },
     description='PDF parser and analyzer',
     long_description=package.__doc__,
     license='MIT/X',
