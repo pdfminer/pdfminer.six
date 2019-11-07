@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Simple wrapper to easily extract text from a PDF file [#330](https://github.com/pdfminer/pdfminer.six/pull/330)
 - Support for extracting JBIG2 encoded images ([#311](https://github.com/pdfminer/pdfminer.six/pull/311) and [#46](https://github.com/pdfminer/pdfminer.six/pull/46))
+- Sphinx documentation that is published on 
+  [Read the Docs](https://pdfminersix.readthedocs.io/)
+  ([#329](https://github.com/pdfminer/pdfminer.six/pull/329))
 
 ### Fixed
 - Unhandled AssertionError when dumping pdf containing reference to object id 0 

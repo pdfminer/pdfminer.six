@@ -240,51 +240,51 @@ def create_parser():
                         help='One or more paths to PDF files.')
 
     parser.add_argument(
-        '-d', '--debug', default=False, action='store_true',
+        '--debug', '-d', default=False, action='store_true',
         help='Use debug logging level.')
     procedure_parser = parser.add_mutually_exclusive_group()
     procedure_parser.add_argument(
-        '-T', '--extract-toc', default=False, action='store_true',
+        '--extract-toc', '-T', default=False, action='store_true',
         help='Extract structure of outline')
     procedure_parser.add_argument(
-        '-E', '--extract-embedded', type=str,
+        '--extract-embedded', '-E', type=str,
         help='Extract embedded files')
 
     parse_params = parser.add_argument_group(
         'Parser', description='Used during PDF parsing')
     parse_params.add_argument(
-        "--page-numbers", type=int, default=None, nargs="+",
-        help="A space-seperated list of page numbers to parse.")
+        '--page-numbers', type=int, default=None, nargs='+',
+        help='A space-seperated list of page numbers to parse.')
     parse_params.add_argument(
-        "-p", "--pagenos", type=str,
-        help="A comma-separated list of page numbers to parse. Included for "
-             "legacy applications, use --page-numbers for more idiomatic "
-             "argument entry.")
+        '--pagenos', '-p', type=str,
+        help='A comma-separated list of page numbers to parse. Included for '
+             'legacy applications, use --page-numbers for more idiomatic '
+             'argument entry.')
     parse_params.add_argument(
-        '-i', '--objects', type=str,
+        '--objects', '-i', type=str,
         help='Comma separated list of object numbers to extract')
     parse_params.add_argument(
-        '-a', '--all', default=False, action='store_true',
+        '--all', '-a', default=False, action='store_true',
         help='If the structure of all objects should be extracted')
     parse_params.add_argument(
-        '-P', '--password', type=str, default='',
+        '--password', '-P', type=str, default='',
         help='The password to use for decrypting PDF file.')
 
     output_params = parser.add_argument_group(
         'Output', description='Used during output generation.')
     output_params.add_argument(
-        '-o', '--outfile', type=str, default='-',
+        '--outfile', '-o', type=str, default='-',
         help='Path to file where output is written. Or "-" (default) to '
              'write to stdout.')
     codec_parser = output_params.add_mutually_exclusive_group()
     codec_parser.add_argument(
-        '-r', '--raw-stream', default=False, action='store_true',
+        '--raw-stream', '-r', default=False, action='store_true',
         help='Write stream objects without encoding')
     codec_parser.add_argument(
-        '-b', '--binary-stream', default=False, action='store_true',
+        '--binary-stream', '-b', default=False, action='store_true',
         help='Write stream objects with binary encoding')
     codec_parser.add_argument(
-        '-t', '--text-stream', default=False, action='store_true',
+        '--text-stream', '-t', default=False, action='store_true',
         help='Write stream objects as plain text')
 
     return parser

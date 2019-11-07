@@ -2,13 +2,13 @@
 
 import six
 
+from . import utils
 from .pdffont import PDFUnicodeNotDefined
 
-from . import utils
 
-##  PDFDevice
-##
 class PDFDevice(object):
+    """Translate the output of PDFPageInterpreter to the output that is needed
+    """
 
     def __init__(self, rsrcmgr):
         self.rsrcmgr = rsrcmgr
