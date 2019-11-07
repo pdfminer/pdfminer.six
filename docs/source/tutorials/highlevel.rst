@@ -10,11 +10,15 @@ For example, to read text from a PDF and print it on the command line:
 
 .. testsetup::
 
+    import sys
     from pdfminer.high_level import extract_text_to_fp
 
 .. doctest::
 
-    >>> from io import StringIO
+    >>> if sys.version_info > (3, 0):
+    ...     from io import StringIO
+    ... else:
+    ...     from io import BytesIO as StringIO
     >>> output_string = StringIO()
     >>> with open('samples/simple1.pdf', 'rb') as fin:
     ...     extract_text_to_fp(fin, output_string)
@@ -25,7 +29,10 @@ Or to convert it to html and use layout analysis:
 
 .. doctest::
 
-    >>> from io import StringIO
+    >>> if sys.version_info > (3, 0):
+    ...     from io import StringIO
+    ... else:
+    ...     from io import BytesIO as StringIO
     >>> from pdfminer.layout import LAParams
     >>> output_string = StringIO()
     >>> with open('samples/simple1.pdf', 'rb') as fin:
