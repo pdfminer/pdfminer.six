@@ -15,6 +15,8 @@ from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
 from pdfminer.psparser import PSKeyword, PSLiteral, LIT
 from pdfminer.utils import isnumber
 
+logging.basicConfig()
+
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
 
 
