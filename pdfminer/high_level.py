@@ -6,7 +6,12 @@ bundled scripts and for using pdfminer as a module for routine tasks.
 
 import six
 import sys
-from io import StringIO
+
+# Conditional import because python 2 is stupid
+if sys.version_info > (3, 0):
+    from io import StringIO
+else:
+    from io import BytesIO as StringIO
 
 from .pdfdocument import PDFDocument
 from .pdfparser import PDFParser
