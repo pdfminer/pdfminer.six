@@ -17,22 +17,22 @@ The most simple way to extract text from a PDF is to use
 
     >>> text = extract_text('samples/simple1.pdf')
     >>> print(repr(text))
-    'Hello \n\nWorld\n\nWorld\n\nHello \n\nH e l l o  \n\nH e l l o  \n\nW o r l d\n\nW o r l d\n\n\x0c'
+    'Hello \n\nWorld\n\nHello \n\nWorld\n\nH e l l o  \n\nW o r l d\n\nH e l l o  \n\nW o r l d\n\n\x0c'
     >>> print(text)
     ... # doctest: +NORMALIZE_WHITESPACE
     Hello
     <BLANKLINE>
     World
     <BLANKLINE>
-    World
-    <BLANKLINE>
     Hello
     <BLANKLINE>
-    H e l l o
+    World
     <BLANKLINE>
     H e l l o
     <BLANKLINE>
     W o r l d
+    <BLANKLINE>
+    H e l l o
     <BLANKLINE>
     W o r l d
     <BLANKLINE>
