@@ -1,6 +1,7 @@
 import heapq
+import logging
 
-from .utils import INF
+from .utils import INF, shorten_str
 from .utils import Plane
 from .utils import apply_matrix_pt
 from .utils import bbox2str
@@ -8,6 +9,8 @@ from .utils import fsplit
 from .utils import get_bound
 from .utils import matrix2str
 from .utils import uniq
+
+logger = logging.getLogger(__name__)
 
 
 class IndexAssigner(object):
@@ -45,7 +48,7 @@ class LAParams(object):
         considered to be part of the same paragraph. The margin is
         specified relative to the height of a line.
     :param boxes_flow: Specifies how much a horizontal and vertical position
-        of a text matters when determining the order of lines. The value
+        of a text matters when determining the order of text boxes. The value
         should be within the range of -1.0 (only horizontal position
         matters) to +1.0 (only vertical position matters).
     :param detect_vertical: If vertical text should be considered during
@@ -505,7 +508,7 @@ class LTTextGroupTBRL(LTTextGroup):
         # reorder the objects from top-right to bottom-left.
         self._objs.sort(key=lambda obj:
                            -(1+laparams.boxes_flow)*(obj.x0+obj.x1)
-                           - (1-laparams.boxes_flow)*(obj.y1))
+                           -(1-laparams.boxes_flow)*(obj.y1))
         return
 
 
@@ -562,6 +565,7 @@ class LTLayoutContainer(LTContainer):
 
                 if ((halign and isinstance(line, LTTextLineHorizontal)) or
                     (valign and isinstance(line, LTTextLineVertical))):
+
                     line.add(obj1)
                 elif line is not None:
                     yield line
@@ -667,18 +671,23 @@ class LTLayoutContainer(LTContainer):
             obj1 = boxes[i]
             for j in range(i+1, len(boxes)):
                 obj2 = boxes[j]
-                dists.append((True, dist(obj1, obj2), id(obj1), id(obj2), obj1, obj2))
+                dists.append((False, dist(obj1, obj2), id(obj1), id(obj2),
+                              obj1, obj2))
         heapq.heapify(dists)
 
         plane = Plane(self.bbox)
         plane.extend(boxes)
         done = set()
         while len(dists) > 0:
-            (is_first, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
+            (skip_isany, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
             # Skip objects that are already merged
             if (id1 not in done) and (id2 not in done):
-                if is_first and isany(obj1, obj2):
-                    heapq.heappush(dists, (False, d, id1, id2, obj1, obj2))
+                logger.debug('Grouping: {:50.50s}   and   {:50.50s}'.format(
+                    shorten_str(obj1.get_text(), 50),
+                    shorten_str(obj2.get_text(), 50)))
+
+                if skip_isany and isany(obj1, obj2):
+                    heapq.heappush(dists, (True, d, id1, id2, obj1, obj2))
                     continue
                 if isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or \
                         isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL)):

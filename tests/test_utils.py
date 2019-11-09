@@ -1,7 +1,7 @@
 from nose.tools import assert_equal
 
 from pdfminer.layout import LTComponent
-from pdfminer.utils import Plane
+from pdfminer.utils import Plane, shorten_str
 
 
 class TestPlane(object):
@@ -38,3 +38,9 @@ class TestPlane(object):
         obj = LTComponent((0, 0, object_size, object_size))
         plane.add(obj)
         return plane, obj
+
+
+class TestFunctions(object):
+    def test_shorten_str(self):
+        s = shorten_str('Hello there World', 15)
+        assert_equal(s, 'Hello ... World')
