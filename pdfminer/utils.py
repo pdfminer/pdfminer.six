@@ -32,6 +32,16 @@ def make_compat_str(in_str):
     return in_str
 
 
+def shorten_str(s, size):
+    if size < 7:
+        return s[:size]
+    if len(s) > size:
+        length = (size - 5) // 2
+        return '{} ... {}'.format(s[:length], s[-length:])
+    else:
+        return s
+
+
 def compatible_encode_method(bytesorstring, encoding='utf-8', erraction='ignore'):
     """When Py2 str.encode is called, it often means bytes.encode in Py3. This does either."""
     if six.PY2:
