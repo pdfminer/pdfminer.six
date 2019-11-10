@@ -44,3 +44,10 @@ class TestFunctions(object):
     def test_shorten_str(self):
         s = shorten_str('Hello there World', 15)
         assert_equal(s, 'Hello ... World')
+
+    def test_shorten_short_str_is_same(self):
+        s = 'Hello World'
+        assert_equal(s, shorten_str(s, 50))
+
+    def test_shorten_to_really_short(self):
+        assert_equal('Hello', shorten_str('Hello World', 5))

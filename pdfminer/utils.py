@@ -33,6 +33,8 @@ def make_compat_str(in_str):
 
 
 def shorten_str(s, size):
+    if size < 7:
+        return s[:size]
     if len(s) > size:
         length = (size - 5) // 2
         return '{} ... {}'.format(s[:length], s[-length:])
