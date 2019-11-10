@@ -682,10 +682,6 @@ class LTLayoutContainer(LTContainer):
             (skip_isany, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
             # Skip objects that are already merged
             if (id1 not in done) and (id2 not in done):
-                logger.debug('Grouping: {:50.50s}   and   {:50.50s}'.format(
-                    shorten_str(obj1.get_text(), 50),
-                    shorten_str(obj2.get_text(), 50)))
-
                 if skip_isany and isany(obj1, obj2):
                     heapq.heappush(dists, (True, d, id1, id2, obj1, obj2))
                     continue
