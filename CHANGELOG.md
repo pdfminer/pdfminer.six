@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [20191110] - 2019-11-10
+
 ### Fixed
 - Wrong order of text box grouping introduced by PR #315 ([#335](https://github.com/pdfminer/pdfminer.six/pull/335))
 
