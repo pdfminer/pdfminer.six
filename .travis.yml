@@ -9,5 +9,4 @@ python:
 install:
   - pip install tox-travis flake8
 script:
-  - flake8 pdfminer/ tools/ tests/ --count --statistics
   - tox -r
