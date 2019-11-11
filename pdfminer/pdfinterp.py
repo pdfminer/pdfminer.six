@@ -1,4 +1,3 @@
-
 import re
 import logging
 from io import BytesIO
@@ -31,13 +30,14 @@ from .utils import choplist
 from .utils import mult_matrix
 from .utils import MATRIX_IDENTITY
 
-import six  # Python 2+3 compatibility
+import six
 
 log = logging.getLogger(__name__)
 
 
 class PDFResourceError(PDFException):
     pass
+
 
 class PDFInterpreterError(PDFException):
     pass
@@ -67,12 +67,12 @@ class PDFTextState(object):
         return
 
     def __repr__(self):
-        return ('<PDFTextState: font=%r, fontsize=%r, charspace=%r, wordspace=%r, '
-                ' scaling=%r, leading=%r, render=%r, rise=%r, '
-                ' matrix=%r, linematrix=%r>' %
-                (self.font, self.fontsize, self.charspace, self.wordspace,
-                 self.scaling, self.leading, self.render, self.rise,
-                 self.matrix, self.linematrix))
+        return '<PDFTextState: font=%r, fontsize=%r, charspace=%r, ' \
+               'wordspace=%r, scaling=%r, leading=%r, render=%r, rise=%r, ' \
+               'matrix=%r, linematrix=%r>' \
+               % (self.font, self.fontsize, self.charspace, self.wordspace,
+                  self.scaling, self.leading, self.render, self.rise,
+                  self.matrix, self.linematrix)
 
     def copy(self):
         obj = PDFTextState()
@@ -92,7 +92,6 @@ class PDFTextState(object):
         self.matrix = MATRIX_IDENTITY
         self.linematrix = (0, 0)
         return
-
 
 
 class PDFGraphicState(object):
@@ -135,9 +134,7 @@ class PDFGraphicState(object):
                  self.scolor, self.ncolor))
 
 
-
 class PDFResourceManager(object):
-
     """Repository of shared resources.
 
     ResourceManager facilitates reuse of shared resources
@@ -157,7 +154,6 @@ class PDFResourceManager(object):
             elif proc is LITERAL_TEXT:
                 pass
             else:
-                #raise PDFResourceError('ProcSet %r is not supported.' % proc)
                 pass
         return
 
@@ -214,7 +210,6 @@ class PDFResourceManager(object):
         return font
 
 
-
 class PDFContentParser(PSStackParser):
 
     def __init__(self, streams):
@@ -258,20 +253,21 @@ class PDFContentParser(PSStackParser):
         while i <= len(target):
             self.fillbuf()
             if i:
-                c = six.indexbytes(self.buf,self.charpos)
-                c=six.int2byte(c)
+                c = six.indexbytes(self.buf, self.charpos)
+                c = six.int2byte(c)
                 data += c
                 self.charpos += 1
+                target_i = (six.int2byte(target[i]) if six.PY3 else target[i])
                 if len(target) <= i and c.isspace():
                     i += 1
-                elif i < len(target) and c == (six.int2byte(target[i]) if six.PY3 else target[i]):
+                elif i < len(target) and c == target_i:
                     i += 1
                 else:
                     i = 0
             else:
                 try:
                     j = self.buf.index(target[0], self.charpos)
-                    #print 'found', (0, self.buf[j:j+10])
+                    # print 'found', (0, self.buf[j:j+10])
                     data += self.buf[self.charpos:j+1]
                     self.charpos = j+1
                     i = 1
@@ -298,7 +294,8 @@ class PDFContentParser(PSStackParser):
             try:
                 (_, objs) = self.end_type('inline')
                 if len(objs) % 2 != 0:
-                    raise PSTypeError('Invalid dictionary construct: %r' % objs)
+                    error_msg = 'Invalid dictionary construct: %r' % objs
+                    raise PSTypeError(error_msg)
                 d = dict((literal_name(k), v) for (k, v) in choplist(2, objs))
                 (pos, data) = self.get_inline_data(pos+len(b'ID '))
                 obj = PDFStream(d, data)
@@ -313,7 +310,10 @@ class PDFContentParser(PSStackParser):
 
 
 class PDFPageInterpreter(object):
-    """Processor for the content of a PDF page"""
+    """Processor for the content of a PDF page
+
+    Reference: PDF Reference, Appendix A, Operator Summary
+    """
 
     def __init__(self, rsrcmgr, device):
         self.rsrcmgr = rsrcmgr
@@ -323,9 +323,8 @@ class PDFPageInterpreter(object):
     def dup(self):
         return self.__class__(self.rsrcmgr, self.device)
 
-    # init_resources(resources):
-    #   Prepare the fonts and XObjects listed in the Resource attribute.
     def init_resources(self, resources):
+        """Prepare the fonts and XObjects listed in the Resource attribute."""
         self.resources = resources
         self.fontmap = {}
         self.xobjmap = {}
@@ -338,9 +337,11 @@ class PDFPageInterpreter(object):
                 name = literal_name(spec[0])
             else:
                 name = literal_name(spec)
-            if name == 'ICCBased' and isinstance(spec, list) and 2 <= len(spec):
+            if name == 'ICCBased' and isinstance(spec, list) \
+                    and 2 <= len(spec):
                 return PDFColorSpace(name, stream_value(spec[1])['N'])
-            elif name == 'DeviceN' and isinstance(spec, list) and 2 <= len(spec):
+            elif name == 'DeviceN' and isinstance(spec, list) \
+                    and 2 <= len(spec):
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
                 return PREDEFINED_COLORSPACE.get(name)
@@ -363,11 +364,9 @@ class PDFPageInterpreter(object):
                     self.xobjmap[xobjid] = xobjstrm
         return
 
-    # init_state(ctm)
-    #   Initialize the text and graphic states for rendering a page.
     def init_state(self, ctm):
-        # gstack: stack for graphical states.
-        self.gstack = []
+        """Initialize the text and graphic states for rendering a page."""
+        self.gstack = []  # stack for graphical states.
         self.ctm = ctm
         self.device.set_ctm(self.ctm)
         self.textstate = PDFTextState()
@@ -400,95 +399,95 @@ class PDFPageInterpreter(object):
         self.device.set_ctm(self.ctm)
         return
 
-    # gsave
     def do_q(self):
+        """Save graphics state"""
         self.gstack.append(self.get_current_state())
         return
 
-    # grestore
     def do_Q(self):
+        """Restore graphics state"""
         if self.gstack:
             self.set_current_state(self.gstack.pop())
         return
 
-    # concat-matrix
     def do_cm(self, a1, b1, c1, d1, e1, f1):
+        """Concatenate matrix to current transformation matrix"""
         self.ctm = mult_matrix((a1, b1, c1, d1, e1, f1), self.ctm)
         self.device.set_ctm(self.ctm)
         return
 
-    # setlinewidth
     def do_w(self, linewidth):
+        """Set line width"""
         self.graphicstate.linewidth = linewidth
         return
 
-    # setlinecap
     def do_J(self, linecap):
+        """Set line cap style"""
         self.graphicstate.linecap = linecap
         return
 
-    # setlinejoin
     def do_j(self, linejoin):
+        """Set line join style"""
         self.graphicstate.linejoin = linejoin
         return
 
-    # setmiterlimit
     def do_M(self, miterlimit):
+        """Set miter limit"""
         self.graphicstate.miterlimit = miterlimit
         return
 
-    # setdash
     def do_d(self, dash, phase):
+        """Set line dash pattern"""
         self.graphicstate.dash = (dash, phase)
         return
 
-    # setintent
     def do_ri(self, intent):
+        """Set color rendering intent"""
         self.graphicstate.intent = intent
         return
 
-    # setflatness
     def do_i(self, flatness):
+        """Set flatness tolerance"""
         self.graphicstate.flatness = flatness
         return
 
-    # load-gstate
     def do_gs(self, name):
-        #XXX
+        """Set parameters from graphics state parameter dictionary"""
+        # todo
         return
 
-    # moveto
     def do_m(self, x, y):
+        """Begin new subpath"""
         self.curpath.append(('m', x, y))
         return
 
-    # lineto
     def do_l(self, x, y):
+        """Append straight line segment to path"""
         self.curpath.append(('l', x, y))
         return
 
-    # curveto
     def do_c(self, x1, y1, x2, y2, x3, y3):
+        """Append curved segment to path (three control points)"""
         self.curpath.append(('c', x1, y1, x2, y2, x3, y3))
         return
 
-    # urveto
     def do_v(self, x2, y2, x3, y3):
+        """Append curved segment to path (initial point replicated)"""
         self.curpath.append(('v', x2, y2, x3, y3))
         return
 
-    # rveto
     def do_y(self, x1, y1, x3, y3):
+        """Append curved segment to path (final point replicated)"""
         self.curpath.append(('y', x1, y1, x3, y3))
         return
 
-    # closepath
     def do_h(self):
+        """Close subpath"""
         self.curpath.append(('h',))
         return
 
-    # rectangle
     def do_re(self, x, y, w, h):
+        """Append rectangle to path"""
         self.curpath.append(('m', x, y))
         self.curpath.append(('l', x+w, y))
         self.curpath.append(('l', x+w, y+h))
@@ -496,71 +495,81 @@ class PDFPageInterpreter(object):
         self.curpath.append(('h',))
         return
 
-    # stroke
     def do_S(self):
-        self.device.paint_path(self.graphicstate, True, False, False, self.curpath)
+        """Stroke path"""
+        self.device.paint_path(self.graphicstate, True, False, False,
+                               self.curpath)
         self.curpath = []
         return
 
-    # close-and-stroke
     def do_s(self):
+        """Close and stroke path"""
         self.do_h()
         self.do_S()
         return
 
-    # fill
     def do_f(self):
-        self.device.paint_path(self.graphicstate, False, True, False, self.curpath)
+        """Fill path using nonzero winding number rule"""
+        self.device.paint_path(self.graphicstate, False, True, False,
+                               self.curpath)
         self.curpath = []
         return
-    # fill (obsolete)
-    do_F = do_f
 
-    # fill-even-odd
+    def do_F(self):
+        """Fill path using nonzero winding number rule (obsolete)"""
+        return self.do_f()
+
     def do_f_a(self):
-        self.device.paint_path(self.graphicstate, False, True, True, self.curpath)
+        """Fill path using even-odd rule"""
+        self.device.paint_path(self.graphicstate, False, True, True,
+                               self.curpath)
         self.curpath = []
         return
 
-    # fill-and-stroke
     def do_B(self):
-        self.device.paint_path(self.graphicstate, True, True, False, self.curpath)
+        """Fill and stroke path using nonzero winding number rule"""
+        self.device.paint_path(self.graphicstate, True, True, False,
+                               self.curpath)
         self.curpath = []
         return
 
-    # fill-and-stroke-even-odd
     def do_B_a(self):
-        self.device.paint_path(self.graphicstate, True, True, True, self.curpath)
+        """Fill and stroke path using even-odd rule"""
+        self.device.paint_path(self.graphicstate, True, True, True,
+                               self.curpath)
         self.curpath = []
         return
 
-    # close-fill-and-stroke
     def do_b(self):
+        """Close, fill, and stroke path using nonzero winding number rule"""
         self.do_h()
         self.do_B()
         return
 
-    # close-fill-and-stroke-even-odd
     def do_b_a(self):
+        """Close, fill, and stroke path using even-odd rule"""
         self.do_h()
         self.do_B_a()
         return
 
-    # close-only
     def do_n(self):
+        """End path without filling or stroking"""
         self.curpath = []
         return
 
-    # clip
     def do_W(self):
+        """Set clipping path using nonzero winding number rule"""
         return
 
-    # clip-even-odd
     def do_W_a(self):
+        """Set clipping path using even-odd rule"""
         return
 
-    # setcolorspace-stroking
     def do_CS(self, name):
+        """Set color space for stroking operations
+
+        Introduced in PDF 1.1
+        """
         try:
             self.scs = self.csmap[literal_name(name)]
         except KeyError:
@@ -568,8 +577,8 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('Undefined ColorSpace: %r' % name)
         return
 
-    # setcolorspace-non-strokine
     def do_cs(self, name):
+        """Set color space for nonstroking operations"""
         try:
             self.ncs = self.csmap[literal_name(name)]
         except KeyError:
@@ -577,44 +586,38 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('Undefined ColorSpace: %r' % name)
         return
 
-    # setgray-stroking
     def do_G(self, gray):
+        """Set gray level for stroking operations"""
         self.graphicstate.scolor = gray
-        #self.do_CS(LITERAL_DEVICE_GRAY)
         return
 
-    # setgray-non-stroking
     def do_g(self, gray):
+        """Set gray level for nonstroking operations"""
         self.graphicstate.ncolor = gray
-        #self.do_cs(LITERAL_DEVICE_GRAY)
         return
 
-    # setrgb-stroking
     def do_RG(self, r, g, b):
+        """Set RGB color for stroking operations"""
         self.graphicstate.scolor = (r, g, b)
-        #self.do_CS(LITERAL_DEVICE_RGB)
         return
 
-    # setrgb-non-stroking
     def do_rg(self, r, g, b):
+        """Set RGB color for nonstroking operations"""
         self.graphicstate.ncolor = (r, g, b)
-        #self.do_cs(LITERAL_DEVICE_RGB)
         return
 
-    # setcmyk-stroking
     def do_K(self, c, m, y, k):
+        """Set CMYK color for stroking operations"""
         self.graphicstate.scolor = (c, m, y, k)
-        #self.do_CS(LITERAL_DEVICE_CMYK)
         return
 
-    # setcmyk-non-stroking
     def do_k(self, c, m, y, k):
+        """Set CMYK color for nonstroking operations"""
         self.graphicstate.ncolor = (c, m, y, k)
-        #self.do_cs(LITERAL_DEVICE_CMYK)
         return
 
-    # setcolor
     def do_SCN(self):
+        """Set color for stroking operations."""
         if self.scs:
             n = self.scs.ncomponents
         else:
@@ -625,6 +628,7 @@ class PDFPageInterpreter(object):
         return
 
     def do_scn(self):
+        """Set color for nonstroking operations"""
         if self.ncs:
             n = self.ncs.ncomponents
         else:
@@ -635,77 +639,111 @@ class PDFPageInterpreter(object):
         return
 
     def do_SC(self):
+        """Set color for stroking operations"""
         self.do_SCN()
         return
 
     def do_sc(self):
+        """Set color for nonstroking operations"""
         self.do_scn()
         return
 
-    # sharing-name
     def do_sh(self, name):
+        """Paint area defined by shading pattern"""
         return
 
-    # begin-text
     def do_BT(self):
+        """Begin text object
+
+        Initializing the text matrix, Tm, and the text line matrix, Tlm, to
+        the identity matrix. Text objects cannot be nested; a second BT cannot
+        appear before an ET.
+        """
         self.textstate.reset()
         return
 
-    # end-text
     def do_ET(self):
+        """End a text object"""
         return
 
-    # begin-compat
     def do_BX(self):
+        """Begin compatibility section"""
         return
 
-    # end-compat
     def do_EX(self):
+        """End compatibility section"""
         return
 
-    # marked content operators
     def do_MP(self, tag):
+        """Define marked-content point"""
         self.device.do_tag(tag)
         return
 
     def do_DP(self, tag, props):
+        """Define marked-content point with property list"""
         self.device.do_tag(tag, props)
         return
 
     def do_BMC(self, tag):
+        """Begin marked-content sequence"""
         self.device.begin_tag(tag)
         return
 
     def do_BDC(self, tag, props):
+        """Begin marked-content sequence with property list"""
         self.device.begin_tag(tag, props)
         return
 
     def do_EMC(self):
+        """End marked-content sequence"""
         self.device.end_tag()
         return
 
-    # setcharspace
     def do_Tc(self, space):
+        """Set character spacing.
+
+        Character spacing is used by the Tj, TJ, and ' operators.
+
+        :param space: a number expressed in unscaled text space units.
+        """
         self.textstate.charspace = space
         return
 
-    # setwordspace
     def do_Tw(self, space):
+        """Set the word spacing.
+
+        Word spacing is used by the Tj, TJ, and ' operators.
+
+        :param space: a number expressed in unscaled text space units
+        """
         self.textstate.wordspace = space
         return
 
-    # textscale
     def do_Tz(self, scale):
+        """Set the horizontal scaling.
+
+        :param scale: is a number specifying the percentage of the normal width
+        """
         self.textstate.scaling = scale
         return
 
-    # setleading
     def do_TL(self, leading):
+        """Set the text leading.
+
+        Text leading is used only by the T*, ', and " operators.
+
+        :param leading: a number expressed in unscaled text space units
+        """
         self.textstate.leading = -leading
         return
 
-    # selectfont
     def do_Tf(self, fontid, fontsize):
+        """Set the text font
+
+        :param fontid: the name of a font resource in the Font subdictionary
+            of the current resource dictionary
+        :param fontsize: size is a number representing a scale factor.
+        """
         try:
             self.textstate.font = self.fontmap[literal_name(fontid)]
         except KeyError:
@@ -715,82 +753,92 @@ class PDFPageInterpreter(object):
         self.textstate.fontsize = fontsize
         return
 
-    # setrendering
     def do_Tr(self, render):
+        """Set the text rendering mode"""
         self.textstate.render = render
         return
 
-    # settextrise
     def do_Ts(self, rise):
+        """Set the text rise
+
+        :param rise: a number expressed in unscaled text space units
+        """
         self.textstate.rise = rise
         return
 
-    # text-move
     def do_Td(self, tx, ty):
+        """Move text position"""
         (a, b, c, d, e, f) = self.textstate.matrix
         self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
         self.textstate.linematrix = (0, 0)
-        #print >>sys.stderr, 'Td(%r,%r): %r' % (tx, ty, self.textstate)
         return
 
-    # text-move
     def do_TD(self, tx, ty):
+        """Move text position and set leading"""
         (a, b, c, d, e, f) = self.textstate.matrix
         self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
         self.textstate.leading = ty
         self.textstate.linematrix = (0, 0)
-        #print >>sys.stderr, 'TD(%r,%r): %r' % (tx, ty, self.textstate)
         return
 
-    # textmatrix
     def do_Tm(self, a, b, c, d, e, f):
+        """Set text matrix and text line matrix"""
         self.textstate.matrix = (a, b, c, d, e, f)
         self.textstate.linematrix = (0, 0)
         return
 
-    # nextline
     def do_T_a(self):
+        """Move to start of next text line"""
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, self.textstate.leading*c+e, self.textstate.leading*d+f)
+        self.textstate.matrix = (a, b, c, d, self.textstate.leading*c+e,
+                                 self.textstate.leading*d+f)
         self.textstate.linematrix = (0, 0)
         return
 
-    # show-pos
     def do_TJ(self, seq):
-        #print >>sys.stderr, 'TJ(%r): %r' % (seq, self.textstate)
+        """Show text, allowing individual glyph positioning"""
         if self.textstate.font is None:
             if settings.STRICT:
                 raise PDFInterpreterError('No font specified!')
             return
-        self.device.render_string(self.textstate, seq, self.ncs, self.graphicstate.copy())
+        self.device.render_string(self.textstate, seq, self.ncs,
+                                  self.graphicstate.copy())
         return
 
-    # show
     def do_Tj(self, s):
+        """Show text"""
         self.do_TJ([s])
         return
 
-    # quote
     def do__q(self, s):
+        """Move to next line and show text
+
+        The ' (single quote) operator.
+        """
         self.do_T_a()
         self.do_TJ([s])
         return
 
-    # doublequote
     def do__w(self, aw, ac, s):
+        """Set word and character spacing, move to next line, and show text
+
+        The " (double quote) operator.
+        """
         self.do_Tw(aw)
         self.do_Tc(ac)
         self.do_TJ([s])
         return
 
-    # inline image
-    def do_BI(self):  # never called
+    def do_BI(self):
+        """Begin inline image object"""
         return
 
-    def do_ID(self):  # never called
+    def do_ID(self):
+        """Begin inline image data"""
         return
 
     def do_EI(self, obj):
+        """End inline image object"""
         if 'W' in obj and 'H' in obj:
             iobjid = str(id(obj))
             self.device.begin_figure(iobjid, (0, 0, 1, 1), MATRIX_IDENTITY)
@@ -798,8 +846,8 @@ class PDFPageInterpreter(object):
             self.device.end_figure(iobjid)
         return
 
-    # invoke an XObject
     def do_Do(self, xobjid):
+        """Invoke named XObject"""
         xobjid = literal_name(xobjid)
         try:
             xobj = stream_value(self.xobjmap[xobjid])
@@ -817,9 +865,13 @@ class PDFPageInterpreter(object):
             # earlier PDFs (prior to v1.2) use the page's Resources entry
             # instead of having their own Resources entry.
             xobjres = xobj.get('Resources')
-            resources = dict_value(xobjres) if xobjres else self.resources.copy()
+            if xobjres:
+                resources = dict_value(xobjres)
+            else:
+                resources = self.resources.copy()
             self.device.begin_figure(xobjid, bbox, matrix)
-            interpreter.render_contents(resources, [xobj], ctm=mult_matrix(matrix, self.ctm))
+            interpreter.render_contents(resources, [xobj],
+                                        ctm=mult_matrix(matrix, self.ctm))
             self.device.end_figure(xobjid)
         elif subtype is LITERAL_IMAGE and 'Width' in xobj and 'Height' in xobj:
             self.device.begin_figure(xobjid, (0, 0, 1, 1), MATRIX_IDENTITY)
@@ -846,10 +898,11 @@ class PDFPageInterpreter(object):
         self.device.end_page(page)
         return
 
-    # render_contents(resources, streams, ctm)
-    #   Render the content streams.
-    #   This method may be called recursively.
     def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY):
+        """Render the content streams.
+
+        This method may be called recursively.
+        """
         log.info('render_contents: resources=%r, streams=%r, ctm=%r',
                  resources, streams, ctm)
         self.init_resources(resources)
@@ -870,7 +923,8 @@ class PDFPageInterpreter(object):
                 break
             if isinstance(obj, PSKeyword):
                 name = keyword_name(obj)
-                method = 'do_%s' % name.replace('*', '_a').replace('"', '_w').replace("'", '_q')
+                method = 'do_%s' % name.replace('*', '_a').replace('"', '_w')\
+                    .replace("'", '_q')
                 if hasattr(self, method):
                     func = getattr(self, method)
                     nargs = six.get_function_code(func).co_argcount-1
@@ -884,7 +938,8 @@ class PDFPageInterpreter(object):
                         func()
                 else:
                     if settings.STRICT:
-                        raise PDFInterpreterError('Unknown operator: %r' % name)
+                        error_msg = 'Unknown operator: %r' % name
+                        raise PDFInterpreterError(error_msg)
             else:
                 self.push(obj)
         return
