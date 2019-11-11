@@ -1,7 +1,7 @@
 import collections
 from .psparser import LIT
 
-import six #Python 2+3 compatibility
+import six
 
 ##  PDFColorSpace
 ##

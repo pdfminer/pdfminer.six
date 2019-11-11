@@ -3,7 +3,7 @@
 import sys
 import fileinput
 
-import six #Python 2+3 compatibility
+import six
 
 def main(argv):
     fonts = {}

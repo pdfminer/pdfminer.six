@@ -29,7 +29,7 @@ from .encodingdb import name2unicode
 from .utils import choplist
 from .utils import nunpack
 
-import six  #Python 2+3 compatibility
+import six 
 
 log = logging.getLogger(__name__)
 

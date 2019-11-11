@@ -1,7 +1,7 @@
 
 from io import BytesIO
 
-import six  #Python 2+3 compatibility
+import six 
 
 import logging
 

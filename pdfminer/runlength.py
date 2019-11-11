@@ -6,7 +6,7 @@
 #  * public domain *
 #
 
-import six #Python 2+3 compatibility
+import six
 
 def rldecode(data):
     """

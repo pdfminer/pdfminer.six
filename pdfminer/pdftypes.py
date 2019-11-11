@@ -13,7 +13,7 @@ from . import settings
 from .utils import apply_png_predictor
 from .utils import isnumber
 
-import six #Python 2+3 compatibility
+import six
 
 log = logging.getLogger(__name__)
 
