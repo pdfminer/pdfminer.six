@@ -11,7 +11,7 @@ from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument
 from .pdfdocument import PDFTextExtractionNotAllowed
 
-import six  # Python 2+3 compatibility
+import six
 
 log = logging.getLogger(__name__)
 
@@ -72,7 +72,8 @@ class PDFPage(object):
         return
 
     def __repr__(self):
-        return '<PDFPage: Resources=%r, MediaBox=%r>' % (self.resources, self.mediabox)
+        return '<PDFPage: Resources=%r, MediaBox=%r>' % \
+               (self.resources, self.mediabox)
 
     INHERITABLE_ATTRS = set(['Resources', 'MediaBox', 'CropBox', 'Rotate'])
 
@@ -103,7 +104,8 @@ class PDFPage(object):
                 yield (objid, tree)
         pages = False
         if 'Pages' in document.catalog:
-            for (objid, tree) in search(document.catalog['Pages'], document.catalog):
+            objects = search(document.catalog['Pages'], document.catalog)
+            for (objid, tree) in objects:
                 yield klass(document, objid, tree)
                 pages = True
         if not pages:
@@ -112,7 +114,8 @@ class PDFPage(object):
                 for objid in xref.get_objids():
                     try:
                         obj = document.getobj(objid)
-                        if isinstance(obj, dict) and obj.get('Type') is LITERAL_PAGE:
+                        if isinstance(obj, dict) \
+                                and obj.get('Type') is LITERAL_PAGE:
                             yield klass(document, objid, obj)
                     except PDFObjectNotFound:
                         pass
@@ -128,7 +131,8 @@ class PDFPage(object):
         doc = PDFDocument(parser, password=password, caching=caching)
         # Check if the document allows text extraction. If not, abort.
         if check_extractable and not doc.is_extractable:
-            raise PDFTextExtractionNotAllowed('Text extraction is not allowed: %r' % fp)
+            error_msg = 'Text extraction is not allowed: %r' % fp
+            raise PDFTextExtractionNotAllowed(error_msg)
         # Process each page contained in the document.
         for (pageno, page) in enumerate(klass.create_pages(doc)):
             if pagenos and (pageno not in pagenos):
