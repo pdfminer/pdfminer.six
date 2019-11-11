@@ -62,8 +62,7 @@ class PDFDevice(object):
         return
 
 
-##  PDFTextDevice
-##
+
 class PDFTextDevice(PDFDevice):
 
     def render_string(self, textstate, seq, ncs, graphicstate):
@@ -133,8 +132,7 @@ class PDFTextDevice(PDFDevice):
         return 0
 
 
-##  TagExtractor
-##
+
 class TagExtractor(PDFDevice):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8'):

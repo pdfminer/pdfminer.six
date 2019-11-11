@@ -35,24 +35,21 @@ import six  # Python 2+3 compatibility
 
 log = logging.getLogger(__name__)
 
-##  Exceptions
-##
+
 class PDFResourceError(PDFException):
     pass
 
 class PDFInterpreterError(PDFException):
     pass
 
-##  Constants
-##
+
 LITERAL_PDF = LIT('PDF')
 LITERAL_TEXT = LIT('Text')
 LITERAL_FONT = LIT('Font')
 LITERAL_FORM = LIT('Form')
 LITERAL_IMAGE = LIT('Image')
 
-##  PDFTextState
-##
+
 class PDFTextState(object):
 
     def __init__(self):
@@ -97,8 +94,7 @@ class PDFTextState(object):
         return
 
 
-##  PDFGraphicState
-##
+
 class PDFGraphicState(object):
 
     def __init__(self):
@@ -139,8 +135,7 @@ class PDFGraphicState(object):
                  self.scolor, self.ncolor))
 
 
-##  Resource Manager
-##
+
 class PDFResourceManager(object):
 
     """Repository of shared resources.
@@ -219,8 +214,7 @@ class PDFResourceManager(object):
         return font
 
 
-##  PDFContentParser
-##
+
 class PDFContentParser(PSStackParser):
 
     def __init__(self, streams):

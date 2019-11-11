@@ -39,8 +39,7 @@ from .utils import decode_text
 
 log = logging.getLogger(__name__)
 
-##  Exceptions
-##
+
 class PDFNoValidXRef(PDFSyntaxError):
     pass
 
@@ -65,8 +64,7 @@ LITERAL_XREF = LIT('XRef')
 LITERAL_CATALOG = LIT('Catalog')
 
 
-##  XRefs
-##
+
 class PDFBaseXRef(object):
 
     def get_trailer(self):
@@ -82,8 +80,7 @@ class PDFBaseXRef(object):
         raise KeyError(objid)
 
 
-##  PDFXRef
-##
+
 class PDFXRef(PDFBaseXRef):
 
     def __init__(self):
@@ -160,8 +157,7 @@ class PDFXRef(PDFBaseXRef):
             raise
 
 
-##  PDFXRefFallback
-##
+
 class PDFXRefFallback(PDFXRef):
 
     def __repr__(self):
@@ -216,8 +212,7 @@ class PDFXRefFallback(PDFXRef):
         return
 
 
-##  PDFXRefStream
-##
+
 class PDFXRefStream(PDFBaseXRef):
 
     def __init__(self):
@@ -288,8 +283,7 @@ class PDFXRefStream(PDFBaseXRef):
             raise KeyError(objid)
 
 
-##  PDFSecurityHandler
-##
+
 class PDFStandardSecurityHandler(object):
 
     PASSWORD_PADDING = (b'(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08'
@@ -514,8 +508,7 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         return AES.new(self.key, mode=AES.MODE_CBC, IV=data[:16]).decrypt(data[16:])
 
 
-##  PDFDocument
-##
+
 class PDFDocument(object):
 
     """PDFDocument object represents a PDF document.

@@ -9,8 +9,7 @@ import codecs
 import six
 
 
-##  CMapConverter
-##
+
 class CMapConverter(object):
 
     def __init__(self, enc2codec={}):

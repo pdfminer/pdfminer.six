@@ -13,8 +13,7 @@ from .utils import choplist
 log = logging.getLogger(__name__)
 
 
-##  PS Exceptions
-##
+
 class PSException(Exception):
     pass
 
@@ -35,11 +34,9 @@ class PSValueError(PSException):
     pass
 
 
-##  Basic PostScript Types
-##
 
-##  PSObject
-##
+
+
 class PSObject(object):
 
     """Base class for all PS or PDF-related data types."""
@@ -47,8 +44,7 @@ class PSObject(object):
     pass
 
 
-##  PSLiteral
-##
+
 class PSLiteral(PSObject):
 
     """A class that represents a PostScript literal.
@@ -70,8 +66,7 @@ class PSLiteral(PSObject):
         return '/%r' % name
 
 
-##  PSKeyword
-##
+
 class PSKeyword(PSObject):
 
     """A class that represents a PostScript keyword.
@@ -93,8 +88,7 @@ class PSKeyword(PSObject):
         return '/%r' % name
 
 
-##  PSSymbolTable
-##
+
 class PSSymbolTable(object):
 
     """A utility class for storing PSLiteral/PSKeyword objects.
@@ -155,8 +149,7 @@ def keyword_name(x):
     return name
 
 
-##  PSBaseParser
-##
+
 EOL = re.compile(br'[\r\n]')
 SPC = re.compile(br'\s')
 NONSPC = re.compile(br'\S')
@@ -504,8 +497,7 @@ class PSBaseParser(object):
         return token
 
 
-##  PSStackParser
-##
+
 class PSStackParser(PSBaseParser):
 
     def __init__(self, fp):

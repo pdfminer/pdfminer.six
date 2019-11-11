@@ -15,14 +15,12 @@ from .pdftypes import dict_value
 log = logging.getLogger(__name__)
 
 
-##  Exceptions
-##
+
 class PDFSyntaxError(PDFException):
     pass
 
 
-##  PDFParser
-##
+
 class PDFParser(PSStackParser):
 
     """
@@ -134,8 +132,7 @@ class PDFParser(PSStackParser):
         return
 
 
-##  PDFStreamParser
-##
+
 class PDFStreamParser(PDFParser):
 
     """

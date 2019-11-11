@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 class CorruptDataError(Exception):
     pass
 
-##  LZWDecoder
-##
+
 class LZWDecoder(object):
 
     def __init__(self, fp):

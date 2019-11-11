@@ -29,8 +29,6 @@ LITERALS_CCITTFAX_DECODE = (LIT('CCITTFaxDecode'), LIT('CCF'))
 LITERALS_DCT_DECODE = (LIT('DCTDecode'), LIT('DCT'))
 LITERALS_JBIG2_DECODE = (LIT('JBIG2Decode'),)
 
-##  PDF Objects
-##
 class PDFObject(PSObject):
     pass
 
@@ -50,8 +48,7 @@ class PDFNotImplementedError(PDFException):
     pass
 
 
-##  PDFObjRef
-##
+
 class PDFObjRef(PDFObject):
 
     def __init__(self, doc, objid, _):
@@ -73,7 +70,6 @@ class PDFObjRef(PDFObject):
             return default
 
 
-# resolve
 def resolve1(x, default=None):
     """Resolves an object.
 
@@ -114,7 +110,6 @@ def decipher_all(decipher, objid, genno, x):
     return x
 
 
-# Type cheking
 def int_value(x):
     x = resolve1(x)
     if not isinstance(x, int):
@@ -179,8 +174,7 @@ def stream_value(x):
     return x
 
 
-##  PDFStream type
-##
+
 class PDFStream(PDFObject):
 
     def __init__(self, attrs, rawdata, decipher=None):

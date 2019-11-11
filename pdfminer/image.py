@@ -15,8 +15,7 @@ def align32(x):
     return ((x+3)//4)*4
 
 
-##  BMPWriter
-##
+
 class BMPWriter(object):
 
     def __init__(self, fp, bits, width, height):

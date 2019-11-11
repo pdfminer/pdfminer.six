@@ -29,8 +29,7 @@ import six  # Python 2+3 compatibility
 log = logging.getLogger(__name__)
 
 
-##  PDFLayoutAnalyzer
-##
+
 class PDFLayoutAnalyzer(PDFTextDevice):
 
     def __init__(self, rsrcmgr, pageno=1, laparams=None):
@@ -133,8 +132,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
 
-##  PDFPageAggregator
-##
+
 class PDFPageAggregator(PDFLayoutAnalyzer):
 
     def __init__(self, rsrcmgr, pageno=1, laparams=None):
@@ -150,8 +148,7 @@ class PDFPageAggregator(PDFLayoutAnalyzer):
         return self.result
 
 
-##  PDFConverter
-##
+
 class PDFConverter(PDFLayoutAnalyzer):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None):
@@ -178,8 +175,7 @@ class PDFConverter(PDFLayoutAnalyzer):
         return
 
 
-##  TextConverter
-##
+
 class TextConverter(PDFConverter):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8', pageno=1, laparams=None,
@@ -227,8 +223,7 @@ class TextConverter(PDFConverter):
         return
 
 
-##  HTMLConverter
-##
+
 class HTMLConverter(PDFConverter):
 
     RECT_COLORS = {
@@ -431,8 +426,7 @@ class HTMLConverter(PDFConverter):
         return
 
 
-##  XMLConverter
-##
+
 class XMLConverter(PDFConverter):
 
     CONTROL = re.compile(u'[\x00-\x08\x0b-\x0c\x0e-\x1f]')

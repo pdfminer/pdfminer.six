@@ -19,8 +19,7 @@ log = logging.getLogger(__name__)
 LITERAL_PAGE = LIT('Page')
 LITERAL_PAGES = LIT('Pages')
 
-##  PDFPage
-##
+
 class PDFPage(object):
 
     """An object that holds the information about a page.
