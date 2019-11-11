@@ -29,7 +29,7 @@ from .encodingdb import name2unicode
 from .utils import choplist
 from .utils import nunpack
 
-import six 
+import six
 
 log = logging.getLogger(__name__)
 
@@ -156,7 +156,8 @@ class UnicodeMap(CMapBase):
 class FileCMap(CMap):
 
     def add_code2cid(self, code, cid):
-        assert isinstance(code, str) and isinstance(cid, int), str((type(code), type(cid)))
+        assert isinstance(code, str) and isinstance(cid, int),\
+            str((type(code), type(cid)))
         d = self.code2cid
         for c in code[:-1]:
             c = ord(c)
@@ -261,8 +262,9 @@ class CMapDB(object):
         except KeyError:
             pass
         data = cls._load_data('to-unicode-%s' % name)
-        cls._umap_cache[name] = umaps = [PyUnicodeMap(name, data, v) for v in (False, True)]
-        return umaps[vertical]
+        cls._umap_cache[name] = [PyUnicodeMap(name, data, v)
+                                 for v in (False, True)]
+        return cls._umap_cache[name][vertical]
 
 
 class CMapParser(PSStackParser):
@@ -375,7 +377,7 @@ class CMapParser(PSStackParser):
             for (s, e, code) in choplist(3, objs):
                 if (not isinstance(s, bytes) or not isinstance(e, bytes) or
                    len(s) != len(e)):
-                        continue
+                    continue
                 s1 = nunpack(s)
                 e1 = nunpack(e)
                 if isinstance(code, list):
