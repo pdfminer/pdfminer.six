@@ -17,7 +17,8 @@ class PDFColorSpace(object):
         return
 
     def __repr__(self):
-        return '<PDFColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
+        return '<PDFColorSpace: %s, ncomponents=%d>' % \
+               (self.name, self.ncomponents)
 
 
 if six.PY2:
@@ -36,4 +37,4 @@ for (name, n) in [
     ('Indexed', 1),
     ('Pattern', 1),
 ]:
-    PREDEFINED_COLORSPACE[name]=PDFColorSpace(name, n)
+    PREDEFINED_COLORSPACE[name] = PDFColorSpace(name, n)
