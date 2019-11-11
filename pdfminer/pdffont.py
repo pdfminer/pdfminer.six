@@ -78,7 +78,7 @@ def get_widths2(seq):
 class FontMetricsDB(object):
 
     @classmethod
-    def get_metrics(klass, fontname):
+    def get_metrics(cls, fontname):
         return FONT_METRICS[fontname]
 
 

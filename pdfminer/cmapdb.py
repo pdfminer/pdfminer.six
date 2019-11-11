@@ -219,7 +219,7 @@ class CMapDB(object):
         pass
 
     @classmethod
-    def _load_data(klass, name):
+    def _load_data(cls, name):
         name = name.replace("\0", "")
         filename = '%s.pickle.gz' % name
         log.info('loading: %r', name)
@@ -237,7 +237,7 @@ class CMapDB(object):
             raise CMapDB.CMapNotFound(name)
 
     @classmethod
-    def get_cmap(klass, name):
+    def get_cmap(cls, name):
         if name == 'Identity-H':
             return IdentityCMap(WMode=0)
         elif name == 'Identity-V':
@@ -247,21 +247,21 @@ class CMapDB(object):
         elif name == 'OneByteIdentityV':
             return IdentityCMapByte(WMode=1)
         try:
-            return klass._cmap_cache[name]
+            return cls._cmap_cache[name]
         except KeyError:
             pass
-        data = klass._load_data(name)
-        klass._cmap_cache[name] = cmap = PyCMap(name, data)
+        data = cls._load_data(name)
+        cls._cmap_cache[name] = cmap = PyCMap(name, data)
         return cmap
 
     @classmethod
-    def get_unicode_map(klass, name, vertical=False):
+    def get_unicode_map(cls, name, vertical=False):
         try:
-            return klass._umap_cache[name][vertical]
+            return cls._umap_cache[name][vertical]
         except KeyError:
             pass
-        data = klass._load_data('to-unicode-%s' % name)
-        klass._umap_cache[name] = umaps = [PyUnicodeMap(name, data, v) for v in (False, True)]
+        data = cls._load_data('to-unicode-%s' % name)
+        cls._umap_cache[name] = umaps = [PyUnicodeMap(name, data, v) for v in (False, True)]
         return umaps[vertical]
 
 

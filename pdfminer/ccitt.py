@@ -34,7 +34,7 @@ class BitParser(object):
         return
 
     @classmethod
-    def add(klass, root, v, bits):
+    def add(cls, root, v, bits):
         p = root
         b = None
         for i in range(len(bits)):
