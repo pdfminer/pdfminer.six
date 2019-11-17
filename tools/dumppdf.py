@@ -174,8 +174,8 @@ LITERAL_EMBEDDEDFILE = LIT('EmbeddedFile')
 def extractembedded(outfp, fname, objids, pagenos, password='',
                     dumpall=False, codec=None, extractdir=None):
     def extract1(obj):
-        filename = os.path.basename(obj['UF'] or obj['F'])
-        fileref = obj['EF']['F']
+        filename = os.path.basename(obj.get('UF') or obj.get('F').decode())
+        fileref = obj['EF'].get('UF') or obj['EF'].get('F')
         fileobj = doc.getobj(fileref.objid)
         if not isinstance(fileobj, PDFStream):
             raise PDFValueError(
@@ -189,6 +189,7 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
         if os.path.exists(path):
             raise IOError('file exists: %r' % path)
         print('extracting: %r' % path)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         out = open(path, 'wb')
         out.write(fileobj.get_data())
         out.close()
