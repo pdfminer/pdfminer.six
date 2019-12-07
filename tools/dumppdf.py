@@ -100,11 +100,13 @@ def dumpallobjs(out, doc, codec=None):
     out.write('<pdf>')
     for xref in doc.xrefs:
         for objid in xref.get_objids():
-            if objid in visited: continue
+            if objid in visited:
+                continue
             visited.add(objid)
             try:
                 obj = doc.getobj(objid)
-                if obj is None: continue
+                if obj is None:
+                    continue
                 out.write('<object id="%d">\n' % objid)
                 dumpxml(out, obj, codec=codec)
                 out.write('\n</object>\n\n')
@@ -183,8 +185,8 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
                 (filename))
         if fileobj.get('Type') is not LITERAL_EMBEDDEDFILE:
             raise PDFValueError(
-                'unable to process PDF: reference for %r is not an EmbeddedFile' %
-                (filename))
+                'unable to process PDF: reference for %r '
+                'is not an EmbeddedFile' % (filename))
         path = os.path.join(extractdir, filename)
         if os.path.exists(path):
             raise IOError('file exists: %r' % path)
