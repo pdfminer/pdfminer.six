@@ -1,6 +1,6 @@
 from nose.tools import assert_equal
 
-from pdfminer.ccitt import *
+from pdfminer.ccitt import CCITTG4Parser
 
 
 class TestCCITTG4Parser():

@@ -86,7 +86,7 @@ class TestPDFEncoding():
         font = PDFCIDFont(None, spec)
         assert isinstance(font.cmap, IdentityCMap)
 
-    def test_encoding_DLIdentH_as_PSLiteral_stream(self):
+    def test_encoding_DLIdentV_as_PSLiteral_stream(self):
         stream = PDFStream({'CMapName': PSLiteral('DLIdent-V')}, '')
         spec = {'Encoding': stream}
         font = PDFCIDFont(None, spec)
