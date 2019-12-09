@@ -10,6 +10,11 @@ from pdfminer.image import ImageWriter
 
 logging.basicConfig()
 
+OUTPUT_TYPES = ((".htm", "html"),
+                (".html", "html"),
+                (".xml", "xml"),
+                (".tag", "tag"))
+
 
 def extract_text(files=[], outfile='-',
             no_laparams=False, all_texts=None, detect_vertical=None, # LAParams
@@ -39,15 +44,8 @@ def extract_text(files=[], outfile='-',
     else:
         laparams = None
 
-    imagewriter = None
-    if output_dir:
-        imagewriter = ImageWriter(output_dir)
-
     if output_type == "text" and outfile != "-":
-        for override, alttype in (  (".htm", "html"),
-                                    (".html", "html"),
-                                    (".xml", "xml"),
-                                    (".tag", "tag") ):
+        for override, alttype in OUTPUT_TYPES:
             if outfile.endswith(override):
                 output_type = alttype
 
@@ -57,7 +55,6 @@ def extract_text(files=[], outfile='-',
             codec = 'utf-8'
     else:
         outfp = open(outfile, "wb")
-
 
     for fname in files:
         with open(fname, "rb") as fp:
@@ -145,28 +142,13 @@ def main(args=None):
     if A.pagenos:
         A.page_numbers = set([int(x)-1 for x in A.pagenos.split(",")])
 
-    imagewriter = None
-    if A.output_dir:
-        imagewriter = ImageWriter(A.output_dir)
-
     if six.PY2 and sys.stdin.encoding:
         A.password = A.password.decode(sys.stdin.encoding)
 
     if A.output_type == "text" and A.outfile != "-":
-        for override, alttype in (  (".htm",  "html"),
-                                    (".html", "html"),
-                                    (".xml",  "xml" ),
-                                    (".tag",  "tag" ) ):
+        for override, alttype in OUTPUT_TYPES:
             if A.outfile.endswith(override):
                 A.output_type = alttype
-
-    if A.outfile == "-":
-        outfp = sys.stdout
-        if outfp.encoding is not None:
-            # Why ignore outfp.encoding? :-/ stupid cathal?
-            A.codec = 'utf-8'
-    else:
-        outfp = open(A.outfile, "wb")
 
     ## Test Code
     outfp = extract_text(**vars(A))
@@ -174,4 +156,5 @@ def main(args=None):
     return 0
 
 
-if __name__ == '__main__': sys.exit(main())
+if __name__ == '__main__':
+    sys.exit(main())
