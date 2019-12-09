@@ -10,7 +10,8 @@ def run(sample_path, options=None):
     absolute_path = absolute_sample_path(sample_path)
     with NamedTemporaryFile() as output_file:
         if options:
-            s = 'pdf2txt -o %s %s %s' % (output_file.name, options, absolute_path)
+            s = 'pdf2txt -o %s %s %s' % (output_file.name,
+                                         options, absolute_path)
         else:
             s = 'pdf2txt -o %s %s' % (output_file.name, absolute_path)
         pdf2txt.main(s.split(' ')[1:])
@@ -34,7 +35,8 @@ class TestDumpPDF():
         run('sampleOneByteIdentityEncode.pdf')
 
     def test_nonfree_175(self):
-        """Regression test for https://github.com/pdfminer/pdfminer.six/issues/65"""
+        """Regression test for:
+        https://github.com/pdfminer/pdfminer.six/issues/65"""
         run('nonfree/175.pdf')
 
     def test_nonfree_dmca(self):
@@ -69,7 +71,8 @@ class TestDumpImages(object):
     def extract_images(input_file):
         output_dir = mkdtemp()
         with NamedTemporaryFile() as output_file:
-            commands = ['-o', output_file.name, '--output-dir', output_dir, input_file]
+            commands = ['-o', output_file.name, '--output-dir',
+                        output_dir, input_file]
             pdf2txt.main(commands)
         image_files = os.listdir(output_dir)
         rmtree(output_dir)
@@ -78,9 +81,11 @@ class TestDumpImages(object):
     def test_nonfree_dmca(self):
         """Extract images of pdf containing bmp images
 
-        Regression test for: https://github.com/pdfminer/pdfminer.six/issues/131
+        Regression test for:
+        https://github.com/pdfminer/pdfminer.six/issues/131
         """
-        image_files = self.extract_images(absolute_sample_path('../samples/nonfree/dmca.pdf'))
+        image_files = self.extract_images(
+            absolute_sample_path('../samples/nonfree/dmca.pdf'))
         assert image_files[0].endswith('bmp')
 
     def test_nonfree_175(self):
@@ -92,7 +97,8 @@ class TestDumpImages(object):
 
         Feature test for: https://github.com/pdfminer/pdfminer.six/pull/46
         """
-        image_files = self.extract_images(absolute_sample_path('../samples/contrib/pdf-with-jbig2.pdf'))
+        image_files = self.extract_images(
+            absolute_sample_path('../samples/contrib/pdf-with-jbig2.pdf'))
         assert image_files[0].endswith('.jb2')
 
     def test_contrib_matplotlib(self):

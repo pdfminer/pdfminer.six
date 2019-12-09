@@ -15,12 +15,16 @@ log = logging.getLogger(__name__)
 def name2unicode(name):
     """Converts Adobe glyph names to Unicode numbers.
 
-    In contrast to the specification, this raises a KeyError instead of return an empty string when the key is unknown.
-    This way the caller must explicitly define what to do when there is not a match.
+    In contrast to the specification, this raises a KeyError instead of return
+    an empty string when the key is unknown.
+    This way the caller must explicitly define what to do
+    when there is not a match.
 
-    Reference: https://github.com/adobe-type-tools/agl-specification#2-the-mapping
+    Reference:
+    https://github.com/adobe-type-tools/agl-specification#2-the-mapping
 
-    :returns unicode character if name resembles something, otherwise a KeyError
+    :returns unicode character if name resembles something,
+    otherwise a KeyError
     """
     name = name.split('.')[0]
     components = name.split('_')
@@ -35,8 +39,10 @@ def name2unicode(name):
         elif name.startswith('uni'):
             name_without_uni = name.strip('uni')
 
-            if HEXADECIMAL.match(name_without_uni) and len(name_without_uni) % 4 == 0:
-                unicode_digits = [int(name_without_uni[i:i + 4], base=16) for i in range(0, len(name_without_uni), 4)]
+            if HEXADECIMAL.match(name_without_uni) and \
+                    len(name_without_uni) % 4 == 0:
+                unicode_digits = [int(name_without_uni[i:i + 4], base=16)
+                                  for i in range(0, len(name_without_uni), 4)]
                 for digit in unicode_digits:
                     raise_key_error_for_invalid_unicode(digit)
                 characters = map(six.unichr, unicode_digits)
@@ -45,21 +51,25 @@ def name2unicode(name):
         elif name.startswith('u'):
             name_without_u = name.strip('u')
 
-            if HEXADECIMAL.match(name_without_u) and 4 <= len(name_without_u) <= 6:
+            if HEXADECIMAL.match(name_without_u) and \
+                    4 <= len(name_without_u) <= 6:
                 unicode_digit = int(name_without_u, base=16)
                 raise_key_error_for_invalid_unicode(unicode_digit)
                 return six.unichr(unicode_digit)
 
-    raise KeyError('Could not convert unicode name "%s" to character because it does not match specification' % name)
+    raise KeyError('Could not convert unicode name "%s" to character because '
+                   'it does not match specification' % name)
 
 
 def raise_key_error_for_invalid_unicode(unicode_digit):
-    """Unicode values should not be in the range D800 through DFFF because that is used for surrogate pairs in UTF-16
+    """Unicode values should not be in the range D800 through DFFF because
+    that is used for surrogate pairs in UTF-16
 
     :raises KeyError if unicode digit is invalid
     """
     if 55295 < unicode_digit < 57344:
-        raise KeyError('Unicode digit %d is invalid because it is in the range D800 through DFFF' % unicode_digit)
+        raise KeyError('Unicode digit %d is invalid because '
+                       'it is in the range D800 through DFFF' % unicode_digit)
 
 
 class EncodingDB(object):
