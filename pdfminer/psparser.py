@@ -570,7 +570,6 @@ class PSStackParser(PSBaseParser):
         """
         while not self.results:
             (pos, token) = self.nexttoken()
-            # print (pos,token), (self.curtype, self.curstack)
             if isinstance(token, (six.integer_types, float, bool,
                                   six.string_types, six.binary_type,
                                   PSLiteral)):

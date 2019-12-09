@@ -267,7 +267,6 @@ class PDFContentParser(PSStackParser):
             else:
                 try:
                     j = self.buf.index(target[0], self.charpos)
-                    # print 'found', (0, self.buf[j:j+10])
                     data += self.buf[self.charpos:j+1]
                     self.charpos = j+1
                     i = 1
