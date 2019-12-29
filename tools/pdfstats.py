@@ -20,7 +20,7 @@ _, SCRIPT = os.path.split(__file__)
 
 
 def msg(*args, **kwargs):
-    print(' '.join(map(str, args)), **kwargs)
+    print(' '.join(map(str, args)), **kwargs)  # noqa E999
 
 
 def flat_iter(obj):
