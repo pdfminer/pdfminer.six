@@ -29,12 +29,12 @@ def rldecode(data):
 
         if length >= 0 and length < 128:
             for j in range(i+1, (i+1)+(length+1)):
-                decoded+=bytes((data[j],))
+                decoded += bytes((data[j],))
             i = (i+1) + (length+1)
 
         if length > 128:
             run = bytes((data[i+1],))*(257-length)
-            decoded+=run
+            decoded += run
             i = (i+1) + 1
 
     return decoded

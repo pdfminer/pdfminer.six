@@ -4,8 +4,6 @@ import argparse
 import logging
 import sys
 
-import six
-
 import pdfminer.high_level
 import pdfminer.layout
 

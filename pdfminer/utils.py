@@ -2,12 +2,11 @@
 Miscellaneous Routines.
 """
 import struct
+import chardet  # For str encoding detection
 
 # from sys import maxint as INF doesn't work anymore under Python3, but PDF
 # still uses 32 bits ints
 INF = (1 << 31) - 1
-
-import chardet  # For str encoding detection
 
 
 def make_compat_bytes(in_str):

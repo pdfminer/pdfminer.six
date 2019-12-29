@@ -121,7 +121,7 @@ def literal_name(x):
     else:
         name = x.name
         try:
-            name = str(name,'utf-8')
+            name = str(name, 'utf-8')
         except Exception:
             pass
     return name

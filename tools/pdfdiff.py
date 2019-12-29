@@ -31,12 +31,14 @@ def compare(file1, file2, **kwargs):
                       "char_margin", "line_margin", "boxes_flow"):
             paramv = kwargs.get(param, None)
             if paramv is not None:
+                laparams[param] = paramv
+        kwargs['laparams'] = laparams
 
-    s1=io.StringIO()
+    s1 = io.StringIO()
     with open(file1, "rb") as fp:
-        high_level.extract_text_to_fp(fp,s1, **kwargs)
-    
-    s2=io.StringIO()
+        high_level.extract_text_to_fp(fp, s1, **kwargs)
+
+    s2 = io.StringIO()
     with open(file2, "rb") as fp:
         high_level.extract_text_to_fp(fp, s2, **kwargs)
 
