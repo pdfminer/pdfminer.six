@@ -3,11 +3,11 @@ output it to plain text, html, xml or tags."""
 import argparse
 import logging
 import sys
+
 import six
 
 import pdfminer.high_level
 import pdfminer.layout
-from pdfminer.image import ImageWriter
 
 logging.basicConfig()
 
@@ -190,7 +190,7 @@ def main(args=None):
         for override, alttype in OUTPUT_TYPES:
             if A.outfile.endswith(override):
                 A.output_type = alttype
-                
+
     outfp = extract_text(**vars(A))
     outfp.close()
     return 0
