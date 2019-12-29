@@ -22,12 +22,14 @@ class TestPlane(object):
         assert_equal(result, [obj])
 
     def test_find_if_object_is_smaller_than_gridsize(self):
-        plane, obj = self.given_plane_with_one_object(object_size=1, gridsize=100)
+        plane, obj = self.given_plane_with_one_object(object_size=1,
+                                                      gridsize=100)
         result = list(plane.find((0, 0, 100, 100)))
         assert_equal(result, [obj])
 
     def test_find_object_if_much_larger_than_gridsize(self):
-        plane, obj = self.given_plane_with_one_object(object_size=100, gridsize=10)
+        plane, obj = self.given_plane_with_one_object(object_size=100,
+                                                      gridsize=10)
         result = list(plane.find((0, 0, 100, 100)))
         assert_equal(result, [obj])
 

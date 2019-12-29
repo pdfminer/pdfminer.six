@@ -62,8 +62,6 @@ class PDFDevice(object):
         return
 
 
-##  PDFTextDevice
-##
 class PDFTextDevice(PDFDevice):
 
     def render_string(self, textstate, seq, ncs, graphicstate):
@@ -80,11 +78,13 @@ class PDFTextDevice(PDFDevice):
         if font.is_vertical():
             textstate.linematrix = self.render_string_vertical(
                 seq, matrix, textstate.linematrix, font, fontsize,
-                scaling, charspace, wordspace, rise, dxscale, ncs, graphicstate)
+                scaling, charspace, wordspace, rise, dxscale, ncs,
+                graphicstate)
         else:
             textstate.linematrix = self.render_string_horizontal(
                 seq, matrix, textstate.linematrix, font, fontsize,
-                scaling, charspace, wordspace, rise, dxscale, ncs, graphicstate)
+                scaling, charspace, wordspace, rise, dxscale, ncs,
+                graphicstate)
         return
 
     def render_string_horizontal(self, seq, matrix, pos,
@@ -100,9 +100,9 @@ class PDFTextDevice(PDFDevice):
                 for cid in font.decode(obj):
                     if needcharspace:
                         x += charspace
-                    x += self.render_char(utils.translate_matrix(matrix, (x, y)),
-                                          font, fontsize, scaling, rise, cid,
-                                          ncs, graphicstate)
+                    x += self.render_char(
+                        utils.translate_matrix(matrix, (x, y)), font,
+                        fontsize, scaling, rise, cid, ncs, graphicstate)
                     if cid == 32 and wordspace:
                         x += wordspace
                     needcharspace = True
@@ -121,20 +121,19 @@ class PDFTextDevice(PDFDevice):
                 for cid in font.decode(obj):
                     if needcharspace:
                         y += charspace
-                    y += self.render_char(utils.translate_matrix(matrix, (x, y)),
-                                          font, fontsize, scaling, rise, cid,
-                                          ncs, graphicstate)
+                    y += self.render_char(
+                        utils.translate_matrix(matrix, (x, y)), font, fontsize,
+                        scaling, rise, cid, ncs, graphicstate)
                     if cid == 32 and wordspace:
                         y += wordspace
                     needcharspace = True
         return (x, y)
 
-    def render_char(self, matrix, font, fontsize, scaling, rise, cid, ncs, graphicstate):
+    def render_char(self, matrix, font, fontsize, scaling, rise, cid, ncs,
+                    graphicstate):
         return 0
 
 
-##  TagExtractor
-##
 class TagExtractor(PDFDevice):
 
     def __init__(self, rsrcmgr, outfp, codec='utf-8'):
@@ -165,7 +164,8 @@ class TagExtractor(PDFDevice):
         return
 
     def begin_page(self, page, ctm):
-        output = '<page id="%s" bbox="%s" rotate="%d">' % (self.pageno, utils.bbox2str(page.mediabox), page.rotate)
+        output = '<page id="%s" bbox="%s" rotate="%d">' %\
+                 (self.pageno, utils.bbox2str(page.mediabox), page.rotate)
         self.outfp.write(utils.make_compat_bytes(output))
         return
 
@@ -177,8 +177,8 @@ class TagExtractor(PDFDevice):
     def begin_tag(self, tag, props=None):
         s = ''
         if isinstance(props, dict):
-            s = ''.join(' %s="%s"' % (utils.enc(k), utils.enc(str(v))) for (k, v)
-                        in sorted(six.iteritems(props)))
+            s = ''.join(' %s="%s"' % (utils.enc(k), utils.enc(str(v)))
+                        for (k, v) in sorted(six.iteritems(props)))
         out_s = '<%s%s>' % (utils.enc(tag.name), s)
         self.outfp.write(utils.make_compat_bytes(out_s))
         self._stack.append(tag)

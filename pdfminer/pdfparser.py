@@ -1,4 +1,3 @@
-
 import logging
 from io import BytesIO
 from .psparser import PSStackParser
@@ -15,16 +14,11 @@ from .pdftypes import dict_value
 log = logging.getLogger(__name__)
 
 
-##  Exceptions
-##
 class PDFSyntaxError(PDFException):
     pass
 
 
-##  PDFParser
-##
 class PDFParser(PSStackParser):
-
     """
     PDFParser fetch PDF objects from a file stream.
     It can handle indirect references by referring to
@@ -123,7 +117,8 @@ class PDFParser(PSStackParser):
             data = bytes(data)
             self.seek(pos+objlen)
             # XXX limit objlen not to exceed object boundary
-            log.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...', pos, objlen, dic, data[:10])
+            log.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...', pos,
+                      objlen, dic, data[:10])
             obj = PDFStream(dic, data, self.doc.decipher)
             self.push((pos, obj))
 
@@ -134,10 +129,7 @@ class PDFParser(PSStackParser):
         return
 
 
-##  PDFStreamParser
-##
 class PDFStreamParser(PDFParser):
-
     """
     PDFStreamParser is used to parse PDF content streams
     that is contained in each page and has instructions
@@ -155,6 +147,7 @@ class PDFStreamParser(PDFParser):
         return
 
     KEYWORD_OBJ = KWD(b'obj')
+
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_R:
             # reference to indirect object

@@ -1,14 +1,16 @@
 #!/usr/bin/env python
-
 import sys
 
+
 def prof_main(argv):
-    import hotshot, hotshot.stats
+    import hotshot.stats
+
     def usage():
-        print ('usage: %s module.function [args ...]' % argv[0])
+        print('usage: %s module.function [args ...]' % argv[0])
         return 100
     args = argv[1:]
-    if len(args) < 1: return usage()
+    if len(args) < 1:
+        return usage()
     name = args.pop(0)
     prof = name+'.prof'
     i = name.rindex('.')
@@ -18,7 +20,7 @@ def prof_main(argv):
     if args:
         args.insert(0, argv[0])
         prof = hotshot.Profile(prof)
-        prof.runcall(lambda : func(args))
+        prof.runcall(lambda: func(args))
         prof.close()
     else:
         stats = hotshot.stats.load(prof)
@@ -27,4 +29,6 @@ def prof_main(argv):
         stats.print_stats(1000)
     return
 
-if __name__ == '__main__': sys.exit(prof_main(sys.argv))
+
+if __name__ == '__main__':
+    sys.exit(prof_main(sys.argv))

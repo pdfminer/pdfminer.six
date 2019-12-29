@@ -1,8 +1,6 @@
 
 from io import BytesIO
-
-import six  #Python 2+3 compatibility
-
+import six
 import logging
 
 
@@ -12,8 +10,7 @@ logger = logging.getLogger(__name__)
 class CorruptDataError(Exception):
     pass
 
-##  LZWDecoder
-##
+
 class LZWDecoder(object):
 
     def __init__(self, fp):
@@ -71,12 +68,12 @@ class LZWDecoder(object):
                 x = self.table[code]
             else:
                 raise CorruptDataError
-            l = len(self.table)
-            if l == 511:
+            table_length = len(self.table)
+            if table_length == 511:
                 self.nbits = 10
-            elif l == 1023:
+            elif table_length == 1023:
                 self.nbits = 11
-            elif l == 2047:
+            elif table_length == 2047:
                 self.nbits = 12
             self.prevbuf = x
         return x
@@ -93,13 +90,12 @@ class LZWDecoder(object):
                 # just ignore corrupt data and stop yielding there
                 break
             yield x
-            logger.debug('nbits=%d, code=%d, output=%r, table=%r' %
-                          (self.nbits, code, x, self.table[258:]))
+            logger.debug('nbits=%d, code=%d, output=%r, table=%r'
+                         % (self.nbits, code, x, self.table[258:]))
         return
 
 
-# lzwdecode
 def lzwdecode(data):
     fp = BytesIO(data)
-    s=LZWDecoder(fp).run()
+    s = LZWDecoder(fp).run()
     return b''.join(s)

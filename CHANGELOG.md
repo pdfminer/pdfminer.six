@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+- Enforce pep8 coding style by adding flake8 to CI ([#345](https://github.com/pdfminer/pdfminer.six/pull/345))
+
 ## [20191110] - 2019-11-10
 
 ### Fixed

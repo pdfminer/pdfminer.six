@@ -9,16 +9,14 @@ import codecs
 import six
 
 
-##  CMapConverter
-##
 class CMapConverter(object):
 
     def __init__(self, enc2codec={}):
         self.enc2codec = enc2codec
-        self.code2cid = {} # {'cmapname': ...}
+        self.code2cid = {}  # {'cmapname': ...}
         self.is_vertical = {}
-        self.cid2unichr_h = {} # {cid: unichr}
-        self.cid2unichr_v = {} # {cid: unichr}
+        self.cid2unichr_h = {}  # {cid: unichr}
+        self.cid2unichr_v = {}  # {cid: unichr}
         return
 
     def get_encs(self):
@@ -49,8 +47,9 @@ class CMapConverter(object):
     def load(self, fp):
         encs = None
         for line in fp:
-            (line,_,_) = line.strip().partition('#')
-            if not line: continue
+            (line, _, _) = line.strip().partition('#')
+            if not line:
+                continue
             values = line.split('\t')
             if encs is None:
                 assert values[0] == 'CID', str(values)
@@ -90,16 +89,18 @@ class CMapConverter(object):
 
             def pick(unimap):
                 chars = list(unimap.items())
-                chars.sort(key=(lambda x:(x[1],-ord(x[0]))), reverse=True)
-                (c,_) = chars[0]
+                chars.sort(key=(lambda x: (x[1], -ord(x[0]))), reverse=True)
+                (c, _) = chars[0]
                 return c
 
             cid = int(values[0])
             unimap_h = {}
             unimap_v = {}
-            for (enc,value) in zip(encs, values):
-                if enc == 'CID': continue
-                if value == '*': continue
+            for (enc, value) in zip(encs, values):
+                if enc == 'CID':
+                    continue
+                if value == '*':
+                    continue
 
                 # hcodes, vcodes: encoded bytes for each writing mode.
                 hcodes = []
@@ -110,7 +111,7 @@ class CMapConverter(object):
                         code = code[:-1]
                     try:
                         code = codecs.decode(code, 'hex_codec')
-                    except:
+                    except Exception:
                         code = chr(int(code, 16))
                     if vertical:
                         vcodes.append(code)
@@ -155,14 +156,15 @@ class CMapConverter(object):
         fp.write(pickle.dumps(data, 2))
         return
 
-# main
+
 def main(argv):
     import getopt
     import gzip
     import os.path
 
     def usage():
-        print ('usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]' % argv[0])
+        print('usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]'
+              % argv[0])
         return 100
     try:
         (opts, args) = getopt.getopt(argv[1:], 'c:')
@@ -171,16 +173,18 @@ def main(argv):
     enc2codec = {}
     for (k, v) in opts:
         if k == '-c':
-            (enc,_,codec) = v.partition('=')
+            (enc, _, codec) = v.partition('=')
             enc2codec[enc] = codec
-    if not args: return usage()
+    if not args:
+        return usage()
     outdir = args.pop(0)
-    if not args: return usage()
+    if not args:
+        return usage()
     regname = args.pop(0)
 
     converter = CMapConverter(enc2codec)
     for path in args:
-        print ('reading: %r...' % path)
+        print('reading: %r...' % path)
         fp = open(path)
         converter.load(fp)
         fp.close()
@@ -188,17 +192,19 @@ def main(argv):
     for enc in converter.get_encs():
         fname = '%s.pickle.gz' % enc
         path = os.path.join(outdir, fname)
-        print ('writing: %r...' % path)
+        print('writing: %r...' % path)
         fp = gzip.open(path, 'wb')
         converter.dump_cmap(fp, enc)
         fp.close()
 
     fname = 'to-unicode-%s.pickle.gz' % regname
     path = os.path.join(outdir, fname)
-    print ('writing: %r...' % path)
+    print('writing: %r...' % path)
     fp = gzip.open(path, 'wb')
     converter.dump_unicodemap(fp)
     fp.close()
     return
 
-if __name__ == '__main__': sys.exit(main(sys.argv))
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))

@@ -15,8 +15,6 @@ def align32(x):
     return ((x+3)//4)*4
 
 
-##  BMPWriter
-##
 class BMPWriter(object):
 
     def __init__(self, fp, bits, width, height):
@@ -35,9 +33,11 @@ class BMPWriter(object):
         self.linesize = align32((self.width*self.bits+7)//8)
         self.datasize = self.linesize * self.height
         headersize = 14+40+ncols*4
-        info = struct.pack('<IiiHHIIIIII', 40, self.width, self.height, 1, self.bits, 0, self.datasize, 0, 0, ncols, 0)
+        info = struct.pack('<IiiHHIIIIII', 40, self.width, self.height,
+                           1, self.bits, 0, self.datasize, 0, 0, ncols, 0)
         assert len(info) == 40, str(len(info))
-        header = struct.pack('<ccIHHI', b'B', b'M', headersize+self.datasize, 0, 0, headersize)
+        header = struct.pack('<ccIHHI', b'B', b'M',
+                             headersize+self.datasize, 0, 0, headersize)
         assert len(header) == 14, str(len(header))
         self.fp.write(header)
         self.fp.write(info)
@@ -76,7 +76,8 @@ class ImageWriter(object):
 
         is_jbig2 = self.is_jbig2_image(image)
         ext = self._get_image_extension(image, width, height, is_jbig2)
-        name, path = self._create_unique_image_name(self.outdir, image.name, ext)
+        name, path = self._create_unique_image_name(self.outdir,
+                                                    image.name, ext)
 
         fp = open(path, 'wb')
         if ext == '.jpg':
@@ -146,7 +147,9 @@ class ImageWriter(object):
         elif is_jbig2:
             ext = '.jb2'
         elif (image.bits == 1 or
-              image.bits == 8 and (LITERAL_DEVICE_RGB in image.colorspace or LITERAL_DEVICE_GRAY in image.colorspace)):
+              image.bits == 8 and
+              (LITERAL_DEVICE_RGB in image.colorspace or
+               LITERAL_DEVICE_GRAY in image.colorspace)):
             ext = '.%dx%d.bmp' % (width, height)
         else:
             ext = '.%d.%dx%d.img' % (image.bits, width, height)

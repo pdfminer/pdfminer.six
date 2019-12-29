@@ -1,15 +1,9 @@
 """Functions that can be used for the most common use-cases for pdfminer.six"""
- 
+
 import logging
 import sys
 
 import six
-
-# Conditional import because python 2 is stupid
-if sys.version_info > (3, 0):
-    from io import StringIO
-else:
-    from io import BytesIO as StringIO
 
 from .pdfinterp import PDFResourceManager, PDFPageInterpreter
 from .pdfdevice import TagExtractor
@@ -18,36 +12,46 @@ from .converter import XMLConverter, HTMLConverter, TextConverter
 from .image import ImageWriter
 from .layout import LAParams
 
+# Conditional import because python 2 is stupid
+if sys.version_info > (3, 0):
+    from io import StringIO
+else:
+    from io import BytesIO as StringIO
 
-def extract_text_to_fp(inf, outfp,
-                    output_type='text', codec='utf-8', laparams = None,
-                    maxpages=0, page_numbers=None, password="", scale=1.0, rotation=0,
-                    layoutmode='normal', output_dir=None, strip_control=False,
-                    debug=False, disable_caching=False, **kwargs):
-    """
-    Parses text from inf-file and writes to outfp file-like object.
+
+def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
+                       laparams=None, maxpages=0, page_numbers=None,
+                       password="", scale=1.0, rotation=0, layoutmode='normal',
+                       output_dir=None, strip_control=False, debug=False,
+                       disable_caching=False, **kwargs):
+    """Parses text from inf-file and writes to outfp file-like object.
+
     Takes loads of optional arguments but the defaults are somewhat sane.
-    Beware laparams: Including an empty LAParams is not the same as passing None!
-    Returns nothing, acting as it does on two streams. Use StringIO to get strings.
+    Beware laparams: Including an empty LAParams is not the same as passing
+        None!
 
     :param inf: a file-like object to read PDF structure from, such as a
         file handler (using the builtin `open()` function) or a `BytesIO`.
     :param outfp: a file-like object to write the text to.
-    :param output_type: May be 'text', 'xml', 'html', 'tag'. Only 'text' works properly.
+    :param output_type: May be 'text', 'xml', 'html', 'tag'. Only 'text' works
+        properly.
     :param codec: Text decoding codec
-    :param laparams: An LAParams object from pdfminer.layout. Default is None but may not layout correctly.
+    :param laparams: An LAParams object from pdfminer.layout. Default is None
+        but may not layout correctly.
     :param maxpages: How many pages to stop parsing after
     :param page_numbers: zero-indexed page numbers to operate on.
     :param password: For encrypted PDFs, the password to decrypt.
     :param scale: Scale factor
     :param rotation: Rotation factor
-    :param layoutmode: Default is 'normal', see pdfminer.converter.HTMLConverter
+    :param layoutmode: Default is 'normal', see
+        pdfminer.converter.HTMLConverter
     :param output_dir: If given, creates an ImageWriter for extracted images.
     :param strip_control: Does what it says on the tin
     :param debug: Output more logging data
     :param disable_caching: Does what it says on the tin
     :param other:
-    :return:
+    :return: nothing, acting as it does on two streams. Use StringIO to get
+        strings.
     """
     if '_py2_no_more_posargs' in kwargs is not None:
         raise DeprecationWarning(
@@ -124,14 +128,13 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
         for page in PDFPage.get_pages(
-            fp,
-            page_numbers,
-            maxpages=maxpages,
-            password=password,
-            caching=caching,
-            check_extractable=True,
+                fp,
+                page_numbers,
+                maxpages=maxpages,
+                password=password,
+                caching=caching,
+                check_extractable=True,
         ):
             interpreter.process_page(page)
 
         return output_string.getvalue()
-    

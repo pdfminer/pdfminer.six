@@ -5,7 +5,8 @@ import struct
 
 import six
 
-# from sys import maxint as INF doesn't work anymore under Python3, but PDF still uses 32 bits ints
+# from sys import maxint as INF doesn't work anymore under Python3, but PDF
+# still uses 32 bits ints
 INF = (1 << 31) - 1
 
 if six.PY3:
@@ -42,10 +43,15 @@ def shorten_str(s, size):
         return s
 
 
-def compatible_encode_method(bytesorstring, encoding='utf-8', erraction='ignore'):
-    """When Py2 str.encode is called, it often means bytes.encode in Py3. This does either."""
+def compatible_encode_method(bytesorstring, encoding='utf-8',
+                             erraction='ignore'):
+    """When Py2 str.encode is called, it often means bytes.encode in Py3.
+
+     This does either.
+     """
     if six.PY2:
-        assert isinstance(bytesorstring, (str, unicode)), str(type(bytesorstring))
+        error_msg = str(type(bytesorstring))
+        assert isinstance(bytesorstring, (str, unicode)), error_msg
         return bytesorstring.encode(encoding, erraction)
     if six.PY3:
         if isinstance(bytesorstring, str):
@@ -205,21 +211,21 @@ def choplist(n, seq):
 
 def nunpack(s, default=0):
     """Unpacks 1 to 4 or 8 byte integers (big endian)."""
-    l = len(s)
-    if not l:
+    length = len(s)
+    if not length:
         return default
-    elif l == 1:
+    elif length == 1:
         return ord(s)
-    elif l == 2:
+    elif length == 2:
         return struct.unpack('>H', s)[0]
-    elif l == 3:
+    elif length == 3:
         return struct.unpack('>L', b'\x00' + s)[0]
-    elif l == 4:
+    elif length == 4:
         return struct.unpack('>L', s)[0]
-    elif l == 8:
+    elif length == 8:
         return struct.unpack('>Q', s)[0]
     else:
-        raise TypeError('invalid length: %d' % l)
+        raise TypeError('invalid length: %d' % length)
 
 
 PDFDocEncoding = ''.join(six.unichr(x) for x in (
@@ -270,7 +276,8 @@ def enc(x, codec='ascii'):
     """Encodes a string for SGML/XML/HTML"""
     if six.PY3 and isinstance(x, bytes):
         return ''
-    x = x.replace('&', '&amp;').replace('>', '&gt;').replace('<', '&lt;').replace('"', '&quot;')
+    x = x.replace('&', '&amp;').replace('>', '&gt;').replace('<', '&lt;') \
+        .replace('"', '&quot;')
     if codec:
         x = x.encode(codec, 'xmlcharrefreplace')
     return x
@@ -290,7 +297,9 @@ def vecBetweenBoxes(obj1, obj2):
     """A distance function between two TextBoxes.
 
     Consider the bounding rectangle for obj1 and obj2.
-    Return vector between 2 boxes boundaries if they don't overlap, otherwise returns vector betweeen boxes centers
+    Return vector between 2 boxes boundaries if they don't overlap, otherwise
+    returns vector betweeen boxes centers
+
              +------+..........+ (x1, y1)
              | obj1 |          :
              +------+www+------+
@@ -385,6 +394,7 @@ class Plane(object):
                 if obj in done:
                     continue
                 done.add(obj)
-                if obj.x1 <= x0 or x1 <= obj.x0 or obj.y1 <= y0 or y1 <= obj.y0:
+                if obj.x1 <= x0 or x1 <= obj.x0 or obj.y1 <= y0 \
+                        or y1 <= obj.y0:
                     continue
                 yield obj

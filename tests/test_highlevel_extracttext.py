@@ -11,7 +11,9 @@ def run(sample_path):
 
 
 test_strings = {
-    "simple1.pdf": "Hello \n\nWorld\n\nHello \n\nWorld\n\nH e l l o  \n\nW o r l d\n\nH e l l o  \n\nW o r l d\n\n\f",
+    "simple1.pdf": "Hello \n\nWorld\n\nHello \n\nWorld\n\n"
+                   "H e l l o  \n\nW o r l d\n\n"
+                   "H e l l o  \n\nW o r l d\n\n\f",
     "simple2.pdf": "\f",
     "simple3.pdf": "HelloHello\n\nWorld\n\nWorld\n\n\f",
 }

@@ -5,7 +5,7 @@
 import re
 import logging
 
-import six  # Python 2+3 compatibility
+import six
 
 from . import settings
 from .utils import choplist
@@ -13,8 +13,6 @@ from .utils import choplist
 log = logging.getLogger(__name__)
 
 
-##  PS Exceptions
-##
 class PSException(Exception):
     pass
 
@@ -35,11 +33,6 @@ class PSValueError(PSException):
     pass
 
 
-##  Basic PostScript Types
-##
-
-##  PSObject
-##
 class PSObject(object):
 
     """Base class for all PS or PDF-related data types."""
@@ -47,8 +40,6 @@ class PSObject(object):
     pass
 
 
-##  PSLiteral
-##
 class PSLiteral(PSObject):
 
     """A class that represents a PostScript literal.
@@ -66,12 +57,10 @@ class PSLiteral(PSObject):
         self.name = name
 
     def __repr__(self):
-        name=self.name
+        name = self.name
         return '/%r' % name
 
 
-##  PSKeyword
-##
 class PSKeyword(PSObject):
 
     """A class that represents a PostScript keyword.
@@ -89,12 +78,10 @@ class PSKeyword(PSObject):
         return
 
     def __repr__(self):
-        name=self.name
+        name = self.name
         return '/%r' % name
 
 
-##  PSSymbolTable
-##
 class PSSymbolTable(object):
 
     """A utility class for storing PSLiteral/PSKeyword objects.
@@ -115,6 +102,7 @@ class PSSymbolTable(object):
             self.dict[name] = lit
         return lit
 
+
 PSLiteralTable = PSSymbolTable(PSLiteral)
 PSKeywordTable = PSSymbolTable(PSKeyword)
 LIT = PSLiteralTable.intern
@@ -132,31 +120,30 @@ def literal_name(x):
         if settings.STRICT:
             raise PSTypeError('Literal required: %r' % (x,))
         else:
-            name=x
+            name = x
     else:
-        name=x.name
+        name = x.name
         if six.PY3:
             try:
-                name = str(name,'utf-8')
-            except:
+                name = str(name, 'utf-8')
+            except Exception:
                 pass
     return name
+
 
 def keyword_name(x):
     if not isinstance(x, PSKeyword):
         if settings.STRICT:
             raise PSTypeError('Keyword required: %r' % x)
         else:
-            name=x
+            name = x
     else:
-        name=x.name
+        name = x.name
         if six.PY3:
-            name = str(name,'utf-8','ignore')
+            name = str(name, 'utf-8', 'ignore')
     return name
 
 
-##  PSBaseParser
-##
 EOL = re.compile(br'[\r\n]')
 SPC = re.compile(br'\s')
 NONSPC = re.compile(br'\S')
@@ -168,7 +155,16 @@ END_NUMBER = re.compile(br'[^0-9]')
 END_KEYWORD = re.compile(br'[#/%\[\]()<>{}\s]')
 END_STRING = re.compile(br'[()\134]')
 OCT_STRING = re.compile(br'[0-7]')
-ESC_STRING = {b'b': 8, b't': 9, b'n': 10, b'f': 12, b'r': 13, b'(': 40, b')': 41, b'\\': 92}
+ESC_STRING = {
+    b'b': 8,
+    b't': 9,
+    b'n': 10,
+    b'f': 12,
+    b'r': 13,
+    b'(': 40,
+    b')': 41,
+    b'\\': 92
+}
 
 
 class PSBaseParser(object):
@@ -183,7 +179,8 @@ class PSBaseParser(object):
         return
 
     def __repr__(self):
-        return '<%s: %r, bufpos=%d>' % (self.__class__.__name__, self.fp, self.bufpos)
+        return '<%s: %r, bufpos=%d>' % (self.__class__.__name__, self.fp,
+                                        self.bufpos)
 
     def flush(self):
         return
@@ -343,7 +340,7 @@ class PSBaseParser(object):
         self._curtoken += s[i:j]
         self._parse1 = self._parse_main
         # We ignore comments.
-        #self._tokens.append(self._curtoken)
+        # self._tokens.append(self._curtoken)
         return j
 
     def _parse_literal(self, s, i):
@@ -359,8 +356,8 @@ class PSBaseParser(object):
             self._parse1 = self._parse_literal_hex
             return j+1
         try:
-            self._curtoken=str(self._curtoken,'utf-8')
-        except:
+            self._curtoken = str(self._curtoken, 'utf-8')
+        except Exception:
             pass
         self._add_token(LIT(self._curtoken))
         self._parse1 = self._parse_main
@@ -444,7 +441,8 @@ class PSBaseParser(object):
             return j+1
         if c == b')':
             self.paren -= 1
-            if self.paren:  # WTF, they said balanced parens need no special treatment.
+            if self.paren:
+                # WTF, they said balanced parens need no special treatment.
                 self._curtoken += c
                 return j+1
         self._add_token(self._curtoken)
@@ -490,7 +488,8 @@ class PSBaseParser(object):
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        token = HEX_PAIR.sub(lambda m: six.int2byte(int(m.group(0), 16)),SPC.sub(b'', self._curtoken))
+        token = HEX_PAIR.sub(lambda m: six.int2byte(int(m.group(0), 16)),
+                             SPC.sub(b'', self._curtoken))
         self._add_token(token)
         self._parse1 = self._parse_main
         return j
@@ -504,10 +503,7 @@ class PSBaseParser(object):
         return token
 
 
-##  PSStackParser
-##
 class PSStackParser(PSBaseParser):
-
     def __init__(self, fp):
         PSBaseParser.__init__(self, fp)
         self.reset()
@@ -542,7 +538,7 @@ class PSStackParser(PSBaseParser):
     def add_results(self, *objs):
         try:
             log.debug('add_results: %r', objs)
-        except:
+        except Exception:
             log.debug('add_results: (unprintable object)')
         self.results.extend(objs)
         return
@@ -567,13 +563,16 @@ class PSStackParser(PSBaseParser):
     def nextobject(self):
         """Yields a list of objects.
 
-        Returns keywords, literals, strings, numbers, arrays and dictionaries.
-        Arrays and dictionaries are represented as Python lists and dictionaries.
+        Arrays and dictionaries are represented as Python lists and
+        dictionaries.
+
+        :return: keywords, literals, strings, numbers, arrays and dictionaries.
         """
         while not self.results:
             (pos, token) = self.nexttoken()
-            #print (pos,token), (self.curtype, self.curstack)
-            if isinstance(token, (six.integer_types, float, bool, six.string_types, six.binary_type, PSLiteral)):
+            if isinstance(token, (six.integer_types, float, bool,
+                                  six.string_types, six.binary_type,
+                                  PSLiteral)):
                 # normal token
                 self.push((pos, token))
             elif token == KEYWORD_ARRAY_BEGIN:
@@ -594,9 +593,11 @@ class PSStackParser(PSBaseParser):
                 try:
                     (pos, objs) = self.end_type('d')
                     if len(objs) % 2 != 0:
-                        raise PSSyntaxError('Invalid dictionary construct: %r' % objs)
+                        error_msg = 'Invalid dictionary construct: %r' % objs
+                        raise PSSyntaxError(error_msg)
                     # construct a Python dictionary.
-                    d = dict((literal_name(k), v) for (k, v) in choplist(2, objs) if v is not None)
+                    d = dict((literal_name(k), v)
+                             for (k, v) in choplist(2, objs) if v is not None)
                     self.push((pos, d))
                 except PSTypeError:
                     if settings.STRICT:
@@ -611,11 +612,13 @@ class PSStackParser(PSBaseParser):
                 except PSTypeError:
                     if settings.STRICT:
                         raise
-            elif isinstance(token,PSKeyword):
-                log.debug('do_keyword: pos=%r, token=%r, stack=%r', pos, token, self.curstack)
+            elif isinstance(token, PSKeyword):
+                log.debug('do_keyword: pos=%r, token=%r, stack=%r', pos,
+                          token, self.curstack)
                 self.do_keyword(pos, token)
             else:
-                log.error('unknown token: pos=%r, token=%r, stack=%r', pos, token, self.curstack)
+                log.error('unknown token: pos=%r, token=%r, stack=%r', pos,
+                          token, self.curstack)
                 self.do_keyword(pos, token)
                 raise
             if self.context:
@@ -625,6 +628,6 @@ class PSStackParser(PSBaseParser):
         obj = self.results.pop(0)
         try:
             log.debug('nextobject: %r', obj)
-        except:
+        except Exception:
             log.debug('nextobject: (unprintable object)')
         return obj

@@ -14,7 +14,7 @@ Any contribution is appreciated! You might want to:
     - If you report a bug in the results for a particular pdf, include that pdf. This allows others to replicate the
      issue. 
 * Fix issues by [creating pull requests](https://help.github.com/en/articles/creating-a-pull-request).
-* Help others by giving your thoughts on open issues and pull requests.
+* Help others by sharing your thoughs in comments on issues and pull requests.
 
 ## Guidelines for creating issues
 
@@ -29,10 +29,14 @@ Any contribution is appreciated! You might want to:
 * Pull requests should be merged to develop, not master. This ensures that master always equals the released version.  
 * Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case 
   of features, this will show that your code works correctly.
-* Code should work for Python 2.7 and Python 3.x (for now), conform to PEP8 code style (with a line-width of 120) 
-  and properly documented with docstrings.
+* Code should work for Python 2.7 and Python 3.x (for now), conform to PEP8 code style (enforced by 
+  [flake8](http://flake8.pycqa.org/en/latest/)) and properly documented with docstrings.
 * Check spelling and grammar.
 * Don't forget to update the [CHANGELOG.md](CHANGELOG.md#[Unreleased])
+
+## Guidelines for posting comments
+
+* [Be cordial and positive](https://www.kennethreitz.org/essays/be-cordial-or-be-on-your-way)
 
 ## Getting started
 
