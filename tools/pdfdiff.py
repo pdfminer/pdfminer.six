@@ -3,11 +3,13 @@
 """
 compares rwo pdf files.
 """
-from pdfminer import high_level, layout
-import sys
-import logging
 import io
+import logging
+import sys
+
 import pdfminer.settings
+from pdfminer import high_level, layout
+
 pdfminer.settings.STRICT = False
 
 
@@ -15,13 +17,6 @@ logging.basicConfig()
 
 
 def compare(file1, file2, **kwargs):
-    if '_py2_no_more_posargs' in kwargs is not None:
-        raise DeprecationWarning(
-            'The `_py2_no_more_posargs will be removed on January, 2020. At '
-            'that moment pdfminer.six will stop supporting Python 2. Please '
-            'upgrade to Python 3. For more information see '
-            'https://github.com/pdfminer/pdfminer .six/issues/194')
-
     # If any LAParams group arguments were passed,
     # create an LAParams object and
     # populate with given args. Otherwise, set it to None.

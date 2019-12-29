@@ -5,8 +5,6 @@ import re
 import sys
 from argparse import ArgumentParser
 
-import six
-
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
@@ -317,8 +315,6 @@ def main(argv=None):
         pagenos = set()
 
     password = args.password
-    if six.PY2 and sys.stdin.encoding:
-        password = password.decode(sys.stdin.encoding)
 
     if args.raw_stream:
         codec = 'raw'

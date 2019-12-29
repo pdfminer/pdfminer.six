@@ -23,13 +23,6 @@ def extract_text(files=[], outfile='-',
                  password="", scale=1.0, rotation=0, layoutmode='normal',
                  output_dir=None, debug=False, disable_caching=False,
                  **kwargs):
-    if '_py2_no_more_posargs' in kwargs is not None:
-        raise DeprecationWarning(
-            'The `_py2_no_more_posargs will be removed on January, 2020. At '
-            'that moment pdfminer.six will stop supporting Python 2. Please '
-            'upgrade to Python 3. For more information see '
-            'https://github.com/pdfminer/pdfminer .six/issues/194')
-
     if not files:
         raise ValueError("Must provide files to work upon!")
 
