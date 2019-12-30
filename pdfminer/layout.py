@@ -280,7 +280,7 @@ class LTChar(LTComponent, LTText):
         # compute the boundary rectangle.
         if font.is_vertical():
             # vertical
-            width = font.get_width() * fontsize
+            width = fontsize
             (vx, vy) = textdisp
             if vx is None:
                 vx = width * 0.5
@@ -293,7 +293,7 @@ class LTChar(LTComponent, LTText):
             bur = (tx+width, ty)
         else:
             # horizontal
-            height = font.get_height() * fontsize
+            height = fontsize
             descent = font.get_descent() * fontsize
             ty = descent + rise
             bll = (0, ty)
