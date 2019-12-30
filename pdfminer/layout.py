@@ -280,28 +280,23 @@ class LTChar(LTComponent, LTText):
         # compute the boundary rectangle.
         if font.is_vertical():
             # vertical
-            width = fontsize
             (vx, vy) = textdisp
             if vx is None:
-                vx = width * 0.5
+                vx = fontsize * 0.5
             else:
                 vx = vx * fontsize * .001
             vy = (1000 - vy) * fontsize * .001
-            tx = -vx
-            ty = vy + rise
-            bll = (tx, ty+self.adv)
-            bur = (tx+width, ty)
+            bbox_lower_left = (-vx, vy + rise + self.adv)
+            bbox_upper_right = (-vx + fontsize, vy + rise)
         else:
             # horizontal
-            height = fontsize
             descent = font.get_descent() * fontsize
-            ty = descent + rise
-            bll = (0, ty)
-            bur = (self.adv, ty+height)
+            bbox_lower_left = (0, descent + rise)
+            bbox_upper_right = (self.adv, descent + rise + fontsize)
         (a, b, c, d, e, f) = self.matrix
         self.upright = (0 < a*d*scaling and b*c <= 0)
-        (x0, y0) = apply_matrix_pt(self.matrix, bll)
-        (x1, y1) = apply_matrix_pt(self.matrix, bur)
+        (x0, y0) = apply_matrix_pt(self.matrix, bbox_lower_left)
+        (x1, y1) = apply_matrix_pt(self.matrix, bbox_upper_right)
         if x1 < x0:
             (x0, x1) = (x1, x0)
         if y1 < y0:
