@@ -46,13 +46,12 @@ Features
 Installation instructions
 =========================
 
-Before using it, you must install it using Python 2.7 or newer.
+Before using it, you must install it using Python 3.4 or newer.
 
 ::
 
     $ pip install pdfminer.six
 
-Note that Python 2.7 support is dropped at January, 2020.
 
 Common use-cases
 ----------------
