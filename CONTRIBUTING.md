@@ -29,8 +29,9 @@ Any contribution is appreciated! You might want to:
 * Pull requests should be merged to develop, not master. This ensures that master always equals the released version.  
 * Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case 
   of features, this will show that your code works correctly.
-* Code should work for Python 2.7 and Python 3.x (for now), conform to PEP8 code style (enforced by 
-  [flake8](http://flake8.pycqa.org/en/latest/)) and properly documented with docstrings.
+* Code should work for Python 3.4+.
+* Code should conform to PEP8 coding style.
+* New features should be well documented using docstrings.
 * Check spelling and grammar.
 * Don't forget to update the [CHANGELOG.md](CHANGELOG.md#[Unreleased])
 

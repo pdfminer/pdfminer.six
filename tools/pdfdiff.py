@@ -3,11 +3,13 @@
 """
 compares rwo pdf files.
 """
-from pdfminer import high_level, layout
-import sys
+import io
 import logging
-import six
+import sys
+
 import pdfminer.settings
+from pdfminer import high_level, layout
+
 pdfminer.settings.STRICT = False
 
 
@@ -15,13 +17,6 @@ logging.basicConfig()
 
 
 def compare(file1, file2, **kwargs):
-    if '_py2_no_more_posargs' in kwargs is not None:
-        raise DeprecationWarning(
-            'The `_py2_no_more_posargs will be removed on January, 2020. At '
-            'that moment pdfminer.six will stop supporting Python 2. Please '
-            'upgrade to Python 3. For more information see '
-            'https://github.com/pdfminer/pdfminer .six/issues/194')
-
     # If any LAParams group arguments were passed,
     # create an LAParams object and
     # populate with given args. Otherwise, set it to None.
@@ -33,12 +28,15 @@ def compare(file1, file2, **kwargs):
             if paramv is not None:
                 laparams[param] = paramv
         kwargs['laparams'] = laparams
-    s1 = six.StringIO()
+
+    s1 = io.StringIO()
     with open(file1, "rb") as fp:
         high_level.extract_text_to_fp(fp, s1, **kwargs)
-    s2 = six.StringIO()
+
+    s2 = io.StringIO()
     with open(file2, "rb") as fp:
         high_level.extract_text_to_fp(fp, s2, **kwargs)
+
     import difflib
     s1.seek(0)
     s2.seek(0)
@@ -122,12 +120,9 @@ def main(args=None):
         logging.getLogger().setLevel(logging.DEBUG)
 
     if A.page_numbers:
-        A.page_numbers = set([x-1 for x in A.page_numbers])
+        A.page_numbers = {x-1 for x in A.page_numbers}
     if A.pagenos:
-        A.page_numbers = set([int(x)-1 for x in A.pagenos.split(",")])
-
-    if six.PY2 and sys.stdin.encoding:
-        A.password = A.password.decode(sys.stdin.encoding)
+        A.page_numbers = {int(x)-1 for x in A.pagenos.split(",")}
 
     if A.output_type == "text" and A.outfile != "-":
         for override, alttype in ((".htm",  "html"),

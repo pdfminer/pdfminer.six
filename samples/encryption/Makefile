@@ -2,7 +2,7 @@
 
 RM=rm -f
 CMP=:
-PYTHON=python2
+PYTHON=python3
 PDF2TXT=PYTHONPATH=../.. $(PYTHON) ../../tools/pdf2txt.py
 
 XMLS= \

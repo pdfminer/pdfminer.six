@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 
 import sys
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle as pickle
+import pickle as pickle
 import codecs
-import six
 
 
-class CMapConverter(object):
+class CMapConverter:
 
     def __init__(self, enc2codec={}):
         self.enc2codec = enc2codec
@@ -58,8 +54,6 @@ class CMapConverter(object):
 
             def put(dmap, code, cid, force=False):
                 for b in code[:-1]:
-                    if six.PY2:
-                        b = ord(b)
                     if b in dmap:
                         dmap = dmap[b]
                     else:
@@ -67,8 +61,6 @@ class CMapConverter(object):
                         dmap[b] = d
                         dmap = d
                 b = code[-1]
-                if six.PY2:
-                    b = ord(b)
                 if force or ((b not in dmap) or dmap[b] == cid):
                     dmap[b] = cid
                 return

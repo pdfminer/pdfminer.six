@@ -1,4 +1,3 @@
-
 import os
 import os.path
 import struct
@@ -15,8 +14,7 @@ def align32(x):
     return ((x+3)//4)*4
 
 
-class BMPWriter(object):
-
+class BMPWriter:
     def __init__(self, fp, bits, width, height):
         self.fp = fp
         self.bits = bits
@@ -59,7 +57,7 @@ class BMPWriter(object):
         return
 
 
-class ImageWriter(object):
+class ImageWriter:
     """Write image to a file
 
     Supports various image types: JPEG, JBIG2 and bitmaps

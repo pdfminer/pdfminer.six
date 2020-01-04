@@ -1,4 +1,3 @@
-
 import zlib
 import logging
 from .lzw import lzwdecode
@@ -13,7 +12,6 @@ from . import settings
 from .utils import apply_png_predictor
 from .utils import isnumber
 
-import six
 
 log = logging.getLogger(__name__)
 
@@ -96,7 +94,7 @@ def resolve_all(x, default=None):
     if isinstance(x, list):
         x = [resolve_all(v, default=default) for v in x]
     elif isinstance(x, dict):
-        for (k, v) in six.iteritems(x):
+        for (k, v) in x.items():
             x[k] = resolve_all(v, default=default)
     return x
 
@@ -109,7 +107,7 @@ def decipher_all(decipher, objid, genno, x):
     if isinstance(x, list):
         x = [decipher_all(decipher, objid, genno, v) for v in x]
     elif isinstance(x, dict):
-        for (k, v) in six.iteritems(x):
+        for (k, v) in x.items():
             x[k] = decipher_all(decipher, objid, genno, v)
     return x
 
@@ -143,7 +141,7 @@ def num_value(x):
 
 def str_value(x):
     x = resolve1(x)
-    if not isinstance(x, six.binary_type):
+    if not isinstance(x, bytes):
         if settings.STRICT:
             raise PDFTypeError('String required: %r' % x)
         return ''
@@ -260,7 +258,8 @@ class PDFStream(PDFObject):
                     data = zlib.decompress(data)
                 except zlib.error as e:
                     if settings.STRICT:
-                        error_msg = 'Invalid zlib bytes: %r, %r' % (e, data)
+                        error_msg = 'Invalid zlib bytes: {!r}, {!r}'\
+                            .format(e, data)
                         raise PDFException(error_msg)
                     data = b''
             elif f in LITERALS_LZW_DECODE:

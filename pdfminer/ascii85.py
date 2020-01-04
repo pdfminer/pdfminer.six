@@ -1,5 +1,3 @@
-
-
 """ Python implementation of ASCII85/ASCIIHex decoder (Adobe version).
 
 This code is in the public domain.
@@ -8,8 +6,6 @@ This code is in the public domain.
 
 import re
 import struct
-
-import six  # Python 2+3 compatibility
 
 
 # ascii85decode(data)
@@ -26,8 +22,8 @@ def ascii85decode(data):
     """
     n = b = 0
     out = b''
-    for i in six.iterbytes(data):
-        c = six.int2byte(i)
+    for i in iter(data):
+        c = bytes((i,))
         if b'!' <= c and c <= b'u':
             n += 1
             b = b*85+(ord(c)-33)
@@ -47,9 +43,8 @@ def ascii85decode(data):
 
 
 # asciihexdecode(data)
-hex_re = re.compile(b'([a-f0-9]{2})', re.IGNORECASE)
-trail_re = re.compile(b'^(?:[a-f0-9]{2}|[ \t\n\r\f\v])*'
-                      b'([a-f0-9])[ \t\n\r\f\v>]*$', re.IGNORECASE)
+hex_re = re.compile(br'([a-f\d]{2})', re.IGNORECASE)
+trail_re = re.compile(br'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
 
 
 def asciihexdecode(data):
@@ -64,7 +59,7 @@ def asciihexdecode(data):
     """
     def decode(x):
         i = int(x, 16)
-        return six.int2byte(i)
+        return bytes((i,))
 
     out = b''
     for x in hex_re.findall(data):

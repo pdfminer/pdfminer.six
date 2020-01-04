@@ -10,7 +10,6 @@ setup(
     install_requires=[
         'chardet ; python_version > "3.0"',
         'pycryptodome',
-        'six',
         'sortedcontainers',
     ],
     extras_require={
@@ -34,13 +33,13 @@ setup(
         'layout analysis',
         'text mining',
     ],
+    python_requires='>=3.4',
     classifiers=[
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3 :: Only',
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',

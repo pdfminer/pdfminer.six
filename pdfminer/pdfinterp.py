@@ -30,7 +30,6 @@ from .utils import choplist
 from .utils import mult_matrix
 from .utils import MATRIX_IDENTITY
 
-import six
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +49,7 @@ LITERAL_FORM = LIT('Form')
 LITERAL_IMAGE = LIT('Image')
 
 
-class PDFTextState(object):
+class PDFTextState:
 
     def __init__(self):
         self.font = None
@@ -94,7 +93,7 @@ class PDFTextState(object):
         return
 
 
-class PDFGraphicState(object):
+class PDFGraphicState:
 
     def __init__(self):
         self.linewidth = 0
@@ -134,7 +133,7 @@ class PDFGraphicState(object):
                  self.scolor, self.ncolor))
 
 
-class PDFResourceManager(object):
+class PDFResourceManager:
     """Repository of shared resources.
 
     ResourceManager facilitates reuse of shared resources
@@ -253,14 +252,13 @@ class PDFContentParser(PSStackParser):
         while i <= len(target):
             self.fillbuf()
             if i:
-                c = six.indexbytes(self.buf, self.charpos)
-                c = six.int2byte(c)
+                c = self.buf[self.charpos]
+                c = bytes((c,))
                 data += c
                 self.charpos += 1
                 if len(target) <= i and c.isspace():
                     i += 1
-                elif i < len(target) and (c == six.int2byte(target[i])
-                                          if six.PY3 else target[i]):
+                elif i < len(target) and c == (bytes((target[i],))):
                     i += 1
                 else:
                     i = 0
@@ -293,9 +291,10 @@ class PDFContentParser(PSStackParser):
             try:
                 (_, objs) = self.end_type('inline')
                 if len(objs) % 2 != 0:
-                    error_msg = 'Invalid dictionary construct: %r' % objs
+                    error_msg = 'Invalid dictionary construct: {!r}' \
+                        .format(objs)
                     raise PSTypeError(error_msg)
-                d = dict((literal_name(k), v) for (k, v) in choplist(2, objs))
+                d = {literal_name(k): v for (k, v) in choplist(2, objs)}
                 (pos, data) = self.get_inline_data(pos+len(b'ID '))
                 obj = PDFStream(d, data)
                 self.push((pos, obj))
@@ -308,7 +307,7 @@ class PDFContentParser(PSStackParser):
         return
 
 
-class PDFPageInterpreter(object):
+class PDFPageInterpreter:
     """Processor for the content of a PDF page
 
     Reference: PDF Reference, Appendix A, Operator Summary
@@ -344,22 +343,22 @@ class PDFPageInterpreter(object):
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
                 return PREDEFINED_COLORSPACE.get(name)
-        for (k, v) in six.iteritems(dict_value(resources)):
+        for (k, v) in dict_value(resources).items():
             log.debug('Resource: %r: %r', k, v)
             if k == 'Font':
-                for (fontid, spec) in six.iteritems(dict_value(v)):
+                for (fontid, spec) in dict_value(v).items():
                     objid = None
                     if isinstance(spec, PDFObjRef):
                         objid = spec.objid
                     spec = dict_value(spec)
                     self.fontmap[fontid] = self.rsrcmgr.get_font(objid, spec)
             elif k == 'ColorSpace':
-                for (csid, spec) in six.iteritems(dict_value(v)):
+                for (csid, spec) in dict_value(v).items():
                     self.csmap[csid] = get_colorspace(resolve1(spec))
             elif k == 'ProcSet':
                 self.rsrcmgr.get_procset(list_value(v))
             elif k == 'XObject':
-                for (xobjid, xobjstrm) in six.iteritems(dict_value(v)):
+                for (xobjid, xobjstrm) in dict_value(v).items():
                     self.xobjmap[xobjid] = xobjstrm
         return
 
@@ -376,7 +375,7 @@ class PDFPageInterpreter(object):
         # set some global states.
         self.scs = self.ncs = None
         if self.csmap:
-            self.scs = self.ncs = six.next(six.itervalues(self.csmap))
+            self.scs = self.ncs = next(iter(self.csmap.values()))
         return
 
     def push(self, obj):
@@ -926,7 +925,7 @@ class PDFPageInterpreter(object):
                     .replace("'", '_q')
                 if hasattr(self, method):
                     func = getattr(self, method)
-                    nargs = six.get_function_code(func).co_argcount-1
+                    nargs = func.__code__.co_argcount-1
                     if nargs:
                         args = self.pop(nargs)
                         log.debug('exec: %s %r', name, args)

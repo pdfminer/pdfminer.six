@@ -4,8 +4,6 @@ import argparse
 import logging
 import sys
 
-import six
-
 import pdfminer.high_level
 import pdfminer.layout
 
@@ -25,13 +23,6 @@ def extract_text(files=[], outfile='-',
                  password="", scale=1.0, rotation=0, layoutmode='normal',
                  output_dir=None, debug=False, disable_caching=False,
                  **kwargs):
-    if '_py2_no_more_posargs' in kwargs is not None:
-        raise DeprecationWarning(
-            'The `_py2_no_more_posargs will be removed on January, 2020. At '
-            'that moment pdfminer.six will stop supporting Python 2. Please '
-            'upgrade to Python 3. For more information see '
-            'https://github.com/pdfminer/pdfminer .six/issues/194')
-
     if not files:
         raise ValueError("Must provide files to work upon!")
 
@@ -179,12 +170,9 @@ def main(args=None):
     A = P.parse_args(args=args)
 
     if A.page_numbers:
-        A.page_numbers = set([x-1 for x in A.page_numbers])
+        A.page_numbers = {x-1 for x in A.page_numbers}
     if A.pagenos:
-        A.page_numbers = set([int(x)-1 for x in A.pagenos.split(",")])
-
-    if six.PY2 and sys.stdin.encoding:
-        A.password = A.password.decode(sys.stdin.encoding)
+        A.page_numbers = {int(x)-1 for x in A.pagenos.split(",")}
 
     if A.output_type == "text" and A.outfile != "-":
         for override, alttype in OUTPUT_TYPES:

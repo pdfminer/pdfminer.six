@@ -58,7 +58,7 @@ def mask_value(mask, value):
     raise Exception("Invalid mask or value")
 
 
-class JBIG2StreamReader(object):
+class JBIG2StreamReader:
     """Read segments from a JBIG2 byte stream"""
 
     def __init__(self, stream):
@@ -160,7 +160,7 @@ class JBIG2StreamReader(object):
         return length
 
 
-class JBIG2StreamWriter(object):
+class JBIG2StreamWriter:
     """Write JBIG2 segments to a file in JBIG2 format"""
 
     def __init__(self, stream):
