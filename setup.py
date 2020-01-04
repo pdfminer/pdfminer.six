@@ -1,6 +1,11 @@
 from setuptools import setup
+from os import path
 
 import pdfminer as package
+
+
+with open(path.join(path.abspath(path.dirname(__file__)), 'README.md')) as f:
+    readme = f.read()
 
 setup(
     name='pdfminer.six',
@@ -17,7 +22,8 @@ setup(
         "docs": ["sphinx", "sphinx-argparse"],
     },
     description='PDF parser and analyzer',
-    long_description=package.__doc__,
+    long_description=readme,
+    long_description_content_type='text/markdown',
     license='MIT/X',
     author='Yusuke Shinyama + Philippe Guglielmetti',
     author_email='pdfminer@goulu.net',

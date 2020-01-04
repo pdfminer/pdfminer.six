@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+Nothing here
+
+## [20200104] - 2019-01-04
+
 ## Removed
 - Support for Python 2 ([#346](https://github.com/pdfminer/pdfminer.six/pull/346))
 
