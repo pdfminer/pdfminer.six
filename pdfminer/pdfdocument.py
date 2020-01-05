@@ -348,7 +348,7 @@ class PDFStandardSecurityHandler:
         password = (password + self.PASSWORD_PADDING)[:32]  # 1
         hash = md5.md5(password)  # 2
         hash.update(self.o)  # 3
-        hash.update(struct.pack('<l', self.p))  # 4
+        hash.update(struct.pack('<L', self.p))  # 4
         hash.update(self.docid[0])  # 5
         if self.r >= 4:
             if not self.encrypt_metadata:
