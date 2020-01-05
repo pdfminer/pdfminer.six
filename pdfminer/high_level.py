@@ -16,7 +16,7 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
                        laparams=None, maxpages=0, page_numbers=None,
                        password="", scale=1.0, rotation=0, layoutmode='normal',
                        output_dir=None, strip_control=False, debug=False,
-                       disable_caching=False, **kwargs):
+                       disable_caching=False, check_extractable=True, **kwargs):
     """Parses text from inf-file and writes to outfp file-like object.
 
     Takes loads of optional arguments but the defaults are somewhat sane.
@@ -42,6 +42,7 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
     :param strip_control: Does what it says on the tin
     :param debug: Output more logging data
     :param disable_caching: Does what it says on the tin
+    :param check_extractable: Check if the document allows text extraction.
     :param other:
     :return: nothing, acting as it does on two streams. Use StringIO to get
         strings.
@@ -79,7 +80,7 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
                                   maxpages=maxpages,
                                   password=password,
                                   caching=not disable_caching,
-                                  check_extractable=True):
+                                  check_extractable=check_extractable):
         page.rotate = (page.rotate + rotation) % 360
         interpreter.process_page(page)
 
@@ -87,7 +88,8 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
 
 
 def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
-                 caching=True, codec='utf-8', laparams=None):
+                 caching=True, codec='utf-8', laparams=None,
+                 check_extractable=True):
     """
     Parses and returns the text contained in a PDF file.
     Takes loads of optional arguments but the defaults are somewhat sane.
@@ -100,6 +102,7 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
     :param caching: If resources should be cached
     :param codec: Text decoding codec
     :param laparams: LAParams object from pdfminer.layout.
+    :param check_extractable: Check if the document allows text extraction.
     """
     if laparams is None:
         laparams = LAParams()
@@ -116,7 +119,7 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
                 maxpages=maxpages,
                 password=password,
                 caching=caching,
-                check_extractable=True,
+                check_extractable=check_extractable,
         ):
             interpreter.process_page(page)
 
