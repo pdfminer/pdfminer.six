@@ -28,7 +28,7 @@ Features
  * CJK languages and vertical writing scripts support.
  * Various font types (Type1, TrueType, Type3, and CID) support.
  * Support for extracting images (JPG, JBIG2 and Bitmaps).
- * Basic encryption (RC4) support.
+ * Support for RC4 and AES encryption.
  * Outline (TOC) extraction.
  * Tagged contents extraction.
  * Automatic layout analysis.

@@ -40,7 +40,7 @@ Features
 * Support for Chinese, Japanese and Korean CJK) languages as well as vertical
   writing.
 * Support for various font types (Type1, TrueType, Type3, and CID).
-* Support for basic encryption (RC4).
+* Support for RC4 and AES encryption.
 
 
 Installation instructions
