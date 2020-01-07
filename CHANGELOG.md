@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-Nothing here
+### Fixed
+- Interpret two's complement integer as unsigned integer ([#352](https://github.com/pdfminer/pdfminer.six/pull/352))
 
 ## [20200104] - 2019-01-04
 
