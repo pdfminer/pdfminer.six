@@ -124,7 +124,7 @@ def apply_matrix_norm(m, v):
 #  Utility functions
 
 def isnumber(x):
-    return isinstance(x, ((int,), float))
+    return isinstance(x, (int, float))
 
 
 def uniq(objs):

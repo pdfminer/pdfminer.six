@@ -14,7 +14,7 @@ from .psparser import literal_name
 from .psparser import LIT
 from .psparser import KWD
 from . import settings
-from .pdftypes import PDFException
+from .pdftypes import PDFException, uint_value
 from .pdftypes import PDFTypeError
 from .pdftypes import PDFStream
 from .pdftypes import PDFObjectNotFound
@@ -307,7 +307,7 @@ class PDFStandardSecurityHandler:
     def init_params(self):
         self.v = int_value(self.param.get('V', 0))
         self.r = int_value(self.param['R'])
-        self.p = int_value(self.param['P'])
+        self.p = uint_value(self.param['P'], 32)
         self.o = str_value(self.param['O'])
         self.u = str_value(self.param['U'])
         self.length = int_value(self.param.get('Length', 40))
@@ -349,8 +349,7 @@ class PDFStandardSecurityHandler:
         hash = md5.md5(password)  # 2
         hash.update(self.o)  # 3
         # See https://github.com/pdfminer/pdfminer.six/issues/186
-        unsigned_p = self.p if self.p > 0 else self.p + (1 << 32)
-        hash.update(struct.pack('<L', unsigned_p))  # 4
+        hash.update(struct.pack('<L', self.p))  # 4
         hash.update(self.docid[0])  # 5
         if self.r >= 4:
             if not self.encrypt_metadata:
