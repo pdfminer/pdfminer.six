@@ -141,7 +141,7 @@ def num_value(x):
 
 def uint_value(x, n_bits):
     """Resolve number and interpret it as a two's-complement unsigned number"""
-    x = num_value(x)
+    x = int_value(x)
     if x > 0:
         return x
     else:
