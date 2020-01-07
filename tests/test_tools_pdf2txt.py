@@ -35,7 +35,8 @@ class TestDumpPDF():
 
     def test_nonfree_175(self):
         """Regression test for:
-        https://github.com/pdfminer/pdfminer.six/issues/65"""
+        https://github.com/pdfminer/pdfminer.six/issues/65
+        """
         run('nonfree/175.pdf')
 
     def test_nonfree_dmca(self):
@@ -62,6 +63,13 @@ class TestDumpPDF():
     def test_scancode_patchelf(self):
         """Regression test for # https://github.com/euske/pdfminer/issues/96"""
         run('scancode/patchelf.pdf')
+
+    def test_contrib_hash_two_complement(self):
+        """Check that unsigned integer is added correctly to encryption hash.
+
+        See https://github.com/pdfminer/pdfminer.six/issues/186
+        """
+        run('contrib/issue-00352-hash-twos-complement.pdf')
 
 
 class TestDumpImages:
