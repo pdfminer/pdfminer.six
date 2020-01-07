@@ -139,6 +139,15 @@ def num_value(x):
     return x
 
 
+def uint_value(x, n_bits):
+    """Resolve number and interpret it as a two's-complement unsigned number"""
+    x = int_value(x)
+    if x > 0:
+        return x
+    else:
+        return x + 2**n_bits
+
+
 def str_value(x):
     x = resolve1(x)
     if not isinstance(x, bytes):

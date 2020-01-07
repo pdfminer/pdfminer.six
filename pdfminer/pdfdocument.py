@@ -1,34 +1,21 @@
+import hashlib as md5
+import logging
 import re
 import struct
-import logging
-import hashlib as md5
+
 try:
-    from Crypto.Cipher import ARC4
-    from Crypto.Cipher import AES
+    from Crypto.Cipher import ARC4, AES
     from Crypto.Hash import SHA256
 except ImportError:
     AES = SHA256 = None
     from . import arcfour as ARC4
-from .psparser import PSEOF
-from .psparser import literal_name
-from .psparser import LIT
-from .psparser import KWD
+from .psparser import PSEOF, literal_name, LIT, KWD
 from . import settings
-from .pdftypes import PDFException
-from .pdftypes import PDFTypeError
-from .pdftypes import PDFStream
-from .pdftypes import PDFObjectNotFound
-from .pdftypes import decipher_all
-from .pdftypes import int_value
-from .pdftypes import str_value
-from .pdftypes import list_value
-from .pdftypes import dict_value
-from .pdftypes import stream_value
-from .pdfparser import PDFSyntaxError
-from .pdfparser import PDFStreamParser
-from .utils import choplist
-from .utils import nunpack
-from .utils import decode_text
+from .pdftypes import PDFException, uint_value, PDFTypeError, PDFStream, \
+    PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
+    dict_value, stream_value
+from .pdfparser import PDFSyntaxError, PDFStreamParser
+from .utils import choplist, nunpack, decode_text
 
 
 log = logging.getLogger(__name__)
@@ -307,7 +294,7 @@ class PDFStandardSecurityHandler:
     def init_params(self):
         self.v = int_value(self.param.get('V', 0))
         self.r = int_value(self.param['R'])
-        self.p = int_value(self.param['P'])
+        self.p = uint_value(self.param['P'], 32)
         self.o = str_value(self.param['O'])
         self.u = str_value(self.param['U'])
         self.length = int_value(self.param.get('Length', 40))
@@ -348,7 +335,8 @@ class PDFStandardSecurityHandler:
         password = (password + self.PASSWORD_PADDING)[:32]  # 1
         hash = md5.md5(password)  # 2
         hash.update(self.o)  # 3
-        hash.update(struct.pack('<l', self.p))  # 4
+        # See https://github.com/pdfminer/pdfminer.six/issues/186
+        hash.update(struct.pack('<L', self.p))  # 4
         hash.update(self.docid[0])  # 5
         if self.r >= 4:
             if not self.encrypt_metadata:
