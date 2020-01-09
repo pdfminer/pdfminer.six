@@ -358,8 +358,11 @@ class HTMLConverter(PDFConverter):
         if font != self._font:
             if self._font is not None:
                 self.write('</span>')
+            # Remove subset tag from fontname, see PDF Reference 5.5.3
+            fontname_without_subset_tag = fontname.split('+')[-1]
             self.write('<span style="font-family: %s; font-size:%dpx">' %
-                       (fontname.split('+')[-1], fontsize * self.scale * self.fontscale))
+                       (fontname_without_subset_tag,
+                        fontsize * self.scale * self.fontscale))
             self._font = font
         self.write_text(text)
         return
