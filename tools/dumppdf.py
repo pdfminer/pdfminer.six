@@ -173,19 +173,19 @@ LITERAL_EMBEDDEDFILE = LIT('EmbeddedFile')
 
 def extractembedded(outfp, fname, objids, pagenos, password='',
                     dumpall=False, codec=None, extractdir=None):
-    def extract1(obj):
+    def extract1(objid, obj):
         filename = os.path.basename(obj.get('UF') or obj.get('F').decode())
         fileref = obj['EF'].get('UF') or obj['EF'].get('F')
         fileobj = doc.getobj(fileref.objid)
         if not isinstance(fileobj, PDFStream):
-            raise PDFValueError(
-                'unable to process PDF: reference for %r is not a PDFStream' %
-                (filename))
+            error_msg = 'unable to process PDF: reference for %r is not a ' \
+                        'PDFStream' % filename
+            raise PDFValueError(error_msg)
         if fileobj.get('Type') is not LITERAL_EMBEDDEDFILE:
             raise PDFValueError(
                 'unable to process PDF: reference for %r '
                 'is not an EmbeddedFile' % (filename))
-        path = os.path.join(extractdir, filename)
+        path = os.path.join(extractdir, '%.6d-%s' % (objid, filename))
         if os.path.exists(path):
             raise IOError('file exists: %r' % path)
         print('extracting: %r' % path)
@@ -195,15 +195,17 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
         out.close()
         return
 
-    fp = open(fname, 'rb')
-    parser = PDFParser(fp)
-    doc = PDFDocument(parser, password)
-    for xref in doc.xrefs:
-        for objid in xref.get_objids():
-            obj = doc.getobj(objid)
-            if isinstance(obj, dict) and obj.get('Type') is LITERAL_FILESPEC:
-                extract1(obj)
-    fp.close()
+    with open(fname, 'rb') as fp:
+        parser = PDFParser(fp)
+        doc = PDFDocument(parser, password)
+        extracted_objids = set()
+        for xref in doc.xrefs:
+            for objid in xref.get_objids():
+                obj = doc.getobj(objid)
+                if objid not in extracted_objids and isinstance(obj, dict) \
+                        and obj.get('Type') is LITERAL_FILESPEC:
+                    extracted_objids.add(objid)
+                    extract1(objid, obj)
     return
 
 
