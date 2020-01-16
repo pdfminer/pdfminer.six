@@ -2,6 +2,8 @@
 Miscellaneous Routines.
 """
 import struct
+from html import escape
+
 import chardet  # For str encoding detection
 
 # from sys import maxint as INF doesn't work anymore under Python3, but PDF
@@ -250,15 +252,11 @@ def decode_text(s):
         return ''.join(PDFDocEncoding[c] for c in s)
 
 
-def enc(x, codec='ascii'):
+def enc(x):
     """Encodes a string for SGML/XML/HTML"""
     if isinstance(x, bytes):
         return ''
-    x = x.replace('&', '&amp;').replace('>', '&gt;').replace('<', '&lt;') \
-        .replace('"', '&quot;')
-    if codec:
-        x = x.encode(codec, 'xmlcharrefreplace')
-    return x
+    return escape(x)
 
 
 def bbox2str(bbox):

@@ -292,7 +292,7 @@ class HTMLConverter(PDFConverter):
         return
 
     def write_text(self, text):
-        self.write(enc(text, None))
+        self.write(enc(text))
         return
 
     def place_rect(self, color, borderwidth, x, y, w, h):
@@ -317,7 +317,7 @@ class HTMLConverter(PDFConverter):
             name = self.imagewriter.export_image(item)
             s = '<img src="%s" border="%d" style="position:absolute; ' \
                 'left:%dpx; top:%dpx;" width="%d" height="%d" />\n' % \
-                (enc(name, None), borderwidth, x * self.scale,
+                (enc(name), borderwidth, x * self.scale,
                  (self._yoffset - y) * self.scale, w * self.scale,
                  h * self.scale)
             self.write(s)
@@ -482,7 +482,7 @@ class XMLConverter(PDFConverter):
     def write_text(self, text):
         if self.stripcontrol:
             text = self.CONTROL.sub('', text)
-        self.write(enc(text, None))
+        self.write(enc(text))
         return
 
     def receive_layout(self, ltpage):
@@ -547,7 +547,7 @@ class XMLConverter(PDFConverter):
             elif isinstance(item, LTChar):
                 s = '<text font="%s" bbox="%s" colourspace="%s" ' \
                     'ncolour="%s" size="%.3f">' % \
-                    (enc(item.fontname, None), bbox2str(item.bbox),
+                    (enc(item.fontname), bbox2str(item.bbox),
                      item.ncs.name, item.graphicstate.ncolor, item.size)
                 self.write(s)
                 self.write_text(item.get_text())
@@ -558,7 +558,7 @@ class XMLConverter(PDFConverter):
                 if self.imagewriter is not None:
                     name = self.imagewriter.export_image(item)
                     self.write('<image src="%s" width="%d" height="%d" />\n' %
-                               (enc(name, None), item.width, item.height))
+                               (enc(name), item.width, item.height))
                 else:
                     self.write('<image width="%d" height="%d" />\n' %
                                (item.width, item.height))
