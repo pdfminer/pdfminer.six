@@ -31,7 +31,6 @@ setup(
     scripts=[
         'tools/pdf2txt.py',
         'tools/dumppdf.py',
-        'tools/latin2ascii.py',
     ],
     keywords=[
         'pdf parser',
