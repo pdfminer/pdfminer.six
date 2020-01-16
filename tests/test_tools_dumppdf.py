@@ -1,4 +1,5 @@
-from tempfile import NamedTemporaryFile
+from shutil import rmtree
+from tempfile import NamedTemporaryFile, mkdtemp
 
 from helpers import absolute_sample_path
 from tools import dumppdf
@@ -36,3 +37,15 @@ class TestDumpPDF():
 
     def test_6(self):
         run('nonfree/naacl06-shinyama.pdf', '-t -a')
+
+    def test_embedded_font_filename(self):
+        """If UF font file name does not exist, then F should be used
+
+        Related issue: https://github.com/pdfminer/pdfminer.six/issues/152
+        """
+        output_dir = mkdtemp()
+        try:
+            run('contrib/issue-00152-embedded-pdf.pdf',
+                '--extract-embedded %s' % output_dir)
+        finally:
+            rmtree(output_dir)
