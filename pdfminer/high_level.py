@@ -1,15 +1,16 @@
 """Functions that can be used for the most common use-cases for pdfminer.six"""
 
-import sys
 import logging
+import sys
+from io import StringIO
 
-from .pdfinterp import PDFResourceManager, PDFPageInterpreter
-from .pdfdevice import TagExtractor
-from .pdfpage import PDFPage
-from .converter import XMLConverter, HTMLConverter, TextConverter
+from .converter import XMLConverter, HTMLConverter, TextConverter, \
+    PDFPageAggregator
 from .image import ImageWriter
 from .layout import LAParams
-from io import StringIO
+from .pdfdevice import TagExtractor
+from .pdfinterp import PDFResourceManager, PDFPageInterpreter
+from .pdfpage import PDFPage
 
 
 def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
@@ -88,10 +89,7 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
 
 def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
                  caching=True, codec='utf-8', laparams=None):
-    """
-    Parses and returns the text contained in a PDF file.
-    Takes loads of optional arguments but the defaults are somewhat sane.
-    Returns a string containing all of the text extracted.
+    """Parse and return the text contained in a PDF file.
 
     :param pdf_file: Path to the PDF file to be worked on
     :param password: For encrypted PDFs, the password to decrypt.
@@ -99,7 +97,9 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
     :param maxpages: The maximum number of pages to parse
     :param caching: If resources should be cached
     :param codec: Text decoding codec
-    :param laparams: LAParams object from pdfminer.layout.
+    :param laparams: An LAParams object from pdfminer.layout. If None, uses
+        some default settings that often work well.
+    :return: a string containing all of the text extracted.
     """
     if laparams is None:
         laparams = LAParams()
@@ -121,3 +121,30 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
             interpreter.process_page(page)
 
         return output_string.getvalue()
+
+
+def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
+                  caching=True, laparams=None):
+    """Extract and yield LTPage objects
+
+    :param pdf_file: Path to the PDF file to be worked on
+    :param password: For encrypted PDFs, the password to decrypt.
+    :param page_numbers: List of zero-indexed page numbers to extract.
+    :param maxpages: The maximum number of pages to parse
+    :param caching: If resources should be cached
+    :param laparams: An LAParams object from pdfminer.layout. If None, uses
+        some default settings that often work well.
+    :return:
+    """
+    if laparams is None:
+        laparams = LAParams()
+
+    with open(pdf_file, "rb") as fp:
+        resource_manager = PDFResourceManager()
+        device = PDFPageAggregator(resource_manager, laparams=laparams)
+        interpreter = PDFPageInterpreter(resource_manager, device)
+        for page in PDFPage.get_pages(fp, page_numbers, maxpages=maxpages,
+                                      password=password, caching=caching):
+            interpreter.process_page(page)
+            layout = device.get_result()
+            yield layout
