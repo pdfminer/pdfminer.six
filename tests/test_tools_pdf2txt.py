@@ -17,7 +17,7 @@ def run(sample_path, options=None):
         pdf2txt.main(s.split(' ')[1:])
 
 
-class TestDumpPDF():
+class TestPdf2Txt():
     def test_jo(self):
         run('jo.pdf')
 
