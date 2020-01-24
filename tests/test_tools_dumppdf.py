@@ -1,5 +1,4 @@
-from shutil import rmtree
-from tempfile import NamedTemporaryFile, mkdtemp
+from tempfile import NamedTemporaryFile
 
 from helpers import absolute_sample_path
 from tools import dumppdf
