@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-Nothing
+### Security
+- Removed samples/issue-00152-embedded-pdf.pdf because it contains a possible security thread; a javascript enabled object ([#364](https://github.com/pdfminer/pdfminer.six/pull/364))
 
 ## [20200121] - 2020-01-21
 
