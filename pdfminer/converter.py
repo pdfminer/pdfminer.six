@@ -27,6 +27,9 @@ log = logging.getLogger(__name__)
 
 
 class PDFLayoutAnalyzer(PDFTextDevice):
+
+    RECTS = re.compile('^(mlllh)+$')
+
     def __init__(self, rsrcmgr, pageno=1, laparams=None):
         PDFTextDevice.__init__(self, rsrcmgr)
         self.pageno = pageno
@@ -100,6 +103,12 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                                          stroke, fill, evenodd, gstate.scolor,
                                          gstate.ncolor))
                 return
+        if self.RECTS.match(shape):
+            for path_group in zip(*(iter(path),) * 5):
+                self.paint_path(gstate, stroke, fill, evenodd,
+                                list(path_group))
+            return
+
         # other shapes
         pts = []
         for p in path:

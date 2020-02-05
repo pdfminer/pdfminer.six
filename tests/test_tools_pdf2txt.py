@@ -71,6 +71,9 @@ class TestPdf2Txt():
         """
         run('contrib/issue-00352-hash-twos-complement.pdf')
 
+    def test_contrib_excel(self):
+        run('contrib/excel.pdf', '-t xml')
+
 
 class TestDumpImages:
 
