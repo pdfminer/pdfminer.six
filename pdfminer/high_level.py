@@ -149,7 +149,7 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
             layout = device.get_result()
             yield layout
 
- def lrtd_parse_page(document,callback,context):
+def lrtd_parse_page(document,callback,context):
     """Parse page and yield text token left to right and top down (lrtd)
     
     :param document: open stream to the PDF file to be worked on
@@ -171,7 +171,7 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
             layout = device.get_result()
             elts=[]
             m = 0
-            mindelatheight = 1000
+            mindeltaheight = 1000
             """
             breakdown lines into string (w/o \n) calculate new coordinates
             """
@@ -197,7 +197,6 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
                     if m < element.y1:
                         m = element.y1
             n = len(elts)
-            elts1 = []
             """
             tune strings coordinate to get them aligned in the same "line" if not too far apart 
             (less than 1/2 the min line height of the page)
