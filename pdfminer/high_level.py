@@ -158,6 +158,7 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
          selts the lrtb token list and context.
          selts is a list of objects {"x1":x1,"y1":y1,"x0":x0,"y0":y0,"txt":text}
          (x0,y0),(x1,y1) are the coordinates of the box surrounding the object
+         if callback return False, lrtd_parse_page quits
     :param context: a caller context object for storing some data and passed to callback
     """
     rsrcmgr = PDFResourceManager()
