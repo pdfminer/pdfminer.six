@@ -148,3 +148,65 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
             interpreter.process_page(page)
             layout = device.get_result()
             yield layout
+
+ def lrtd_parse_page(document,callback,context):
+    """Parse page and yield text token left to right and top down (lrtd)
+    
+    :param document: open stream to the PDF file to be worked on
+    :param callback: a function to callback each tim a page is processed accept 3 parameters 
+         p the page, starts at 0 
+         selts the lrtb token list and context.
+         selts is a list of objects {"x1":x1,"y1":y1,"x0":x0,"y0":y0,"txt":text}
+         (x0,y0),(x1,y1) are the coordinates of the box surrounding the object
+    :param context: a caller context object for storing some data and passed to callback
+    """
+    rsrcmgr = PDFResourceManager()
+    laparams = LAParams()
+    device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    i=0
+    p=0
+    for page in PDFPage.get_pages(document):
+            interpreter.process_page(page)
+            layout = device.get_result()
+            elts=[]
+            m = 0
+            mindelatheight = 1000
+            for element in layout:
+                if isinstance(element, LTTextBoxHorizontal):
+                    x0 = element.x0
+                    y0 = element.y0
+                    x1 = element.x1
+                    y1 = element.y1
+                    lines = element.get_text().splitlines()
+                    lenlines = len(lines)
+                    j = 0
+                    deltaheight = (y1-y0)/lenlines
+                    if mindeltaheight > deltaheight:
+                        mindeltaheight = deltaheight
+                    for line in lines:
+                        x0j = x0
+                        y0j = y1 - (1+j)*deltaheight
+                        x1j = x1
+                        y1j = y1 - j*deltaheight
+                        j += 1
+                        elts.append({"x1":x1j,"y1":y1j,"x0":x0j,"y0":y0j,"txt":line})
+                    if m < element.y1:
+                        m = element.y1
+            n = len(elts)
+            elts1 = []
+            for i in range(1,n):
+                for j in range(i+1,n):
+                    if abs(elts[i-1]["y0"]-elts[j-1]["y0"])<(mindeltaheight/2):
+                        elts[j-1]["y0"] = elts[i-1]["y0"]
+                    if abs(elts[i-1]["y1"]-elts[j-1]["y1"])<(mindeltaheight/2):
+                        elts[j-1]["y1"] = elts[i-1]["y1"]
+                    
+            selts = sorted(elts, key=lambda item: (round((2*m-item['y0']-item['y1'])/2,0),round(item['x0'],0)))   
+            
+            # for elt in selts:
+            #    print(f"({p})({elt['x0']:0.0f},{elt['y0']:0.0f},{elt['x1']:0.0f},{elt['y1']:0.0f}){elt['txt']}")
+            if not callback(p,selts,context):
+                return
+                
+            p +=1
