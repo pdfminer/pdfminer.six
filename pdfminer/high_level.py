@@ -164,7 +164,6 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
     laparams = LAParams()
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
-    i=0
     p=0
     for page in PDFPage.get_pages(document):
             interpreter.process_page(page)
@@ -172,6 +171,9 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
             elts=[]
             m = 0
             mindelatheight = 1000
+            """
+            breakdown lines into string (w/o \n) calculate new coordinates
+            """
             for element in layout:
                 if isinstance(element, LTTextBoxHorizontal):
                     x0 = element.x0
@@ -195,6 +197,10 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
                         m = element.y1
             n = len(elts)
             elts1 = []
+            """
+            tune strings coordinate to get them aligned in the same "line" if not too far apart 
+            (less than 1/2 the min line height of the page)
+            """
             for i in range(1,n):
                 for j in range(i+1,n):
                     if abs(elts[i-1]["y0"]-elts[j-1]["y0"])<(mindeltaheight/2):
