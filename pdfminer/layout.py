@@ -55,8 +55,12 @@ class LAParams(object):
         return
 
     def __repr__(self):
-        return ('<LAParams: char_margin=%.1f, line_margin=%.1f, word_margin=%.1f, cell_margin=%.1f , all_texts=%r ,split_tables=%r>' %
-                (self.char_margin, self.line_margin, self.word_margin, self.cell_margin, self.all_texts, self.split_tables))
+        return ('<LAParams: char_margin=%.1f, ' % self.char_margin
+                'line_margin=%.1f, ' % self.line_margin 
+                'word_margin=%.1f, ' % self.word_margin
+                'cell_margin=%.1f ,' % self.cell_margin
+                'all_texts=%r, ' % self.all_texts
+                'split_tables=%r>' % self.split_tables)
 
 
 ##  LTItem
