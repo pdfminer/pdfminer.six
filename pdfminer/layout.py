@@ -162,7 +162,14 @@ class LTComponent(LTItem):
 ##
 class LTCurve(LTComponent):
 
-    def __init__(self, linewidth, pts, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
+    def __init__(self,
+                 linewidth,
+                 pts,
+                 stroke = False,
+                 fill = False,
+                 evenodd = False,
+                 stroking_color = None,
+                 non_stroking_color = None):
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
         self.linewidth = linewidth
@@ -181,8 +188,23 @@ class LTCurve(LTComponent):
 ##
 class LTLine(LTCurve):
 
-    def __init__(self, linewidth, p0, p1, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
-        LTCurve.__init__(self, linewidth, [p0, p1], stroke, fill, evenodd, stroking_color, non_stroking_color)
+    def __init__(self,
+                 linewidth,
+                 p0,
+                 p1,
+                 stroke = False,
+                 fill = False,
+                 evenodd = False,
+                 stroking_color = None,
+                 non_stroking_color = None):
+        LTCurve.__init__(self, 
+                         linewidth,
+                         [p0, p1],
+                         stroke,
+                         fill,
+                         evenodd,
+                         stroking_color,
+                         non_stroking_color)
         return
 
 
@@ -190,9 +212,23 @@ class LTLine(LTCurve):
 ##
 class LTRect(LTCurve):
 
-    def __init__(self, linewidth, bbox, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
+    def __init__(self,
+                 linewidth,
+                 bbox,
+                 stroke = False,
+                 fill = False,
+                 evenodd = False, 
+                 stroking_color = None,
+                 non_stroking_color = None):
         (x0, y0, x1, y1) = bbox
-        LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke, fill, evenodd, stroking_color, non_stroking_color)
+        LTCurve.__init__(self,
+                         linewidth, 
+                         [(x0, y0), (x1, y0), (x1, y1), (x0, y1)],
+                         stroke, 
+                         fill, 
+                         evenodd,
+                         stroking_color,
+                         non_stroking_color)
         return
 
 
@@ -508,30 +544,61 @@ class LTLayoutContainer(LTContainer):
         self.groups = None
         return
 
-    #detect if between obj0 and obj1 there is a horizontal split line
     def hsplitted(self, obj0, obj1, splitobjs, cell_margin):
+        ''' detect that between obj0 and obj1 there is a horizontal
+        split line.
+        
+        # ARGUMENTS:
+            obj0: a LTTextLineHorizontal or LTTextLineVertical Object
+            obj1: a LTTextLineHorizontal or LTTextLineVertical Object
+            splitobjs: list -- each elememnt is a LTRect Object
+            cell_margin: float -- the distance given for allowing
+                additional matches
+
+        # RETURNS:
+            boolean
+        '''
         cross = False
         for r in splitobjs:
+            # line cuts through the entire object horizontally
             if (r.x0 <= min(obj0.x0, obj1.x0)) and (r.x1 >= max(obj0.x1, obj1.x1)):
-                if   ((r.y0 + cell_margin) >= obj0.y0) and ((r.y0 - cell_margin) <= obj1.y1):
+                if ((r.y0 + cell_margin) >= obj0.y0)
+                    and ((r.y0 - cell_margin) <= obj1.y1):
                     cross = True
                     break
-                elif ((r.y0 + cell_margin) >= obj1.y0) and ((r.y0 - cell_margin) <= obj0.y1):
+                elif ((r.y0 + cell_margin) >= obj1.y0)
+                      and ((r.y0 - cell_margin) <= obj0.y1):
                     cross = True
                     break
-                elif ((r.y1 + cell_margin) >= obj0.y0) and ((r.y1 - cell_margin) <= obj1.y1):
+                elif ((r.y1 + cell_margin) >= obj0.y0)
+                      and ((r.y1 - cell_margin) <= obj1.y1):
                     cross = True
                     break
-                elif ((r.y1 + cell_margin) >= obj1.y0) and ((r.y1 - cell_margin) <= obj0.y1):
+                elif ((r.y1 + cell_margin) >= obj1.y0) 
+                      and ((r.y1 - cell_margin) <= obj0.y1):
                     cross = True
                     break
         return cross
 
-    #detect if between obj0 and obj1 there is a vertical split line
     def vsplitted(self, obj0, obj1, splitobjs, cell_margin):
+        ''' detects if between obj0 and obj1, there is a vertical split line
+        # ARGUMENTS:
+            obj0: a LTTextLineHorizontal or LTTextLineVertical Object
+            obj1: a LTTextLineHorizontal or LTTextLineVertical Object
+            splitobs: list -- objects that will be used to verify that obj1 
+                and obj2 are divided by one of the split objects
+            cell_margin: float -- the distance one cell is allowed to overlap
+                horizontally
+                
+        # RETURNS: 
+            boolean
+        '''
         cross = False
         for r in splitobjs:
+            # if the split object covers over the entire projected hight of the
+            # combined objects
             if (r.y0 <= min(obj0.y0, obj1.y0)) and (r.y1 >= max(obj0.y1, obj1.y1)):
+                
                 if   ((r.x0 + cell_margin) >= obj0.x0) and ((r.x0 - cell_margin) <= obj1.x1):
                     cross = True
                     break
@@ -619,19 +686,38 @@ class LTLayoutContainer(LTContainer):
         return
 
     # group_textlines: group neighboring lines to textboxes.
-    def group_textlines(self, laparams, lines, splitobjs):
+    def group_textlines(self, laparams, lines, splitobjs=[]):
+        ''' group_textlines: group neighboring lines to textboxes
+
+        # ARGUMENTS
+            laparams: laparams obj -- an object containing all the parameters
+                needed to join together characters and make lines of text
+            lines: list -- each member is an LTLayoutContainer object
+                containing a unique textline
+            splitobjs: list -- each member is an LTRect object
+        '''
         plane = Plane(self.bbox)
         plane.extend(lines)
         boxes = {}
+        # iterate through all neighbors and join any that are text that
+        # pass requirements
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
             if line not in neighbors: continue
             members = []
             for obj1 in neighbors:
-                if line is not obj1:
-                    if self.vsplitted(line, obj1, splitobjs, laparams.cell_margin):
+                # for each text line to be merged, see if it is split by 
+                # an LTRect object
+                if line is not obj1 and splitobjs:
+                    if self.vsplitted(line,
+                                      obj1,
+                                      splitobjs,
+                                      laparams.cell_margin):
                         continue
-                    if self.hsplitted(line, obj1, splitobjs, laparams.cell_margin):
+                    if self.hsplitted(line,
+                                      obj1,
+                                      splitobjs,
+                                      laparams.cell_margin):
                         continue
                 members.append(obj1)
                 if obj1 in boxes:
@@ -668,13 +754,15 @@ class LTLayoutContainer(LTContainer):
                     | obj1 |wwwwwwwwww:
                     +------+www+------+
                     :wwwwwwwwww| obj2 |
-            (x0, y0) +..........+------+
+            (x0, y0)+..........+------+
             """
             x0 = min(obj1.x0, obj2.x0)
             y0 = min(obj1.y0, obj2.y0)
             x1 = max(obj1.x1, obj2.x1)
             y1 = max(obj1.y1, obj2.y1)
-            return ((x1-x0)*(y1-y0) - obj1.width*obj1.height - obj2.width*obj2.height)
+            return ((x1-x0)*(y1-y0)
+                    - obj1.width*obj1.height
+                    - obj2.width*obj2.height)
 
         def isany(obj1, obj2):
             """Check if there's any other object between obj1 and obj2.
@@ -723,6 +811,12 @@ class LTLayoutContainer(LTContainer):
         return list(plane)
 
     def analyze(self, laparams):
+        ''' used recursively to split object into smaller objects
+
+        # ARGUMENTS
+            laparams: an laparams object containing all the revelvant
+                parameters for assessing the broken down pdf
+        '''
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
         (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self)
