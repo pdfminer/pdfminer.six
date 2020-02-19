@@ -55,12 +55,17 @@ class LAParams(object):
         return
 
     def __repr__(self):
-        return ('<LAParams: char_margin=%.1f, ' % self.char_margin
-                'line_margin=%.1f, ' % self.line_margin 
-                'word_margin=%.1f, ' % self.word_margin
-                'cell_margin=%.1f ,' % self.cell_margin
-                'all_texts=%r, ' % self.all_texts
-                'split_tables=%r>' % self.split_tables)
+        return """<LAParams: char_margin=%.1f,
+                 line_margin=%.1f,
+                 word_margin=%.1f,
+                 cell_margin=%.1f,
+                 all_texts=%r,
+                 split_tables=%r>""" % (self.char_margin,
+                                        self.line_margin,
+                                        self.word_margin,
+                                        self.cell_margin,
+                                        self.all_texts,
+                                        self.split_tables)
 
 
 ##  LTItem
@@ -549,8 +554,8 @@ class LTLayoutContainer(LTContainer):
         split line.
         
         # ARGUMENTS:
-            obj0: a LTTextLineHorizontal or LTTextLineVertical Object
-            obj1: a LTTextLineHorizontal or LTTextLineVertical Object
+            obj0: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
+            obj1: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
             splitobjs: list -- each elememnt is a LTRect Object
             cell_margin: float -- the distance given for allowing
                 additional matches
@@ -562,20 +567,20 @@ class LTLayoutContainer(LTContainer):
         for r in splitobjs:
             # line cuts through the entire object horizontally
             if (r.x0 <= min(obj0.x0, obj1.x0)) and (r.x1 >= max(obj0.x1, obj1.x1)):
-                if ((r.y0 + cell_margin) >= obj0.y0)
-                    and ((r.y0 - cell_margin) <= obj1.y1):
+                if (((r.y0 + cell_margin) >= obj0.y0)
+                    and ((r.y0 - cell_margin) <= obj1.y1)):
                     cross = True
                     break
-                elif ((r.y0 + cell_margin) >= obj1.y0)
-                      and ((r.y0 - cell_margin) <= obj0.y1):
+                elif (((r.y0 + cell_margin) >= obj1.y0)
+                      and ((r.y0 - cell_margin) <= obj0.y1)):
                     cross = True
                     break
-                elif ((r.y1 + cell_margin) >= obj0.y0)
-                      and ((r.y1 - cell_margin) <= obj1.y1):
+                elif (((r.y1 + cell_margin) >= obj0.y0)
+                      and ((r.y1 - cell_margin) <= obj1.y1)):
                     cross = True
                     break
-                elif ((r.y1 + cell_margin) >= obj1.y0) 
-                      and ((r.y1 - cell_margin) <= obj0.y1):
+                elif (((r.y1 + cell_margin) >= obj1.y0) 
+                      and ((r.y1 - cell_margin) <= obj0.y1)):
                     cross = True
                     break
         return cross
@@ -583,8 +588,8 @@ class LTLayoutContainer(LTContainer):
     def vsplitted(self, obj0, obj1, splitobjs, cell_margin):
         ''' detects if between obj0 and obj1, there is a vertical split line
         # ARGUMENTS:
-            obj0: a LTTextLineHorizontal or LTTextLineVertical Object
-            obj1: a LTTextLineHorizontal or LTTextLineVertical Object
+            obj0: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
+            obj1: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
             splitobs: list -- objects that will be used to verify that obj1 
                 and obj2 are divided by one of the split objects
             cell_margin: float -- the distance one cell is allowed to overlap
@@ -599,27 +604,39 @@ class LTLayoutContainer(LTContainer):
             # combined objects
             if (r.y0 <= min(obj0.y0, obj1.y0)) and (r.y1 >= max(obj0.y1, obj1.y1)):
                 
-                if   ((r.x0 + cell_margin) >= obj0.x0) and ((r.x0 - cell_margin) <= obj1.x1):
+                if (((r.x0 + cell_margin) >= obj0.x0)
+                    and ((r.x0 - cell_margin) <= obj1.x1)):
                     cross = True
                     break
-                elif ((r.x0 + cell_margin) >= obj1.x0) and ((r.x0 - cell_margin) <= obj0.x1):
+                elif (((r.x0 + cell_margin) >= obj1.x0)
+                    and ((r.x0 - cell_margin) <= obj0.x1)):
                     cross = True
                     break
-                elif ((r.x1 + cell_margin) >= obj0.x0) and ((r.x1 - cell_margin) <= obj1.x1):
+                elif (((r.x1 + cell_margin) >= obj0.x0)
+                    and ((r.x1 - cell_margin) <= obj1.x1)):
                     cross = True
                     break
-                elif ((r.x1 + cell_margin) >= obj1.x0) and ((r.x1 - cell_margin) <= obj0.x1):
+                elif (((r.x1 + cell_margin) >= obj1.x0)
+                    and ((r.x1 - cell_margin) <= obj0.x1)):
                     cross = True
                     break
         return cross
 
-    # group_objects: group text object to textlines.
     def group_objects(self, laparams, objs, splitobjs):
+        ''' group text object to textlines.
+        # Arguments
+            laparams:  LaParams object - contains all the settings for 
+                determing the page layout
+            objs: list - each element is a unique LTChar object
+            splitobjs: list - each element is a LTRect object.  These are used
+                as barriers to prevent joining into textlines
+        # Returns: Textline object
+        '''
         obj0 = None
         line = None
         for obj1 in objs:
             if obj0 is not None:
-                # halign: obj0 and obj1 is horizontally aligned.
+                # halign: obj0 and obj1 are horizontally aligned. (boolean)
                 #
                 #   +------+ - - -
                 #   | obj0 | - - +------+   -
@@ -635,8 +652,18 @@ class LTLayoutContainer(LTContainer):
                            obj0.voverlap(obj1)) and
                           (obj0.hdistance(obj1) <
                            max(obj0.width, obj1.width) * laparams.char_margin))
+                
+                # check if there is a line between them, if so switch halign
+                if halign:
+                    for line in splitobjs:
+                        if self.vsplitted(obj0,
+                                          obj1,
+                                          line,
+                                          laparams.cell_margin):
+                            halign = False
+                            break
 
-                # valign: obj0 and obj1 is vertically aligned.
+                # valign: obj0 and obj1 are vertically aligned. (boolean)
                 #
                 #   +------+
                 #   | obj0 |
@@ -657,6 +684,16 @@ class LTLayoutContainer(LTContainer):
                            obj0.hoverlap(obj1)) and
                           (obj0.vdistance(obj1) <
                            max(obj0.height, obj1.height) * laparams.char_margin))
+
+                # check if there is a line between them, if so switch valign
+                if valign:
+                    for line in splitobjs:
+                        if self.hsplitted(obj0,
+                                          obj1,
+                                          line,
+                                          laparams.cell_margin):
+                            valign = False
+                            break
 
                 if ((halign and isinstance(line, LTTextLineHorizontal)) or
                     (valign and isinstance(line, LTTextLineVertical))):
@@ -720,16 +757,29 @@ class LTLayoutContainer(LTContainer):
                                       laparams.cell_margin):
                         continue
                 members.append(obj1)
+                
+                # verify that the neighbor isn't apart of anoter text box
+                # if it is add the entire textbox
                 if obj1 in boxes:
                     members.extend(boxes.pop(obj1))
+            
+            # instantiate a new textbox
             if isinstance(line, LTTextLineHorizontal):
                 box = LTTextBoxHorizontal()
             else:
                 box = LTTextBoxVertical()
+            
+            # Add unique textlines to the textbox and record that its been
+            # added (so we don't add the textline to two different boxes)
             for obj in uniq(members):
                 box.add(obj)
                 boxes[obj] = box
         done = set()
+
+        # yield each non-empty textbox.
+        # for box in boxes.values:
+            # if not box.is_empty():
+            #     yield box
         for line in lines:
             if line not in boxes: continue
             box = boxes[line]
@@ -740,10 +790,13 @@ class LTLayoutContainer(LTContainer):
                 yield box
         return
 
-    # group_textboxes: group textboxes hierarchically.
+    # group_textboxes: 
     def group_textboxes(self, laparams, boxes):
+        ''' group textboxes hierarchically.
+        '''
         assert boxes, str((laparams, boxes))
 
+            # Add unique lines to the textbox
         def dist(obj1, obj2):
             """A distance function between two TextBoxes.
 
@@ -821,7 +874,9 @@ class LTLayoutContainer(LTContainer):
         # it has all the individual characters in the page.
         (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self)
         if laparams.split_tables:
-            (splitobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTRect), self)
+            (splitobjs, otherobjs) = (
+                fsplit(lambda obj: isinstance(obj, LTRect), self)
+            )
         else:
             splitobjs = []
         for obj in otherobjs:
