@@ -566,7 +566,9 @@ class LTLayoutContainer(LTContainer):
         cross = False
         for r in splitobjs:
             # line cuts through the entire object horizontally
-            if (r.x0 <= min(obj0.x0, obj1.x0)) and (r.x1 >= max(obj0.x1, obj1.x1)):
+            if ((r.x0 <= min(obj0.x0, obj1.x0))
+                and (r.x1 >= max(obj0.x1, obj1.x1))):
+
                 if (((r.y0 + cell_margin) >= obj0.y0)
                     and ((r.y0 - cell_margin) <= obj1.y1)):
                     cross = True
@@ -602,7 +604,8 @@ class LTLayoutContainer(LTContainer):
         for r in splitobjs:
             # if the split object covers over the entire projected hight of the
             # combined objects
-            if (r.y0 <= min(obj0.y0, obj1.y0)) and (r.y1 >= max(obj0.y1, obj1.y1)):
+            if ((r.y0 <= min(obj0.y0, obj1.y0)) 
+                and (r.y1 >= max(obj0.y1, obj1.y1))):
                 
                 if (((r.x0 + cell_margin) >= obj0.x0)
                     and ((r.x0 - cell_margin) <= obj1.x1)):
@@ -883,7 +886,7 @@ class LTLayoutContainer(LTContainer):
             obj.analyze(laparams)
         if not textobjs:
             return
-        textlines = list(self.group_objects(laparams, textobjs))
+        textlines = list(self.group_objects(laparams, textobjs, splitobjs))
         (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
         for obj in empties:
             obj.analyze(laparams)
