@@ -657,14 +657,11 @@ class LTLayoutContainer(LTContainer):
                            max(obj0.width, obj1.width) * laparams.char_margin))
                 
                 # check if there is a line between them, if so switch halign
-                if halign:
-                    for line in splitobjs:
-                        if self.vsplitted(obj0,
-                                          obj1,
-                                          line,
-                                          laparams.cell_margin):
-                            halign = False
-                            break
+                if halign and self.vsplitted(obj0,
+                                             obj1,
+                                             splitobjs,
+                                             laparams.cell_margin):
+                    halign = False
 
                 # valign: obj0 and obj1 are vertically aligned. (boolean)
                 #
@@ -689,14 +686,11 @@ class LTLayoutContainer(LTContainer):
                            max(obj0.height, obj1.height) * laparams.char_margin))
 
                 # check if there is a line between them, if so switch valign
-                if valign:
-                    for line in splitobjs:
-                        if self.hsplitted(obj0,
-                                          obj1,
-                                          line,
-                                          laparams.cell_margin):
-                            valign = False
-                            break
+                if valign and self.hsplitted(obj0,
+                                            obj1,
+                                            splitobjs,
+                                            laparams.cell_margin):
+                    valign = False
 
                 if ((halign and isinstance(line, LTTextLineHorizontal)) or
                     (valign and isinstance(line, LTTextLineVertical))):
