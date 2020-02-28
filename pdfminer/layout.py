@@ -39,7 +39,7 @@ class LAParams(object):
                  line_margin=0.5,
                  word_margin=0.1,
                  boxes_flow=0.5,
-                 cell_margin=0.5,
+                 cell_margin=0.001,
                  detect_vertical=False,
                  all_texts=False,
                  split_tables=False):
@@ -899,7 +899,7 @@ class LTLayoutContainer(LTContainer):
                 else:
                     return (1, box.y0, box.x0)
             textboxes.sort(key=getkey)
-        self._objs = textboxes + otherobjs + empties
+        self._objs = textboxes + otherobjs + empties + splitobjs
         return
 
 
