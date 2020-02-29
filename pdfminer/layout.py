@@ -565,9 +565,9 @@ class LTLayoutContainer(LTContainer):
         '''
         cross = False
         for r in splitobjs:
-            # line cuts through the entire object horizontally
-            if ((r.x0 <= min(obj0.x0, obj1.x0))
-                and (r.x1 >= max(obj0.x1, obj1.x1))):
+            # line cuts through the overlap of the two objs horizontally
+            if ((r.x0 <= max(obj0.x0, obj1.x0))
+                and (r.x1 >= min(obj0.x1, obj1.x1))):
 
                 if (((r.y0 + cell_margin) >= obj0.y0)
                     and ((r.y0 - cell_margin) <= obj1.y1)):
@@ -602,10 +602,10 @@ class LTLayoutContainer(LTContainer):
         '''
         cross = False
         for r in splitobjs:
-            # if the split object covers over the entire projected hight of the
-            # combined objects
-            if ((r.y0 <= min(obj0.y0, obj1.y0)) 
-                and (r.y1 >= max(obj0.y1, obj1.y1))):
+            # if the split object covers over the overlap of the projected 
+            # hight of the combined objects
+            if ((r.y0 <= max(obj0.y0, obj1.y0)) 
+                and (r.y1 >= min(obj0.y1, obj1.y1))):
                 
                 if (((r.x0 + cell_margin) >= obj0.x0)
                     and ((r.x0 - cell_margin) <= obj1.x1)):
@@ -872,7 +872,9 @@ class LTLayoutContainer(LTContainer):
         (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self)
         if laparams.split_tables:
             (splitobjs, otherobjs) = (
-                fsplit(lambda obj: isinstance(obj, LTRect), self)
+                fsplit(lambda obj: (isinstance(obj, LTRect)
+                                    | isinstance(obj, LTLine)
+                                    | isinstance(obj, LTCurve)), self)
             )
         else:
             splitobjs = []
