@@ -31,6 +31,7 @@ Features
  * Support for RC4 and AES encryption.
  * Outline (TOC) extraction.
  * Tagged contents extraction.
+ * Table extraction.
  * Automatic layout analysis.
 
 

@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-Nothing
+- Incorporated optional parameters to LAParams: cell_margin (float) and
+split_table (bool).  These cause textboxes and textlines to be bounded by 
+LTcurve based objects. ([#379](https://github.com/pdfminer/pdfminer.six/pull/379))
 
 ## [20200124] - 2020-01-24
 
