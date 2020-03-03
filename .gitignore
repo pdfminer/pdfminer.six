@@ -16,3 +16,5 @@ tests/*.xml
 tests/*.txt
 .idea/
 .tox/
+Pipfile
+Pipfile.lock

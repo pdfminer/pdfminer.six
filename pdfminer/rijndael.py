@@ -1,5 +1,3 @@
-
-
 """ Python implementation of Rijndael encryption algorithm.
 
 This code is in the public domain.
@@ -23,6 +21,7 @@ def RKLENGTH(keybits):
 
 def NROUNDS(keybits):
     return (keybits)//32+6
+
 
 Te0 = [
     0xc66363a5, 0xf87c7c84, 0xee777799, 0xf67b7b8d,
@@ -701,7 +700,7 @@ rcon = [
     # 128-bit blocks, Rijndael never uses more than 10 rcon values
 ]
 
-if len(struct.pack('L',0)) == 4:
+if len(struct.pack('L', 0)) == 4:
     # 32bit
     def GETU32(x): return struct.unpack('>L', x)[0]
     def PUTU32(x): return struct.pack('>L', x)
@@ -734,7 +733,8 @@ def rijndaelSetupEncrypt(key, keybits):
             rk[p+6] = rk[p+2] ^ rk[p+5]
             rk[p+7] = rk[p+3] ^ rk[p+6]
             i += 1
-            if i == 10: return (rk, 10)
+            if i == 10:
+                return (rk, 10)
             p += 4
 
     rk[4] = GETU32(key[16:20])
@@ -752,7 +752,8 @@ def rijndaelSetupEncrypt(key, keybits):
             rk[p+8] = rk[p+2] ^ rk[p+7]
             rk[p+9] = rk[p+3] ^ rk[p+8]
             i += 1
-            if i == 8: return (rk, 12)
+            if i == 8:
+                return (rk, 12)
             rk[p+10] = rk[p+4] ^ rk[p+9]
             rk[p+11] = rk[p+5] ^ rk[p+10]
             p += 6
@@ -772,7 +773,8 @@ def rijndaelSetupEncrypt(key, keybits):
             rk[p+10] = rk[p+2] ^ rk[p+9]
             rk[p+11] = rk[p+3] ^ rk[p+10]
             i += 1
-            if i == 7: return (rk, 14)
+            if i == 7:
+                return (rk, 14)
             temp = rk[p+11]
             rk[p+12] = (rk[p+4] ^
                         (Te4[(temp >> 24)       ] & 0xff000000) ^
@@ -796,15 +798,28 @@ def rijndaelSetupDecrypt(key, keybits):
     (rk, nrounds) = rijndaelSetupEncrypt(key, keybits)
     # invert the order of the round keys:
     i = 0
-    j = 4*nrounds
+    j = 4 * nrounds
     while i < j:
-        temp = rk[i    ]; rk[i    ] = rk[j    ]; rk[j    ] = temp
-        temp = rk[i + 1]; rk[i + 1] = rk[j + 1]; rk[j + 1] = temp
-        temp = rk[i + 2]; rk[i + 2] = rk[j + 2]; rk[j + 2] = temp
-        temp = rk[i + 3]; rk[i + 3] = rk[j + 3]; rk[j + 3] = temp
+        temp = rk[i]
+        rk[i] = rk[j]
+        rk[j] = temp
+
+        temp = rk[i + 1]
+        rk[i + 1] = rk[j + 1]
+        rk[j + 1] = temp
+
+        temp = rk[i + 2]
+        rk[i + 2] = rk[j + 2]
+        rk[j + 2] = temp
+
+        temp = rk[i + 3]
+        rk[i + 3] = rk[j + 3]
+        rk[j + 3] = temp
+
         i += 4
         j -= 4
-    # apply the inverse MixColumn transform to all round keys but the first and the last:
+    # apply the inverse MixColumn transform to all round keys but the first
+    # and the last:
     p = 0
     for i in range(1, nrounds):
         p += 4
@@ -872,7 +887,8 @@ def rijndaelEncrypt(rk, nrounds, plaintext):
           rk[p+7])
         p += 8
         r -= 1
-        if r == 0: break
+        if r == 0:
+            break
         s0 = (
           Te0[(t0 >> 24)       ] ^
           Te1[(t1 >> 16) & 0xff] ^
@@ -975,7 +991,8 @@ def rijndaelDecrypt(rk, nrounds, ciphertext):
           rk[p+7])
         p += 8
         r -= 1
-        if r == 0: break
+        if r == 0:
+            break
         s0 = (
           Td0[(t0 >> 24)       ] ^
           Td1[(t3 >> 16) & 0xff] ^
@@ -1039,7 +1056,7 @@ def rijndaelDecrypt(rk, nrounds, ciphertext):
 
 
 # decrypt(key, fin, fout, keybits=256)
-class RijndaelDecryptor(object):
+class RijndaelDecryptor:
 
     """
     >>> key = b'00010203050607080a0b0c0d0f101112'.decode('hex')
@@ -1049,10 +1066,13 @@ class RijndaelDecryptor(object):
     """
 
     def __init__(self, key, keybits=256):
-        assert len(key) == KEYLENGTH(keybits), str((len(key), KEYLENGTH(keybits)))
+        assert len(key) == KEYLENGTH(keybits), \
+            str((len(key), KEYLENGTH(keybits)))
         (self.rk, self.nrounds) = rijndaelSetupDecrypt(key, keybits)
-        assert len(self.rk) == RKLENGTH(keybits), str((len(self.rk), RKLENGTH(keybits)))
-        assert self.nrounds == NROUNDS(keybits), str((self.nrounds, NROUNDS(keybits)))
+        assert len(self.rk) == RKLENGTH(keybits), \
+            str((len(self.rk), RKLENGTH(keybits)))
+        assert self.nrounds == NROUNDS(keybits), \
+            str((self.nrounds, NROUNDS(keybits)))
         return
 
     def decrypt(self, ciphertext):
@@ -1061,13 +1081,16 @@ class RijndaelDecryptor(object):
 
 
 # encrypt(key, fin, fout, keybits=256)
-class RijndaelEncryptor(object):
+class RijndaelEncryptor:
 
     def __init__(self, key, keybits=256):
-        assert len(key) == KEYLENGTH(keybits), str((len(key), KEYLENGTH(keybits)))
+        assert len(key) == KEYLENGTH(keybits), \
+            str((len(key), KEYLENGTH(keybits)))
         (self.rk, self.nrounds) = rijndaelSetupEncrypt(key, keybits)
-        assert len(self.rk) == RKLENGTH(keybits), str((len(self.rk), RKLENGTH(keybits)))
-        assert self.nrounds == NROUNDS(keybits), str((self.nrounds, NROUNDS(keybits)))
+        assert len(self.rk) == RKLENGTH(keybits),\
+            str((len(self.rk), RKLENGTH(keybits)))
+        assert self.nrounds == NROUNDS(keybits), \
+            str((self.nrounds, NROUNDS(keybits)))
         return
 
     def encrypt(self, plaintext):

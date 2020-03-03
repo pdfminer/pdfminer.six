@@ -1,16 +1,13 @@
 import collections
 from .psparser import LIT
 
-import six #Python 2+3 compatibility
 
-##  PDFColorSpace
-##
 LITERAL_DEVICE_GRAY = LIT('DeviceGray')
 LITERAL_DEVICE_RGB = LIT('DeviceRGB')
 LITERAL_DEVICE_CMYK = LIT('DeviceCMYK')
 
 
-class PDFColorSpace(object):
+class PDFColorSpace:
 
     def __init__(self, name, ncomponents):
         self.name = name
@@ -18,13 +15,11 @@ class PDFColorSpace(object):
         return
 
     def __repr__(self):
-        return '<PDFColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
+        return '<PDFColorSpace: %s, ncomponents=%d>' % \
+               (self.name, self.ncomponents)
 
 
-if six.PY2:
-    PREDEFINED_COLORSPACE = {}
-else:
-    PREDEFINED_COLORSPACE = collections.OrderedDict()
+PREDEFINED_COLORSPACE = collections.OrderedDict()
 
 for (name, n) in [
     ('DeviceGray', 1),  # default value first
@@ -37,4 +32,4 @@ for (name, n) in [
     ('Indexed', 1),
     ('Pattern', 1),
 ]:
-    PREDEFINED_COLORSPACE[name]=PDFColorSpace(name, n)
+    PREDEFINED_COLORSPACE[name] = PDFColorSpace(name, n)

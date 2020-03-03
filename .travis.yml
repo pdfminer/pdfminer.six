@@ -1,12 +1,11 @@
 language: python
 python:
-  - "2.7"
   - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
+  - "3.8"
 install:
-  - pip install six
-  - pip install pycryptodome
-  - pip install chardet
+  - pip install tox-travis flake8
 script:
-  nosetests --nologcapture
+  - tox -r
