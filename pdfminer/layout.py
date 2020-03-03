@@ -188,11 +188,11 @@ class LTCurve(LTComponent):
     def __init__(self,
                  linewidth,
                  pts,
-                 stroke = False,
-                 fill = False,
-                 evenodd = False,
-                 stroking_color = None,
-                 non_stroking_color = None):
+                 stroke=False,
+                 fill=False,
+                 evenodd=False,
+                 stroking_color=None,
+                 non_stroking_color=None):
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
         self.linewidth = linewidth
@@ -217,12 +217,12 @@ class LTLine(LTCurve):
                  linewidth,
                  p0,
                  p1,
-                 stroke = False,
-                 fill = False,
-                 evenodd = False,
-                 stroking_color = None,
-                 non_stroking_color = None):
-        LTCurve.__init__(self, 
+                 stroke=False,
+                 fill=False,
+                 evenodd=False,
+                 stroking_color=None,
+                 non_stroking_color=None):
+        LTCurve.__init__(self,
                          linewidth,
                          [p0, p1],
                          stroke,
@@ -242,17 +242,17 @@ class LTRect(LTCurve):
     def __init__(self,
                  linewidth,
                  bbox,
-                 stroke = False,
-                 fill = False,
-                 evenodd = False, 
-                 stroking_color = None,
-                 non_stroking_color = None):
+                 stroke=False,
+                 fill=False,
+                 evenodd=False,
+                 stroking_color=None,
+                 non_stroking_color=None):
         (x0, y0, x1, y1) = bbox
         LTCurve.__init__(self,
-                         linewidth, 
+                         linewidth,
                          [(x0, y0), (x1, y0), (x1, y1), (x0, y1)],
-                         stroke, 
-                         fill, 
+                         stroke,
+                         fill,
                          evenodd,
                          stroking_color,
                          non_stroking_color)
@@ -560,7 +560,7 @@ class LTLayoutContainer(LTContainer):
     def hsplitted(self, obj0, obj1, splitobjs, cell_margin):
         ''' detect that between obj0 and obj1 there is a horizontal
         split line.
-        
+
         # ARGUMENTS:
             obj0: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
             obj1: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
@@ -575,10 +575,10 @@ class LTLayoutContainer(LTContainer):
         for r in splitobjs:
             # line cuts through the overlap of the two objs horizontally
             if ((r.x0 <= max(obj0.x0, obj1.x0))
-                and (r.x1 >= min(obj0.x1, obj1.x1))):
+                    and (r.x1 >= min(obj0.x1, obj1.x1))):
 
                 if (((r.y0 + cell_margin) >= obj0.y0)
-                    and ((r.y0 - cell_margin) <= obj1.y1)):
+                        and ((r.y0 - cell_margin) <= obj1.y1)):
                     cross = True
                     break
                 elif (((r.y0 + cell_margin) >= obj1.y0)
@@ -589,7 +589,7 @@ class LTLayoutContainer(LTContainer):
                       and ((r.y1 - cell_margin) <= obj1.y1)):
                     cross = True
                     break
-                elif (((r.y1 + cell_margin) >= obj1.y0) 
+                elif (((r.y1 + cell_margin) >= obj1.y0)
                       and ((r.y1 - cell_margin) <= obj0.y1)):
                     cross = True
                     break
@@ -600,35 +600,35 @@ class LTLayoutContainer(LTContainer):
         # ARGUMENTS:
             obj0: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
             obj1: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
-            splitobs: list -- objects that will be used to verify that obj1 
+            splitobs: list -- objects that will be used to verify that obj1
                 and obj2 are divided by one of the split objects
             cell_margin: float -- the distance one cell is allowed to overlap
                 horizontally
-                
-        # RETURNS: 
+
+        # RETURNS:
             boolean
         '''
         cross = False
         for r in splitobjs:
-            # if the split object covers over the overlap of the projected 
+            # if the split object covers over the overlap of the projected
             # hight of the combined objects
-            if ((r.y0 <= max(obj0.y0, obj1.y0)) 
-                and (r.y1 >= min(obj0.y1, obj1.y1))):
-                
+            if ((r.y0 <= max(obj0.y0, obj1.y0))
+                    and (r.y1 >= min(obj0.y1, obj1.y1))):
+
                 if (((r.x0 + cell_margin) >= obj0.x0)
-                    and ((r.x0 - cell_margin) <= obj1.x1)):
+                        and ((r.x0 - cell_margin) <= obj1.x1)):
                     cross = True
                     break
                 elif (((r.x0 + cell_margin) >= obj1.x0)
-                    and ((r.x0 - cell_margin) <= obj0.x1)):
+                        and ((r.x0 - cell_margin) <= obj0.x1)):
                     cross = True
                     break
                 elif (((r.x1 + cell_margin) >= obj0.x0)
-                    and ((r.x1 - cell_margin) <= obj1.x1)):
+                        and ((r.x1 - cell_margin) <= obj1.x1)):
                     cross = True
                     break
                 elif (((r.x1 + cell_margin) >= obj1.x0)
-                    and ((r.x1 - cell_margin) <= obj0.x1)):
+                        and ((r.x1 - cell_margin) <= obj0.x1)):
                     cross = True
                     break
         return cross
@@ -636,7 +636,7 @@ class LTLayoutContainer(LTContainer):
     def group_objects(self, laparams, objs, splitobjs):
         ''' group text object to textlines.
         # Arguments
-            laparams:  LaParams object - contains all the settings for 
+            laparams:  LaParams object - contains all the settings for
                 determing the page layout
             objs: list - each element is a unique LTChar object
             splitobjs: list - each element is a LTRect object.  These are used
@@ -657,13 +657,15 @@ class LTLayoutContainer(LTContainer):
                 #
                 #          |<--->|
                 #        (char_margin)
-                halign = (obj0.is_compatible(obj1) and
-                          obj0.is_voverlap(obj1) and
-                          (min(obj0.height, obj1.height) * laparams.line_overlap <
-                           obj0.voverlap(obj1)) and
-                          (obj0.hdistance(obj1) <
-                           max(obj0.width, obj1.width) * laparams.char_margin))
-                
+                halign = (
+                    obj0.is_compatible(obj1) and
+                    obj0.is_voverlap(obj1) and
+                    (min(obj0.height, obj1.height) * laparams.line_overlap <
+                        obj0.voverlap(obj1)) and
+                    (obj0.hdistance(obj1) <
+                        max(obj0.width, obj1.width) * laparams.char_margin)
+                )
+
                 # check if there is a line between them, if so switch halign
                 if halign and self.vsplitted(obj0,
                                              obj1,
@@ -696,9 +698,9 @@ class LTLayoutContainer(LTContainer):
 
                 # check if there is a line between them, if so switch valign
                 if valign and self.hsplitted(obj0,
-                                            obj1,
-                                            splitobjs,
-                                            laparams.cell_margin):
+                                             obj1,
+                                             splitobjs,
+                                             laparams.cell_margin):
                     valign = False
 
                 if ((halign and isinstance(line, LTTextLineHorizontal)) or
@@ -751,7 +753,7 @@ class LTLayoutContainer(LTContainer):
                 continue
             members = []
             for obj1 in neighbors:
-                # for each text line to be merged, see if it is split by 
+                # for each text line to be merged, see if it is split by
                 # an LTRect object
                 if line is not obj1 and splitobjs:
                     if self.vsplitted(line,
@@ -765,18 +767,18 @@ class LTLayoutContainer(LTContainer):
                                       laparams.cell_margin):
                         continue
                 members.append(obj1)
-                
+
                 # verify that the neighbor isn't apart of anoter text box
                 # if it is add the entire textbox
                 if obj1 in boxes:
                     members.extend(boxes.pop(obj1))
-            
+
             # instantiate a new textbox
             if isinstance(line, LTTextLineHorizontal):
                 box = LTTextBoxHorizontal()
             else:
                 box = LTTextBoxVertical()
-            
+
             # Add unique textlines to the textbox and record that its been
             # added (so we don't add the textline to two different boxes)
             for obj in uniq(members):
@@ -785,9 +787,6 @@ class LTLayoutContainer(LTContainer):
         done = set()
 
         # yield each non-empty textbox.
-        # for box in boxes.values:
-            # if not box.is_empty():
-            #     yield box
         for line in lines:
             if line not in boxes:
                 continue
@@ -798,7 +797,6 @@ class LTLayoutContainer(LTContainer):
             if not box.is_empty():
                 yield box
         return
-
 
     def group_textboxes(self, laparams, boxes):
         """Group textboxes hierarchically.
@@ -819,7 +817,7 @@ class LTLayoutContainer(LTContainer):
         :return: a list that has only one element, the final top level textbox.
         """
 
-            # Add unique lines to the textbox
+        # Add unique lines to the textbox
         def dist(obj1, obj2):
             """A distance function between two TextBoxes.
 
@@ -911,8 +909,8 @@ class LTLayoutContainer(LTContainer):
         for obj in empties:
             obj.analyze(laparams)
         textboxes = list(self.group_textlines(laparams, textlines, splitobjs))
-        if (-1 <= laparams.boxes_flow and laparams.boxes_flow <= +1 
-            and textboxes):
+        if (-1 <= laparams.boxes_flow and laparams.boxes_flow <= +1
+                and textboxes):
             self.groups = self.group_textboxes(laparams, textboxes)
             assigner = IndexAssigner()
             for group in self.groups:
