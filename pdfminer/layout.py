@@ -558,19 +558,19 @@ class LTLayoutContainer(LTContainer):
         return
 
     def hsplitted(self, obj0, obj1, splitobjs, cell_margin):
-        ''' detect that between obj0 and obj1 there is a horizontal
+        """ detect that between obj0 and obj1 there is a horizontal
         split line.
 
-        # ARGUMENTS:
-            obj0: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
-            obj1: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
-            splitobjs: list -- each elememnt is a LTRect Object
-            cell_margin: float -- the distance given for allowing
+        :param obj0: a LTTextLineHorizontal, LTTextLineVertical, or
+            LTChar Object
+        :param obj1: a LTTextLineHorizontal, LTTextLineVertical, or
+            LTChar Object
+        :param splitobjs: list -- each elememnt is a LTRect Object
+        :param cell_margin: float -- the distance given for allowing
                 additional matches
-
-        # RETURNS:
-            boolean
-        '''
+        :return: boolean if a splitting line is found between obj0 and
+            obj1 in splitobjs
+        """
         cross = False
         for r in splitobjs:
             # line cuts through the overlap of the two objs horizontally
@@ -596,18 +596,20 @@ class LTLayoutContainer(LTContainer):
         return cross
 
     def vsplitted(self, obj0, obj1, splitobjs, cell_margin):
-        ''' detects if between obj0 and obj1, there is a vertical split line
-        # ARGUMENTS:
-            obj0: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
-            obj1: a LTTextLineHorizontal, LTTextLineVertical, or LTChar Object
-            splitobs: list -- objects that will be used to verify that obj1
-                and obj2 are divided by one of the split objects
-            cell_margin: float -- the distance one cell is allowed to overlap
-                horizontally
+        """ detects if between obj0 and obj1, there is a vertical split
+        line
 
-        # RETURNS:
-            boolean
-        '''
+        :param obj0: a LTTextLineHorizontal, LTTextLineVertical, or
+            LTChar Object
+        :param obj1: a LTTextLineHorizontal, LTTextLineVertical, or
+            LTChar Object
+        :param splitobs: list -- objects that will be used to verify
+            that obj1 and obj2 are divided by one of the split objects
+        :param cell_margin: float -- the distance one cell is allowed to
+            overlap horizontally
+        :return: boolean if a splitting line is found between obj0 and
+            obj1 in splitobjs
+        """
         cross = False
         for r in splitobjs:
             # if the split object covers over the overlap of the projected
@@ -634,15 +636,15 @@ class LTLayoutContainer(LTContainer):
         return cross
 
     def group_objects(self, laparams, objs, splitobjs):
-        ''' group text object to textlines.
-        # Arguments
-            laparams:  LaParams object - contains all the settings for
-                determing the page layout
-            objs: list - each element is a unique LTChar object
-            splitobjs: list - each element is a LTRect object.  These are used
-                as barriers to prevent joining into textlines
-        # Returns: Textline object
-        '''
+        """ group text object to textlines.
+
+        :param laparams:  LaParams object - contains all the settings
+            for determing the page layout
+        :param objs: list - each element is a unique LTChar object
+        :param splitobjs: list - each element is a LTRect object.  These
+            are used as barriers to prevent joining into textlines
+        :return: Textline object
+        """
         obj0 = None
         line = None
         for obj1 in objs:
@@ -733,15 +735,15 @@ class LTLayoutContainer(LTContainer):
 
     # group_textlines: group neighboring lines to textboxes.
     def group_textlines(self, laparams, lines, splitobjs=[]):
-        ''' group_textlines: group neighboring lines to textboxes
+        """ group_textlines: group neighboring lines to textboxes
 
-        # ARGUMENTS
-            laparams: laparams obj -- an object containing all the parameters
-                needed to join together characters and make lines of text
-            lines: list -- each member is an LTLayoutContainer object
-                containing a unique textline
-            splitobjs: list -- each member is an LTRect object
-        '''
+        :param laparams: laparams obj -- an object containing all the
+            parameters needed to join together characters and make lines
+            of text
+        :param lines: list -- each member is an LTLayoutContainer object
+            containing a unique textline
+        :param splitobjs: list -- each member is an LTRect object
+        """
         plane = Plane(self.bbox)
         plane.extend(lines)
         boxes = {}
@@ -882,12 +884,11 @@ class LTLayoutContainer(LTContainer):
         return list(plane)
 
     def analyze(self, laparams):
-        ''' used recursively to split object into smaller objects
+        """ used recursively to split object into smaller objects
 
-        # ARGUMENTS
-            laparams: an laparams object containing all the revelvant
-                parameters for assessing the broken down pdf
-        '''
+        :param laparams: an LAParams object containing all the revelvant
+            parameters for assessing the broken down pdf
+        """
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
         (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar),
