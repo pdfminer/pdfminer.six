@@ -191,14 +191,8 @@ class LTComponent(LTItem):
 class LTCurve(LTComponent):
     """A generic Bezier curve"""
 
-    def __init__(self,
-                 linewidth,
-                 pts,
-                 stroke=False,
-                 fill=False,
-                 evenodd=False,
-                 stroking_color=None,
-                 non_stroking_color=None):
+    def __init__(self, linewidth, pts, stroke=False, fill=False, evenodd=False,
+                 stroking_color=None, non_stroking_color=None):
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
         self.linewidth = linewidth
