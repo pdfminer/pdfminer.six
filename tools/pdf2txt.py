@@ -122,7 +122,7 @@ def maketheparser():
              "should be within the range of -1.0 (only horizontal position "
              "matters) to +1.0 (only vertical position matters).")
     la_params.add_argument(
-        "--all-texts", "-A", default=True, action="store_true",
+        "--all-texts", "-A", default=False, action="store_true",
         help="If layout analysis should be performed on text in figures.")
 
     output_params = parser.add_argument_group(
