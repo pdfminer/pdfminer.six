@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-Nothing
+- Also ignore ValueError's when converting font encoding differences ([#389](https://github.com/pdfminer/pdfminer.six/pull/389))
 
 ## [20200124] - 2020-01-24
 
