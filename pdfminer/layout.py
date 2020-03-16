@@ -420,10 +420,22 @@ class LTTextLineHorizontal(LTTextLine):
         objs = plane.find((self.x0, self.y0-d, self.x1, self.y1+d))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal) and
-                    abs(obj.height-self.height) < d and
-                    (abs(obj.x0-self.x0) < d or
-                     abs(obj.x1-self.x1) < d or
-                     abs((obj.x0+obj.x1)/2-(self.x0+self.x1)/2) < d))]
+                    self.__is_same_height_as(obj, tolerance=d) and
+                    (self.__is_left_aligned_with(obj, tolerance=d) or
+                     self.__is_right_aligned_with(obj, tolerance=d) or
+                     self.__is_centrally_aligned_with(obj, tolerance=d)))]
+
+    def __is_left_aligned_with(self, other, tolerance=0):
+        return abs(other.x0 - self.x0) <= tolerance
+
+    def __is_right_aligned_with(self, other, tolerance=0):
+        return abs(other.x1 - self.x1) <= tolerance
+
+    def __is_centrally_aligned_with(self, other, tolerance=0):
+        return abs((other.x0+other.x1)/2 - (self.x0+self.x1)/2) <= tolerance
+
+    def __is_same_height_as(self, other, tolerance):
+        return abs(other.height - self.height) <= tolerance
 
 
 class LTTextLineVertical(LTTextLine):
@@ -446,10 +458,22 @@ class LTTextLineVertical(LTTextLine):
         objs = plane.find((self.x0-d, self.y0, self.x1+d, self.y1))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineVertical) and
-                    abs(obj.width-self.width) < d and
-                    (abs(obj.y0-self.y0) < d or
-                     abs(obj.y1-self.y1) < d or
-                     abs((obj.y0+obj.y1)/2-(self.y0+self.y1)/2) < d))]
+                    self.__is_same_width_as(obj, tolerance=d) and
+                    (self.__is_lower_aligned_with(obj, tolerance=d) or
+                     self.__is_upper_aligned_with(obj, tolerance=d) or
+                     self.__is_centrally_aligned_with(obj, tolerance=d)))]
+
+    def __is_lower_aligned_with(self, other, tolerance=0):
+        return abs(other.y0 - self.y0) <= tolerance
+
+    def __is_upper_aligned_with(self, other, tolerance=0):
+        return abs(other.y1 - self.y1) <= tolerance
+
+    def __is_centrally_aligned_with(self, other, tolerance=0):
+        return abs((other.y0+other.y1)/2 - (self.y0+self.y1)/2) <= tolerance
+
+    def __is_same_width_as(self, other, tolerance):
+        return abs(other.width - self.width) <= tolerance
 
 
 class LTTextBox(LTTextContainer):
