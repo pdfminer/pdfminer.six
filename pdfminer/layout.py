@@ -597,16 +597,14 @@ class LTLayoutContainer(LTContainer):
         yield line
         return
 
-    # group_textlines: group neighboring lines to textboxes.
     def group_textlines(self, laparams, lines):
+        """Group neighboring lines to textboxes"""
         plane = Plane(self.bbox)
         plane.extend(lines)
         boxes = {}
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
-            if line not in neighbors:
-                continue
-            members = []
+            members = [line]
             for obj1 in neighbors:
                 members.append(obj1)
                 if obj1 in boxes:
