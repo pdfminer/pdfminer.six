@@ -409,7 +409,7 @@ class LTTextLineHorizontal(LTTextLine):
     def add(self, obj):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
-            if self._x1 < obj.x0-margin:
+            if self._x1 < obj.x0 - margin:
                 LTContainer.add(self, LTAnno(' '))
         self._x1 = obj.x1
         LTTextLine.add(self, obj)
@@ -424,34 +424,35 @@ class LTTextLineHorizontal(LTTextLine):
         will be the same height as self, and also either left-, right-, or
         centrally-aligned.
         """
-        d = ratio*self.height
-        objs = plane.find((self.x0, self.y0-d, self.x1, self.y1+d))
+        d = ratio * self.height
+        objs = plane.find((self.x0, self.y0 - d, self.x1, self.y1 + d))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal) and
-                    self.__is_same_height_as(obj, tolerance=d) and
-                    (self.__is_left_aligned_with(obj, tolerance=d) or
-                     self.__is_right_aligned_with(obj, tolerance=d) or
-                     self.__is_centrally_aligned_with(obj, tolerance=d)))]
+                    self._is_same_height_as(obj, tolerance=d) and
+                    (self._is_left_aligned_with(obj, tolerance=d) or
+                     self._is_right_aligned_with(obj, tolerance=d) or
+                     self._is_centrally_aligned_with(obj, tolerance=d)))]
 
-    def __is_left_aligned_with(self, other, tolerance=0):
+    def _is_left_aligned_with(self, other, tolerance=0):
         """
         Whether the left-hand edge of `other` is within `tolerance`.
         """
         return abs(other.x0 - self.x0) <= tolerance
 
-    def __is_right_aligned_with(self, other, tolerance=0):
+    def _is_right_aligned_with(self, other, tolerance=0):
         """
         Whether the right-hand edge of `other` is within `tolerance`.
         """
         return abs(other.x1 - self.x1) <= tolerance
 
-    def __is_centrally_aligned_with(self, other, tolerance=0):
+    def _is_centrally_aligned_with(self, other, tolerance=0):
         """
         Whether the horizontal center of `other` is within `tolerance`.
         """
-        return abs((other.x0+other.x1)/2 - (self.x0+self.x1)/2) <= tolerance
+        return abs(
+            (other.x0 + other.x1) / 2 - (self.x0 + self.x1) / 2) <= tolerance
 
-    def __is_same_height_as(self, other, tolerance):
+    def _is_same_height_as(self, other, tolerance):
         return abs(other.height - self.height) <= tolerance
 
 
@@ -464,7 +465,7 @@ class LTTextLineVertical(LTTextLine):
     def add(self, obj):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
-            if obj.y1+margin < self._y0:
+            if obj.y1 + margin < self._y0:
                 LTContainer.add(self, LTAnno(' '))
         self._y0 = obj.y0
         LTTextLine.add(self, obj)
@@ -479,34 +480,35 @@ class LTTextLineVertical(LTTextLine):
         will be the same width as self, and also either upper-, lower-, or
         centrally-aligned.
         """
-        d = ratio*self.width
-        objs = plane.find((self.x0-d, self.y0, self.x1+d, self.y1))
+        d = ratio * self.width
+        objs = plane.find((self.x0 - d, self.y0, self.x1 + d, self.y1))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineVertical) and
-                    self.__is_same_width_as(obj, tolerance=d) and
-                    (self.__is_lower_aligned_with(obj, tolerance=d) or
-                     self.__is_upper_aligned_with(obj, tolerance=d) or
-                     self.__is_centrally_aligned_with(obj, tolerance=d)))]
+                    self._is_same_width_as(obj, tolerance=d) and
+                    (self._is_lower_aligned_with(obj, tolerance=d) or
+                     self._is_upper_aligned_with(obj, tolerance=d) or
+                     self._is_centrally_aligned_with(obj, tolerance=d)))]
 
-    def __is_lower_aligned_with(self, other, tolerance=0):
+    def _is_lower_aligned_with(self, other, tolerance=0):
         """
         Whether the lower edge of `other` is within `tolerance`.
         """
         return abs(other.y0 - self.y0) <= tolerance
 
-    def __is_upper_aligned_with(self, other, tolerance=0):
+    def _is_upper_aligned_with(self, other, tolerance=0):
         """
         Whether the upper edge of `other` is within `tolerance`.
         """
         return abs(other.y1 - self.y1) <= tolerance
 
-    def __is_centrally_aligned_with(self, other, tolerance=0):
+    def _is_centrally_aligned_with(self, other, tolerance=0):
         """
         Whether the vertical center of `other` is within `tolerance`.
         """
-        return abs((other.y0+other.y1)/2 - (self.y0+self.y1)/2) <= tolerance
+        return abs(
+            (other.y0 + other.y1) / 2 - (self.y0 + self.y1) / 2) <= tolerance
 
-    def __is_same_width_as(self, other, tolerance):
+    def _is_same_width_as(self, other, tolerance):
         return abs(other.width - self.width) <= tolerance
 
 
