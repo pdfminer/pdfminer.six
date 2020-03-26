@@ -11,6 +11,7 @@ from .layout import LAParams
 from .pdfdevice import TagExtractor
 from .pdfinterp import PDFResourceManager, PDFPageInterpreter
 from .pdfpage import PDFPage
+from .utils import open_filename
 
 
 def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
@@ -91,7 +92,8 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
                  caching=True, codec='utf-8', laparams=None):
     """Parse and return the text contained in a PDF file.
 
-    :param pdf_file: Path to the PDF file to be worked on
+    :param pdf_file: Either a file path or a file-like object for the PDF file
+        to be worked on.
     :param password: For encrypted PDFs, the password to decrypt.
     :param page_numbers: List of zero-indexed page numbers to extract.
     :param maxpages: The maximum number of pages to parse
@@ -104,7 +106,7 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
     if laparams is None:
         laparams = LAParams()
 
-    with open(pdf_file, "rb") as fp, StringIO() as output_string:
+    with open_filename(pdf_file, "rb") as fp, StringIO() as output_string:
         rsrcmgr = PDFResourceManager()
         device = TextConverter(rsrcmgr, output_string, codec=codec,
                                laparams=laparams)
@@ -127,7 +129,8 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
                   caching=True, laparams=None):
     """Extract and yield LTPage objects
 
-    :param pdf_file: Path to the PDF file to be worked on
+    :param pdf_file: Either a file path or a file-like object for the PDF file
+        to be worked on.
     :param password: For encrypted PDFs, the password to decrypt.
     :param page_numbers: List of zero-indexed page numbers to extract.
     :param maxpages: The maximum number of pages to parse
@@ -139,7 +142,7 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
     if laparams is None:
         laparams = LAParams()
 
-    with open(pdf_file, "rb") as fp:
+    with open_filename(pdf_file, "rb") as fp:
         resource_manager = PDFResourceManager()
         device = PDFPageAggregator(resource_manager, laparams=laparams)
         interpreter = PDFPageInterpreter(resource_manager, device)
