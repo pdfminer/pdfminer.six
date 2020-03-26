@@ -553,7 +553,7 @@ class LTLayoutContainer(LTContainer):
         self.groups = None
         return
 
-    def hsplitted(self, obj0, obj1, splitobjs, cell_margin):
+    def are_these_split_horiz(self, obj0, obj1, splitobjs, cell_margin):
         """ detect that between obj0 and obj1 there is a horizontal
         split line.
 
@@ -591,7 +591,7 @@ class LTLayoutContainer(LTContainer):
                     break
         return cross
 
-    def vsplitted(self, obj0, obj1, splitobjs, cell_margin):
+    def are_these_split_vert(self, obj0, obj1, splitobjs, cell_margin):
         """ detects if between obj0 and obj1, there is a vertical split
         line
 
@@ -662,14 +662,11 @@ class LTLayoutContainer(LTContainer):
                         obj0.voverlap(obj1)) and
                     (obj0.hdistance(obj1) <
                         max(obj0.width, obj1.width) * laparams.char_margin)
+                    and not self.are_these_split_vert(obj0,
+                                                      obj1,
+                                                      splitobjs,
+                                                      laparams.cell_margin)
                 )
-
-                # check if there is a line between them, if so switch halign
-                if halign and self.vsplitted(obj0,
-                                             obj1,
-                                             splitobjs,
-                                             laparams.cell_margin):
-                    halign = False
 
                 # valign: obj0 and obj1 are vertically aligned. (boolean)
                 #
@@ -685,21 +682,23 @@ class LTLayoutContainer(LTContainer):
                 #
                 #     |<-->|
                 #   (line_overlap)
-                valign = \
-                    laparams.detect_vertical \
-                    and obj0.is_compatible(obj1) \
-                    and obj0.is_hoverlap(obj1) \
-                    and min(obj0.width, obj1.width) * laparams.line_overlap \
-                    < obj0.hoverlap(obj1) \
-                    and obj0.vdistance(obj1) \
-                    < max(obj0.height, obj1.height) * laparams.char_margin
-
-                # check if there is a line between them, if so switch valign
-                if valign and self.hsplitted(obj0,
-                                             obj1,
-                                             splitobjs,
-                                             laparams.cell_margin):
-                    valign = False
+                valign = (
+                    laparams.detect_vertical
+                    and obj0.is_compatible(obj1)
+                    and obj0.is_hoverlap(obj1)
+                    and (
+                         min(obj0.width, obj1.width) * laparams.line_overlap
+                         < obj0.hoverlap(obj1)
+                    )
+                    and (
+                         obj0.vdistance(obj1)
+                         < max(obj0.height, obj1.height) * laparams.char_margin
+                    )
+                    and not self.are_these_split_horiz(obj0,
+                                                       obj1,
+                                                       splitobjs,
+                                                       laparams.cell_margin)
+                )
 
                 if ((halign and isinstance(line, LTTextLineHorizontal)) or
                         (valign and isinstance(line, LTTextLineVertical))):
@@ -754,15 +753,14 @@ class LTLayoutContainer(LTContainer):
                 # for each text line to be merged, see if it is split by
                 # an LTRect object
                 if line is not obj1 and splitobjs:
-                    if self.vsplitted(line,
-                                      obj1,
-                                      splitobjs,
-                                      laparams.cell_margin):
-                        continue
-                    if self.hsplitted(line,
-                                      obj1,
-                                      splitobjs,
-                                      laparams.cell_margin):
+                    if (self.are_these_split_vert(line,
+                                                  obj1,
+                                                  splitobjs,
+                                                  laparams.cell_margin)
+                        or self.are_these_split_horiz(line,
+                                                      obj1,
+                                                      splitobjs,
+                                                      laparams.cell_margin)):
                         continue
                 members.append(obj1)
 
