@@ -13,6 +13,28 @@ from .pdfinterp import PDFResourceManager, PDFPageInterpreter
 from .pdfpage import PDFPage
 
 
+class open_filename(object):
+    """
+    Context manager that allows opening a filename and closes it on exit,
+    (just like `open`), but does nothing for file-like objects.
+    """
+    def __init__(self, filename, *args, **kwargs):
+        if isinstance(filename, str):
+            self.file_handler = open(filename, *args, **kwargs)
+            self.closing = True
+        else:
+            self.file_handler = filename
+            self.closing = False
+
+    def __enter__(self):
+        return self.file_handler
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.closing:
+            self.file_handler.close()
+        return False
+
+
 def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
                        laparams=None, maxpages=0, page_numbers=None,
                        password="", scale=1.0, rotation=0, layoutmode='normal',
@@ -91,7 +113,8 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
                  caching=True, codec='utf-8', laparams=None):
     """Parse and return the text contained in a PDF file.
 
-    :param pdf_file: Path to the PDF file to be worked on
+    :param pdf_file: Either a file path or a file-like object for the PDF file
+        to be worked on.
     :param password: For encrypted PDFs, the password to decrypt.
     :param page_numbers: List of zero-indexed page numbers to extract.
     :param maxpages: The maximum number of pages to parse
@@ -104,7 +127,7 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
     if laparams is None:
         laparams = LAParams()
 
-    with open(pdf_file, "rb") as fp, StringIO() as output_string:
+    with open_filename(pdf_file, "rb") as fp, StringIO() as output_string:
         rsrcmgr = PDFResourceManager()
         device = TextConverter(rsrcmgr, output_string, codec=codec,
                                laparams=laparams)
@@ -127,7 +150,8 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
                   caching=True, laparams=None):
     """Extract and yield LTPage objects
 
-    :param pdf_file: Path to the PDF file to be worked on
+    :param pdf_file: Either a file path or a file-like object for the PDF file
+        to be worked on.
     :param password: For encrypted PDFs, the password to decrypt.
     :param page_numbers: List of zero-indexed page numbers to extract.
     :param maxpages: The maximum number of pages to parse
@@ -139,7 +163,7 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
     if laparams is None:
         laparams = LAParams()
 
-    with open(pdf_file, "rb") as fp:
+    with open_filename(pdf_file, "rb") as fp:
         resource_manager = PDFResourceManager()
         device = PDFPageAggregator(resource_manager, laparams=laparams)
         interpreter = PDFPageInterpreter(resource_manager, device)
