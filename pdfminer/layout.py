@@ -52,14 +52,12 @@ class LAParams:
         should be within the range of -1.0 (only horizontal position
         matters) to +1.0 (only vertical position matters).
     :param cell_margin: (float) An additional distance allowing a line
-        to be counted as splitting an object when split_table mode enabled.
+        to be counted as splitting an object.  When set to None, the
+        splitting logic is deactivated.
     :param detect_vertical: If vertical text should be considered during
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
         figures.
-    :param split_tables: (bool) Enable parsing logic to have textboxes
-        and textlines to be bounded LTRect, LTLine, and LTCurve objects.
-        This causes the parser to respect boundary lines drawn a table.
     """
 
     def __init__(self,
@@ -68,10 +66,9 @@ class LAParams:
                  line_margin=0.5,
                  word_margin=0.1,
                  boxes_flow=0.5,
-                 cell_margin=0.001,
+                 cell_margin=None,
                  detect_vertical=False,
-                 all_texts=False,
-                 split_tables=False):
+                 all_texts=False):
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin
@@ -80,16 +77,15 @@ class LAParams:
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
-        self.split_tables = split_tables
         return
 
     def __repr__(self):
         return '<LAParams: char_margin=%.1f, line_margin=%.1f, ' \
                'word_margin=%.1f, cell_margin=%.1f, boxes_flow=%.1f, ' \
-               'detect_vertical=%r, all_texts=%r, split_tables=%r>' % \
+               'detect_vertical=%r, all_texts=%r>' % \
                (self.char_margin, self.line_margin, self.word_margin,
                 self.cell_margin, self.boxes_flow, self.detect_vertical,
-                self.all_texts, self.split_tables)
+                self.all_texts)
 
 
 class LTItem:
@@ -893,7 +889,7 @@ class LTLayoutContainer(LTContainer):
         # it has all the individual characters in the page.
         (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar),
                                        self)
-        if laparams.split_tables:
+        if laparams.cell_margin:
             (splitobjs, otherobjs) = (
                 fsplit(lambda obj: (isinstance(obj, LTRect)
                                     | isinstance(obj, LTLine)
