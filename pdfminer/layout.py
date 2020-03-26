@@ -52,7 +52,7 @@ class LAParams:
         should be within the range of -1.0 (only horizontal position
         matters) to +1.0 (only vertical position matters). You can also pass
         `None` to disable advanced layout analysis, and instead return text
-        based on the (x, y) coordinates of the bottom left corner.
+        based on the position of the bottom left corner of the text box.
     :param detect_vertical: If vertical text should be considered during
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
@@ -79,7 +79,6 @@ class LAParams:
         return
 
     def _validate(self):
-        # Validate boxes_flow
         if self.boxes_flow is not None:
             boxes_flow_err_msg = ("LAParam boxes_flow should be None, or a "
                                   "number between -1 and +1")
