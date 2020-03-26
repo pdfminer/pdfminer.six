@@ -120,7 +120,10 @@ def maketheparser():
         help="Specifies how much a horizontal and vertical position of a "
              "text matters when determining the order of lines. The value "
              "should be within the range of -1.0 (only horizontal position "
-             "matters) to +1.0 (only vertical position matters).")
+             "matters) to +1.0 (only vertical position matters). You can also "
+             "pass `None` to disable advanced layout analysis, and instead "
+             "return text based on the position of the bottom left corner of "
+             "the text box.")
     la_params.add_argument(
         "--all-texts", "-A", default=False, action="store_true",
         help="If layout analysis should be performed on text in figures.")
