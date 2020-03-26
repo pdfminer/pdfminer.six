@@ -102,14 +102,14 @@ def maketheparser():
     la_params.add_argument(
         "--char-margin", "-M", type=float, default=2.0,
         help="If two characters are closer together than this margin they "
-             "are considered to be part of the same word. The margin is "
+             "are considered to be part of the same line. The margin is "
              "specified relative to the width of the character.")
     la_params.add_argument(
         "--word-margin", "-W", type=float, default=0.1,
-        help="If two words are are closer together than this margin they "
-             "are considered to be part of the same line. A space is added "
-             "in between for readability. The margin is specified relative "
-             "to the width of the word.")
+        help="If two characters on the same line are further apart than this "
+             "margin then they are considered to be two separate words, and "
+             "an intermediate space will be added for readability. The margin "
+             "is specified relative to the width of the character.")
     la_params.add_argument(
         "--line-margin", "-L", type=float, default=0.5,
         help="If two lines are are close together they are considered to "
