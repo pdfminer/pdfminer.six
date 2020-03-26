@@ -11,28 +11,7 @@ from .layout import LAParams
 from .pdfdevice import TagExtractor
 from .pdfinterp import PDFResourceManager, PDFPageInterpreter
 from .pdfpage import PDFPage
-
-
-class open_filename(object):
-    """
-    Context manager that allows opening a filename and closes it on exit,
-    (just like `open`), but does nothing for file-like objects.
-    """
-    def __init__(self, filename, *args, **kwargs):
-        if isinstance(filename, str):
-            self.file_handler = open(filename, *args, **kwargs)
-            self.closing = True
-        else:
-            self.file_handler = filename
-            self.closing = False
-
-    def __enter__(self):
-        return self.file_handler
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.closing:
-            self.file_handler.close()
-        return False
+from .utils import open_filename
 
 
 def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',

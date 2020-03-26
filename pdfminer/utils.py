@@ -11,6 +11,28 @@ import chardet  # For str encoding detection
 INF = (1 << 31) - 1
 
 
+class open_filename(object):
+    """
+    Context manager that allows opening a filename and closes it on exit,
+    (just like `open`), but does nothing for file-like objects.
+    """
+    def __init__(self, filename, *args, **kwargs):
+        if isinstance(filename, str):
+            self.file_handler = open(filename, *args, **kwargs)
+            self.closing = True
+        else:
+            self.file_handler = filename
+            self.closing = False
+
+    def __enter__(self):
+        return self.file_handler
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.closing:
+            self.file_handler.close()
+        return False
+
+
 def make_compat_bytes(in_str):
     "Converts to bytes, encoding to unicode."
     assert isinstance(in_str, str), str(type(in_str))
