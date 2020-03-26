@@ -29,6 +29,10 @@ class IndexAssigner:
         return
 
 
+class InvalidLaParamsException(Exception):
+    pass
+
+
 class LAParams:
     """Parameters for layout analysis
 
@@ -50,7 +54,9 @@ class LAParams:
     :param boxes_flow: Specifies how much a horizontal and vertical position
         of a text matters when determining the order of text boxes. The value
         should be within the range of -1.0 (only horizontal position
-        matters) to +1.0 (only vertical position matters).
+        matters) to +1.0 (only vertical position matters). You can also pass
+        None to disable advanced layout analysis, and instead return text
+        based on the (x, y) coordinates of the bottom left corner.
     :param detect_vertical: If vertical text should be considered during
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
@@ -72,7 +78,20 @@ class LAParams:
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
+
+        self.__validate()
         return
+
+    def __validate(self):
+        # Validate boxes_flow
+        if self.boxes_flow is not None:
+            boxes_flow_err_msg = ("LAParam boxes_flow should be None, or a "
+                                  "number between -1 and +1")
+            if not (isinstance(self.boxes_flow, int) or
+                    isinstance(self.boxes_flow, float)):
+                raise InvalidLaParamsException(boxes_flow_err_msg)
+            if not -1 <= self.boxes_flow <= 1:
+                raise InvalidLaParamsException(boxes_flow_err_msg)
 
     def __repr__(self):
         return '<LAParams: char_margin=%.1f, line_margin=%.1f, ' \
@@ -785,8 +804,8 @@ class LTLayoutContainer(LTContainer):
         for obj in empties:
             obj.analyze(laparams)
         textboxes = list(self.group_textlines(laparams, textlines))
-        if -1 <= laparams.boxes_flow and laparams.boxes_flow <= +1 \
-                and textboxes:
+        if laparams.boxes_flow is not None and \
+                -1 <= laparams.boxes_flow <= +1 and textboxes:
             self.groups = self.group_textboxes(laparams, textboxes)
             assigner = IndexAssigner()
             for group in self.groups:

@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Grouping of text lines outside of parent container bounding box ([#386](https://github.com/pdfminer/pdfminer.six/pull/386))
 
 ### Changed
+- Allow boxes_flow LAParam to be passed as None, validate the input, and update documentation ([#395](https://github.com/pdfminer/pdfminer.six/pull/395))
 - Group text lines if they are centered ([#382](https://github.com/pdfminer/pdfminer.six/pull/382))
 
 ## [20200124] - 2020-01-24
