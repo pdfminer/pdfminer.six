@@ -70,9 +70,9 @@ Spaces need to be inserted between characters because the PDF format has no
 notion of the space character. A space is inserted if the characters are
 further apart that the `word_margin` (W in the figure). The `word_margin` is
 relative to the maximum width or height of the new character. Having a smaller
-`word_margin` creates smaller words and inserts more spaces between 
-characters. Note that the `word_margin` should be smaller than the
-`char_margin` otherwise none of the characters will be separated by a space.
+`word_margin` creates smaller words. Note that the `word_margin` should at 
+least be smaller than the `char_margin` otherwise none of the characters will 
+be separated by a space.
 
 The result of this stage is a list of lines. Each line consists a list of
 characters. These characters either original `LTChar` characters that
