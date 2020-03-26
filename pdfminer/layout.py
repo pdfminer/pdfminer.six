@@ -36,14 +36,12 @@ class LAParams:
         are considered to be on the same line. The overlap is specified
         relative to the minimum height of both characters.
     :param char_margin: If two characters are closer together than this
-        margin they are considered to be part of the same word. If
-        characters are on the same line but not part of the same word, an
-        intermediate space is inserted. The margin is specified relative to
-        the width of the character.
-    :param word_margin: If two words are are closer together than this
-        margin they are considered to be part of the same line. A space is
-        added in between for readability. The margin is specified relative
-        to the width of the word.
+        margin they are considered part of the same line. The margin is
+        specified relative to the width of the character.
+    :param word_margin: If two characters on the same line are further apart
+        than this margin then they are considered to be two separate words, and
+        an intermediate space will be added for readability. The margin is
+        specified relative to the width of the character.
     :param line_margin: If two lines are are close together they are
         considered to be part of the same paragraph. The margin is
         specified relative to the height of a line.
