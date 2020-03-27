@@ -800,9 +800,9 @@ class LTLayoutContainer(LTContainer):
         if laparams.boxes_flow is None:
             def getkey(box):
                 if isinstance(box, LTTextBoxVertical):
-                    return (0, -box.x1, box.y0)
+                    return (0, -box.x1, -box.y0)
                 else:
-                    return (1, box.y0, box.x0)
+                    return (1, -box.y0, box.x0)
             textboxes.sort(key=getkey)
         else:
             self.groups = self.group_textboxes(laparams, textboxes)
