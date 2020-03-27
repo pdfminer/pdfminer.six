@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Exercise pdfminer, looking deeply into a PDF document,
 # print some stats to stdout

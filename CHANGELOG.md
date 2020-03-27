@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Group text lines if they are centered ([#382](https://github.com/pdfminer/pdfminer.six/pull/382))
+- Add shebang line to script in tools (pull request to come)
 
 ## [20200124] - 2020-01-24
 
