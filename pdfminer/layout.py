@@ -553,7 +553,7 @@ class LTLayoutContainer(LTContainer):
         self.groups = None
         return
 
-    def are_these_split_horiz(self, obj0, obj1, splitobjs, cell_margin):
+    def are_split_horizontally(self, obj0, obj1, splitobjs, cell_margin):
         """ detect that between obj0 and obj1 there is a horizontal
         split line.
 
@@ -591,7 +591,7 @@ class LTLayoutContainer(LTContainer):
                     break
         return cross
 
-    def are_these_split_vert(self, obj0, obj1, splitobjs, cell_margin):
+    def are_split_vertically(self, obj0, obj1, splitobjs, cell_margin):
         """ detects if between obj0 and obj1, there is a vertical split
         line
 
@@ -662,7 +662,7 @@ class LTLayoutContainer(LTContainer):
                         obj0.voverlap(obj1)) and
                     (obj0.hdistance(obj1) <
                         max(obj0.width, obj1.width) * laparams.char_margin)
-                    and not self.are_these_split_vert(obj0,
+                    and not self.are_split_vertically(obj0,
                                                       obj1,
                                                       splitobjs,
                                                       laparams.cell_margin)
@@ -694,7 +694,7 @@ class LTLayoutContainer(LTContainer):
                          obj0.vdistance(obj1)
                          < max(obj0.height, obj1.height) * laparams.char_margin
                     )
-                    and not self.are_these_split_horiz(obj0,
+                    and not self.are_split_horizontally(obj0,
                                                        obj1,
                                                        splitobjs,
                                                        laparams.cell_margin)
@@ -753,11 +753,11 @@ class LTLayoutContainer(LTContainer):
                 # for each text line to be merged, see if it is split by
                 # an LTRect object
                 if line is not obj1 and splitobjs:
-                    if (self.are_these_split_vert(line,
+                    if (self.are_split_vertically(line,
                                                   obj1,
                                                   splitobjs,
                                                   laparams.cell_margin)
-                        or self.are_these_split_horiz(line,
+                        or self.are_split_horizontally(line,
                                                       obj1,
                                                       splitobjs,
                                                       laparams.cell_margin)):
