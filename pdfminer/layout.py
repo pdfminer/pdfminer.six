@@ -572,7 +572,7 @@ class LTLayoutContainer(LTContainer):
         # define some convience constants (for speed)
         largest_x0 = max(obj0.x0, obj1.x0)
         smallest_x1 = min(obj0.x1, obj1.x1)
-        
+
         min_y = min(obj0.y0, obj1.y0) - cell_margin
         max_y = max(obj0.y1, obj1.y1) + cell_margin
 
@@ -599,8 +599,8 @@ class LTLayoutContainer(LTContainer):
             LTChar Object
         :param obj1: a LTTextLineHorizontal, LTTextLineVertical, or
             LTChar Object
-        :param splitobs: list -- list of LTLine based objects that will 
-            be used to verify that obj1 and obj2 are divided 
+        :param splitobs: list -- list of LTLine based objects that will
+            be used to verify that obj1 and obj2 are divided
         :param cell_margin: float -- the distance one cell is allowed to
             overlap horizontally
         :return: boolean if a splitting line is found between obj0 and
@@ -611,7 +611,7 @@ class LTLayoutContainer(LTContainer):
         # define some convience constants (for speed)
         largest_y0 = max(obj0.y0, obj1.y0)
         smallest_y1 = min(obj0.y1, obj1.y1)
-        
+
         min_x = min(obj0.x0, obj1.x0) - cell_margin
         max_x = max(obj0.x1, obj1.x1) + cell_margin
 
@@ -662,11 +662,12 @@ class LTLayoutContainer(LTContainer):
                         obj0.voverlap(obj1)) and
                     (obj0.hdistance(obj1) <
                         max(obj0.width, obj1.width) * laparams.char_margin)
-                    and (laparams.cell_margin is None
-                         or not self.are_split_vertically(obj0,
-                                                          obj1,
-                                                          splitobjs,
-                                                          laparams.cell_margin)
+                    and (
+                        laparams.cell_margin is None
+                        or not self.are_split_vertically(obj0,
+                                                         obj1,
+                                                         splitobjs,
+                                                         laparams.cell_margin)
                     )
                 )
 
@@ -766,7 +767,7 @@ class LTLayoutContainer(LTContainer):
                                                        splitobjs,
                                                        laparams.cell_margin)):
                         not_split_flag = False
-                
+
                 if not_split_flag:
                     members.append(obj1)
 
