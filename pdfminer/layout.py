@@ -798,6 +798,9 @@ class LTLayoutContainer(LTContainer):
             obj.analyze(laparams)
         textboxes = list(self.group_textlines(laparams, textlines))
         if laparams.boxes_flow is None:
+            for textbox in textboxes:
+                textbox.analyze(laparams)
+
             def getkey(box):
                 if isinstance(box, LTTextBoxVertical):
                     return (0, -box.x1, -box.y0)

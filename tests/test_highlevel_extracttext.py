@@ -24,9 +24,9 @@ test_strings = {
     "simple1.pdf": "Hello \n\nWorld\n\nHello \n\nWorld\n\n"
                    "H e l l o  \n\nW o r l d\n\n"
                    "H e l l o  \n\nW o r l d\n\n\f",
-    "simple1.pdf_no_boxes_flow": "Hello \nWorld\nHello \nWorld\n"
-                                 "H e l l o  \nW o r l d\n"
-                                 "H e l l o  \nW o r l d\n\f",
+    "simple1.pdf_no_boxes_flow": "Hello \n\nWorld\n\nHello \n\nWorld\n\n"
+                                 "H e l l o  \n\nW o r l d\n\n"
+                                 "H e l l o  \n\nW o r l d\n\n\f",
     "simple2.pdf": "\f",
     "simple3.pdf": "Hello\n\nHello\n\nWorld\n\nWorld\n\n\f",
 }

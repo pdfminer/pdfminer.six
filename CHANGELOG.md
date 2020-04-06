@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Python3 shebang line to script in tools ([408](https://github.com/pdfminer/pdfminer.six/pull/408)
+### Fixed
+- Fix ordering of textlines within a textbox when `boxes_flow=None` ([#411](https://github.com/pdfminer/pdfminer.six/issues/411))
 
 ## [20200402]
 
