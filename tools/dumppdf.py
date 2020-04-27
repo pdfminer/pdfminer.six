@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Extract pdf structure in XML format"""
 import logging
 import os.path
