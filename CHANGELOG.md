@@ -3,6 +3,12 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Added
+
+- Python3 shebang line to script in tools ([408](https://github.com/pdfminer/pdfminer.six/pull/408)
+
 ## [20200402]
 
 ### Added
@@ -19,7 +25,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Group text lines if they are centered ([#382](https://github.com/pdfminer/pdfminer.six/pull/382))
-- Add shebang line to script in tools (pull request to come)
 
 ## [20200124] - 2020-01-24
 
