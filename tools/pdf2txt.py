@@ -65,6 +65,9 @@ def maketheparser():
         help="One or more paths to PDF files.")
 
     parser.add_argument(
+        "--version", "-v", action="version",
+        version="pdfminer.six v{}".format(pdfminer.__version__))
+    parser.add_argument(
         "--debug", "-d", default=False, action="store_true",
         help="Use debug logging level.")
     parser.add_argument(
