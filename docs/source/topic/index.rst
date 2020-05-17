@@ -1,5 +1,7 @@
-Using pdfminer.six
-******************
+.. _topic:
+
+Topics
+******
 
 .. toctree::
     :maxdepth: 2

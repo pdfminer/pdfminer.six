@@ -23,7 +23,7 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
 
     Takes loads of optional arguments but the defaults are somewhat sane.
     Beware laparams: Including an empty LAParams is not the same as passing
-        None!
+    None!
 
     :param inf: a file-like object to read PDF structure from, such as a
         file handler (using the builtin `open()` function) or a `BytesIO`.

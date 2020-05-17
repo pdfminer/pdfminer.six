@@ -12,9 +12,11 @@
 
 import os
 import sys
+
+import pdfminer
+
 sys.path.insert(0, os.path.join(
     os.path.abspath(os.path.dirname(__file__)), '../../'))
-
 
 # -- Project information -----------------------------------------------------
 
@@ -23,7 +25,7 @@ copyright = '2019, Yusuke Shinyama, Philippe Guglielmetti & Pieter Marsman'
 author = 'Yusuke Shinyama, Philippe Guglielmetti & Pieter Marsman'
 
 # The full version, including alpha/beta/rc tags
-release = '20191020'
+release = pdfminer.__version__
 
 
 # -- General configuration ---------------------------------------------------
