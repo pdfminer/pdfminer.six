@@ -286,8 +286,8 @@ def create_parser():
     parse_params.add_argument(
         '--show-fallback-xref', action='store_true',
         help='Additionally show the fallback xref. Use this if the PDF '
-             'has zero or only invalid xref\'s. Ignored if --extract-toc or '
-             '--extract-embedded is used.')
+             'has zero or only invalid xref\'s. This setting is ignored if '
+             '--extract-toc or --extract-embedded is used.')
     parse_params.add_argument(
         '--password', '-P', type=str, default='',
         help='The password to use for decrypting PDF file.')
