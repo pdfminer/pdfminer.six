@@ -4,11 +4,12 @@ import logging
 import os.path
 import re
 import sys
+import warnings
 from argparse import ArgumentParser
 
 import pdfminer
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback, \
-    PDFNoValidXRef
+    PDFNoValidXRefWarning
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import PDFObjectNotFound, PDFValueError
@@ -96,10 +97,10 @@ def dumptrailers(out, doc, show_fallback_xref=False):
             out.write('\n</trailer>\n\n')
     no_xrefs = all(isinstance(xref, PDFXRefFallback) for xref in doc.xrefs)
     if no_xrefs and not show_fallback_xref:
-        raise PDFNoValidXRef(
-            'This PDF does not have an xref. Use --show-fallback-xref if '
-            'you want to display the content of a fallback xref that contains '
-            'all objects.')
+        msg = 'This PDF does not have an xref. Use --show-fallback-xref if ' \
+              'you want to display the content of a fallback xref that ' \
+              'contains all objects.'
+        warnings.warn(msg, PDFNoValidXRefWarning)
     return
 
 
