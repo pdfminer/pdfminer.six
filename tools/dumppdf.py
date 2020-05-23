@@ -4,10 +4,12 @@ import logging
 import os.path
 import re
 import sys
+import warnings
 from argparse import ArgumentParser
 
 import pdfminer
-from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines
+from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback, \
+    PDFNoValidXRefWarning
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import PDFObjectNotFound, PDFValueError
@@ -87,15 +89,22 @@ def dumpxml(out, obj, codec=None):
     raise TypeError(obj)
 
 
-def dumptrailers(out, doc):
+def dumptrailers(out, doc, show_fallback_xref=False):
     for xref in doc.xrefs:
-        out.write('<trailer>\n')
-        dumpxml(out, xref.trailer)
-        out.write('\n</trailer>\n\n')
+        if not isinstance(xref, PDFXRefFallback) or show_fallback_xref:
+            out.write('<trailer>\n')
+            dumpxml(out, xref.trailer)
+            out.write('\n</trailer>\n\n')
+    no_xrefs = all(isinstance(xref, PDFXRefFallback) for xref in doc.xrefs)
+    if no_xrefs and not show_fallback_xref:
+        msg = 'This PDF does not have an xref. Use --show-fallback-xref if ' \
+              'you want to display the content of a fallback xref that ' \
+              'contains all objects.'
+        warnings.warn(msg, PDFNoValidXRefWarning)
     return
 
 
-def dumpallobjs(out, doc, codec=None):
+def dumpallobjs(out, doc, codec=None, show_fallback_xref=False):
     visited = set()
     out.write('<pdf>')
     for xref in doc.xrefs:
@@ -112,7 +121,7 @@ def dumpallobjs(out, doc, codec=None):
                 out.write('\n</object>\n\n')
             except PDFObjectNotFound as e:
                 print('not found: %r' % e)
-    dumptrailers(out, doc)
+    dumptrailers(out, doc, show_fallback_xref)
     out.write('</pdf>')
     return
 
@@ -211,8 +220,8 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
     return
 
 
-def dumppdf(outfp, fname, objids, pagenos, password='',
-            dumpall=False, codec=None, extractdir=None):
+def dumppdf(outfp, fname, objids, pagenos, password='', dumpall=False,
+            codec=None, extractdir=None, show_fallback_xref=False):
     fp = open(fname, 'rb')
     parser = PDFParser(fp)
     doc = PDFDocument(parser, password)
@@ -230,9 +239,9 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
                 else:
                     dumpxml(outfp, page.attrs)
     if dumpall:
-        dumpallobjs(outfp, doc, codec=codec)
+        dumpallobjs(outfp, doc, codec, show_fallback_xref)
     if (not objids) and (not pagenos) and (not dumpall):
-        dumptrailers(outfp, doc)
+        dumptrailers(outfp, doc, show_fallback_xref)
     fp.close()
     if codec not in ('raw', 'binary'):
         outfp.write('\n')
@@ -274,6 +283,11 @@ def create_parser():
     parse_params.add_argument(
         '--all', '-a', default=False, action='store_true',
         help='If the structure of all objects should be extracted')
+    parse_params.add_argument(
+        '--show-fallback-xref', action='store_true',
+        help='Additionally show the fallback xref. Use this if the PDF '
+             'has zero or only invalid xref\'s. This setting is ignored if '
+             '--extract-toc or --extract-embedded is used.')
     parse_params.add_argument(
         '--password', '-P', type=str, default='',
         help='The password to use for decrypting PDF file.')
@@ -333,19 +347,24 @@ def main(argv=None):
     else:
         codec = None
 
-    if args.extract_toc:
-        extractdir = None
-        proc = dumpoutline
-    elif args.extract_embedded:
-        extractdir = args.extract_embedded
-        proc = extractembedded
-    else:
-        extractdir = None
-        proc = dumppdf
-
     for fname in args.files:
-        proc(outfp, fname, objids, pagenos, password=password,
-             dumpall=args.all, codec=codec, extractdir=extractdir)
+        if args.extract_toc:
+            dumpoutline(
+                outfp, fname, objids, pagenos, password=password,
+                dumpall=args.all, codec=codec, extractdir=None
+            )
+        elif args.extract_embedded:
+            extractembedded(
+                outfp, fname, objids, pagenos, password=password,
+                dumpall=args.all, codec=codec, extractdir=args.extract_embedded
+            )
+        else:
+            dumppdf(
+                outfp, fname, objids, pagenos, password=password,
+                dumpall=args.all, codec=codec, extractdir=None,
+                show_fallback_xref=args.show_fallback_xref
+            )
+
     outfp.close()
 
 
