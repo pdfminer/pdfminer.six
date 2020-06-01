@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-compares rwo pdf files.
+compares two pdf files.
 """
 import io
 import logging
