@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Changed
 - Hiding fallback xref by default from dumppdf.py output ([#431](https://github.com/pdfminer/pdfminer.six/pull/431))
 
+## Fixed
+- Always try to get CMap, not only for identity encodings ([#438](https://github.com/pdfminer/pdfminer.six/pull/438))
+
 ## [20200517]
 
 ### Added
