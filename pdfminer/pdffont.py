@@ -724,7 +724,8 @@ class PDFCIDFont(PDFFont):
         return
 
     def get_cmap_from_spec(self, spec, strict):
-        """
+        """Get cmap from font specification
+
         For certain PDFs, Encoding Type isn't mentioned as an attribute of
         Encoding but as an attribute of CMapName, where CMapName is an
         attribute of spec['Encoding'].
@@ -741,6 +742,7 @@ class PDFCIDFont(PDFFont):
             return CMap()
 
     def _get_cmap_name(self, spec, strict):
+        """Get cmap name from font specification"""
         cmap_name = 'unknown'  # default value
 
         try:
