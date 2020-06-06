@@ -760,7 +760,7 @@ class PDFCIDFont(PDFFont):
                 if strict:
                     raise PDFFontError('CMapName unspecified for encoding')
 
-        cmap_name = IDENTITY_ENCODER.get(cmap_name, default=cmap_name)
+        cmap_name = IDENTITY_ENCODER.get(cmap_name, cmap_name)
         return cmap_name
 
     def __repr__(self):
