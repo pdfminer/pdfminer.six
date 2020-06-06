@@ -741,7 +741,8 @@ class PDFCIDFont(PDFFont):
                 raise PDFFontError(e)
             return CMap()
 
-    def _get_cmap_name(self, spec, strict):
+    @staticmethod
+    def _get_cmap_name(spec, strict):
         """Get cmap name from font specification"""
         cmap_name = 'unknown'  # default value
 
