@@ -488,7 +488,7 @@ LITERAL_TYPE1C = LIT('Type1C')
 
 class PDFFont:
 
-    def __init__(self, descriptor, widths, default_width=None):
+    def __init__(self, descriptor, widths, default_width=None, glyph_boxes=None):
         self.descriptor = descriptor
         self.widths = resolve_all(widths)
         self.fontname = resolve1(descriptor.get('FontName', 'unknown'))
@@ -506,6 +506,7 @@ class PDFFont:
         self.bbox = list_value(resolve_all(descriptor.get('FontBBox',
                                                           (0, 0, 0, 0))))
         self.hscale = self.vscale = .001
+        self.glyph_boxes = glyph_boxes
 
         # PDF RM 9.8.1 specifies /Descent should always be a negative number.
         # PScript5.dll seems to produce Descent with a positive number, but
@@ -540,6 +541,11 @@ class PDFFont:
         if w == 0:
             w = -self.default_width
         return w * self.hscale
+
+    def get_bbox(self, cid):
+      if self.glyph_boxes is not None:
+        if cid in self.glyph_boxes:
+          return self.glyph_boxes[cid]
 
     def get_height(self):
         h = self.bbox[3]-self.bbox[1]

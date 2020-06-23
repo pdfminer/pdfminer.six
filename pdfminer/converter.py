@@ -118,8 +118,9 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             text = self.handle_undefined_char(font, cid)
         textwidth = font.char_width(cid)
         textdisp = font.char_disp(cid)
+        glyph_bbox = font.get_bbox(cid)
         item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth,
-                      textdisp, ncs, graphicstate)
+                      textdisp, ncs, graphicstate, glyph_bbox)
         self.cur_item.add(item)
         return item.adv
 

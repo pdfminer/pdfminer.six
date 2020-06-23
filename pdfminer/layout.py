@@ -281,7 +281,7 @@ class LTChar(LTComponent, LTText):
     """Actual letter in the text as a Unicode string."""
 
     def __init__(self, matrix, font, fontsize, scaling, rise,
-                 text, textwidth, textdisp, ncs, graphicstate):
+                 text, textwidth, textdisp, ncs, graphicstate, glyph_bbox):
         LTText.__init__(self)
         self._text = text
         self.matrix = matrix
@@ -302,10 +302,15 @@ class LTChar(LTComponent, LTText):
             bbox_upper_right = (-vx + fontsize, vy + rise)
         else:
             # horizontal
-            ascent = font.get_ascent() * fontsize
-            descent = font.get_descent() * fontsize
-            bbox_lower_left = (0, descent + rise)
-            bbox_upper_right = (self.adv, ascent + rise)
+            if glyph_bbox is not None:
+                # If available, use glyph bounding box
+                bbox_lower_left = (glyph_bbox[0] / 1000, glyph_bbox[1] / 1000)
+                bbox_upper_right = (glyph_bbox[2] / 1000, glyph_bbox[3] / 1000)
+            else:
+                ascent = font.get_ascent() * fontsize
+                descent = font.get_descent() * fontsize
+                bbox_lower_left = (0, descent + rise)
+                bbox_upper_right = (self.adv, ascent + rise)
         (a, b, c, d, e, f) = self.matrix
         self.upright = (0 < a*d*scaling and b*c <= 0)
         (x0, y0) = apply_matrix_pt(self.matrix, bbox_lower_left)
