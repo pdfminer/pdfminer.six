@@ -144,11 +144,15 @@ class PDFResourceManager:
     """
 
     def __init__(self, caching: bool = True,
-                 glyph_boxes_per_font: Optional[
-                     Dict[str, Dict[int, Tuple[float, float, float, float]]]] = None):
+                 bbox_per_font_and_glyph: Optional[
+                     Dict[str, Dict[str, Tuple[float, float, float, float]]]] = None,
+                 bbox_per_font: Optional[
+                     Dict[str, Tuple[float, float, float, float]]] = None
+                 ):
         self.caching = caching
         self._cached_fonts = {}
-        self.glyph_boxes_per_font = glyph_boxes_per_font
+        self.bbox_per_font_and_glyph = bbox_per_font_and_glyph
+        self.bbox_per_font = bbox_per_font
 
     def get_procset(self, procs):
         for proc in procs:
@@ -208,10 +212,14 @@ class PDFResourceManager:
                 if settings.STRICT:
                     raise PDFFontError('Invalid Font spec: %r' % spec)
                 font = PDFType1Font(self, spec)  # this is so wrong!
-            if objid and self.glyph_boxes_per_font is not None:
+            if objid and self.bbox_per_font_and_glyph is not None:
                 # If available, set glyph boxes for each font
-                if font.fontname in self.glyph_boxes_per_font:
-                    font.glyph_boxes = self.glyph_boxes_per_font[font.fontname]
+                if font.fontname in self.bbox_per_font_and_glyph:
+                    font.glyph_bounding_box = self.bbox_per_font_and_glyph[font.fontname]
+            if objid and self.bbox_per_font is not None:
+                # If available, set a minimal bounding box that bounds all glyph boxes for each font
+                if font.fontname in self.bbox_per_font:
+                    font.font_bounding_box = self.bbox_per_font[font.fontname]
             if objid and self.caching:
                 self._cached_fonts[objid] = font
         return font
