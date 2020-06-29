@@ -544,10 +544,16 @@ class PDFFont:
         return w * self.hscale
 
     def get_bbox(self, cid: int) -> Optional[Tuple[float, float, float, float]]:
+      """ Get glyph bounding box
+      :param cid: cid (character identifier) which points to a font character and glyph
+      :return: returns bounding box if glyph bounding boxes are provided and cid has a
+        corresponding glyph, otherwise returns None
+      """
       if self.glyph_bounding_box is not None:
         cid = str(cid)
         if cid in self.glyph_bounding_box:
           return self.glyph_bounding_box[cid]
+        return
       return self.font_bounding_box
 
     def get_height(self):

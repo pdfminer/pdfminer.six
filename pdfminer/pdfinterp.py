@@ -213,7 +213,7 @@ class PDFResourceManager:
                     raise PDFFontError('Invalid Font spec: %r' % spec)
                 font = PDFType1Font(self, spec)  # this is so wrong!
             if objid and self.bbox_per_font_and_glyph is not None:
-                # If available, set glyph boxes for each font
+                # If available, set custom glyph boxes for each font
                 if font.fontname in self.bbox_per_font_and_glyph:
                     font.glyph_bounding_box = self.bbox_per_font_and_glyph[font.fontname]
             if objid and self.bbox_per_font is not None:

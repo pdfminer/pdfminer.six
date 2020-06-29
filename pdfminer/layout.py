@@ -307,6 +307,7 @@ class LTChar(LTComponent, LTText):
                 bbox_lower_left = (glyph_bbox[0] / 1000, glyph_bbox[1] / 1000)
                 bbox_upper_right = (glyph_bbox[2] / 1000, glyph_bbox[3] / 1000)
             else:
+                # Using the default font level info embedded in the PDF
                 ascent = font.get_ascent() * fontsize
                 descent = font.get_descent() * fontsize
                 bbox_lower_left = (0, descent + rise)
