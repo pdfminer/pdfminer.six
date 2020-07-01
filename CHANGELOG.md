@@ -4,6 +4,8 @@ All notable changes in pdfminer.six will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+## Changed
+- Check type of image object do_EI 
 
 ## Changed
 - Hiding fallback xref by default from dumppdf.py output ([#431](https://github.com/pdfminer/pdfminer.six/pull/431))
