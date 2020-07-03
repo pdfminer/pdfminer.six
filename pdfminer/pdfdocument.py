@@ -28,6 +28,10 @@ class PDFNoValidXRefWarning(SyntaxWarning):
     pass
 
 
+class PDFTextExtractionNotAllowedWarning(UserWarning):
+    pass
+
+
 class PDFNoOutlines(PDFException):
     pass
 
@@ -41,10 +45,6 @@ class PDFEncryptionError(PDFException):
 
 
 class PDFPasswordIncorrect(PDFEncryptionError):
-    pass
-
-
-class PDFTextExtractionNotAllowed(PDFEncryptionError):
     pass
 
 
