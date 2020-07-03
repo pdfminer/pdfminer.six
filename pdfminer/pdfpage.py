@@ -126,10 +126,11 @@ class PDFPage:
         parser = PDFParser(fp)
         # Create a PDF document object that stores the document structure.
         doc = PDFDocument(parser, password=password, caching=caching)
-        # Check if the document allows text extraction. If not, warn the user and proceed.
+        # Check if the document allows text extraction.
+        # If not, warn the user and proceed.
         if not doc.is_extractable:
-            warning_msg = 'This PDF contains a metadata field indicating '\
-                          'that it should not allow text extraction.'   \
+            warning_msg = 'This PDF contains a metadata field indicating'\
+                          'that it should not allow text extraction.'    \
                           'Ignoring this field and proceeding.'
             warnings.warn(warning_msg, PDFTextExtractionNotAllowedWarning)
         # Process each page contained in the document.
