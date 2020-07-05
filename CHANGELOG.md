@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## Changed
+### Fixed
+- Validate image object in do_EI is a PDFStream ([#451](https://github.com/pdfminer/pdfminer.six/pull/451))
+
+### Changed
 - Hiding fallback xref by default from dumppdf.py output ([#431](https://github.com/pdfminer/pdfminer.six/pull/431))
 
 ## [20200517]
@@ -20,15 +23,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Allow boxes_flow LAParam to be passed as None, validate the input, and update documentation ([#395](https://github.com/pdfminer/pdfminer.six/pull/395))
+- Also accept file-like objects in high level functions `extract_text` and `extract_pages` ([#392](https://github.com/pdfminer/pdfminer.six/pull/392))
 
 ### Fixed
 - Text no longer comes in reverse order when advanced layout analysis is disabled ([#398](https://github.com/pdfminer/pdfminer.six/pull/398))
 - Updated misleading documentation for `word_margin` and `char_margin` ([#407](https://github.com/pdfminer/pdfminer.six/pull/407))
 - Ignore ValueError when converting font encoding differences ([#389](https://github.com/pdfminer/pdfminer.six/pull/389))
 - Grouping of text lines outside of parent container bounding box ([#386](https://github.com/pdfminer/pdfminer.six/pull/386))
-
-### Added
-- Also accept file-like objects in high level functions `extract_text` and `extract_pages` ([#392](https://github.com/pdfminer/pdfminer.six/pull/392))
 
 ### Changed
 - Group text lines if they are centered ([#382](https://github.com/pdfminer/pdfminer.six/pull/382))
