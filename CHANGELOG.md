@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Changed
 - Hiding fallback xref by default from dumppdf.py output ([#431](https://github.com/pdfminer/pdfminer.six/pull/431))
-- Changed `Text extraction is not allowed` error to a warning, this fixes ([#350](https://github.com/pdfminer/pdfminer.six/issues/350))
+- Changed `Text extraction is not allowed` error to a warning by default, this fixes ([#350](https://github.com/pdfminer/pdfminer.six/issues/350))
   
 ## [20200517]
 

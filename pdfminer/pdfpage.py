@@ -10,6 +10,7 @@ from .pdftypes import dict_value
 from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument
 from .pdfdocument import PDFTextExtractionNotAllowedWarning
+from .pdfdocument import PDFTextExtractionNotAllowedError
 
 
 log = logging.getLogger(__name__)
@@ -121,7 +122,7 @@ class PDFPage:
     @classmethod
     def get_pages(cls, fp,
                   pagenos=None, maxpages=0, password='',
-                  caching=True):
+                  caching=True, check_extractable=False):
         # Create a PDF parser object associated with the file object.
         parser = PDFParser(fp)
         # Create a PDF document object that stores the document structure.
@@ -129,10 +130,15 @@ class PDFPage:
         # Check if the document allows text extraction.
         # If not, warn the user and proceed.
         if not doc.is_extractable:
-            warning_msg = 'This PDF contains a metadata field indicating'\
-                          'that it should not allow text extraction.'    \
-                          'Ignoring this field and proceeding.'
-            warnings.warn(warning_msg, PDFTextExtractionNotAllowedWarning)
+            if check_extractable:
+                error_msg = 'Text extraction is not allowed: %r' % fp
+                raise PDFTextExtractionNotAllowedError(error_msg)
+            else:
+                warning_msg = 'The PDF %r contains a metadata field '\
+                            'indicating that it should not allow '   \
+                            'text extraction. Ignoring this field '  \
+                            'and proceeding.' % fp
+                warnings.warn(warning_msg, PDFTextExtractionNotAllowedWarning)
         # Process each page contained in the document.
         for (pageno, page) in enumerate(cls.create_pages(doc)):
             if pagenos and (pageno not in pagenos):
