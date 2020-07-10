@@ -4,7 +4,8 @@ import re
 import struct
 
 try:
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+    from cryptography.hazmat.primitives.ciphers import (Cipher, algorithms,
+                                                        modes)
     from cryptography.hazmat.backends import default_backend
     AES = True
 except ImportError:
@@ -468,7 +469,8 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
         iv = data[:16]
         ct = data[16:]
 
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv),
+                        backend=default_backend())
         return cipher.decryptor().update(ct)
 
 
@@ -523,7 +525,8 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         iv = data[:16]
         ct = data[16:]
 
-        cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend())
+        cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv),
+                        backend=default_backend())
         return cipher.decryptor().update(ct)
 
 
