@@ -14,7 +14,7 @@ setup(
     package_data={'pdfminer': ['cmap/*.pickle.gz']},
     install_requires=[
         'chardet ; python_version > "3.0"',
-        'pycryptodome',
+        'cryptography',
         'sortedcontainers',
     ],
     extras_require={

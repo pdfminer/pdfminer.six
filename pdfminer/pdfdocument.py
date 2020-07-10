@@ -4,11 +4,19 @@ import re
 import struct
 
 try:
-    from Crypto.Cipher import ARC4, AES
-    from Crypto.Hash import SHA256
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+    from cryptography.hazmat.backends import default_backend
+    AES = True
 except ImportError:
-    AES = SHA256 = None
-    from . import arcfour as ARC4
+    AES = None
+
+try:
+    from hashlib import sha256
+except ImportError:
+    sha256 = None
+
+from . import arcfour as ARC4
+
 from .psparser import PSEOF, literal_name, LIT, KWD
 from . import settings
 from .pdftypes import PDFException, uint_value, PDFTypeError, PDFStream, \
@@ -457,7 +465,11 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
               + struct.pack('<L', genno)[:2] + b'sAlT'
         hash = md5.md5(key)
         key = hash.digest()[:min(len(key), 16)]
-        return AES.new(key, mode=AES.MODE_CBC, IV=data[:16]).decrypt(data[16:])
+        iv = data[:16]
+        ct = data[16:]
+
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        return cipher.decryptor().update(ct)
 
 
 class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
@@ -485,27 +497,34 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
 
     def authenticate(self, password):
         password = password.encode('utf-8')[:127]
-        hash = SHA256.new(password)
+        hash = sha256(password)
         hash.update(self.o_validation_salt)
         hash.update(self.u)
         if hash.digest() == self.o_hash:
-            hash = SHA256.new(password)
+            hash = sha256(password)
             hash.update(self.o_key_salt)
             hash.update(self.u)
-            return AES.new(hash.digest(), mode=AES.MODE_CBC, IV=b'\x00' * 16)\
-                .decrypt(self.oe)
-        hash = SHA256.new(password)
+            cipher = Cipher(algorithms.AES(hash.digest()),
+                            modes.CBC(b'\0' * 16),
+                            backend=default_backend())
+            return cipher.decryptor().update(self.oe)
+        hash = sha256(password)
         hash.update(self.u_validation_salt)
         if hash.digest() == self.u_hash:
-            hash = SHA256.new(password)
+            hash = sha256(password)
             hash.update(self.u_key_salt)
-            return AES.new(hash.digest(), mode=AES.MODE_CBC, IV=b'\x00' * 16)\
-                .decrypt(self.ue)
+            cipher = Cipher(algorithms.AES(hash.digest()),
+                            modes.CBC(b'\0' * 16),
+                            backend=default_backend())
+            return cipher.decryptor().update(self.ue)
         return None
 
     def decrypt_aes256(self, objid, genno, data):
-        return AES.new(self.key, mode=AES.MODE_CBC, IV=data[:16])\
-            .decrypt(data[16:])
+        iv = data[:16]
+        ct = data[16:]
+
+        cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend())
+        return cipher.decryptor().update(ct)
 
 
 class PDFDocument:
@@ -527,7 +546,7 @@ class PDFDocument:
     }
     if AES is not None:
         security_handler_registry[4] = PDFStandardSecurityHandlerV4
-        if SHA256 is not None:
+        if sha256 is not None:
             security_handler_registry[5] = PDFStandardSecurityHandlerV5
 
     def __init__(self, parser, password='', caching=True, fallback=True):
