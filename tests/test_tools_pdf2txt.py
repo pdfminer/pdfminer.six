@@ -61,7 +61,7 @@ class TestPdf2Txt():
         run('contrib/2b.pdf', '-A -t xml')
 
     def test_scancode_patchelf(self):
-        """Regression test for # https://github.com/euske/pdfminer/issues/96"""
+        """Regression test for https://github.com/euske/pdfminer/issues/96"""
         run('scancode/patchelf.pdf')
 
     def test_contrib_hash_two_complement(self):
@@ -72,7 +72,10 @@ class TestPdf2Txt():
         run('contrib/issue-00352-hash-twos-complement.pdf')
 
     def test_contrib_excel(self):
-        run('contrib/excel.pdf', '-t xml')
+        """Regression test for
+         https://github.com/pdfminer/pdfminer.six/issues/369
+         """
+        run('contrib/issue-00369-excel.pdf')
 
 
 class TestDumpImages:
