@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-Nothing
+### Added
+- Support for painting multiple rectangles at once ([#371](https://github.com/pdfminer/pdfminer.six/pull/371))
 
 ## [20200124] - 2020-01-24
 
