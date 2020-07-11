@@ -75,7 +75,7 @@ class TestPdf2Txt():
         """Regression test for
          https://github.com/pdfminer/pdfminer.six/issues/369
          """
-        run('contrib/issue-00369-excel.pdf')
+        run('contrib/issue-00369-excel.pdf', '-t html')
 
 
 class TestDumpImages:
