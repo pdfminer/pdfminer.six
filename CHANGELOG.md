@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Support for painting multiple rectangles at once ([#371](https://github.com/pdfminer/pdfminer.six/pull/371))
+
 ### Fixed
 - Validate image object in do_EI is a PDFStream ([#451](https://github.com/pdfminer/pdfminer.six/pull/451))
 
