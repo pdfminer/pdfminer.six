@@ -61,7 +61,8 @@ class TestPdf2Txt():
         run('contrib/2b.pdf', '-A -t xml')
 
     def test_contrib_issue_350(self):
-        """Regression test for https://github.com/pdfminer/pdfminer.six/issues/350"""
+        """Regression test for
+        https://github.com/pdfminer/pdfminer.six/issues/350"""
         run('contrib/issue-00352-asw-oct96-p41.pdf')
 
     def test_scancode_patchelf(self):
@@ -69,7 +70,7 @@ class TestPdf2Txt():
         run('scancode/patchelf.pdf')
 
     def test_contrib_hash_two_complement(self):
-        """Check that unsigned integer is added correctly to encryption hash.
+        """Check that unsigned integer is added correctly to encryption hash.et
 
         See https://github.com/pdfminer/pdfminer.six/issues/186
         """
