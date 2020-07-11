@@ -75,6 +75,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
     def paint_path(self, gstate, stroke, fill, evenodd, path):
+        """Paint paths described in section 4.4 of the PDF reference manual"""
         shape = ''.join(x[0] for x in path)
         if shape == 'ml':
             # horizontal/vertical line
