@@ -5,8 +5,8 @@
 
 .. _tutorial_highlevel:
 
-Get started using the high-level functions
-******************************************
+Extract text from a PDF using Python
+************************************
 
 The high-level API can be used to do common tasks.
 
