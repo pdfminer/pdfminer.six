@@ -7,14 +7,14 @@ from pdfminer.pdfinterp import PDFGraphicState
 
 class TestPaintPath():
     def test_paint_path(self):
-        path = [('m', 136, 73.28), ('l', 137.28, 73.28)]
+        path = [('m', 6, 73), ('l', 7, 73)]
         analyzer = self._get_analyzer()
         analyzer.cur_item = LTContainer([0, 100, 0, 100])
         analyzer.paint_path(PDFGraphicState(), False, False, False, path)
         assert_equal(len(analyzer.cur_item._objs), 1)
 
     def test_paint_path_mlllh(self):
-        path = [('m', 136, 73.28), ('l', 137.28, 73.28), ('l', 137.28, 91.04), ('l', 136, 91.04), ('h',)]
+        path = [('m', 6, 73), ('l', 7, 73), ('l', 7, 91),  ('l', 6, 91), ('h',)]
         analyzer = self._get_analyzer()
         analyzer.cur_item = LTContainer([0, 100, 0, 100])
         analyzer.paint_path(PDFGraphicState(), False, False, False, path)
@@ -23,9 +23,9 @@ class TestPaintPath():
     def test_paint_path_multiple_mlllh(self):
         """Path from samples/contrib/issue-00369-excel.pdf"""
         path = [
-            ('m', 136, 73.28), ('l', 137.28, 73.28), ('l', 137.28, 91.04), ('l', 136, 91.04), ('h',),
-            ('m', 204.8, 73.28), ('l', 206.08, 73.28), ('l', 206.08, 91.04), ('l', 204.8, 91.04), ('h',),
-            ('m', 67.2, 72), ('l', 68.48, 72), ('l', 68.48, 133.28), ('l', 67.2, 133.28), ('h',)
+            ('m', 6, 73), ('l', 7, 73), ('l', 7, 91), ('l', 6, 91), ('h',),
+            ('m', 4, 73), ('l', 6, 73), ('l', 6, 91), ('l', 4, 91), ('h',),
+            ('m', 67, 2), ('l', 68, 2), ('l', 68, 3), ('l', 67, 3), ('h',)
         ]
         analyzer = self._get_analyzer()
         analyzer.cur_item = LTContainer([0, 100, 0, 100])
