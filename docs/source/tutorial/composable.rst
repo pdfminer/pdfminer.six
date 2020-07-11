@@ -1,7 +1,7 @@
 .. _tutorial_composable:
 
-Get started using the composable components API
-***********************************************
+Extract text from a PDF using Python - part 2
+*********************************************
 
 The command line tools and the high-level API are just shortcuts for often
 used combinations of pdfminer.six components. You can use these components to

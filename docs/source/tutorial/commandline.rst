@@ -1,7 +1,7 @@
 .. _tutorial_commandline:
 
-Get started with command-line tools
-***********************************
+Extract text from a PDF using the commandline
+*********************************************
 
 pdfminer.six has several tools that can be used from the command line. The
 command-line tools are aimed at users that occasionally want to extract text

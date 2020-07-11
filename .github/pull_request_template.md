@@ -1,17 +1,30 @@
-**Description**
+**Pull request**
 
-Please include a summary of the change and which issue is fixed. If this does not fix an issue, then first create a new issue. Please also include relevant motivation and context.
+Thanks for improving pdfminer.six! Please include the following information to
+help us discuss and merge this PR:
 
-Fixes # (issue)
+- A description of why this PR is needed. What does it fix? What does it 
+  improve?
+- A summary of the things that this PR changes.
+- Reference the issues that this PR fixes (use the fixes #(issue nr) syntax). 
+  If this PR does not fix any issue, create the issue first and mention that 
+  you are willing to work on it.
 
 **How Has This Been Tested?**
 
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Include an example pdf if you have one. 
+Please describe the tests that you ran to verify your changes. Provide 
+instructions so we can reproduce. Include an example pdf if you have one. 
 
 **Checklist**
 
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] I have updated the [README.md](../README.md) and other documentation, or I am sure that this is not necessary
-- [ ] I have added a consice human-readable description of the change to [CHANGELOG.md](../CHANGELOG.md)
+- [ ] I have added tests that prove my fix is effective or that my feature 
+  works
 - [ ] I have added docstrings to newly created methods and classes
-- [ ] I have optimized the code at least one time after creating the initial version
+- [ ] I have optimized the code at least one time after creating the initial 
+  version
+- [ ] I have updated the [README.md](../README.md) or I am verified that this
+  is not necessary
+- [ ] I have updated the [readthedocs](../docs/source) documentation or I 
+  verified that this is not necessary
+- [ ] I have added a consice human-readable description of the change to 
+  [CHANGELOG.md](../CHANGELOG.md)

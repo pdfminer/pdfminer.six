@@ -8,6 +8,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Support for painting multiple rectangles at once ([#371](https://github.com/pdfminer/pdfminer.six/pull/371))
 
+### Fixed
+- Validate image object in do_EI is a PDFStream ([#451](https://github.com/pdfminer/pdfminer.six/pull/451))
+
+### Changed
+- Hiding fallback xref by default from dumppdf.py output ([#431](https://github.com/pdfminer/pdfminer.six/pull/431))
+- Raise a warning instead of an error when extracting text from a non-extractable PDF ([#350](https://github.com/pdfminer/pdfminer.six/issues/350))
+  
+## [20200517]
+
+### Added
+- Python3 shebang line to script in tools ([#408](https://github.com/pdfminer/pdfminer.six/pull/408)
+
+### Fixed
+- Fix ordering of textlines within a textbox when `boxes_flow=None` ([#411](https://github.com/pdfminer/pdfminer.six/issues/411))
+
+## [20200402]
+
+### Added
+- Allow boxes_flow LAParam to be passed as None, validate the input, and update documentation ([#395](https://github.com/pdfminer/pdfminer.six/pull/395))
+- Also accept file-like objects in high level functions `extract_text` and `extract_pages` ([#392](https://github.com/pdfminer/pdfminer.six/pull/392))
+
+### Fixed
+- Text no longer comes in reverse order when advanced layout analysis is disabled ([#398](https://github.com/pdfminer/pdfminer.six/pull/398))
+- Updated misleading documentation for `word_margin` and `char_margin` ([#407](https://github.com/pdfminer/pdfminer.six/pull/407))
+- Ignore ValueError when converting font encoding differences ([#389](https://github.com/pdfminer/pdfminer.six/pull/389))
+- Grouping of text lines outside of parent container bounding box ([#386](https://github.com/pdfminer/pdfminer.six/pull/386))
+
+### Changed
+- Group text lines if they are centered ([#382](https://github.com/pdfminer/pdfminer.six/pull/382))
+
 ## [20200124] - 2020-01-24
 
 ### Security

@@ -17,11 +17,14 @@ from .pdftypes import PDFException, uint_value, PDFTypeError, PDFStream, \
 from .pdfparser import PDFSyntaxError, PDFStreamParser
 from .utils import choplist, nunpack, decode_text
 
-
 log = logging.getLogger(__name__)
 
 
 class PDFNoValidXRef(PDFSyntaxError):
+    pass
+
+
+class PDFNoValidXRefWarning(SyntaxWarning):
     pass
 
 
@@ -41,7 +44,11 @@ class PDFPasswordIncorrect(PDFEncryptionError):
     pass
 
 
-class PDFTextExtractionNotAllowed(PDFEncryptionError):
+class PDFTextExtractionNotAllowedWarning(UserWarning):
+    pass
+
+
+class PDFTextExtractionNotAllowedError(PDFEncryptionError):
     pass
 
 

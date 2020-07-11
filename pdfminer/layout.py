@@ -36,21 +36,21 @@ class LAParams:
         are considered to be on the same line. The overlap is specified
         relative to the minimum height of both characters.
     :param char_margin: If two characters are closer together than this
-        margin they are considered to be part of the same word. If
-        characters are on the same line but not part of the same word, an
-        intermediate space is inserted. The margin is specified relative to
-        the width of the character.
-    :param word_margin: If two words are are closer together than this
-        margin they are considered to be part of the same line. A space is
-        added in between for readability. The margin is specified relative
-        to the width of the word.
+        margin they are considered part of the same line. The margin is
+        specified relative to the width of the character.
+    :param word_margin: If two characters on the same line are further apart
+        than this margin then they are considered to be two separate words, and
+        an intermediate space will be added for readability. The margin is
+        specified relative to the width of the character.
     :param line_margin: If two lines are are close together they are
         considered to be part of the same paragraph. The margin is
         specified relative to the height of a line.
     :param boxes_flow: Specifies how much a horizontal and vertical position
         of a text matters when determining the order of text boxes. The value
         should be within the range of -1.0 (only horizontal position
-        matters) to +1.0 (only vertical position matters).
+        matters) to +1.0 (only vertical position matters). You can also pass
+        `None` to disable advanced layout analysis, and instead return text
+        based on the position of the bottom left corner of the text box.
     :param detect_vertical: If vertical text should be considered during
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
@@ -72,7 +72,19 @@ class LAParams:
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
+
+        self._validate()
         return
+
+    def _validate(self):
+        if self.boxes_flow is not None:
+            boxes_flow_err_msg = ("LAParam boxes_flow should be None, or a "
+                                  "number between -1 and +1")
+            if not (isinstance(self.boxes_flow, int) or
+                    isinstance(self.boxes_flow, float)):
+                raise TypeError(boxes_flow_err_msg)
+            if not -1 <= self.boxes_flow <= 1:
+                raise ValueError(boxes_flow_err_msg)
 
     def __repr__(self):
         return '<LAParams: char_margin=%.1f, line_margin=%.1f, ' \
@@ -409,20 +421,51 @@ class LTTextLineHorizontal(LTTextLine):
     def add(self, obj):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
-            if self._x1 < obj.x0-margin:
+            if self._x1 < obj.x0 - margin:
                 LTContainer.add(self, LTAnno(' '))
         self._x1 = obj.x1
         LTTextLine.add(self, obj)
         return
 
     def find_neighbors(self, plane, ratio):
-        d = ratio*self.height
-        objs = plane.find((self.x0, self.y0-d, self.x1, self.y1+d))
+        """
+        Finds neighboring LTTextLineHorizontals in the plane.
+
+        Returns a list of other LTTestLineHorizontals in the plane which are
+        close to self. "Close" can be controlled by ratio. The returned objects
+        will be the same height as self, and also either left-, right-, or
+        centrally-aligned.
+        """
+        d = ratio * self.height
+        objs = plane.find((self.x0, self.y0 - d, self.x1, self.y1 + d))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal) and
-                    abs(obj.height-self.height) < d and
-                    (abs(obj.x0-self.x0) < d or
-                     abs(obj.x1-self.x1) < d))]
+                    self._is_same_height_as(obj, tolerance=d) and
+                    (self._is_left_aligned_with(obj, tolerance=d) or
+                     self._is_right_aligned_with(obj, tolerance=d) or
+                     self._is_centrally_aligned_with(obj, tolerance=d)))]
+
+    def _is_left_aligned_with(self, other, tolerance=0):
+        """
+        Whether the left-hand edge of `other` is within `tolerance`.
+        """
+        return abs(other.x0 - self.x0) <= tolerance
+
+    def _is_right_aligned_with(self, other, tolerance=0):
+        """
+        Whether the right-hand edge of `other` is within `tolerance`.
+        """
+        return abs(other.x1 - self.x1) <= tolerance
+
+    def _is_centrally_aligned_with(self, other, tolerance=0):
+        """
+        Whether the horizontal center of `other` is within `tolerance`.
+        """
+        return abs(
+            (other.x0 + other.x1) / 2 - (self.x0 + self.x1) / 2) <= tolerance
+
+    def _is_same_height_as(self, other, tolerance):
+        return abs(other.height - self.height) <= tolerance
 
 
 class LTTextLineVertical(LTTextLine):
@@ -434,20 +477,51 @@ class LTTextLineVertical(LTTextLine):
     def add(self, obj):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
-            if obj.y1+margin < self._y0:
+            if obj.y1 + margin < self._y0:
                 LTContainer.add(self, LTAnno(' '))
         self._y0 = obj.y0
         LTTextLine.add(self, obj)
         return
 
     def find_neighbors(self, plane, ratio):
-        d = ratio*self.width
-        objs = plane.find((self.x0-d, self.y0, self.x1+d, self.y1))
+        """
+        Finds neighboring LTTextLineVerticals in the plane.
+
+        Returns a list of other LTTextLineVerticals in the plane which are
+        close to self. "Close" can be controlled by ratio. The returned objects
+        will be the same width as self, and also either upper-, lower-, or
+        centrally-aligned.
+        """
+        d = ratio * self.width
+        objs = plane.find((self.x0 - d, self.y0, self.x1 + d, self.y1))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineVertical) and
-                    abs(obj.width-self.width) < d and
-                    (abs(obj.y0-self.y0) < d or
-                     abs(obj.y1-self.y1) < d))]
+                    self._is_same_width_as(obj, tolerance=d) and
+                    (self._is_lower_aligned_with(obj, tolerance=d) or
+                     self._is_upper_aligned_with(obj, tolerance=d) or
+                     self._is_centrally_aligned_with(obj, tolerance=d)))]
+
+    def _is_lower_aligned_with(self, other, tolerance=0):
+        """
+        Whether the lower edge of `other` is within `tolerance`.
+        """
+        return abs(other.y0 - self.y0) <= tolerance
+
+    def _is_upper_aligned_with(self, other, tolerance=0):
+        """
+        Whether the upper edge of `other` is within `tolerance`.
+        """
+        return abs(other.y1 - self.y1) <= tolerance
+
+    def _is_centrally_aligned_with(self, other, tolerance=0):
+        """
+        Whether the vertical center of `other` is within `tolerance`.
+        """
+        return abs(
+            (other.y0 + other.y1) / 2 - (self.y0 + self.y1) / 2) <= tolerance
+
+    def _is_same_width_as(self, other, tolerance):
+        return abs(other.width - self.width) <= tolerance
 
 
 class LTTextBox(LTTextContainer):
@@ -597,16 +671,14 @@ class LTLayoutContainer(LTContainer):
         yield line
         return
 
-    # group_textlines: group neighboring lines to textboxes.
     def group_textlines(self, laparams, lines):
+        """Group neighboring lines to textboxes"""
         plane = Plane(self.bbox)
         plane.extend(lines)
         boxes = {}
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
-            if line not in neighbors:
-                continue
-            members = []
+            members = [line]
             for obj1 in neighbors:
                 members.append(obj1)
                 if obj1 in boxes:
@@ -725,21 +797,23 @@ class LTLayoutContainer(LTContainer):
         for obj in empties:
             obj.analyze(laparams)
         textboxes = list(self.group_textlines(laparams, textlines))
-        if -1 <= laparams.boxes_flow and laparams.boxes_flow <= +1 \
-                and textboxes:
+        if laparams.boxes_flow is None:
+            for textbox in textboxes:
+                textbox.analyze(laparams)
+
+            def getkey(box):
+                if isinstance(box, LTTextBoxVertical):
+                    return (0, -box.x1, -box.y0)
+                else:
+                    return (1, -box.y0, box.x0)
+            textboxes.sort(key=getkey)
+        else:
             self.groups = self.group_textboxes(laparams, textboxes)
             assigner = IndexAssigner()
             for group in self.groups:
                 group.analyze(laparams)
                 assigner.run(group)
             textboxes.sort(key=lambda box: box.index)
-        else:
-            def getkey(box):
-                if isinstance(box, LTTextBoxVertical):
-                    return (0, -box.x1, box.y0)
-                else:
-                    return (1, box.y0, box.x0)
-            textboxes.sort(key=getkey)
         self._objs = textboxes + otherobjs + empties
         return
 

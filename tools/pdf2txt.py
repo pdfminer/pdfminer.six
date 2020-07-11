@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """A command line tool for extracting text and images from PDF and
 output it to plain text, html, xml or tags."""
 import argparse
@@ -64,6 +65,9 @@ def maketheparser():
         help="One or more paths to PDF files.")
 
     parser.add_argument(
+        "--version", "-v", action="version",
+        version="pdfminer.six v{}".format(pdfminer.__version__))
+    parser.add_argument(
         "--debug", "-d", default=False, action="store_true",
         help="Use debug logging level.")
     parser.add_argument(
@@ -102,14 +106,14 @@ def maketheparser():
     la_params.add_argument(
         "--char-margin", "-M", type=float, default=2.0,
         help="If two characters are closer together than this margin they "
-             "are considered to be part of the same word. The margin is "
+             "are considered to be part of the same line. The margin is "
              "specified relative to the width of the character.")
     la_params.add_argument(
         "--word-margin", "-W", type=float, default=0.1,
-        help="If two words are are closer together than this margin they "
-             "are considered to be part of the same line. A space is added "
-             "in between for readability. The margin is specified relative "
-             "to the width of the word.")
+        help="If two characters on the same line are further apart than this "
+             "margin then they are considered to be two separate words, and "
+             "an intermediate space will be added for readability. The margin "
+             "is specified relative to the width of the character.")
     la_params.add_argument(
         "--line-margin", "-L", type=float, default=0.5,
         help="If two lines are are close together they are considered to "
@@ -120,9 +124,12 @@ def maketheparser():
         help="Specifies how much a horizontal and vertical position of a "
              "text matters when determining the order of lines. The value "
              "should be within the range of -1.0 (only horizontal position "
-             "matters) to +1.0 (only vertical position matters).")
+             "matters) to +1.0 (only vertical position matters). You can also "
+             "pass `None` to disable advanced layout analysis, and instead "
+             "return text based on the position of the bottom left corner of "
+             "the text box.")
     la_params.add_argument(
-        "--all-texts", "-A", default=True, action="store_true",
+        "--all-texts", "-A", default=False, action="store_true",
         help="If layout analysis should be performed on text in figures.")
 
     output_params = parser.add_argument_group(

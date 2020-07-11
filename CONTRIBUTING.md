@@ -15,6 +15,7 @@ Any contribution is appreciated! You might want to:
      issue. 
 * Fix issues by [creating pull requests](https://help.github.com/en/articles/creating-a-pull-request).
 * Help others by sharing your thoughs in comments on issues and pull requests.
+* Join the chat on [gitter](https://gitter.im/pdfminer-six/Lobby)
 
 ## Guidelines for creating issues
 

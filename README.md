@@ -5,15 +5,15 @@ pdfminer.six
 [![PyPI version](https://img.shields.io/pypi/v/pdfminer.six.svg)](https://pypi.python.org/pypi/pdfminer.six/)
 [![gitter](https://badges.gitter.im/pdfminer-six/Lobby.svg)](https://gitter.im/pdfminer-six/Lobby?utm_source=badge&utm_medium)
 
-Pdfminer.six is an community maintained fork of the original PDFMiner. It is a
-tool for extracting information from PDF documents.
-Unlike other PDF-related tools, it focuses entirely on getting
-and analyzing text data. Pdfminer.six allows one to obtain
-the exact location of text in a page, as well as
-other information such as fonts or lines.
-It includes a PDF converter that can transform PDF files
-into other text formats (such as HTML). It has an extensible
-PDF parser that can be used for other purposes than text analysis.
+Pdfminer.six is a community maintained fork of the original PDFMiner. It is a
+tool for extracting information from PDF documents. It focuses on getting
+and analyzing text data. Pdfminer.six extracts the text from a page directly
+from the sourcecode of the PDF. It can also be used to get the exact location, 
+font or color of the text. 
+
+It is build in a modular way such that each component of pdfminer.six can be
+replaced easily. You can implement your own interpreter or rendering device
+to use the power of pdfminer.six for other purposes that text analysis. 
 
 Check out the full documentation on
 [Read the Docs](https://pdfminersix.readthedocs.io).
@@ -29,7 +29,7 @@ Features
  * Various font types (Type1, TrueType, Type3, and CID) support.
  * Support for extracting images (JPG, JBIG2 and Bitmaps).
  * Support for RC4 and AES encryption.
- * Outline (TOC) extraction.
+ * Table of contents extraction.
  * Tagged contents extraction.
  * Automatic layout analysis.
 
@@ -45,9 +45,6 @@ How to use
  * Use command-line interface to extract text from pdf:
 
     `python pdf2txt.py samples/simple1.pdf`
-    
-* Check out more examples and documentation on
-[Read the Docs](https://pdfminersix.readthedocs.io).
 
 
 Contributing

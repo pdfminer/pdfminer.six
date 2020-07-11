@@ -6,7 +6,8 @@ Therefore lowercase unittest variants are added.
 """
 from nose.tools import assert_raises
 
-from pdfminer.encodingdb import name2unicode
+from pdfminer.encodingdb import name2unicode, EncodingDB
+from pdfminer.psparser import PSLiteral
 
 
 def test_name2unicode_name_in_agl():
@@ -145,3 +146,12 @@ def test_name2unicode_pua_ogoneksmall():
 
 def test_name2unicode_overflow_error():
     assert_raises(KeyError, name2unicode, '226215240241240240240240')
+
+
+def test_get_encoding_with_invalid_differences():
+    """Invalid differences should be silently ignored
+
+    Regression test for https://github.com/pdfminer/pdfminer.six/issues/385
+    """
+    invalid_differences = [PSLiteral('ubuntu'), PSLiteral('1234')]
+    EncodingDB.get_encoding('StandardEncoding', invalid_differences)

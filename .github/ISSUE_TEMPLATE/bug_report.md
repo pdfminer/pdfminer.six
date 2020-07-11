@@ -1,20 +1,20 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Report a bug
 title: ''
 labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Bug report**
 
-**To Reproduce**
+Thanks for finding the bug! To help us fix it, please make sure that you 
+include the following information:
 
-1. If any, include the code that you are using
-2. If any, include the command line statements that you are using
-3. If you have problems with a specific pdf file, include that pdf file
+- A description of the bug
+- Steps to reproduce the bug. Try to minimize the number of steps needed. 
+  Include the command and/or script that you use. Also include the PDF that 
+  you use.
+- If relevant, include the output and/or error stacktrace. 
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
