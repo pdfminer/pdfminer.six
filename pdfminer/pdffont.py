@@ -135,12 +135,8 @@ NIBBLES = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'e-',
 # Note: DLIdent-* isn't found in PDF Reference but is been kept as
 # it is harmless and might be used by some PDFs.
 IDENTITY_ENCODER = {
-    'Identity-H': 'Identity-H',
-    'Identity-V': 'Identity-V',
     'DLIdent-H': 'Identity-H',
     'DLIdent-V': 'Identity-V',
-    'OneByteIdentityH': 'OneByteIdentityH',
-    'OneByteIdentityV': 'OneByteIdentityV',
 }
 
 
