@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Hiding fallback xref by default from dumppdf.py output ([#431](https://github.com/pdfminer/pdfminer.six/pull/431))
-- Switched the crypto depdency to cryptography from pycryptodome ([#456](https://github.com/pdfminer/pdfminer.six/pull/456))
+- Switched from pycryptodome to cryptography package for AES decryption ([#456](https://github.com/pdfminer/pdfminer.six/pull/456))
 
 ## [20200517]
 
