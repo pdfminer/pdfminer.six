@@ -5,13 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Support for painting multiple rectangles at once ([#371](https://github.com/pdfminer/pdfminer.six/pull/371))
+
 ### Fixed
 - Validate image object in do_EI is a PDFStream ([#451](https://github.com/pdfminer/pdfminer.six/pull/451))
 
 ### Changed
 - Hiding fallback xref by default from dumppdf.py output ([#431](https://github.com/pdfminer/pdfminer.six/pull/431))
+- Raise a warning instead of an error when extracting text from a non-extractable PDF ([#350](https://github.com/pdfminer/pdfminer.six/issues/350))
 - Switched from pycryptodome to cryptography package for AES decryption ([#456](https://github.com/pdfminer/pdfminer.six/pull/456))
-
+  
 ## [20200517]
 
 ### Added
