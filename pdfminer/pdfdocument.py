@@ -1,23 +1,13 @@
-import hashlib as md5
 import logging
 import re
 import struct
+from hashlib import sha256, md5
 
-try:
-    from cryptography.hazmat.primitives.ciphers import (Cipher, algorithms,
-                                                        modes)
-    from cryptography.hazmat.backends import default_backend
-    AES = True
-except ImportError:
-    AES = None
-
-try:
-    from hashlib import sha256
-except ImportError:
-    sha256 = None
+from cryptography.hazmat.primitives.ciphers import (Cipher, algorithms,
+                                                    modes)
+from cryptography.hazmat.backends import default_backend
 
 from . import arcfour as ARC4
-
 from .psparser import PSEOF, literal_name, LIT, KWD
 from . import settings
 from .pdftypes import PDFException, uint_value, PDFTypeError, PDFStream, \
@@ -333,7 +323,7 @@ class PDFStandardSecurityHandler:
             return ARC4.new(key).encrypt(self.PASSWORD_PADDING)  # 2
         else:
             # Algorithm 3.5
-            hash = md5.md5(self.PASSWORD_PADDING)  # 2
+            hash = md5(self.PASSWORD_PADDING)  # 2
             hash.update(self.docid[0])  # 3
             result = ARC4.new(key).encrypt(hash.digest())  # 4
             for i in range(1, 20):  # 5
@@ -345,7 +335,7 @@ class PDFStandardSecurityHandler:
     def compute_encryption_key(self, password):
         # Algorithm 3.2
         password = (password + self.PASSWORD_PADDING)[:32]  # 1
-        hash = md5.md5(password)  # 2
+        hash = md5(password)  # 2
         hash.update(self.o)  # 3
         # See https://github.com/pdfminer/pdfminer.six/issues/186
         hash.update(struct.pack('<L', self.p))  # 4
@@ -358,7 +348,7 @@ class PDFStandardSecurityHandler:
         if self.r >= 3:
             n = self.length // 8
             for _ in range(50):
-                result = md5.md5(result[:n]).digest()
+                result = md5(result[:n]).digest()
         return result[:n]
 
     def authenticate(self, password):
@@ -385,10 +375,10 @@ class PDFStandardSecurityHandler:
     def authenticate_owner_password(self, password):
         # Algorithm 3.7
         password = (password + self.PASSWORD_PADDING)[:32]
-        hash = md5.md5(password)
+        hash = md5(password)
         if self.r >= 3:
             for _ in range(50):
-                hash = md5.md5(hash.digest())
+                hash = md5(hash.digest())
         n = 5
         if self.r >= 3:
             n = self.length // 8
@@ -408,7 +398,7 @@ class PDFStandardSecurityHandler:
     def decrypt_rc4(self, objid, genno, data):
         key = self.key + struct.pack('<L', objid)[:3] \
               + struct.pack('<L', genno)[:2]
-        hash = md5.md5(key)
+        hash = md5(key)
         key = hash.digest()[:min(len(key), 16)]
         return ARC4.new(key).decrypt(data)
 
@@ -464,14 +454,14 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
     def decrypt_aes128(self, objid, genno, data):
         key = self.key + struct.pack('<L', objid)[:3] \
               + struct.pack('<L', genno)[:2] + b'sAlT'
-        hash = md5.md5(key)
+        hash = md5(key)
         key = hash.digest()[:min(len(key), 16)]
-        iv = data[:16]
-        ct = data[16:]
-
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv),
+        initialization_vector = data[:16]
+        ciphertext = data[16:]
+        cipher = Cipher(algorithms.AES(key),
+                        modes.CBC(initialization_vector),
                         backend=default_backend())
-        return cipher.decryptor().update(ct)
+        return cipher.decryptor().update(ciphertext)
 
 
 class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
@@ -522,12 +512,12 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         return None
 
     def decrypt_aes256(self, objid, genno, data):
-        iv = data[:16]
-        ct = data[16:]
-
-        cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv),
+        initialization_vector = data[:16]
+        ciphertext = data[16:]
+        cipher = Cipher(algorithms.AES(self.key),
+                        modes.CBC(initialization_vector),
                         backend=default_backend())
-        return cipher.decryptor().update(ct)
+        return cipher.decryptor().update(ciphertext)
 
 
 class PDFDocument:
@@ -546,11 +536,9 @@ class PDFDocument:
     security_handler_registry = {
         1: PDFStandardSecurityHandler,
         2: PDFStandardSecurityHandler,
+        4: PDFStandardSecurityHandlerV4,
+        5: PDFStandardSecurityHandlerV5,
     }
-    if AES is not None:
-        security_handler_registry[4] = PDFStandardSecurityHandlerV4
-        if sha256 is not None:
-            security_handler_registry[5] = PDFStandardSecurityHandlerV5
 
     def __init__(self, parser, password='', caching=True, fallback=True):
         "Set the document to use a given PDFParser object."
