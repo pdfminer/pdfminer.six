@@ -1,5 +1,6 @@
 import glob
 import filecmp
+import difflib
 import unittest
 
 from samples import getpath
@@ -31,8 +32,12 @@ def pdf2txt_and_cmp(in_file, output_formats=None, additional_args=None,
             pdf2txt.main(args)
 
         if not filecmp.cmp(out_path, expected_contents_path):
-            raise Exception("Parsing of %s to %s do not match excepted in %s" %
-                            (in_file, out_path, expected_contents_path))
+            t1 = open(out_path).readlines()
+            t2 = open(expected_contents_path.readlines())
+            diff_lines = [line for line in difflib.unified_diff(t1, t2)]
+            diff = "\n".join(diff_lines)
+            raise Exception("Parsing of %s to %s do not match excepted in %s. Diff: \n%s" %
+                            (in_file, out_path, expected_contents_path, diff))
 
 
 class TestVerifyParsingOutput(unittest.TestCase):
