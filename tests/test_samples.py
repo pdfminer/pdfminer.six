@@ -5,6 +5,7 @@ import unittest
 from samples import getpath
 from tools import pdf2txt
 
+
 # Use regen_refs to regenerate the reference files to which the outputs
 # will be checked against
 def pdf2txt_and_cmp(in_file, output_formats=None, additional_args=None,
@@ -12,8 +13,8 @@ def pdf2txt_and_cmp(in_file, output_formats=None, additional_args=None,
     if output_formats is None:
         output_formats = ["text"]
 
-    for format in output_formats:
-        ext = "txt" if format == "text" else format
+    for fmt in output_formats:
+        ext = "txt" if fmt == "text" else format
         out_path = in_file.rstrip(".pdf") + "." + ext
 
         out_paths = [out_path]
@@ -22,7 +23,7 @@ def pdf2txt_and_cmp(in_file, output_formats=None, additional_args=None,
             out_paths.append(expected_contents_path)
 
         for p in out_paths:
-            args = ["-p1", "-V", "-t", format, "-o", p, in_file]
+            args = ["-p1", "-V", "-t", fmt, "-o", p, in_file]
             if additional_args is not None:
                 args += additional_args
             # display the equivalent command
