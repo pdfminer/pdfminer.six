@@ -36,8 +36,9 @@ def pdf2txt_and_cmp(in_file, output_formats=None, additional_args=None,
             t2 = open(expected_contents_path.readlines())
             diff_lines = [line for line in difflib.unified_diff(t1, t2)]
             diff = "\n".join(diff_lines)
-            raise Exception("Parsing of %s to %s do not match excepted in %s. Diff: \n%s" %
-                            (in_file, out_path, expected_contents_path, diff))
+            msg = ("Parsing of %s to %s do not match excepted in %s. Diff: "
+                   "\n%s" % (in_file, out_path, expected_contents_path, diff))
+            raise Exception(msg)
 
 
 class TestVerifyParsingOutput(unittest.TestCase):
