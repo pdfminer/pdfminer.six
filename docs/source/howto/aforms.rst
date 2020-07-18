@@ -49,8 +49,8 @@ It won't work for XFA forms.
                     if isinstance(value, bytes):
                         value = utils.decode_text(value)
               
-              data.update({name: value})    
+                data.update({name: value})    
               
-              print(name, value)
+                print(name, value)
 
 This code snippet will print all the fields name and value and save them in the "data" dictionary.
