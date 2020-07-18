@@ -12,3 +12,4 @@ Tutorials help you get started with specific parts of pdfminer.six.
     commandline
     highlevel
     composable
+    extract_pages
