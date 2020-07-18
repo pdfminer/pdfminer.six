@@ -1,6 +1,6 @@
 .. _aforms:
 
-How to extract AcroForm fields from a PDF files
+How to extract AcroForm fields from a PDF using Python and PDFMiner
 ********************************
 
 Before you start, make sure you have :ref:`installed pdfminer.six<install>`.
