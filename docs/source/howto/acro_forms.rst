@@ -7,7 +7,7 @@ Before you start, make sure you have :ref:`installed pdfminer.six<install>`.
 
 The second thing you need is a PDF with AcroForms (as found in PDF files with fillable forms or multiple choices).
 
-Only AcroForm interactive forms are supported, XFA forms are not supported as implementation is not trivial.
+Only AcroForm interactive forms are supported, XFA forms are not supported.
 
 .. code-block:: python
 
