@@ -826,7 +826,7 @@ class PDFDocument:
         for f in fields:
             field = resolve1(f)
             name, value = field.get('T'), field.get('V')
-            name = name.decode()
+            name = decode_text(name)
             if value:
                 while isinstance(value, PDFObjRef):
                     value = resolve1(value)
