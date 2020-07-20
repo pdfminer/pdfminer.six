@@ -13,11 +13,17 @@ from .psparser import PSEOF, literal_name, LIT, KWD
 from . import settings
 from .pdftypes import PDFException, uint_value, PDFTypeError, PDFStream, \
     PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
-    dict_value, stream_value
+    dict_value, stream_value, resolve1, PDFObjRef
 from .pdfparser import PDFSyntaxError, PDFStreamParser
 from .utils import choplist, nunpack, decode_text
 
+from .psparser import PSLiteral, PSKeyword  # rework later
+
 log = logging.getLogger(__name__)
+
+
+class PDFAcroFormError(PDFException):
+    pass
 
 
 class PDFNoValidXRef(PDFSyntaxError):
@@ -812,3 +818,24 @@ class PDFDocument:
             pos = int_value(trailer['Prev'])
             self.read_xref_from(parser, pos, xrefs)
         return
+    
+    # get AcroForm data
+    def get_acroform(self):
+        if 'AcroForm' not in self.catalog:
+            raise PDFAcroFormError("No AcroForm Found")
+        data = {}
+        fields = resolve1(self.catalog['AcroForm'])['Fields']  # may need further resolving
+        for f in fields:
+            field = resolve1(f)
+            name, value = field.get('T'), field.get('V')
+            name = name.decode()
+            if value:
+                while isinstance(value, PDFObjRef):
+                    value = resolve1(value)
+                if isinstance(value, (PSLiteral, PSKeyword)):
+                    value = value.name
+            if isinstance(value, bytes):
+                value = decode_text(value)
+            data.update({name: value})
+
+        return data
