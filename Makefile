@@ -56,4 +56,3 @@ $(CMAPDST)/to-unicode-Adobe-Korea1.pickle.gz: $(CMAPDST)
 
 test: cmap
 	nosetests
-	cd samples && $(MAKE) test
