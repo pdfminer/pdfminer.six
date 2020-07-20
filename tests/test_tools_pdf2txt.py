@@ -82,6 +82,27 @@ class TestPdf2Txt():
          """
         run('contrib/issue-00369-excel.pdf', '-t html')
 
+    def test_encryption_aes128(self):
+        run('encryption/aes-128.pdf', '-P foo')
+
+    def test_encryption_aes128m(self):
+        run('encryption/aes-128-m.pdf', '-P foo')
+
+    def test_encryption_aes256(self):
+        run('encryption/aes-256.pdf', '-P foo')
+
+    def test_encryption_aes256m(self):
+        run('encryption/aes-256-m.pdf', '-P foo')
+
+    def test_encryption_base(self):
+        run('encryption/base.pdf', '-P foo')
+
+    def test_encryption_rc4_40(self):
+        run('encryption/rc4-40.pdf', '-P foo')
+
+    def test_encryption_rc4_128(self):
+        run('encryption/rc4-128.pdf', '-P foo')
+
 
 class TestDumpImages:
 
