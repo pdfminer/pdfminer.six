@@ -33,6 +33,3 @@ class Arcfour:
         return r
 
     encrypt = decrypt = process
-
-
-new = Arcfour

@@ -3,17 +3,16 @@ import re
 import struct
 from hashlib import sha256, md5
 
-from cryptography.hazmat.primitives.ciphers import (Cipher, algorithms,
-                                                    modes)
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-from . import arcfour as ARC4
-from .psparser import PSEOF, literal_name, LIT, KWD
 from . import settings
+from .arcfour import Arcfour
+from .pdfparser import PDFSyntaxError, PDFStreamParser
 from .pdftypes import PDFException, uint_value, PDFTypeError, PDFStream, \
     PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
     dict_value, stream_value
-from .pdfparser import PDFSyntaxError, PDFStreamParser
+from .psparser import PSEOF, literal_name, LIT, KWD
 from .utils import choplist, nunpack, decode_text
 
 log = logging.getLogger(__name__)
@@ -324,15 +323,15 @@ class PDFStandardSecurityHandler:
     def compute_u(self, key):
         if self.r == 2:
             # Algorithm 3.4
-            return ARC4.new(key).encrypt(self.PASSWORD_PADDING)  # 2
+            return Arcfour(key).encrypt(self.PASSWORD_PADDING)  # 2
         else:
             # Algorithm 3.5
             hash = md5(self.PASSWORD_PADDING)  # 2
             hash.update(self.docid[0])  # 3
-            result = ARC4.new(key).encrypt(hash.digest())  # 4
+            result = Arcfour(key).encrypt(hash.digest())  # 4
             for i in range(1, 20):  # 5
                 k = b''.join(bytes((c ^ i,)) for c in iter(key))
-                result = ARC4.new(k).encrypt(result)
+                result = Arcfour(k).encrypt(result)
             result += result  # 6
             return result
 
@@ -388,12 +387,12 @@ class PDFStandardSecurityHandler:
             n = self.length // 8
         key = hash.digest()[:n]
         if self.r == 2:
-            user_password = ARC4.new(key).decrypt(self.o)
+            user_password = Arcfour(key).decrypt(self.o)
         else:
             user_password = self.o
             for i in range(19, -1, -1):
                 k = b''.join(bytes((c ^ i,)) for c in iter(key))
-                user_password = ARC4.new(k).decrypt(user_password)
+                user_password = Arcfour(k).decrypt(user_password)
         return self.authenticate_user_password(user_password)
 
     def decrypt(self, objid, genno, data, attrs=None):
@@ -404,7 +403,7 @@ class PDFStandardSecurityHandler:
               + struct.pack('<L', genno)[:2]
         hash = md5(key)
         key = hash.digest()[:min(len(key), 16)]
-        return ARC4.new(key).decrypt(data)
+        return Arcfour(key).decrypt(data)
 
 
 class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
