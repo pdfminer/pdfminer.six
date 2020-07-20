@@ -28,7 +28,7 @@ test_strings = {
                                  "H e l l o  \n\nW o r l d\n\n"
                                  "H e l l o  \n\nW o r l d\n\n\f",
     "simple2.pdf": "\f",
-    "simple3.pdf": "Hello\n\nHello\n\nWorld\n\nWorld\n\n\f",
+    "simple3.pdf": "Hello\n\nHello\nあ\nい\nう\nえ\nお\nあ\nい\nう\nえ\nお\nWorld\n\nWorld\n\n\f",
     "simple4.pdf": "Text1\nText2\nText3\n\n\f"
 }
 
