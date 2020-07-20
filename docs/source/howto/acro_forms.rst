@@ -1,4 +1,4 @@
-.. _aforms:
+.. _acro_forms:
 
 How to extract AcroForm fields from a PDF using Python and PDFMiner
 ********************************
@@ -25,31 +25,33 @@ It won't work for XFA forms.
         doc = PDFDocument(parser)
         res = resolve1(doc.catalog)
 
-        if 'AcroForm' in res:
-            fields = resolve1(doc.catalog['AcroForm'])['Fields']
+        if 'AcroForm' not in res:
+            raise ValueError("No AcroForm Found")
+            
+        fields = resolve1(doc.catalog['AcroForm'])['Fields']
 
-            for f in fields:
-                field = resolve1(f)
-                name, value = field.get('T'), field.get('V')
+        for f in fields:
+            field = resolve1(f)
+            name, value = field.get('T'), field.get('V')
 
-                # decode name
-                name = name.decode()
+            # decode name
+            name = name.decode()
 
-                if value:
+            if value:
 
-                    # resolve indirect obj
-                    while isinstance(value, PDFObjRef):
-                        value = resolve1(value)
+                # resolve indirect obj
+                while isinstance(value, PDFObjRef):
+                    value = resolve1(value)
 
-                    # decode PSLiteral, PSKeyword
-                    if isinstance(value, (PSLiteral, PSKeyword)):
-                        value = value.name
+                # decode PSLiteral, PSKeyword
+                if isinstance(value, (PSLiteral, PSKeyword)):
+                    value = value.name
 
-                    # decode bytes
-                    if isinstance(value, bytes):
-                        value = utils.decode_text(value)
-              
-                data.update({name: value})    
+                # decode bytes
+                if isinstance(value, bytes):
+                    value = utils.decode_text(value)
+
+            data.update({name: value})    
               
                 print(name, value)
 
