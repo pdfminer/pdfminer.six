@@ -28,7 +28,7 @@ Only AcroForm interactive forms are supported, XFA forms are not supported as im
         if 'AcroForm' not in res:
             raise ValueError("No AcroForm Found")
             
-        fields = resolve1(doc.catalog['AcroForm'])['Fields']
+        fields = resolve1(doc.catalog['AcroForm'])['Fields']  # may need further resolving
 
         for f in fields:
             field = resolve1(f)
@@ -37,23 +37,22 @@ Only AcroForm interactive forms are supported, XFA forms are not supported as im
             # decode name
             name = name.decode()
 
-            if value:
 
-                # resolve indirect obj
-                while isinstance(value, PDFObjRef):
-                    value = resolve1(value)
+            # resolve indirect obj
+            while isinstance(value, PDFObjRef):
+                value = resolve1(value)
 
-                # decode PSLiteral, PSKeyword
-                if isinstance(value, (PSLiteral, PSKeyword)):
-                    value = value.name
+            # decode PSLiteral, PSKeyword
+            if isinstance(value, (PSLiteral, PSKeyword)):
+                value = value.name
 
-                # decode bytes
-                if isinstance(value, bytes):
-                    value = utils.decode_text(value)
+            # decode bytes
+            if isinstance(value, bytes):
+                value = utils.decode_text(value)
 
             data.update({name: value})    
               
-                print(name, value)
+            print(name, value)
 
 This code snippet will print all the fields name and value and save them in the "data" dictionary.
 
@@ -88,7 +87,7 @@ How it works:
 
     fields = resolve1(doc.catalog['AcroForm'])['Fields']
     for f in fields:
-        field = resolve1(f)  # may need further resolving
+        field = resolve1(f)
 
 - Get field name and field value
 
