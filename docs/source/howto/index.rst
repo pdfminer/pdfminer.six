@@ -9,4 +9,4 @@ How-to guides help you to solve specific problems with pdfminer.six.
     :maxdepth: 1
 
     images
-    aforms
+    acro_forms
