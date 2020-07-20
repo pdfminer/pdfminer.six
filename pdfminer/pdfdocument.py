@@ -9,15 +9,13 @@ try:
 except ImportError:
     AES = SHA256 = None
     from . import arcfour as ARC4
-from .psparser import PSEOF, literal_name, LIT, KWD
+from .psparser import PSEOF, literal_name, LIT, KWD, PSLiteral, PSKeyword
 from . import settings
 from .pdftypes import PDFException, uint_value, PDFTypeError, PDFStream, \
     PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
     dict_value, stream_value, resolve1, PDFObjRef
 from .pdfparser import PDFSyntaxError, PDFStreamParser
 from .utils import choplist, nunpack, decode_text
-
-from .psparser import PSLiteral, PSKeyword  # rework later
 
 log = logging.getLogger(__name__)
 
