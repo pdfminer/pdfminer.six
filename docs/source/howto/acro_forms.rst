@@ -1,13 +1,13 @@
 .. _acro_forms:
 
-How to extract AcroForm fields from a PDF using Python and PDFMiner
+How to extract AcroForm interactive form fields from a PDF using PDFMiner
 ********************************
 
 Before you start, make sure you have :ref:`installed pdfminer.six<install>`.
 
 The second thing you need is a PDF with AcroForms (as found in PDF files with fillable forms or multiple choices).
 
-It won't work for XFA forms, only AcroForm are not supported.
+Only AcroForm interactive forms are supported, XFA forms are not supported as implementation is not trivial.
 
 .. code-block:: python
 
@@ -68,12 +68,14 @@ How it works:
     doc = PDFDocument(parser)
 
 - Get the catalog
+(the catalog contains references to other objects defining the document structure, see PDF 32000-1:2008 specs: https://www.adobe.com/devnet/pdf/pdf_reference.html)
 
 .. code-block:: python
 
     res = resolve1(doc.catalog)
 
-- Check if the catalogs contains the AcroForm key and raise ValuError if not (the PDF does not contain Acroform)
+- Check if the catalog contains the AcroForm key and raise ValuError if not 
+(the PDF does not contain Acroform type of ibteractive forms if this key is missing in the catalog)
 
 .. code-block:: python
 
