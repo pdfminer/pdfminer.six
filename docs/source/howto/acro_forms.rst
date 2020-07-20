@@ -35,7 +35,7 @@ Only AcroForm interactive forms are supported, XFA forms are not supported.
             name, value = field.get('T'), field.get('V')
 
             # decode name
-            name = name.decode()
+            name = decode_text(name)
 
 
             # resolve indirect obj
@@ -99,7 +99,7 @@ How it works:
 
 .. code-block:: python
 
-    name = name.decode()
+    name = decode_text(name)
 
 - Resolve indirect field value objects
 
