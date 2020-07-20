@@ -68,14 +68,14 @@ How it works:
     doc = PDFDocument(parser)
 
 - Get the catalog
-(the catalog contains references to other objects defining the document structure, see PDF 32000-1:2008 specs: https://www.adobe.com/devnet/pdf/pdf_reference.html)
+(the catalog contains references to other objects defining the document structure, see section 7.7.2 of PDF 32000-1:2008 specs: https://www.adobe.com/devnet/pdf/pdf_reference.html)
 
 .. code-block:: python
 
     res = resolve1(doc.catalog)
 
 - Check if the catalog contains the AcroForm key and raise ValuError if not 
-(the PDF does not contain Acroform type of ibteractive forms if this key is missing in the catalog)
+(the PDF does not contain Acroform type of ibteractive forms if this key is missing in the catalog, see section 12.7.2 of PDF 32000-1:2008 specs)
 
 .. code-block:: python
 
