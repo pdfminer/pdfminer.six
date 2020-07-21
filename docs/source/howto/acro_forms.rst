@@ -73,7 +73,7 @@ How it works:
 
     res = resolve1(doc.catalog)
 
-- Check if the catalog contains the AcroForm key and raise ValuError if not 
+- Check if the catalog contains the AcroForm key and raise ValueError if not 
 (the PDF does not contain Acroform type of ibteractive forms if this key is missing in the catalog, see section 12.7.2 of PDF 32000-1:2008 specs)
 
 .. code-block:: python
@@ -121,4 +121,3 @@ How it works:
 
     if isinstance(value, bytes):
         value = utils.decode_text(value)
-
