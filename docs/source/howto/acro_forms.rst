@@ -38,8 +38,7 @@ Only AcroForm interactive forms are supported, XFA forms are not supported.
             name = decode_text(name)
 
             # resolve indirect obj
-            while isinstance(value, PDFObjRef):
-                value = resolve1(value)
+            value = resolve1(value)
 
             # decode PSLiteral, PSKeyword
             if isinstance(value, (PSLiteral, PSKeyword)):
@@ -104,8 +103,7 @@ How it works:
 
 .. code-block:: python
 
-    while isinstance(value, PDFObjRef):
-        value = resolve1(value)
+    value = resolve1(value)
 
 - Decode PSLiteral and PSKeyword field values
 
