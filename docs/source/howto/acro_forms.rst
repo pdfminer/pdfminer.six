@@ -37,7 +37,6 @@ Only AcroForm interactive forms are supported, XFA forms are not supported.
             # decode name
             name = decode_text(name)
 
-
             # resolve indirect obj
             while isinstance(value, PDFObjRef):
                 value = resolve1(value)
