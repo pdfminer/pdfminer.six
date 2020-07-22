@@ -1,27 +1,21 @@
-import hashlib as md5
 import logging
 import re
 import struct
+from hashlib import sha256, md5
 
-try:
-    from Crypto.Cipher import ARC4, AES
-    from Crypto.Hash import SHA256
-except ImportError:
-    AES = SHA256 = None
-    from . import arcfour as ARC4
-from .psparser import PSEOF, literal_name, LIT, KWD, PSLiteral, PSKeyword
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
 from . import settings
+from .arcfour import Arcfour
+from .pdfparser import PDFSyntaxError, PDFStreamParser
 from .pdftypes import PDFException, uint_value, PDFTypeError, PDFStream, \
     PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
-    dict_value, stream_value, resolve1, PDFObjRef
-from .pdfparser import PDFSyntaxError, PDFStreamParser
+    dict_value, stream_value
+from .psparser import PSEOF, literal_name, LIT, KWD
 from .utils import choplist, nunpack, decode_text
 
 log = logging.getLogger(__name__)
-
-
-class PDFAcroFormError(PDFException):
-    pass
 
 
 class PDFNoValidXRef(PDFSyntaxError):
@@ -329,22 +323,22 @@ class PDFStandardSecurityHandler:
     def compute_u(self, key):
         if self.r == 2:
             # Algorithm 3.4
-            return ARC4.new(key).encrypt(self.PASSWORD_PADDING)  # 2
+            return Arcfour(key).encrypt(self.PASSWORD_PADDING)  # 2
         else:
             # Algorithm 3.5
-            hash = md5.md5(self.PASSWORD_PADDING)  # 2
+            hash = md5(self.PASSWORD_PADDING)  # 2
             hash.update(self.docid[0])  # 3
-            result = ARC4.new(key).encrypt(hash.digest())  # 4
+            result = Arcfour(key).encrypt(hash.digest())  # 4
             for i in range(1, 20):  # 5
                 k = b''.join(bytes((c ^ i,)) for c in iter(key))
-                result = ARC4.new(k).encrypt(result)
+                result = Arcfour(k).encrypt(result)
             result += result  # 6
             return result
 
     def compute_encryption_key(self, password):
         # Algorithm 3.2
         password = (password + self.PASSWORD_PADDING)[:32]  # 1
-        hash = md5.md5(password)  # 2
+        hash = md5(password)  # 2
         hash.update(self.o)  # 3
         # See https://github.com/pdfminer/pdfminer.six/issues/186
         hash.update(struct.pack('<L', self.p))  # 4
@@ -357,7 +351,7 @@ class PDFStandardSecurityHandler:
         if self.r >= 3:
             n = self.length // 8
             for _ in range(50):
-                result = md5.md5(result[:n]).digest()
+                result = md5(result[:n]).digest()
         return result[:n]
 
     def authenticate(self, password):
@@ -384,21 +378,21 @@ class PDFStandardSecurityHandler:
     def authenticate_owner_password(self, password):
         # Algorithm 3.7
         password = (password + self.PASSWORD_PADDING)[:32]
-        hash = md5.md5(password)
+        hash = md5(password)
         if self.r >= 3:
             for _ in range(50):
-                hash = md5.md5(hash.digest())
+                hash = md5(hash.digest())
         n = 5
         if self.r >= 3:
             n = self.length // 8
         key = hash.digest()[:n]
         if self.r == 2:
-            user_password = ARC4.new(key).decrypt(self.o)
+            user_password = Arcfour(key).decrypt(self.o)
         else:
             user_password = self.o
             for i in range(19, -1, -1):
                 k = b''.join(bytes((c ^ i,)) for c in iter(key))
-                user_password = ARC4.new(k).decrypt(user_password)
+                user_password = Arcfour(k).decrypt(user_password)
         return self.authenticate_user_password(user_password)
 
     def decrypt(self, objid, genno, data, attrs=None):
@@ -407,9 +401,9 @@ class PDFStandardSecurityHandler:
     def decrypt_rc4(self, objid, genno, data):
         key = self.key + struct.pack('<L', objid)[:3] \
               + struct.pack('<L', genno)[:2]
-        hash = md5.md5(key)
+        hash = md5(key)
         key = hash.digest()[:min(len(key), 16)]
-        return ARC4.new(key).decrypt(data)
+        return Arcfour(key).decrypt(data)
 
 
 class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
@@ -463,9 +457,14 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
     def decrypt_aes128(self, objid, genno, data):
         key = self.key + struct.pack('<L', objid)[:3] \
               + struct.pack('<L', genno)[:2] + b'sAlT'
-        hash = md5.md5(key)
+        hash = md5(key)
         key = hash.digest()[:min(len(key), 16)]
-        return AES.new(key, mode=AES.MODE_CBC, IV=data[:16]).decrypt(data[16:])
+        initialization_vector = data[:16]
+        ciphertext = data[16:]
+        cipher = Cipher(algorithms.AES(key),
+                        modes.CBC(initialization_vector),
+                        backend=default_backend())
+        return cipher.decryptor().update(ciphertext)
 
 
 class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
@@ -493,27 +492,35 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
 
     def authenticate(self, password):
         password = password.encode('utf-8')[:127]
-        hash = SHA256.new(password)
+        hash = sha256(password)
         hash.update(self.o_validation_salt)
         hash.update(self.u)
         if hash.digest() == self.o_hash:
-            hash = SHA256.new(password)
+            hash = sha256(password)
             hash.update(self.o_key_salt)
             hash.update(self.u)
-            return AES.new(hash.digest(), mode=AES.MODE_CBC, IV=b'\x00' * 16)\
-                .decrypt(self.oe)
-        hash = SHA256.new(password)
+            cipher = Cipher(algorithms.AES(hash.digest()),
+                            modes.CBC(b'\0' * 16),
+                            backend=default_backend())
+            return cipher.decryptor().update(self.oe)
+        hash = sha256(password)
         hash.update(self.u_validation_salt)
         if hash.digest() == self.u_hash:
-            hash = SHA256.new(password)
+            hash = sha256(password)
             hash.update(self.u_key_salt)
-            return AES.new(hash.digest(), mode=AES.MODE_CBC, IV=b'\x00' * 16)\
-                .decrypt(self.ue)
+            cipher = Cipher(algorithms.AES(hash.digest()),
+                            modes.CBC(b'\0' * 16),
+                            backend=default_backend())
+            return cipher.decryptor().update(self.ue)
         return None
 
     def decrypt_aes256(self, objid, genno, data):
-        return AES.new(self.key, mode=AES.MODE_CBC, IV=data[:16])\
-            .decrypt(data[16:])
+        initialization_vector = data[:16]
+        ciphertext = data[16:]
+        cipher = Cipher(algorithms.AES(self.key),
+                        modes.CBC(initialization_vector),
+                        backend=default_backend())
+        return cipher.decryptor().update(ciphertext)
 
 
 class PDFDocument:
@@ -532,11 +539,9 @@ class PDFDocument:
     security_handler_registry = {
         1: PDFStandardSecurityHandler,
         2: PDFStandardSecurityHandler,
+        4: PDFStandardSecurityHandlerV4,
+        5: PDFStandardSecurityHandlerV5,
     }
-    if AES is not None:
-        security_handler_registry[4] = PDFStandardSecurityHandlerV4
-        if SHA256 is not None:
-            security_handler_registry[5] = PDFStandardSecurityHandlerV5
 
     def __init__(self, parser, password='', caching=True, fallback=True):
         "Set the document to use a given PDFParser object."
@@ -816,24 +821,3 @@ class PDFDocument:
             pos = int_value(trailer['Prev'])
             self.read_xref_from(parser, pos, xrefs)
         return
-    
-    # get AcroForm data
-    def get_acroform(self):
-        if 'AcroForm' not in self.catalog:
-            raise PDFAcroFormError("No AcroForm Found")
-        data = {}
-        fields = resolve1(self.catalog['AcroForm'])['Fields']  # may need further resolving
-        for f in fields:
-            field = resolve1(f)
-            name, value = field.get('T'), field.get('V')
-            name = decode_text(name)
-            if value:
-                while isinstance(value, PDFObjRef):
-                    value = resolve1(value)
-                if isinstance(value, (PSLiteral, PSKeyword)):
-                    value = value.name
-            if isinstance(value, bytes):
-                value = decode_text(value)
-            data.update({name: value})
-
-        return data
