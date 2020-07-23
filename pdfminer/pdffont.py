@@ -132,8 +132,8 @@ class Type1FontHeaderParser(PSStackParser):
 NIBBLES = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'e-',
            None, '-')
 
-# Note: DLIdent-* isn't found in PDF Reference but is been kept as
-# it is harmless and might be used by some PDFs.
+# Mapping of cmap names. Original cmap name is kept if not in the mapping.
+# (missing reference for why DLIdent is mapped to Identity)
 IDENTITY_ENCODER = {
     'DLIdent-H': 'Identity-H',
     'DLIdent-V': 'Identity-V',
