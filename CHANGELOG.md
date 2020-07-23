@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Support for painting multiple rectangles at once ([#371](https://github.com/pdfminer/pdfminer.six/pull/371))
 
-### Fixed
+## Fixed
+- Always try to get CMap, not only for identity encodings ([#438](https://github.com/pdfminer/pdfminer.six/pull/438))
 - Validate image object in do_EI is a PDFStream ([#451](https://github.com/pdfminer/pdfminer.six/pull/451))
 
 ### Changed
