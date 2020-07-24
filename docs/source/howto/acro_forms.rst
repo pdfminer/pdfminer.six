@@ -53,7 +53,7 @@ Only AcroForm interactive forms are supported, XFA forms are not supported.
             name = decode_text(name)
 
             # resolve indirect obj
-            value = resolve1(values)
+            values = resolve1(values)
             
             # decode value(s)
             if isinstance(values, list):
@@ -116,7 +116,7 @@ How it works:
 
 .. code-block:: python
 
-    value = resolve1(value)
+    values = resolve1(value)
 
 - Call the value(s) decoding method as needed
 (a single field can hold multiple values, for example a combo box can hold more than one value at time)
