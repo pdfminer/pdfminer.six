@@ -13,12 +13,27 @@ Only AcroForm interactive forms are supported, XFA forms are not supported.
 
     from pdfminer.pdfparser import PDFParser
     from pdfminer.pdfdocument import PDFDocument
-    from pdfminer.pdftypes import resolve1, PDFObjRef
+    from pdfminer.pdftypes import resolve1
     from pdfminer.psparser import PSLiteral, PSKeyword
-    from pdfminer import utils
+    from pdfminer.utils import decode_text    
+    
     
     data = {}
-    
+ 
+ 
+    def decode_value(value):
+
+        # decode PSLiteral, PSKeyword
+        if isinstance(value, (PSLiteral, PSKeyword)):
+            value = value.name
+
+        # decode bytes
+        if isinstance(value, bytes):
+            value = decode_text(value)
+
+        return value
+
+
     with open(file_path, 'rb') as fp:
         parser = PDFParser(fp)
         
@@ -32,25 +47,23 @@ Only AcroForm interactive forms are supported, XFA forms are not supported.
 
         for f in fields:
             field = resolve1(f)
-            name, value = field.get('T'), field.get('V')
+            name, values = field.get('T'), field.get('V')
 
             # decode name
             name = decode_text(name)
 
             # resolve indirect obj
-            value = resolve1(value)
+            value = resolve1(values)
+            
+            # decode value(s)
+            if isinstance(values, list):
+                values = [decode_value(v) for v in values]
+            else:
+                values = decode_value(values)
 
-            # decode PSLiteral, PSKeyword
-            if isinstance(value, (PSLiteral, PSKeyword)):
-                value = value.name
-
-            # decode bytes
-            if isinstance(value, bytes):
-                value = utils.decode_text(value)
-
-            data.update({name: value})    
+            data.update({name: values})    
               
-            print(name, value)
+            print(name, values)
 
 This code snippet will print all the fields name and value and save them in the "data" dictionary.
 
@@ -87,11 +100,11 @@ How it works:
     for f in fields:
         field = resolve1(f)
 
-- Get field name and field value
+- Get field name and field value(s)
 
 .. code-block:: python
 
-    name, value = field.get('T'), field.get('V')
+    name, values = field.get('T'), field.get('V')
 
 - Decode field name.
 
@@ -104,6 +117,18 @@ How it works:
 .. code-block:: python
 
     value = resolve1(value)
+
+- Call the value(s) decoding method as needed
+(a single field can hold multiple values, for example a combo box can hold more than one value at time)
+
+.. code-block:: python
+
+    if isinstance(values, list):
+        values = [decode_value(v) for v in values]
+    else:
+        values = decode_value(values)
+        
+(the decode_value method takes care of decoding the fields value returning a string)
 
 - Decode PSLiteral and PSKeyword field values
 
