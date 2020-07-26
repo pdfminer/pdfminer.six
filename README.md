@@ -29,7 +29,7 @@ Features
  * Various font types (Type1, TrueType, Type3, and CID) support.
  * Support for extracting images (JPG, JBIG2 and Bitmaps).
  * Support for RC4 and AES encryption.
- * Support for AcroForm interactive form extraction (XFA forms are not supported)
+ * Support for AcroForm interactive form extraction.
  * Table of contents extraction.
  * Tagged contents extraction.
  * Automatic layout analysis.
