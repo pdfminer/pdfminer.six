@@ -1,4 +1,4 @@
-__version__ = '20200720'
+__version__ = '20200726'
 
 if __name__ == '__main__':
     print(__version__)
