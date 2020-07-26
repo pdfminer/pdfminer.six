@@ -46,8 +46,16 @@ class PDFTextExtractionNotAllowedWarning(UserWarning):
     pass
 
 
-class PDFTextExtractionNotAllowedError(PDFEncryptionError):
+class PDFTextExtractionNotAllowed(PDFEncryptionError):
     pass
+
+
+class PDFTextExtractionNotAllowedError(PDFTextExtractionNotAllowed):
+    def __init__(self, *args):
+        from warnings import warn
+        warn('PDFTextExtractionNotAllowedError will be removed in the future. '
+             'Use PDFTextExtractionNotAllowed instead.', DeprecationWarning)
+        super().__init__(*args)
 
 
 # some predefined literals and keywords.
