@@ -51,7 +51,7 @@ Features
 * Support for Chinese, Japanese and Korean CJK) languages as well as vertical writing.
 * Support for various font types (Type1, TrueType, Type3, and CID).
 * Support for RC4 and AES encryption.
-* Support for AcroForm interactive form extraction (XFA forms are not supported)
+* Support for AcroForm interactive form extraction
 
 
 Installation instructions
