@@ -8,9 +8,8 @@ from .pdftypes import int_value
 from .pdftypes import list_value
 from .pdftypes import dict_value
 from .pdfparser import PDFParser
-from .pdfdocument import PDFDocument
+from .pdfdocument import PDFDocument, PDFTextExtractionNotAllowed
 from .pdfdocument import PDFTextExtractionNotAllowedWarning
-from .pdfdocument import PDFTextExtractionNotAllowedError
 
 
 log = logging.getLogger(__name__)
@@ -132,7 +131,7 @@ class PDFPage:
         if not doc.is_extractable:
             if check_extractable:
                 error_msg = 'Text extraction is not allowed: %r' % fp
-                raise PDFTextExtractionNotAllowedError(error_msg)
+                raise PDFTextExtractionNotAllowed(error_msg)
             else:
                 warning_msg = 'The PDF %r contains a metadata field '\
                             'indicating that it should not allow '   \
