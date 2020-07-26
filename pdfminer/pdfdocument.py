@@ -49,6 +49,8 @@ class PDFTextExtractionNotAllowedWarning(UserWarning):
 class PDFTextExtractionNotAllowedError(PDFEncryptionError):
     pass
 
+PDFTextExtractionNotAllowed = PDFTextExtractionNotAllowedError
+
 
 # some predefined literals and keywords.
 LITERAL_OBJSTM = LIT('ObjStm')
