@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
-- Remove unused rijndael encryption
+- Remove unused rijndael encryption ([#465](https://github.com/pdfminer/pdfminer.six/pull/465))
 
 ## [20200726]
 
