@@ -44,7 +44,7 @@ class PDFPasswordIncorrect(PDFEncryptionError):
     pass
 
 
-class PDFTextExtractionNotAllowed(PDFEncryptionError):
+class PDFTextExtractionNotAllowedWarning(UserWarning):
     pass
 
 
