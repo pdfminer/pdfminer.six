@@ -3,7 +3,7 @@
 
 PACKAGE=pdfminer
 
-PYTHON=python
+PYTHON=python3
 GIT=git
 RM=rm -f
 CP=cp -f
@@ -55,4 +55,4 @@ $(CMAPDST)/to-unicode-Adobe-Korea1.pickle.gz: $(CMAPDST)
 		$(CMAPDST) Adobe-Korea1 $(CMAPSRC)/cid2code_Adobe_Korea1.txt
 
 test: cmap
-	nosetests
+	nosetests3
