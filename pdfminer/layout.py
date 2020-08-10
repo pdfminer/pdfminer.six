@@ -63,6 +63,7 @@ class LAParams:
                  line_margin=0.5,
                  word_margin=0.1,
                  boxes_flow=0.5,
+                 qnt_spaces_between_words=1,
                  detect_vertical=False,
                  all_texts=False):
         self.line_overlap = line_overlap
@@ -72,6 +73,7 @@ class LAParams:
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
+        self.qnt_spaces_between_words = qnt_spaces_between_words
 
         self._validate()
         return
@@ -413,16 +415,17 @@ class LTTextLine(LTTextContainer):
 
 
 class LTTextLineHorizontal(LTTextLine):
-    def __init__(self, word_margin):
+    def __init__(self, word_margin, qnt_spaces_between_words):
         LTTextLine.__init__(self, word_margin)
         self._x1 = +INF
+        self.qnt_spaces_between_words = qnt_spaces_between_words
         return
-
+    #TODO: edit here
     def add(self, obj):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
             if self._x1 < obj.x0 - margin:
-                LTContainer.add(self, LTAnno(' '))
+                LTContainer.add(self, LTAnno(' ' * self.qnt_spaces_between_words))
         self._x1 = obj.x1
         LTTextLine.add(self, obj)
         return
@@ -656,17 +659,17 @@ class LTLayoutContainer(LTContainer):
                         line.add(obj0)
                         line.add(obj1)
                     elif halign and not valign:
-                        line = LTTextLineHorizontal(laparams.word_margin)
+                        line = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
                         line.add(obj0)
                         line.add(obj1)
                     else:
-                        line = LTTextLineHorizontal(laparams.word_margin)
+                        line = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
                         line.add(obj0)
                         yield line
                         line = None
             obj0 = obj1
         if line is None:
-            line = LTTextLineHorizontal(laparams.word_margin)
+            line = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
             line.add(obj0)
         yield line
         return
