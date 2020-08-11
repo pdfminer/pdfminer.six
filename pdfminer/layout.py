@@ -40,8 +40,8 @@ class LAParams:
         specified relative to the width of the character.
     :param word_margin: If two characters on the same line are further apart
         than this margin then they are considered to be two separate words, and
-        an intermediate space will be added for readability. The margin is
-        specified relative to the width of the character.
+        an intermediate spaces (with amount equal to qnt_spaces_between_words) will be added for readability.
+        The margin is specified relative to the width of the character.
     :param line_margin: If two lines are are close together they are
         considered to be part of the same paragraph. The margin is
         specified relative to the height of a line.
@@ -55,6 +55,9 @@ class LAParams:
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
         figures.
+    :param qnt_spaces_between_words: quantity of spaces, which will be added between words for readability.
+        More than one space can be used, to separate words, which already have spaces in them
+        (e.g. to separate numbers, which have space as a decimal separator)
     """
 
     def __init__(self,
@@ -63,9 +66,9 @@ class LAParams:
                  line_margin=0.5,
                  word_margin=0.1,
                  boxes_flow=0.5,
-                 qnt_spaces_between_words=1,
                  detect_vertical=False,
-                 all_texts=False):
+                 all_texts=False,
+                 qnt_spaces_between_words=1):
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin
