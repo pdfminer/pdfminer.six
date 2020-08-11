@@ -18,9 +18,9 @@ class TestGroupTextLines(unittest.TestCase):
         """
         laparams = LAParams()
         layout = LTLayoutContainer((0, 0, 50, 50))
-        line1 = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+        line1 = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces)
         line1.set_bbox((0, 0, 50, 5))
-        line2 = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+        line2 = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces)
         line2.set_bbox((0, 50, 50, 55))
         lines = [line1, line2]
 
@@ -34,28 +34,32 @@ class TestFindNeigbors(unittest.TestCase):
         laparams = LAParams()
         plane = Plane((0, 0, 50, 50))
 
-        line = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+        line = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces)
         line.set_bbox((10, 4, 20, 6))
         plane.add(line)
 
-        left_aligned_above = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+        left_aligned_above = LTTextLineHorizontal(laparams.word_margin,
+                                                  laparams.qnt_spaces)
         left_aligned_above.set_bbox((10, 6, 15, 8))
         plane.add(left_aligned_above)
 
-        right_aligned_below = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+        right_aligned_below = LTTextLineHorizontal(laparams.word_margin,
+                                                   laparams.qnt_spaces)
         right_aligned_below.set_bbox((15, 2, 20, 4))
         plane.add(right_aligned_below)
 
         centrally_aligned_overlapping = LTTextLineHorizontal(
-            laparams.word_margin, laparams.qnt_spaces_between_words)
+            laparams.word_margin, laparams.qnt_spaces)
         centrally_aligned_overlapping.set_bbox((13, 5, 17, 7))
         plane.add(centrally_aligned_overlapping)
 
-        not_aligned = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+        not_aligned = LTTextLineHorizontal(laparams.word_margin,
+                                           laparams.qnt_spaces)
         not_aligned.set_bbox((0, 6, 5, 8))
         plane.add(not_aligned)
 
-        wrong_height = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+        wrong_height = LTTextLineHorizontal(laparams.word_margin,
+                                            laparams.qnt_spaces)
         wrong_height.set_bbox((10, 6, 15, 10))
         plane.add(wrong_height)
 

@@ -40,7 +40,8 @@ class LAParams:
         specified relative to the width of the character.
     :param word_margin: If two characters on the same line are further apart
         than this margin then they are considered to be two separate words, and
-        an intermediate spaces (with amount equal to qnt_spaces_between_words) will be added for readability.
+        an intermediate spaces (with amount equal to qnt_spaces)
+        will be added for readability.
         The margin is specified relative to the width of the character.
     :param line_margin: If two lines are are close together they are
         considered to be part of the same paragraph. The margin is
@@ -55,9 +56,10 @@ class LAParams:
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
         figures.
-    :param qnt_spaces_between_words: quantity of spaces, which will be inserted between words for readability.
-        More than one space can be used, to separate words, which already have spaces in them
-        (e.g. to separate numbers, which have space as a decimal separator)
+    :param qnt_spaces: quantity of spaces, which will be inserted
+        between words for readability. More than one space can be used, to
+        separate words, which already have spaces in them. (e.g. to separate
+        numbers, which have space as a thousand separator)
     """
 
     def __init__(self,
@@ -68,7 +70,7 @@ class LAParams:
                  boxes_flow=0.5,
                  detect_vertical=False,
                  all_texts=False,
-                 qnt_spaces_between_words=1):
+                 qnt_spaces=1):
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin
@@ -76,7 +78,7 @@ class LAParams:
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
-        self.qnt_spaces_between_words = qnt_spaces_between_words
+        self.qnt_spaces = qnt_spaces
 
         self._validate()
         return
@@ -418,17 +420,18 @@ class LTTextLine(LTTextContainer):
 
 
 class LTTextLineHorizontal(LTTextLine):
-    def __init__(self, word_margin, qnt_spaces_between_words):
+    def __init__(self, word_margin, qnt_spaces):
         LTTextLine.__init__(self, word_margin)
         self._x1 = +INF
-        self.qnt_spaces_between_words = qnt_spaces_between_words
+        self.qnt_spaces = qnt_spaces
         return
 
     def add(self, obj):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
             if self._x1 < obj.x0 - margin:
-                LTContainer.add(self, LTAnno(' ' * self.qnt_spaces_between_words))
+                LTContainer.add(self,
+                                LTAnno(' ' * self.qnt_spaces))
         self._x1 = obj.x1
         LTTextLine.add(self, obj)
         return
@@ -662,17 +665,20 @@ class LTLayoutContainer(LTContainer):
                         line.add(obj0)
                         line.add(obj1)
                     elif halign and not valign:
-                        line = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+                        line = LTTextLineHorizontal(laparams.word_margin,
+                                                    laparams.qnt_spaces)
                         line.add(obj0)
                         line.add(obj1)
                     else:
-                        line = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+                        line = LTTextLineHorizontal(laparams.word_margin,
+                                                    laparams.qnt_spaces)
                         line.add(obj0)
                         yield line
                         line = None
             obj0 = obj1
         if line is None:
-            line = LTTextLineHorizontal(laparams.word_margin, laparams.qnt_spaces_between_words)
+            line = LTTextLineHorizontal(laparams.word_margin,
+                                        laparams.qnt_spaces)
             line.add(obj0)
         yield line
         return

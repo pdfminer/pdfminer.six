@@ -3,9 +3,9 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [20200811]
+## [UNRELEASED]
 ### Added
-- functionality is added to be able to separate words with more than one space. This can be used to separate words, which already contain spaces as a part of them (e.g. to separate numbers, which have space as a decimal separator)
+- functionality is added to be able to separate words with more than one space. This can be used to separate words, which already contain spaces as a part of them (e.g. to separate numbers, which have space as a thousand separator)
 
 ## [20200726]
 

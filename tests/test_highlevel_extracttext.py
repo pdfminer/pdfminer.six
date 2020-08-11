@@ -27,9 +27,9 @@ test_strings = {
     "simple1.pdf_no_boxes_flow": "Hello \n\nWorld\n\nHello \n\nWorld\n\n"
                                  "H e l l o  \n\nW o r l d\n\n"
                                  "H e l l o  \n\nW o r l d\n\n\f",
-    "simple1.pdf_2_spaces_as_word_separator": "Hello \n\nWorld\n\nHello \n\nWorld\n\n"
-                                              "H  e  l  l  o   \n\nW  o  r  l  d\n\n"
-                                              "H  e  l  l  o   \n\nW  o  r  l  d\n\n\f",
+    "simple1.pdf_2_spaces_as_sep": "Hello \n\nWorld\n\nHello \n\nWorld\n\n"
+                                   "H  e  l  l  o   \n\nW  o  r  l  d\n\n"
+                                   "H  e  l  l  o   \n\nW  o  r  l  d\n\n\f",
     "simple2.pdf": "\f",
     "simple3.pdf": "Hello\n\nHello\nあ\nい\nう\nえ\nお\nあ\nい\nう\nえ\nお\n"
                    "World\n\nWorld\n\n\f",
@@ -50,8 +50,9 @@ class TestExtractText(unittest.TestCase):
 
     def test_simple1_2_spaces_as_word_separator(self):
         test_file = "simple1.pdf"
-        s = run_with_string(test_file, laparams={"boxes_flow": None, "qnt_spaces_between_words": 2})
-        self.assertEqual(s, test_strings["simple1.pdf_2_spaces_as_word_separator"])
+        s = run_with_string(test_file, laparams={"boxes_flow": None,
+                                                 "qnt_spaces": 2})
+        self.assertEqual(s, test_strings["simple1.pdf_2_spaces_as_sep"])
 
     def test_simple2_with_string(self):
         test_file = "simple2.pdf"
