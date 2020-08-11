@@ -55,7 +55,7 @@ class LAParams:
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
         figures.
-    :param qnt_spaces_between_words: quantity of spaces, which will be added between words for readability.
+    :param qnt_spaces_between_words: quantity of spaces, which will be inserted between words for readability.
         More than one space can be used, to separate words, which already have spaces in them
         (e.g. to separate numbers, which have space as a decimal separator)
     """
@@ -423,7 +423,7 @@ class LTTextLineHorizontal(LTTextLine):
         self._x1 = +INF
         self.qnt_spaces_between_words = qnt_spaces_between_words
         return
-    #TODO: edit here
+
     def add(self, obj):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
