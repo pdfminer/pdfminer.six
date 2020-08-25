@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Rename PDFTextExtractionNotAllowedError to PDFTextExtractionNotAllowed to revert breaking change ([#461](https://github.com/pdfminer/pdfminer.six/pull/461))
 - Always try to get CMap, not only for identity encodings ([#438](https://github.com/pdfminer/pdfminer.six/pull/438))
+- Fix not being able to pass boxes flow as None to pdf2txt ([#479](https://github.com/pdfminer/pdfminer.six/pull/479))
 
 ## [20200720]
 
