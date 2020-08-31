@@ -14,6 +14,8 @@ def run(filename, options=None):
                                          options, absolute_path)
         else:
             s = 'dumppdf -o %s %s' % (output_file.name, absolute_path)
+        # closing temporary file, as we need only its name
+        output_file.close()
         dumppdf.main(s.split(' ')[1:])
 
 

@@ -14,6 +14,7 @@ def run(sample_path, options=None):
                 .format(output_file.name, options, absolute_path)
         else:
             s = 'pdf2txt -o{} {}'.format(output_file.name, absolute_path)
+        output_file.close()
         pdf2txt.main(s.split(' ')[1:])
 
 
@@ -112,6 +113,8 @@ class TestDumpImages:
         with NamedTemporaryFile() as output_file:
             commands = ['-o', output_file.name, '--output-dir',
                         output_dir, input_file]
+            # closing temporary file, as we need only its name
+            output_file.close()
             pdf2txt.main(commands)
         image_files = os.listdir(output_dir)
         rmtree(output_dir)
