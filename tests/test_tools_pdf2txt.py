@@ -14,6 +14,7 @@ def run(sample_path, options=None):
                 .format(output_file.name, options, absolute_path)
         else:
             s = 'pdf2txt -o{} {}'.format(output_file.name, absolute_path)
+        # closing temporary file, as we need only its name
         output_file.close()
         pdf2txt.main(s.split(' ')[1:])
 
