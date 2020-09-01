@@ -3,6 +3,11 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [20200821]
+
+### Fixed
+- Update pdfminer/high_level.py to enable turning caching on and off. Fixes the ([#474](https://github.com/pdfminer/pdfminer.six/issues/474)) bug.
+
 ## [20200726]
 
 ### Fixed
