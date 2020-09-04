@@ -333,6 +333,8 @@ class PDFPageInterpreter:
         def get_colorspace(spec):
             if isinstance(spec, list):
                 name = literal_name(spec[0])
+            elif isinstance(spec, dict):
+                name = literal_name(list(spec.values())[0])                
             else:
                 name = literal_name(spec)
             if name == 'ICCBased' and isinstance(spec, list) \
