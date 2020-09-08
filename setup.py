@@ -18,7 +18,7 @@ setup(
         'sortedcontainers',
     ],
     extras_require={
-        "dev": ["nose", "tox"],
+        "dev": ["pytest", "tox"],
         "docs": ["sphinx", "sphinx-argparse"],
     },
     description='PDF parser and analyzer',

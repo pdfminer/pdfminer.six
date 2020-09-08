@@ -1,3 +1,5 @@
+import unittest
+
 import os
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
@@ -17,7 +19,7 @@ def run(sample_path, options=None):
         pdf2txt.main(s.split(' ')[1:])
 
 
-class TestPdf2Txt():
+class TestPdf2Txt(unittest.TestCase):
     def test_jo(self):
         run('jo.pdf')
 
@@ -104,7 +106,7 @@ class TestPdf2Txt():
         run('encryption/rc4-128.pdf', '-P foo')
 
 
-class TestDumpImages:
+class TestDumpImages(unittest.TestCase):
 
     @staticmethod
     def extract_images(input_file):

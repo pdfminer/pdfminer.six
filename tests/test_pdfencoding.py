@@ -2,7 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
-import nose
+import unittest
 
 from pdfminer.cmapdb import IdentityCMap, CMap, IdentityCMapByte
 from pdfminer.pdffont import PDFCIDFont
@@ -10,7 +10,7 @@ from pdfminer.pdftypes import PDFStream
 from pdfminer.psparser import PSLiteral
 
 
-class TestPDFEncoding():
+class TestPDFEncoding(unittest.TestCase):
 
     def test_cmapname_onebyteidentityV(self):
         stream = PDFStream({'CMapName': PSLiteral('OneByteIdentityV')}, '')
@@ -109,5 +109,3 @@ class TestPDFEncoding():
         assert isinstance(font.cmap, CMap)
 
 
-if __name__ == '__main__':
-    nose.runmodule()
