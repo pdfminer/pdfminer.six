@@ -1,3 +1,5 @@
+import unittest
+
 import warnings
 from tempfile import NamedTemporaryFile
 
@@ -17,7 +19,7 @@ def run(filename, options=None):
         dumppdf.main(s.split(' ')[1:])
 
 
-class TestDumpPDF():
+class TestDumpPDF(unittest.TestCase):
     def test_simple1(self):
         """dumppdf.py simple1.pdf raises a warning because it has no xref"""
         with warnings.catch_warnings(record=True) as ws:

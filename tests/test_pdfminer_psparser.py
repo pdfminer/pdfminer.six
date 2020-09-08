@@ -1,13 +1,13 @@
 import logging
 
-from nose.tools import assert_equal
+import unittest
 
 from pdfminer.psparser import KWD, LIT, PSBaseParser, PSStackParser, PSEOF
 
 logger = logging.getLogger(__name__)
 
 
-class TestPSBaseParser:
+class TestPSBaseParser(unittest.TestCase):
     """Simplistic Test cases"""
 
     TESTDATA = br'''%!PS
@@ -92,11 +92,11 @@ func/a/b{(c)do*}def
     def test_1(self):
         tokens = self.get_tokens(self.TESTDATA)
         logger.info(tokens)
-        assert_equal(tokens, self.TOKENS)
+        self.assertEqual(tokens, self.TOKENS)
         return
 
     def test_2(self):
         objs = self.get_objects(self.TESTDATA)
         logger.info(objs)
-        assert_equal(objs, self.OBJS)
+        self.assertEqual(objs, self.OBJS)
         return

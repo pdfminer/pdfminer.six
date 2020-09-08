@@ -1,24 +1,24 @@
-from nose.tools import assert_equal
+import unittest
 
 from pdfminer.converter import PDFLayoutAnalyzer
 from pdfminer.layout import LTContainer
 from pdfminer.pdfinterp import PDFGraphicState
 
 
-class TestPaintPath():
+class TestPaintPath(unittest.TestCase):
     def test_paint_path(self):
         path = [('m', 6, 7), ('l', 7, 7)]
         analyzer = self._get_analyzer()
         analyzer.cur_item = LTContainer([0, 100, 0, 100])
         analyzer.paint_path(PDFGraphicState(), False, False, False, path)
-        assert_equal(len(analyzer.cur_item._objs), 1)
+        self.assertEqual(len(analyzer.cur_item._objs), 1)
 
     def test_paint_path_mlllh(self):
         path = [('m', 6, 7), ('l', 7, 7), ('l', 7, 91),  ('l', 6, 91), ('h',)]
         analyzer = self._get_analyzer()
         analyzer.cur_item = LTContainer([0, 100, 0, 100])
         analyzer.paint_path(PDFGraphicState(), False, False, False, path)
-        assert_equal(len(analyzer.cur_item), 1)
+        self.assertEqual(len(analyzer.cur_item), 1)
 
     def test_paint_path_multiple_mlllh(self):
         """Path from samples/contrib/issue-00369-excel.pdf"""
@@ -30,7 +30,7 @@ class TestPaintPath():
         analyzer = self._get_analyzer()
         analyzer.cur_item = LTContainer([0, 100, 0, 100])
         analyzer.paint_path(PDFGraphicState(), False, False, False, path)
-        assert_equal(len(analyzer.cur_item._objs), 3)
+        self.assertEqual(len(analyzer.cur_item._objs), 3)
 
     def _get_analyzer(self):
         analyzer = PDFLayoutAnalyzer(None)
