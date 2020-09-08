@@ -107,4 +107,3 @@ class TestPDFEncoding(unittest.TestCase):
     def test_font_without_spec(self):
         font = PDFCIDFont(None, {})
         assert isinstance(font.cmap, CMap)
-
