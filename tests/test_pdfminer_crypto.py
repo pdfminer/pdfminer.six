@@ -25,39 +25,39 @@ class TestAscii85(unittest.TestCase):
         """The sample string is taken from:
         http://en.wikipedia.org/w/index.php?title=Ascii85"""
         self.assertEqual(ascii85decode(b'9jqo^BlbD-BleB1DJ+*+F(f,q'),
-                     b'Man is distinguished')
+                         b'Man is distinguished')
         self.assertEqual(ascii85decode(b'E,9)oF*2M7/c~>'),
-                     b'pleasure.')
+                         b'pleasure.')
 
     def test_asciihexdecode(self):
         self.assertEqual(asciihexdecode(b'61 62 2e6364   65'),
-                     b'ab.cde')
+                         b'ab.cde')
         self.assertEqual(asciihexdecode(b'61 62 2e6364   657>'),
-                     b'ab.cdep')
+                         b'ab.cdep')
         self.assertEqual(asciihexdecode(b'7>'),
-                     b'p')
+                         b'p')
 
 
 class TestArcfour(unittest.TestCase):
     def test(self):
         self.assertEqual(hex(Arcfour(b'Key').process(b'Plaintext')),
-                     b'bbf316e8d940af0ad3')
+                         b'bbf316e8d940af0ad3')
         self.assertEqual(hex(Arcfour(b'Wiki').process(b'pedia')),
-                     b'1021bf0420')
+                         b'1021bf0420')
         self.assertEqual(hex(Arcfour(b'Secret').process(b'Attack at dawn')),
-                     b'45a01f645fc35b383552544b9bf5')
+                         b'45a01f645fc35b383552544b9bf5')
 
 
 class TestLzw(unittest.TestCase):
     def test_lzwdecode(self):
         self.assertEqual(lzwdecode(b'\x80\x0b\x60\x50\x22\x0c\x0c\x85\x01'),
-                     b'\x2d\x2d\x2d\x2d\x2d\x41\x2d\x2d\x2d\x42')
+                         b'\x2d\x2d\x2d\x2d\x2d\x41\x2d\x2d\x2d\x42')
 
 
 class TestRunlength(unittest.TestCase):
     def test_rldecode(self):
         self.assertEqual(rldecode(b'\x05123456\xfa7\x04abcde\x80junk'),
-                     b'1234567777777abcde')
+                         b'1234567777777abcde')
 
 
 class TestRijndaelEncryptor(unittest.TestCase):
@@ -65,4 +65,4 @@ class TestRijndaelEncryptor(unittest.TestCase):
         key = dehex(b'00010203050607080a0b0c0d0f101112')
         plaintext = dehex(b'506812a45f08c889b97f5980038b8359')
         self.assertEqual(hex(RijndaelEncryptor(key, 128).encrypt(plaintext)),
-                     b'd8f532538289ef7d06b506a4fd5be9c9')
+                         b'd8f532538289ef7d06b506a4fd5be9c9')

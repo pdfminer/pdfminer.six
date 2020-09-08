@@ -9,45 +9,40 @@ import unittest
 from pdfminer.encodingdb import name2unicode, EncodingDB
 from pdfminer.psparser import PSLiteral
 
+
 class TestEncodingDB(unittest.TestCase):
     def test_name2unicode_name_in_agl(self):
         """The name "Lcommaaccent" has a single component,
         which is mapped to the string U+013B by AGL"""
         assert '\u013B' == name2unicode('Lcommaaccent')
 
-
     def test_name2unicode_uni(self):
         """The components "Lcommaaccent," "uni013B," and "u013B"
         all map to the string U+013B"""
         assert '\u013B' == name2unicode('uni013B')
-
 
     def test_name2unicode_uni_lowercase(self):
         """The components "Lcommaaccent," "uni013B," and "u013B"
         all map to the string U+013B"""
         assert '\u013B' == name2unicode('uni013b')
 
-
     def test_name2unicode_uni_with_sequence_of_digits(self):
         """The name "uni20AC0308" has a single component,
         which is mapped to the string U+20AC U+0308"""
         assert '\u20AC\u0308' == name2unicode('uni20AC0308')
-
 
     def test_name2unicode_uni_with_sequence_of_digits_lowercase(self):
         """The name "uni20AC0308" has a single component,
         which is mapped to the string U+20AC U+0308"""
         assert '\u20AC\u0308' == name2unicode('uni20ac0308')
 
-
     def test_name2unicode_uni_empty_string(self):
         """The name "uni20ac" has a single component,
         which is mapped to a euro-sign.
 
-        According to the specification this should be mapped to an empty string,
-        but we also want to support lowercase hexadecimals"""
+        According to the specification this should be mapped to an empty
+        string, but we also want to support lowercase hexadecimals"""
         assert '\u20ac' == name2unicode('uni20ac')
-
 
     def test_name2unicode_uni_empty_string_long(self):
         """The name "uniD801DC0C" has a single component,
@@ -61,7 +56,6 @@ class TestEncodingDB(unittest.TestCase):
         """
         self.assertRaises(KeyError, name2unicode, 'uniD801DC0C')
 
-
     def test_name2unicode_uni_empty_string_long_lowercase(self):
         """The name "uniD801DC0C" has a single component,
         which is mapped to an empty string
@@ -73,56 +67,47 @@ class TestEncodingDB(unittest.TestCase):
         glyph name "u1040C."""
         self.assertRaises(KeyError, name2unicode, 'uniD801DC0C')
 
-
     def test_name2unicode_uni_pua(self):
-        """"Ogoneksmall" and "uniF6FB" both map to the string that corresponds to
-         U+F6FB."""
+        """"Ogoneksmall" and "uniF6FB" both map to the string that corresponds
+        to U+F6FB."""
         assert '\uF6FB' == name2unicode('uniF6FB')
 
-
     def test_name2unicode_uni_pua_lowercase(self):
-        """"Ogoneksmall" and "uniF6FB" both map to the string that corresponds to
-         U+F6FB."""
+        """"Ogoneksmall" and "uniF6FB" both map to the string that corresponds
+        to U+F6FB."""
         assert '\uF6FB' == name2unicode('unif6fb')
-
 
     def test_name2unicode_u_with_4_digits(self):
         """The components "Lcommaaccent," "uni013B," and "u013B" all map to the
         string U+013B"""
         assert '\u013B' == name2unicode('u013B')
 
-
     def test_name2unicode_u_with_4_digits_lowercase(self):
         """The components "Lcommaaccent," "uni013B," and "u013B" all map to the
         string U+013B"""
         assert '\u013B' == name2unicode('u013b')
 
-
     def test_name2unicode_u_with_5_digits(self):
-        """The name "u1040C" has a single component, which is mapped to the string
-         U+1040C"""
+        """The name "u1040C" has a single component, which is mapped to the
+        string U+1040C"""
         assert '\U0001040C' == name2unicode('u1040C')
 
-
     def test_name2unicode_u_with_5_digits_lowercase(self):
-        """The name "u1040C" has a single component, which is mapped to the string
-         U+1040C"""
+        """The name "u1040C" has a single component, which is mapped to the
+        string U+1040C"""
         assert '\U0001040C' == name2unicode('u1040c')
 
-
     def test_name2unicode_multiple_components(self):
-        """The name "Lcommaaccent_uni20AC0308_u1040C.alternate" is mapped to the
-        string U+013B U+20AC U+0308 U+1040C"""
+        """The name "Lcommaaccent_uni20AC0308_u1040C.alternate" is mapped to
+        the string U+013B U+20AC U+0308 U+1040C"""
         assert '\u013B\u20AC\u0308\U0001040C' == \
                name2unicode('Lcommaaccent_uni20AC0308_u1040C.alternate')
 
-
     def test_name2unicode_multiple_components_lowercase(self):
-        """The name "Lcommaaccent_uni20AC0308_u1040C.alternate" is mapped to the
-         string U+013B U+20AC U+0308 U+1040C"""
+        """The name "Lcommaaccent_uni20AC0308_u1040C.alternate" is mapped to
+        the string U+013B U+20AC U+0308 U+1040C"""
         assert '\u013B\u20AC\u0308\U0001040C' == \
                name2unicode('Lcommaaccent_uni20ac0308_u1040c.alternate')
-
 
     def test_name2unicode_foo(self):
         """The name 'foo' maps to an empty string,
@@ -130,12 +115,10 @@ class TestEncodingDB(unittest.TestCase):
         and because it does not start with a 'u.'"""
         self.assertRaises(KeyError, name2unicode, 'foo')
 
-
     def test_name2unicode_notdef(self):
         """The name ".notdef" is reduced to an empty string (step 1)
         and mapped to an empty string (step 3)"""
         self.assertRaises(KeyError, name2unicode, '.notdef')
-
 
     def test_name2unicode_pua_ogoneksmall(self):
         """"
@@ -143,10 +126,8 @@ class TestEncodingDB(unittest.TestCase):
         that corresponds to U+F6FB."""
         assert '\uF6FB' == name2unicode('Ogoneksmall')
 
-
     def test_name2unicode_overflow_error(self):
         self.assertRaises(KeyError, name2unicode, '226215240241240240240240')
-
 
     def test_get_encoding_with_invalid_differences(self):
         """Invalid differences should be silently ignored

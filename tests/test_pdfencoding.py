@@ -108,4 +108,3 @@ class TestPDFEncoding(unittest.TestCase):
         font = PDFCIDFont(None, {})
         assert isinstance(font.cmap, CMap)
 
-
