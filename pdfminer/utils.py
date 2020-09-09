@@ -18,7 +18,9 @@ class open_filename(object):
     (just like `open`), but does nothing for file-like objects.
     """
     def __init__(self, filename, *args, **kwargs):
-        if isinstance(filename, str) or isinstance(filename, pathlib.PurePath):
+        if isinstance(filename, pathlib.PurePath):
+            filename = str(filename)
+        if isinstance(filename, str):
             self.file_handler = open(filename, *args, **kwargs)
             self.closing = True
         else:
