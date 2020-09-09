@@ -17,7 +17,7 @@ def run_with_string(sample_path, laparams=None):
 def run_with_pathlib(sample_path, laparams=None):
     if laparams is None:
         laparams = {}
-    absolute_path = Path(sample_path.absolute())
+    absolute_path = Path(absolute_sample_path(sample_path))
     s = extract_text(absolute_path, laparams=LAParams(**laparams))
     return s
 
