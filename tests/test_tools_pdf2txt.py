@@ -15,9 +15,18 @@ def run(sample_path, options=None):
         else:
             s = 'pdf2txt -o{} {}'.format(output_file.name, absolute_path)
         pdf2txt.main(s.split(' ')[1:])
+        with open(output_file.name) as f:
+          return f.read()
 
 
 class TestPdf2Txt():
+    def test_missing_xref_trailer(self):
+        contents = run('missing_xref_trailer.pdf')
+        assert "Page1" in contents
+        assert "Page2" in contents
+        assert "Page3" in contents
+        assert "Page4" in contents
+
     def test_jo(self):
         run('jo.pdf')
 

@@ -135,7 +135,7 @@ class PDFXRef(PDFBaseXRef):
         try:
             (_, kwd) = parser.nexttoken()
             assert kwd is KWD(b'trailer'), str(kwd)
-            (_, dic) = parser.nextobject()
+            (_, dic) = parser.nextobject(True)
         except PSEOF:
             x = parser.pop(1)
             if not x:

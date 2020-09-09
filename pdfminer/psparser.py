@@ -555,7 +555,7 @@ class PSStackParser(PSBaseParser):
     def do_keyword(self, pos, token):
         return
 
-    def nextobject(self):
+    def nextobject(self, dict_end_produces_result = False):
         """Yields a list of objects.
 
         Arrays and dictionaries are represented as Python lists and
@@ -590,7 +590,11 @@ class PSStackParser(PSBaseParser):
                         raise PSSyntaxError(error_msg)
                     d = {literal_name(k): v
                          for (k, v) in choplist(2, objs) if v is not None}
-                    self.push((pos, d))
+                    if dict_end_produces_result and not self.context:
+                      self.add_results((pos, d))
+                    else:
+                      self.push((pos, d))
+
                 except PSTypeError:
                     if settings.STRICT:
                         raise
