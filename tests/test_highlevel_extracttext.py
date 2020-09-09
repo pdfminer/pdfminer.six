@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 
 from helpers import absolute_sample_path
 from pdfminer.high_level import extract_text, extract_pages
@@ -9,6 +10,14 @@ def run_with_string(sample_path, laparams=None):
     if laparams is None:
         laparams = {}
     absolute_path = absolute_sample_path(sample_path)
+    s = extract_text(absolute_path, laparams=LAParams(**laparams))
+    return s
+
+
+def run_with_pathlib(sample_path, laparams=None):
+    if laparams is None:
+        laparams = {}
+    absolute_path = Path(sample_path.absolute())
     s = extract_text(absolute_path, laparams=LAParams(**laparams))
     return s
 
@@ -58,6 +67,26 @@ class TestExtractText(unittest.TestCase):
     def test_simple4_with_string(self):
         test_file = "simple4.pdf"
         s = run_with_string(test_file)
+        self.assertEqual(s, test_strings[test_file])
+
+    def test_simple1_with_pathlib(self):
+        test_file = "simple1.pdf"
+        s = run_with_pathlib(test_file)
+        self.assertEqual(s, test_strings[test_file])
+
+    def test_simple2_with_pathlib(self):
+        test_file = "simple2.pdf"
+        s = run_with_pathlib(test_file)
+        self.assertEqual(s, test_strings[test_file])
+
+    def test_simple3_with_pathlib(self):
+        test_file = "simple3.pdf"
+        s = run_with_pathlib(test_file)
+        self.assertEqual(s, test_strings[test_file])
+
+    def test_simple4_with_pathlib(self):
+        test_file = "simple4.pdf"
+        s = run_with_pathlib(test_file)
         self.assertEqual(s, test_strings[test_file])
 
     def test_simple1_with_file(self):
