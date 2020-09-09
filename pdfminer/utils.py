@@ -1,6 +1,7 @@
 """
 Miscellaneous Routines.
 """
+import pathlib
 import struct
 from html import escape
 
@@ -17,7 +18,7 @@ class open_filename(object):
     (just like `open`), but does nothing for file-like objects.
     """
     def __init__(self, filename, *args, **kwargs):
-        if isinstance(filename, str):
+        if isinstance(filename, str) or isinstance(filename, pathlib.PurePath):
             self.file_handler = open(filename, *args, **kwargs)
             self.closing = True
         else:

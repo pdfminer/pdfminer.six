@@ -3,6 +3,11 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+- `open_filename` accepts a `pathlib.PurePath` object
+
 ## [20200726]
 
 ### Fixed
