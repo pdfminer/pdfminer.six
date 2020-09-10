@@ -48,10 +48,10 @@ Features
 * Extract text, images (JPG, JBIG2 and Bitmaps), table-of-contents, tagged
   contents and more.
 * Support for (almost all) features from the PDF-1.7 specification
-* Support for Chinese, Japanese and Korean CJK) languages as well as vertical
-  writing.
+* Support for Chinese, Japanese and Korean CJK) languages as well as vertical writing.
 * Support for various font types (Type1, TrueType, Type3, and CID).
 * Support for RC4 and AES encryption.
+* Support for AcroForm interactive form extraction.
 
 
 Installation instructions
