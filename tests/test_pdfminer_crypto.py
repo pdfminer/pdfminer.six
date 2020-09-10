@@ -6,7 +6,6 @@ from nose.tools import assert_equal
 from pdfminer.arcfour import Arcfour
 from pdfminer.ascii85 import asciihexdecode, ascii85decode
 from pdfminer.lzw import lzwdecode
-from pdfminer.rijndael import RijndaelEncryptor
 from pdfminer.runlength import rldecode
 
 
@@ -58,11 +57,3 @@ class TestRunlength():
     def test_rldecode(self):
         assert_equal(rldecode(b'\x05123456\xfa7\x04abcde\x80junk'),
                      b'1234567777777abcde')
-
-
-class TestRijndaelEncryptor():
-    def test_RijndaelEncryptor(self):
-        key = dehex(b'00010203050607080a0b0c0d0f101112')
-        plaintext = dehex(b'506812a45f08c889b97f5980038b8359')
-        assert_equal(hex(RijndaelEncryptor(key, 128).encrypt(plaintext)),
-                     b'd8f532538289ef7d06b506a4fd5be9c9')
