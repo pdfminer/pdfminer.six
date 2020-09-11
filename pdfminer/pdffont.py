@@ -508,6 +508,8 @@ class PDFFont:
         self.hscale = self.vscale = .001
         self.glyph_bounding_box = None
         self.font_bounding_box = None
+        self.default_ascent = 100
+        self.default_descent = -1000
 
         # PDF RM 9.8.1 specifies /Descent should always be a negative number.
         # PScript5.dll seems to produce Descent with a positive number, but
@@ -531,10 +533,16 @@ class PDFFont:
 
     def get_ascent(self):
         """Ascent above the baseline, in text space units"""
+        if not self.ascent:
+          self.ascent = self.default_ascent
+          log.debug("Descent was not set, setting to default value")
         return self.ascent * self.vscale
 
     def get_descent(self):
         """Descent below the baseline, in text space units; always negative"""
+        if not self.descent:
+          self.descent = self.default_descent
+          log.debug("Descent was not set, setting to default value")
         return self.descent * self.vscale
 
     def get_width(self):
