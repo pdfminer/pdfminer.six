@@ -517,6 +517,12 @@ class PDFFont:
         # descent to negative.
         if self.descent > 0:
             self.descent = -self.descent
+
+        if self.descent == self.ascent == 0:
+          log.warning("Font Ascent and Descent are both zero which results in zero height character"
+                      " boxes. Default values were set.")
+          self.ascent = self.default_ascent
+          self.descent = self.default_descent
         return
 
     def __repr__(self):
@@ -533,16 +539,10 @@ class PDFFont:
 
     def get_ascent(self):
         """Ascent above the baseline, in text space units"""
-        if not self.ascent:
-          self.ascent = self.default_ascent
-          log.debug("Descent was not set, setting to default value")
         return self.ascent * self.vscale
 
     def get_descent(self):
         """Descent below the baseline, in text space units; always negative"""
-        if not self.descent:
-          self.descent = self.default_descent
-          log.debug("Descent was not set, setting to default value")
         return self.descent * self.vscale
 
     def get_width(self):
