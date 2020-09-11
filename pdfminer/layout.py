@@ -117,6 +117,12 @@ class LTComponent(LTItem):
     """Object with a bounding box"""
 
     def __init__(self, bbox, orig_bbox=None):
+        """
+        :param bbox: a tuple representing a bounding box of an object (e.g. text box)
+        :param orig_bbox: the original bounding box specified by the PDF as extracted by original
+            pdfminer logic. Note that the original pdfminer logic is overwritten by a "tight"
+            bounding box created by directly measuring glyph sizes in the embedded fonts.
+        """
         LTItem.__init__(self)
         self.set_bbox(bbox)
         self.orig_bbox = orig_bbox
