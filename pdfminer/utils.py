@@ -1,6 +1,7 @@
 """
 Miscellaneous Routines.
 """
+import io
 import pathlib
 import struct
 from html import escape
@@ -23,9 +24,11 @@ class open_filename(object):
         if isinstance(filename, str):
             self.file_handler = open(filename, *args, **kwargs)
             self.closing = True
-        else:
+        elif isinstance(filename, io.IOBase):
             self.file_handler = filename
             self.closing = False
+        else:
+            raise TypeError('Unsupported input type: %s' % type(filename))
 
     def __enter__(self):
         return self.file_handler
