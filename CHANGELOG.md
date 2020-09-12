@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Changed
-- `open_filename` accepts a `pathlib.PurePath` object
+- `open_filename` accepts a `pathlib.PurePath` object ([#491](https://github.com/pdfminer/pdfminer.six/issues/491))
 
 ## [20200726]
 
