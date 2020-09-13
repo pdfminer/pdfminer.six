@@ -15,7 +15,8 @@ INF = (1 << 31) - 1
 
 class open_filename(object):
     """
-    Context manager that allows opening a filename and closes it on exit,
+    Context manager that allows opening a filename
+    (str or pathlib.PurePath type is supported) and closes it on exit,
     (just like `open`), but does nothing for file-like objects.
     """
     def __init__(self, filename, *args, **kwargs):
