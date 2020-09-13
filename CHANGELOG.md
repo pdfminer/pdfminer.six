@@ -5,11 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Support for `pathlib.PurePath` in `open_filename` ([#491](https://github.com/pdfminer/pdfminer.six/issues/491))
+
 ### Fixed
 - Pass caching parameter to PDFResourceManager in `high_level` functions ([#475](https://github.com/pdfminer/pdfminer.six/pull/475))
-
-### Changed
-- `open_filename` accepts a `pathlib.PurePath` object ([#491](https://github.com/pdfminer/pdfminer.six/issues/491))
 
 ### Removed
 - Remove unused rijndael encryption implementation ([#465](https://github.com/pdfminer/pdfminer.six/pull/465))
