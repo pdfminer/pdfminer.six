@@ -1,7 +1,30 @@
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_raises
+import pathlib
 
+from helpers import absolute_sample_path
 from pdfminer.layout import LTComponent
-from pdfminer.utils import Plane, shorten_str
+from pdfminer.utils import open_filename, Plane, shorten_str
+
+
+class TestOpenFilename:
+    def test_string_input(self):
+        filename = absolute_sample_path("simple1.pdf")
+        opened = open_filename(filename)
+        assert_equal(opened.closing, True)
+
+    def test_pathlib_input(self):
+        filename = pathlib.Path(absolute_sample_path("simple1.pdf"))
+        opened = open_filename(filename)
+        assert_equal(opened.closing, True)
+
+    def test_file_input(self):
+        filename = absolute_sample_path("simple1.pdf")
+        with open(filename, "rb") as in_file:
+            opened = open_filename(in_file)
+            assert_equal(opened.file_handler, in_file)
+
+    def test_unsupported_input(self):
+        assert_raises(TypeError, open_filename, 0)
 
 
 class TestPlane:
