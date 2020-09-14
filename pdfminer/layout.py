@@ -334,14 +334,15 @@ class LTChar(LTComponent, LTText):
         if y1 < y0:
             (y0, y1) = (y1, y0)
 
-        (orig_x0, orig_y0) = apply_matrix_pt(self.matrix, descriptor_bbox_lower_left)
-        (orig_x1, orig_y1) = apply_matrix_pt(self.matrix, descriptor_bbox_upper_right)
-        if orig_x1 < orig_x0:
-            (orig_x0, orig_x1) = (orig_x1, orig_x0)
-        if orig_y1 < orig_y0:
-            (orig_y0, orig_y1) = (orig_y1, orig_y0)
+        (descriptor_x0, descriptor_y0) = apply_matrix_pt(self.matrix, descriptor_bbox_lower_left)
+        (descriptor_x1, descriptor_y1) = apply_matrix_pt(self.matrix, descriptor_bbox_upper_right)
+        if descriptor_x1 < descriptor_x0:
+            (descriptor_x0, descriptor_x1) = (descriptor_x1, descriptor_x0)
+        if descriptor_y1 < descriptor_y0:
+            (descriptor_y0, descriptor_y1) = (descriptor_y1, descriptor_y0)
 
-        LTComponent.__init__(self, (x0, y0, x1, y1), (orig_x0, orig_y0, orig_x1, orig_y1))
+        LTComponent.__init__(self, (x0, y0, x1, y1), (descriptor_x0, descriptor_y0, descriptor_x1,
+                                                      descriptor_y1))
         if font.is_vertical():
             self.size = self.width
         else:
