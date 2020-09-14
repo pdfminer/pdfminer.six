@@ -99,10 +99,27 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
                 line2 += bytes((c,))
         elif ft == 3:
             # PNG average (UNTESTED)
+            a = 0
+            for (b,x) in zip(line0, line1):
+                x = (x + (a+b)//2) & 255  #((c + a + b) // 2) & 255
+                a=x
+                line2 += bytes((x,))
+        elif ft == 4:
+            #Paeth
+            """ 
+            Bytes in lines
+            c b  ---- line0
+            a x  ---- line1
+            """
+            
             c = 0
-            for (a, b) in zip(line0, line1):
-                c = ((c + a + b) // 2) & 255
-                line2 += bytes((c,))
+            a = 0
+            for (b, x) in zip(line0, line1):
+                x = (x+PaethPredictor(a,b,c)) & 255
+                c = b
+                a = x
+                line2 += bytes((x,))
+        
         else:
             # unsupported
             raise ValueError("Unsupported predictor value: %d" % ft)
@@ -110,6 +127,17 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
         line0 = line2
     return buf
 
+def PaethPredictor(a, b, c):
+        p = a + b - c   
+        pa = abs(p - a)  
+        pb = abs(p - b)
+        pc = abs(p - c)
+        
+        if pa <= pb and pa <= pc: 
+            return a
+        elif pb <= pc:
+            return b
+        else: return c            
 
 #  Matrix operations
 MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
