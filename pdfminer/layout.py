@@ -116,9 +116,18 @@ class LTText:
 class LTComponent(LTItem):
     """Object with a bounding box"""
 
-    def __init__(self, bbox):
+    def __init__(self, bbox, descriptor_bbox=None):
+        """
+        :param bbox: a tuple representing a bounding box of an object (e.g. text box)
+        :param descriptor_bbox: the original bounding box specified by the PDF as extracted by
+            original pdfminer logic. Note that the original pdfminer logic is overwritten by a
+            "tight" bounding box created by directly measuring glyph sizes in the embedded fonts.
+        """
         LTItem.__init__(self)
         self.set_bbox(bbox)
+        self.descriptor_bbox = descriptor_bbox
+        # If a tight_bbox doesn't exist this will be the same as the original bbox
+        self.tight_bbox = bbox
         return
 
     def __repr__(self):
@@ -302,16 +311,20 @@ class LTChar(LTComponent, LTText):
             bbox_upper_right = (-vx + fontsize, vy + rise)
         else:
             # horizontal
+
+            # Using the default font level info embedded in the PDF's font descriptors. A font
+            #  descriptor is a dictionary whose entries specify various font attributes.
+            ascent = font.get_ascent() * fontsize
+            descent = font.get_descent() * fontsize
+            descriptor_bbox_lower_left = (0, descent + rise)
+            descriptor_bbox_upper_right = (self.adv, ascent + rise)
             if glyph_bbox is not None:
-                # If available, use glyph bounding box
+                # If available, use glyph (i.e. tight) bounding box
                 bbox_lower_left = (glyph_bbox[0] / 1000, glyph_bbox[1] / 1000)
                 bbox_upper_right = (glyph_bbox[2] / 1000, glyph_bbox[3] / 1000)
             else:
-                # Using the default font level info embedded in the PDF
-                ascent = font.get_ascent() * fontsize
-                descent = font.get_descent() * fontsize
-                bbox_lower_left = (0, descent + rise)
-                bbox_upper_right = (self.adv, ascent + rise)
+                bbox_lower_left = descriptor_bbox_lower_left
+                bbox_upper_right = descriptor_bbox_upper_right
         (a, b, c, d, e, f) = self.matrix
         self.upright = (0 < a*d*scaling and b*c <= 0)
         (x0, y0) = apply_matrix_pt(self.matrix, bbox_lower_left)
@@ -320,7 +333,16 @@ class LTChar(LTComponent, LTText):
             (x0, x1) = (x1, x0)
         if y1 < y0:
             (y0, y1) = (y1, y0)
-        LTComponent.__init__(self, (x0, y0, x1, y1))
+
+        (descriptor_x0, descriptor_y0) = apply_matrix_pt(self.matrix, descriptor_bbox_lower_left)
+        (descriptor_x1, descriptor_y1) = apply_matrix_pt(self.matrix, descriptor_bbox_upper_right)
+        if descriptor_x1 < descriptor_x0:
+            (descriptor_x0, descriptor_x1) = (descriptor_x1, descriptor_x0)
+        if descriptor_y1 < descriptor_y0:
+            (descriptor_y0, descriptor_y1) = (descriptor_y1, descriptor_y0)
+
+        LTComponent.__init__(self, (x0, y0, x1, y1), (descriptor_x0, descriptor_y0, descriptor_x1,
+                                                      descriptor_y1))
         if font.is_vertical():
             self.size = self.width
         else:
