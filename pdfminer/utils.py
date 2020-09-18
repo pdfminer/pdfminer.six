@@ -1,6 +1,8 @@
 """
 Miscellaneous Routines.
 """
+import io
+import pathlib
 import struct
 from html import escape
 
@@ -13,16 +15,21 @@ INF = (1 << 31) - 1
 
 class open_filename(object):
     """
-    Context manager that allows opening a filename and closes it on exit,
+    Context manager that allows opening a filename
+    (str or pathlib.PurePath type is supported) and closes it on exit,
     (just like `open`), but does nothing for file-like objects.
     """
     def __init__(self, filename, *args, **kwargs):
+        if isinstance(filename, pathlib.PurePath):
+            filename = str(filename)
         if isinstance(filename, str):
             self.file_handler = open(filename, *args, **kwargs)
             self.closing = True
-        else:
+        elif isinstance(filename, io.IOBase):
             self.file_handler = filename
             self.closing = False
+        else:
+            raise TypeError('Unsupported input type: %s' % type(filename))
 
     def __enter__(self):
         return self.file_handler

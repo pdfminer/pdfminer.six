@@ -106,7 +106,7 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
         laparams = LAParams()
 
     with open_filename(pdf_file, "rb") as fp, StringIO() as output_string:
-        rsrcmgr = PDFResourceManager()
+        rsrcmgr = PDFResourceManager(caching=caching)
         device = TextConverter(rsrcmgr, output_string, codec=codec,
                                laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
@@ -141,7 +141,7 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
         laparams = LAParams()
 
     with open_filename(pdf_file, "rb") as fp:
-        resource_manager = PDFResourceManager()
+        resource_manager = PDFResourceManager(caching=caching)
         device = PDFPageAggregator(resource_manager, laparams=laparams)
         interpreter = PDFPageInterpreter(resource_manager, device)
         for page in PDFPage.get_pages(fp, page_numbers, maxpages=maxpages,

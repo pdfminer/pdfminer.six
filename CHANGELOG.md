@@ -3,9 +3,18 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [UNRELEASED]
+
+## [Unreleased]
+
+### Added
+- Support for `pathlib.PurePath` in `open_filename` ([#491](https://github.com/pdfminer/pdfminer.six/issues/491))
+
 ### Fixed
+- Pass caching parameter to PDFResourceManager in `high_level` functions ([#475](https://github.com/pdfminer/pdfminer.six/pull/475))
 - When run on Windows a lot of tests fail with the error: [Errno 13] Permission denied ([#469](https://github.com/pdfminer/pdfminer.six/issues/469))
+
+### Removed
+- Remove unused rijndael encryption implementation ([#465](https://github.com/pdfminer/pdfminer.six/pull/465))
 
 ## [20200726]
 
