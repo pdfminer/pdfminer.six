@@ -3,6 +3,7 @@
 import tempfile
 import os
 
+
 class TemporaryFilePath():
     """
     A context manager class, which generates temporary file name
@@ -31,26 +32,26 @@ class TemporaryFilePath():
         'delete' -- whether the file is deleted at the end (default True)
     """
 
-    def __init__(self,suffix=None, prefix=None, dir=None, delete=True):
+    def __init__(self, suffix=None, prefix=None, dir=None, delete=True):
         self.suffix = suffix
         self.prefix = prefix
         self.dir = dir
         self.delete = delete
 
-    def __enter__(self)-> str:
+    def __enter__(self) -> str:
         # Temporary file will be created and closed immediately.
         # Functionality of NamedTemporaryFile() will insure, that temporary
         # file will be deleted upon closure.
         # We only need a name of the temporary file to be used further
-        with tempfile.NamedTemporaryFile(suffix = self.suffix,
-                                         prefix = self.prefix,
-                                         dir = self.dir) as file:
+        with tempfile.NamedTemporaryFile(suffix=self.suffix,
+                                         prefix=self.prefix,
+                                         dir=self.dir) as file:
             self.temp_file_name = file.name
 
         return self.temp_file_name
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.delete == True:
+        if self.delete:
             try:
                 os.remove(self.temp_file_name)
 
@@ -58,16 +59,3 @@ class TemporaryFilePath():
             # created the file to start with or has deleted it himself
             except FileNotFoundError:
                 pass
-
-
-
-if __name__ == '__main__':
-
-    with TemporaryFilePath() as temp_file_name:
-        print(temp_file_name)
-        temp_file = open(temp_file_name, "w")
-        temp_file.write("some test data, which goes to the file")
-        temp_file.close()
-        # some test code is here which reads data out of temp_file
-
-
