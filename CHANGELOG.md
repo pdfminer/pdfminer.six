@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Deprecated
+- Support for Python 3.4 and 3.5 ([#503](https://github.com/pdfminer/pdfminer.six/pull/503))
+
 ### Added
 - Support for `pathlib.PurePath` in `open_filename` ([#491](https://github.com/pdfminer/pdfminer.six/issues/491))
 
