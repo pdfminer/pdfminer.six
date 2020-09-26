@@ -28,8 +28,6 @@ log = logging.getLogger(__name__)
 
 class PDFLayoutAnalyzer(PDFTextDevice):
 
-    RECTS = re.compile('^(mlllh)+$')
-
     def __init__(self, rsrcmgr, pageno=1, laparams=None):
         PDFTextDevice.__init__(self, rsrcmgr)
         self.pageno = pageno
@@ -77,8 +75,18 @@ class PDFLayoutAnalyzer(PDFTextDevice):
     def paint_path(self, gstate, stroke, fill, evenodd, path):
         """Paint paths described in section 4.4 of the PDF reference manual"""
         shape = ''.join(x[0] for x in path)
+
+        # if path contains multiple subpaths, split them up and reprocess
+        if shape.count("m") > 1:
+            m_indices = [i for i, x in enumerate(shape) if x == "m"]
+            m_indices_zipped = zip(m_indices, m_indices[1:] + [None])
+            subpaths = [path[a:b] for a, b in m_indices_zipped]
+            for sp in subpaths:
+                self.paint_path(gstate, stroke, fill, evenodd, sp)
+            return
+
         if shape == 'ml':
-            # horizontal/vertical line
+            # single line segment
             (_, x0, y0) = path[0]
             (_, x1, y1) = path[1]
             (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
@@ -87,9 +95,10 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                 line = LTLine(gstate.linewidth, (x0, y0), (x1, y1), stroke,
                               fill, evenodd, gstate.scolor, gstate.ncolor)
                 self.cur_item.add(line)
+                return
 
-        elif shape == 'mlllh':
-            # rectangle
+        if shape == 'mlllh':
+            # possibly a rectangle
             (_, x0, y0) = path[0]
             (_, x1, y1) = path[1]
             (_, x2, y2) = path[2]
@@ -98,24 +107,23 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
             (x2, y2) = apply_matrix_pt(self.ctm, (x2, y2))
             (x3, y3) = apply_matrix_pt(self.ctm, (x3, y3))
+
+            # confirmed to be a rectangle
             if (x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or \
                     (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0):
                 rect = LTRect(gstate.linewidth, (x0, y0, x2, y2), stroke,
                               fill, evenodd, gstate.scolor, gstate.ncolor)
                 self.cur_item.add(rect)
+                return
 
-        elif self.RECTS.match(shape):
-            for paths in zip(*(iter(path),) * 5):
-                self.paint_path(gstate, stroke, fill, evenodd, list(paths))
-
-        else:
-            pts = []
-            for p in path:
-                for i in range(1, len(p), 2):
-                    pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
-            curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
-                            gstate.scolor, gstate.ncolor)
-            self.cur_item.add(curve)
+        # if not a rectangle or a line, treat as a curve
+        pts = []
+        for p in path:
+            for i in range(1, len(p), 2):
+                pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
+        curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
+                        gstate.scolor, gstate.ncolor)
+        self.cur_item.add(curve)
 
     def render_char(self, matrix, font, fontsize, scaling, rise, cid, ncs,
                     graphicstate):
