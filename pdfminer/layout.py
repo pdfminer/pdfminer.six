@@ -1,6 +1,7 @@
 import heapq
 import logging
-
+import unicodedata as UD
+import bidi.algorithm as BA
 from .utils import INF
 from .utils import Plane
 from .utils import apply_matrix_pt
@@ -403,8 +404,82 @@ class LTTextLine(LTTextContainer):
                 (self.__class__.__name__, bbox2str(self.bbox),
                  self.get_text()))
 
+    def get_base_level(self, text):
+        """Get the paragraph base embedding level. Returns 0 for LTR,
+        1 for RTL.
+        `text` a unicode object.
+        Overrides from python-bidi library
+        """
+        base_level = None
+        for _ch in text:
+            bidi_type = UD.bidirectional(_ch)
+
+            if bidi_type in ('AL', 'R'):
+                base_level = 1
+                break
+
+            elif bidi_type == 'L':
+                base_level = 0
+                break
+
+        # P3
+        if base_level is None:
+            base_level = 0
+
+        return base_level
+
+    def get_embedding_levels(self, chars, storage):
+        """Get the paragraph base embedding level and direction,
+        set the storage to the array of chars
+        Overrides from python-bidi library
+        """
+        base_level = storage['base_level']
+
+        # preset the storage's chars
+        for _ch in chars:
+            bidi_type = UD.bidirectional(_ch._text[0])
+
+            storage['chars'].append({
+                'ch': _ch,
+                'level': base_level,
+                'type': bidi_type,
+                'orig': bidi_type
+            })
+
+    def _embedding_direction(self, x):
+        return ('L', 'R')[x % 2]
+
+    def apply_mirroring(self, storage):
+        """Applies L4: mirroring
+        See: http://unicode.org/reports/tr9/#L4
+        """
+        for _ch in storage['chars']:
+            unichar = _ch['ch']._text
+            if len(unichar) == 1 and \
+                    UD.mirrored(unichar) and \
+                    self._embedding_direction(_ch['level']) == 'R':
+                _ch['ch']._text = BA.MIRRORED.get(unichar, unichar)
+
+    def bidi_textline(self):
+        """Reorder Char in Textlines"""
+        storage = BA.get_empty_storage()
+        text = self.get_text()
+        base_level = self.get_base_level(text)
+        storage['base_level'] = base_level
+        storage['base_dir'] = ('L', 'R')[base_level]
+        self.get_embedding_levels(self._objs, storage)
+        BA.explicit_embed_and_overrides(storage)
+        BA.resolve_weak_types(storage)
+        BA.resolve_neutral_types(storage, False)
+        BA.resolve_implicit_levels(storage, False)
+        BA.reorder_resolved_levels(storage, False)
+        self.apply_mirroring(storage)
+        self._objs = [_ch['ch'] for _ch in storage['chars']]
+        return
+
     def analyze(self, laparams):
         LTTextContainer.analyze(self, laparams)
+        self.bidi_textline()
         LTContainer.add(self, LTAnno('\n'))
         return
 

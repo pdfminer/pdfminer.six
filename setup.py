@@ -16,6 +16,7 @@ setup(
         'chardet ; python_version > "3.0"',
         'cryptography',
         'sortedcontainers',
+        'python-bidi',
     ],
     extras_require={
         "dev": ["nose", "tox"],
