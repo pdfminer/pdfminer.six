@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Deprecated
+- Support for Python 3.4 and 3.5 ([#503](https://github.com/pdfminer/pdfminer.six/pull/503))
+
 ### Added
 
 - Option to disable boxes flow layout analysis when using pdf2txt ([#479](https://github.com/pdfminer/pdfminer.six/pull/479))

@@ -57,7 +57,7 @@ Features
 Installation instructions
 =========================
 
-Before using it, you must install it using Python 3.4 or newer.
+Before using it, you must install it using Python 3.6 or newer (3.4 and 3.5 are deprecated).
 
 ::
 
