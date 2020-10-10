@@ -5,8 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Fixed
-- Fix not being able to pass boxes flow as None to pdf2txt ([#479](https://github.com/pdfminer/pdfminer.six/pull/479))
+### Added
+- Option to disable boxes flow layout analysis when using pdf2txt ([#479](https://github.com/pdfminer/pdfminer.six/pull/479))
 
 ## [20200726]
 
