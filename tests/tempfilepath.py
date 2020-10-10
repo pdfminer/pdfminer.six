@@ -5,31 +5,27 @@ import os
 
 
 class TemporaryFilePath():
-    """
-    A context manager class, which generates temporary file name
-    (but, conroraly to standard tempfile.NamedTemporaryFile() does not create
-    and open such file).
-    Upon exit from the context manager block, he will attempt to delete the
-    file with the generated file name.
+    """Context manager class, which generates temporary file name
+    
+    Coonroraly to standard tempfile.NamedTemporaryFile(), it does not 
+    create file. Upon exit from the context manager block, it will 
+    attempt to delete the file with the generated file name.
 
-    Minimal usage example:
+    Example:
 
-        with TemporaryFilePath() as temp_file_name:
-            with open(temp_file_name, "w") as temp_file:
-                temp_file.write("some test data, which goes to the file")
-                # some test code is here which reads data out of temp_file
+        >>> with TemporaryFilePath() as temp_file_name:
+        >>>    with open(temp_file_name, "w") as temp_file:
+        >>>        temp_file.write("some test data, which goes to the file")
+        >>>        # some test code is here which reads data out of temp_file
 
-    Arguments:
-        'suffix' -- If 'suffix' is not None, the file name will end with
-        that suffix, otherwise there will be no suffix.
-
-        'prefix' -- If 'prefix' is not None, the file name will begin with
-        that prefix, otherwise a default prefix is used.
-
-        'dir' -- If 'dir' is not None, the file will be created in that
-        directory, otherwise a default directory is used.
-
-        'delete' -- whether the file is deleted at the end (default True)
+    Args:
+        suffix: If 'suffix' is not None, the file name will end with that
+            suffix, otherwise there will be no suffix.
+        prefix: If 'prefix' is not None, the file name will begin with that
+            prefix, otherwise a default prefix is used.
+        dir: If 'dir' is not None, the file will be created in that directory,
+            otherwise a default directory is used.
+        delete: whether the file is deleted at the end (default True)
     """
 
     def __init__(self, suffix=None, prefix=None, dir=None, delete=True):
@@ -39,10 +35,11 @@ class TemporaryFilePath():
         self.delete = delete
 
     def __enter__(self) -> str:
-        # Temporary file will be created and closed immediately.
-        # Functionality of NamedTemporaryFile() will insure, that temporary
-        # file will be deleted upon closure.
-        # We only need a name of the temporary file to be used further
+        """Create temporary file path
+        
+        `tempfile.NamedTemporaryFile` will create and delete a file, and 
+        this method only returns the filepath of the non-existing file.
+        """
         with tempfile.NamedTemporaryFile(suffix=self.suffix,
                                          prefix=self.prefix,
                                          dir=self.dir) as file:
