@@ -6,9 +6,9 @@ import os
 
 class TemporaryFilePath():
     """Context manager class, which generates temporary file name
-    
-    Coonroraly to standard tempfile.NamedTemporaryFile(), it does not 
-    create file. Upon exit from the context manager block, it will 
+
+    Coonroraly to standard tempfile.NamedTemporaryFile(), it does not
+    create file. Upon exit from the context manager block, it will
     attempt to delete the file with the generated file name.
 
     Example:
@@ -36,8 +36,8 @@ class TemporaryFilePath():
 
     def __enter__(self) -> str:
         """Create temporary file path
-        
-        `tempfile.NamedTemporaryFile` will create and delete a file, and 
+
+        `tempfile.NamedTemporaryFile` will create and delete a file, and
         this method only returns the filepath of the non-existing file.
         """
         with tempfile.NamedTemporaryFile(suffix=self.suffix,
