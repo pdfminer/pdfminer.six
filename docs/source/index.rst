@@ -39,6 +39,7 @@ pdfminer.six.
     howto/index
     topic/index
     reference/index
+    faq
 
 
 Features
