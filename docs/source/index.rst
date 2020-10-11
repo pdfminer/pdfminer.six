@@ -13,6 +13,7 @@ Welcome to pdfminer.six's documentation!
     :target: https://gitter.im/pdfminer-six/Lobby?utm_source=badge&utm_medium
     :alt: gitter badge
 
+We fathom PDF.
 
 Pdfminer.six is a python package for extracting information from PDF documents.
 
