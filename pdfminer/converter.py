@@ -76,54 +76,49 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         """Paint paths described in section 4.4 of the PDF reference manual"""
         shape = ''.join(x[0] for x in path)
 
-        # if path contains multiple subpaths, split them up and reprocess
-        if shape.count("m") > 1:
-            m_indices = [i for i, x in enumerate(shape) if x == "m"]
-            m_indices_zipped = zip(m_indices, m_indices[1:] + [None])
-            subpaths = [path[a:b] for a, b in m_indices_zipped]
-            for sp in subpaths:
-                self.paint_path(gstate, stroke, fill, evenodd, sp)
-            return
+        if shape == 'mlllh':
+            (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])
+            (x1, y1) = apply_matrix_pt(self.ctm, path[1][1:])
+            (x2, y2) = apply_matrix_pt(self.ctm, path[2][1:])
+            (x3, y3) = apply_matrix_pt(self.ctm, path[3][1:])
 
-        if shape == 'ml':
+            if (x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or \
+                    (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0):
+                is_rectangle = True
+            else:
+                is_rectangle = False
+        else:
+            is_rectangle = False
+
+        if is_rectangle:
+            rect = LTRect(gstate.linewidth, (x0, y0, x2, y2), stroke,
+                          fill, evenodd, gstate.scolor, gstate.ncolor)
+            self.cur_item.add(rect)
+
+        # if path contains multiple subpaths, split them up and reprocess
+        elif shape.count('m') > 1:
+            for m in re.finditer(r'm[^m]+', shape):
+                subpath = path[m.start(0):m.end(0)]
+                self.paint_path(gstate, stroke, fill, evenodd, subpath)
+
+        elif shape == 'ml':
             # single line segment
-            (_, x0, y0) = path[0]
-            (_, x1, y1) = path[1]
-            (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
-            (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
+            (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])
+            (x1, y1) = apply_matrix_pt(self.ctm, path[1][1:])
             if x0 == x1 or y0 == y1:
                 line = LTLine(gstate.linewidth, (x0, y0), (x1, y1), stroke,
                               fill, evenodd, gstate.scolor, gstate.ncolor)
                 self.cur_item.add(line)
-                return
 
-        if shape == 'mlllh':
-            # possibly a rectangle
-            (_, x0, y0) = path[0]
-            (_, x1, y1) = path[1]
-            (_, x2, y2) = path[2]
-            (_, x3, y3) = path[3]
-            (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
-            (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
-            (x2, y2) = apply_matrix_pt(self.ctm, (x2, y2))
-            (x3, y3) = apply_matrix_pt(self.ctm, (x3, y3))
-
-            # confirmed to be a rectangle
-            if (x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or \
-                    (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0):
-                rect = LTRect(gstate.linewidth, (x0, y0, x2, y2), stroke,
-                              fill, evenodd, gstate.scolor, gstate.ncolor)
-                self.cur_item.add(rect)
-                return
-
-        # if not a rectangle or a line, treat as a curve
-        pts = []
-        for p in path:
-            for i in range(1, len(p), 2):
-                pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
-        curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
-                        gstate.scolor, gstate.ncolor)
-        self.cur_item.add(curve)
+        else:
+            # if not a rectangle or a line, treat as a curve
+            pts = []
+            for p in path:
+                for i in range(1, len(p), 2):
+                    pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
+            curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
+                            gstate.scolor, gstate.ncolor)
+            self.cur_item.add(curve)
 
     def render_char(self, matrix, font, fontsize, scaling, rise, cid, ncs,
                     graphicstate):
