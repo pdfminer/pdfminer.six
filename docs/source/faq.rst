@@ -17,7 +17,7 @@ to write code that is compatible with both Python 2 and Python 3. Hence,
 pdfminer.six.
 
 As of 2020, pdfminer.six dropped the support for Python 2 because it was
-`end-of-live <https://www.python.org/doc/sunset-python-2/>`_. While the .six
+`end-of-life <https://www.python.org/doc/sunset-python-2/>`_. While the .six
 part is no longer applicable, we kept the name to prevent breaking changes for
 existing users.
 
