@@ -39,5 +39,5 @@ support all the PDF's out there is to have a community that actively uses and
 improves pdfminer.
 
 Since 2020, the original pdfminer is `dormant
-<https://github.com/euske/pdfminer#pdfminer>`_, and pdfminer.six is the
-recommended by Euske if you need an actively maintained version of pdfminer.
+<https://github.com/euske/pdfminer#pdfminer>`_, and pdfminer.six is the fork
+which Euske recommends if you need an actively maintained version of pdfminer.
