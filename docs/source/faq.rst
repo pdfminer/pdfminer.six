@@ -1,4 +1,4 @@
-.. _fac:
+.. _faq:
 
 Frequently asked questions
 **************************
