@@ -117,7 +117,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         pts = [
             apply_matrix_pt(self.ctm, point)
             for p in path
-            for point in zip(p[::2], p[1::2])
+            for point in zip(p[1::2], p[2::2])
         ]
         curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
                         gstate.scolor, gstate.ncolor)
