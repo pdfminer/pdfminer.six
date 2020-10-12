@@ -669,7 +669,7 @@ class PDFDocument:
             while kwd is not self.KEYWORD_OBJ:
                 (_, kwd) = self._parser.nexttoken()
                 x.append(kwd)
-            if x:
+            if len(x) >= 2:
                 objid1 = x[-2]
         # #### end hack around malformed pdf files
         if objid1 != objid:

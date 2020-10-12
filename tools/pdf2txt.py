@@ -16,6 +16,15 @@ OUTPUT_TYPES = ((".htm", "html"),
                 (".tag", "tag"))
 
 
+def float_or_disabled(x):
+    if x.lower().strip() == "disabled":
+        return x
+    try:
+        x = float(x)
+    except ValueError:
+        raise argparse.ArgumentTypeError("invalid float value: {}".format(x))
+
+
 def extract_text(files=[], outfile='-',
                  no_laparams=False, all_texts=None, detect_vertical=None,
                  word_margin=None, char_margin=None, line_margin=None,
@@ -120,14 +129,14 @@ def maketheparser():
              "be part of the same paragraph. The margin is specified "
              "relative to the height of a line.")
     la_params.add_argument(
-        "--boxes-flow", "-F", type=float, default=0.5,
+        "--boxes-flow", "-F", type=float_or_disabled, default=0.5,
         help="Specifies how much a horizontal and vertical position of a "
              "text matters when determining the order of lines. The value "
              "should be within the range of -1.0 (only horizontal position "
              "matters) to +1.0 (only vertical position matters). You can also "
-             "pass `None` to disable advanced layout analysis, and instead "
-             "return text based on the position of the bottom left corner of "
-             "the text box.")
+             "pass `disabled` to disable advanced layout analysis, and "
+             "instead return text based on the position of the bottom left "
+             "corner of the text box.")
     la_params.add_argument(
         "--all-texts", "-A", default=False, action="store_true",
         help="If layout analysis should be performed on text in figures.")

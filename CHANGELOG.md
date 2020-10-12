@@ -5,12 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Deprecated
+- Support for Python 3.4 and 3.5 ([#503](https://github.com/pdfminer/pdfminer.six/pull/503))
+
 ### Added
+
+- Option to disable boxes flow layout analysis when using pdf2txt ([#479](https://github.com/pdfminer/pdfminer.six/pull/479))
 - Support for `pathlib.PurePath` in `open_filename` ([#491](https://github.com/pdfminer/pdfminer.six/issues/491))
 
 ### Fixed
 - Pass caching parameter to PDFResourceManager in `high_level` functions ([#475](https://github.com/pdfminer/pdfminer.six/pull/475))
 - Fix `.paint_path` logic for handling non-rect quadrilaterals and decomposing complex paths ([#473](https://github.com/pdfminer/pdfminer.six/pull/473))
+- Fix out-of-bound access on some PDFs ([#483](https://github.com/pdfminer/pdfminer.six/pull/483))
 
 ### Removed
 - Remove unused rijndael encryption implementation ([#465](https://github.com/pdfminer/pdfminer.six/pull/465))
