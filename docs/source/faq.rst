@@ -11,7 +11,7 @@ Pdfminer.six is a for of the `original pdfminer created by Euske
 fact created by Euske. But, for a long time this original pdfminer did not
 support Python 3. Untill 2020 the original pdfminer only supported Python 2.
 
-Pdfminer.six started as a for of the original pdfminer with the goal of adding
+Pdfminer.six started as a fork of the original pdfminer with the goal of adding
 support for Python 3. This was done with the six package. The six package helps
 to write code that is compatible with both Python 2 and Python 3. Hence,
 pdfminer.six.
