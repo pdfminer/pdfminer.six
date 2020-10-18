@@ -172,6 +172,7 @@ class PDFConverter(PDFLayoutAnalyzer):
 
     @staticmethod
     def _is_binary_stream(outfp):
+        """Test if an stream is binary or not"""
         if 'b' in getattr(outfp, 'mode', ''):
             return True
         elif hasattr(outfp, 'mode'):
