@@ -1,6 +1,9 @@
-from nose.tools import assert_equal
+import io
+from tempfile import TemporaryFile
 
-from pdfminer.converter import PDFLayoutAnalyzer
+from nose.tools import assert_equal, assert_false, assert_true
+
+from pdfminer.converter import PDFLayoutAnalyzer, PDFConverter
 from pdfminer.layout import LTContainer, LTRect, LTCurve
 from pdfminer.pdfinterp import PDFGraphicState
 
@@ -99,3 +102,22 @@ class TestPaintPath():
         analyzer = PDFLayoutAnalyzer(None)
         analyzer.set_ctm([1, 0, 0, 1, 0, 0])
         return analyzer
+
+
+class TestBinaryDetector():
+    def test_stringio(self):
+        assert_false(PDFConverter._is_binary_stream(io.StringIO()))
+
+    def test_bytesio(self):
+        assert_true(PDFConverter._is_binary_stream(io.BytesIO()))
+
+    def test_tmpfile(self):
+        with TemporaryFile(mode='w') as f:
+            assert_false(PDFConverter._is_binary_stream(f))
+
+    def test_binary_tmpfile(self):
+        with TemporaryFile(mode='wb') as f:
+            assert_true(PDFConverter._is_binary_stream(f))
+
+    def test_non_file_like_object_defaults_to_binary(self):
+        assert_true(PDFConverter._is_binary_stream(object()))

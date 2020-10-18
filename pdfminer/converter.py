@@ -1,3 +1,4 @@
+import io
 import logging
 import re
 import sys
@@ -167,24 +168,21 @@ class PDFConverter(PDFLayoutAnalyzer):
                                    laparams=laparams)
         self.outfp = outfp
         self.codec = codec
-        if hasattr(self.outfp, 'mode'):
-            if 'b' in self.outfp.mode:
-                self.outfp_binary = True
-            else:
-                self.outfp_binary = False
-        else:
-            import io
-            if isinstance(self.outfp, io.BytesIO):
-                self.outfp_binary = True
-            elif isinstance(self.outfp, io.StringIO):
-                self.outfp_binary = False
-            else:
-                try:
-                    self.outfp.write("é")
-                    self.outfp_binary = False
-                except TypeError:
-                    self.outfp_binary = True
-        return
+        self.outfp_binary = self._is_binary_stream(self.outfp)
+
+    @staticmethod
+    def _is_binary_stream(outfp):
+        if 'b' in getattr(outfp, 'mode', ''):
+            return True
+        elif hasattr(outfp, 'mode'):
+            # output stream has a mode, but it does not contain 'b'
+            return False
+        elif isinstance(outfp, io.BytesIO):
+            return True
+        elif isinstance(outfp, io.StringIO):
+            return False
+
+        return True
 
 
 class TextConverter(PDFConverter):
