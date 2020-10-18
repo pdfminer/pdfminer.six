@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Removed
-- Unused `sortedcontainers` package ([#524](https://github.com/pdfminer/pdfminer.six/pull/524))
+- Unused `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
 
 ## [20201018]
 
