@@ -6,15 +6,13 @@ Frequently asked questions
 Why is it called pdfminer.six?
 ==============================
 
-Pdfminer.six is a for of the `original pdfminer created by Euske
+Pdfminer.six is a fork of the `original pdfminer created by Euske
 <https://github.com/euske>`_. Almost all of the code and architecture is in
 fact created by Euske. But, for a long time this original pdfminer did not
-support Python 3. Untill 2020 the original pdfminer only supported Python 2.
-
-Pdfminer.six started as a fork of the original pdfminer with the goal of adding
-support for Python 3. This was done with the six package. The six package helps
-to write code that is compatible with both Python 2 and Python 3. Hence,
-pdfminer.six.
+support Python 3. Until 2020 the original pdfminer only supported Python 2.
+The original goal of pdfminer.six was to add support for Python 3. This was
+done with the six package. The six package helps to write code that is
+compatible with both Python 2 and Python 3. Hence, pdfminer.six.
 
 As of 2020, pdfminer.six dropped the support for Python 2 because it was
 `end-of-life <https://www.python.org/doc/sunset-python-2/>`_. While the .six
