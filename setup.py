@@ -15,7 +15,6 @@ setup(
     install_requires=[
         'chardet ; python_version > "3.0"',
         'cryptography',
-        'sortedcontainers',
     ],
     extras_require={
         "dev": ["nose", "tox"],
