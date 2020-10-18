@@ -2,7 +2,7 @@ import sys
 import warnings
 
 
-__version__ = '20200726'
+__version__ = '20201018'
 
 if sys.version_info < (3, 6):
     warnings.warn('Python 3.4 and 3.5 are deprecated. '

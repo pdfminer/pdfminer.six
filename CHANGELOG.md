@@ -3,7 +3,7 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [20201018]
 
 ### Deprecated
 - Support for Python 3.4 and 3.5 ([#503](https://github.com/pdfminer/pdfminer.six/pull/503))
