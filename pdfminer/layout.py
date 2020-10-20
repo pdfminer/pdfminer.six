@@ -298,6 +298,14 @@ class LTChar(LTComponent, LTText):
         self.ncs = ncs
         self.graphicstate = graphicstate
         self.adv = textwidth * fontsize * scaling
+
+        # Using the default font level info embedded in the PDF's font descriptors. A font
+        #  descriptor is a dictionary whose entries specify various font attributes.
+        ascent = font.get_ascent() * fontsize
+        descent = font.get_descent() * fontsize
+        descriptor_bbox_lower_left = (0, descent + rise)
+        descriptor_bbox_upper_right = (self.adv, ascent + rise)
+
         # compute the boundary rectangle.
         if font.is_vertical():
             # vertical
@@ -311,13 +319,6 @@ class LTChar(LTComponent, LTText):
             bbox_upper_right = (-vx + fontsize, vy + rise)
         else:
             # horizontal
-
-            # Using the default font level info embedded in the PDF's font descriptors. A font
-            #  descriptor is a dictionary whose entries specify various font attributes.
-            ascent = font.get_ascent() * fontsize
-            descent = font.get_descent() * fontsize
-            descriptor_bbox_lower_left = (0, descent + rise)
-            descriptor_bbox_upper_right = (self.adv, ascent + rise)
             if glyph_bbox is not None:
                 # If available, use glyph (i.e. tight) bounding box
                 bbox_lower_left = (glyph_bbox[0] / 1000, glyph_bbox[1] / 1000)
