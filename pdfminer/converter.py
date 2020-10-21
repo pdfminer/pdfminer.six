@@ -83,14 +83,13 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                 self.paint_path(gstate, stroke, fill, evenodd, subpath)
 
         else:
-            if shape == 'ml':
+            if shape == 'mlh':
                 # single line segment
                 (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])
                 (x1, y1) = apply_matrix_pt(self.ctm, path[1][1:])
-                if x0 == x1 or y0 == y1:
-                    line = LTLine(gstate.linewidth, (x0, y0), (x1, y1), stroke,
-                                  fill, evenodd, gstate.scolor, gstate.ncolor)
-                    self.cur_item.add(line)
+                line = LTLine(gstate.linewidth, (x0, y0), (x1, y1), stroke,
+                              fill, evenodd, gstate.scolor, gstate.ncolor)
+                self.cur_item.add(line)
 
             elif shape == 'mlllh':
                 (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])

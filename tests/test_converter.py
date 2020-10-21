@@ -1,7 +1,7 @@
 from nose.tools import assert_equal
 
 from pdfminer.converter import PDFLayoutAnalyzer
-from pdfminer.layout import LTContainer, LTRect, LTCurve
+from pdfminer.layout import LTContainer, LTRect, LTLine, LTCurve
 from pdfminer.pdfinterp import PDFGraphicState
 
 
@@ -94,6 +94,21 @@ class TestPaintPath():
             ("l", 455, 10),
             ("h",),
         ]), [LTRect, LTCurve])
+
+        assert_equal(get_types([
+            # Vertical line
+            ("m", 10, 30),
+            ("l", 10, 40),
+            ("h",),
+            # Horizontal line
+            ("m", 10, 50),
+            ("l", 70, 50),
+            ("h",),
+            # Diagonal line
+            ("m", 10, 10),
+            ("l", 30, 30),
+            ("h",),
+        ]), [LTLine, LTLine, LTLine])
 
     def _get_analyzer(self):
         analyzer = PDFLayoutAnalyzer(None)
