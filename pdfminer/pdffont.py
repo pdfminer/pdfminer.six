@@ -706,7 +706,7 @@ class PDFCIDFont(PDFFont):
             widths = get_widths2(list_value(spec.get('W2', [])))
             self.disps = {cid: (vx, vy)
                           for (cid, (_, (vx, vy))) in widths.items()}
-            (vy, w) = spec.get('DW2', [880, -1000])
+            (vy, w) = resolve1(spec.get('DW2', [880, -1000]))
             self.default_disp = (None, vy)
             widths = {cid: w for (cid, (w, _)) in widths.items()}
             default_width = w
