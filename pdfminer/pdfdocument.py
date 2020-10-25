@@ -93,15 +93,16 @@ class PDFXRef(PDFBaseXRef):
         while True:
             try:
                 (pos, line) = parser.nextline()
-                line = line.strip()
-                if not line:
+                if not line.strip():
                     continue
             except PSEOF:
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
+            if not line:
+                raise PDFNoValidXRef('Premature eof: %r' % parser)
             if line.startswith(b'trailer'):
                 parser.seek(pos)
                 break
-            f = line.split(b' ')
+            f = line.strip().split(b' ')
             if len(f) != 2:
                 error_msg = 'Trailer not found: {!r}: line={!r}'\
                     .format(parser, line)
@@ -117,7 +118,7 @@ class PDFXRef(PDFBaseXRef):
                     (_, line) = parser.nextline()
                 except PSEOF:
                     raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
-                f = line.split(b' ')
+                f = line.strip().split(b' ')
                 if len(f) != 3:
                     error_msg = 'Invalid XRef format: {!r}, line={!r}'\
                         .format(parser, line)
