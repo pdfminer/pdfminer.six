@@ -5,22 +5,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Removed
+## Removed
+- Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
 - Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
+
 
 ## [20201018]
 
 ### Deprecated
-- Support for Python 3.4 and 3.5 ([#503](https://github.com/pdfminer/pdfminer.six/pull/503))
+- Support for Python 3.4 and 3.5 ([#507](https://github.com/pdfminer/pdfminer.six/pull/507))
 
 ### Added
 
 - Option to disable boxes flow layout analysis when using pdf2txt ([#479](https://github.com/pdfminer/pdfminer.six/pull/479))
-- Support for `pathlib.PurePath` in `open_filename` ([#491](https://github.com/pdfminer/pdfminer.six/issues/491))
+- Support for `pathlib.PurePath` in `open_filename` ([#492](https://github.com/pdfminer/pdfminer.six/pull/492))
 
 ### Fixed
 - Pass caching parameter to PDFResourceManager in `high_level` functions ([#475](https://github.com/pdfminer/pdfminer.six/pull/475))
-- Fix `.paint_path` logic for handling non-rect quadrilaterals and decomposing complex paths ([#473](https://github.com/pdfminer/pdfminer.six/pull/473))
+- Fix `.paint_path` logic for handling non-rect quadrilaterals and decomposing complex paths ([#512](https://github.com/pdfminer/pdfminer.six/pull/512))
 - Fix out-of-bound access on some PDFs ([#483](https://github.com/pdfminer/pdfminer.six/pull/483))
 
 ### Removed
@@ -43,31 +45,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Hiding fallback xref by default from dumppdf.py output ([#431](https://github.com/pdfminer/pdfminer.six/pull/431))
-- Raise a warning instead of an error when extracting text from a non-extractable PDF ([#350](https://github.com/pdfminer/pdfminer.six/issues/350))
+- Raise a warning instead of an error when extracting text from a non-extractable PDF ([#453](https://github.com/pdfminer/pdfminer.six/pull/453))
 - Switched from pycryptodome to cryptography package for AES decryption ([#456](https://github.com/pdfminer/pdfminer.six/pull/456))
   
 ## [20200517]
 
 ### Added
-- Python3 shebang line to script in tools ([#408](https://github.com/pdfminer/pdfminer.six/pull/408)
+- Python3 shebang line to script in tools ([#408](https://github.com/pdfminer/pdfminer.six/pull/408))
 
 ### Fixed
-- Fix ordering of textlines within a textbox when `boxes_flow=None` ([#411](https://github.com/pdfminer/pdfminer.six/issues/411))
+- Fix ordering of textlines within a textbox when `boxes_flow=None` ([#412](https://github.com/pdfminer/pdfminer.six/pull/412))
 
 ## [20200402]
 
 ### Added
-- Allow boxes_flow LAParam to be passed as None, validate the input, and update documentation ([#395](https://github.com/pdfminer/pdfminer.six/pull/395))
-- Also accept file-like objects in high level functions `extract_text` and `extract_pages` ([#392](https://github.com/pdfminer/pdfminer.six/pull/392))
+- Allow boxes_flow LAParam to be passed as None, validate the input, and update documentation ([#396](https://github.com/pdfminer/pdfminer.six/pull/396))
+- Also accept file-like objects in high level functions `extract_text` and `extract_pages` ([#393](https://github.com/pdfminer/pdfminer.six/pull/393))
 
 ### Fixed
-- Text no longer comes in reverse order when advanced layout analysis is disabled ([#398](https://github.com/pdfminer/pdfminer.six/pull/398))
+- Text no longer comes in reverse order when advanced layout analysis is disabled ([#399](https://github.com/pdfminer/pdfminer.six/pull/399))
 - Updated misleading documentation for `word_margin` and `char_margin` ([#407](https://github.com/pdfminer/pdfminer.six/pull/407))
 - Ignore ValueError when converting font encoding differences ([#389](https://github.com/pdfminer/pdfminer.six/pull/389))
 - Grouping of text lines outside of parent container bounding box ([#386](https://github.com/pdfminer/pdfminer.six/pull/386))
 
 ### Changed
-- Group text lines if they are centered ([#382](https://github.com/pdfminer/pdfminer.six/pull/382))
+- Group text lines if they are centered ([#384](https://github.com/pdfminer/pdfminer.six/pull/384))
 
 ## [20200124] - 2020-01-24
 
@@ -123,7 +125,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Refactor `LTLayoutContainer.group_textboxes` for a significant speed up in layout analysis ([#315](https://github.com/pdfminer/pdfminer.six/pull/315))
 
 ### Removed
-- Files for external applications such as django, cgi and pyinstaller ([#314](https://github.com/pdfminer/pdfminer.six/issues/314))
+- Files for external applications such as django, cgi and pyinstaller ([#320](https://github.com/pdfminer/pdfminer.six/pull/320))
 
 ## [20191020] - 2019-10-20
 

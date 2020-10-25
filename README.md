@@ -40,7 +40,7 @@ Features
 How to use
 ----------
 
- * Install Python 3.6 or newer (3.4 and 3.5 are deprecated)
+ * Install Python 3.6 or newer.
  * Install
 
     `pip install pdfminer.six`
