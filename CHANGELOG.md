@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Removed
 - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
+- Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
+
 
 ## [20201018]
 
@@ -31,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Rename PDFTextExtractionNotAllowedError to PDFTextExtractionNotAllowed to revert breaking change ([#461](https://github.com/pdfminer/pdfminer.six/pull/461))
 - Always try to get CMap, not only for identity encodings ([#438](https://github.com/pdfminer/pdfminer.six/pull/438))
+- Recognizing 'trailer' keyword with spaces as prefix or suffix ([#513](https://github.com/pdfminer/pdfminer.six/pull/513))
 
 ## [20200720]
 
