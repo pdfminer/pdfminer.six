@@ -26,3 +26,5 @@ extract_pages
 
 .. currentmodule:: pdfminer.high_level
 .. autofunction:: extract_pages
+
+.. _api_extract_pages:

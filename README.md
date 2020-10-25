@@ -5,6 +5,8 @@ pdfminer.six
 [![PyPI version](https://img.shields.io/pypi/v/pdfminer.six.svg)](https://pypi.python.org/pypi/pdfminer.six/)
 [![gitter](https://badges.gitter.im/pdfminer-six/Lobby.svg)](https://gitter.im/pdfminer-six/Lobby?utm_source=badge&utm_medium)
 
+*We fathom PDF*
+
 Pdfminer.six is a community maintained fork of the original PDFMiner. It is a
 tool for extracting information from PDF documents. It focuses on getting
 and analyzing text data. Pdfminer.six extracts the text from a page directly
@@ -38,7 +40,7 @@ Features
 How to use
 ----------
 
- * Install Python 3.4 or newer
+ * Install Python 3.6 or newer.
  * Install
 
     `pip install pdfminer.six`

@@ -2,6 +2,7 @@
 *.pyc
 *.pyo
 .svn
+.env
 _svn
 .pythoscope
 .ipynb_checkpoints

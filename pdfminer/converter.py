@@ -1,3 +1,4 @@
+import io
 import logging
 import re
 import sys
@@ -27,8 +28,6 @@ log = logging.getLogger(__name__)
 
 
 class PDFLayoutAnalyzer(PDFTextDevice):
-
-    RECTS = re.compile('^(mlllh)+$')
 
     def __init__(self, rsrcmgr, pageno=1, laparams=None):
         PDFTextDevice.__init__(self, rsrcmgr)
@@ -77,45 +76,53 @@ class PDFLayoutAnalyzer(PDFTextDevice):
     def paint_path(self, gstate, stroke, fill, evenodd, path):
         """Paint paths described in section 4.4 of the PDF reference manual"""
         shape = ''.join(x[0] for x in path)
-        if shape == 'ml':
-            # horizontal/vertical line
-            (_, x0, y0) = path[0]
-            (_, x1, y1) = path[1]
-            (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
-            (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
-            if x0 == x1 or y0 == y1:
-                line = LTLine(gstate.linewidth, (x0, y0), (x1, y1), stroke,
-                              fill, evenodd, gstate.scolor, gstate.ncolor)
-                self.cur_item.add(line)
 
-        elif shape == 'mlllh':
-            # rectangle
-            (_, x0, y0) = path[0]
-            (_, x1, y1) = path[1]
-            (_, x2, y2) = path[2]
-            (_, x3, y3) = path[3]
-            (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
-            (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
-            (x2, y2) = apply_matrix_pt(self.ctm, (x2, y2))
-            (x3, y3) = apply_matrix_pt(self.ctm, (x3, y3))
-            if (x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or \
-                    (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0):
-                rect = LTRect(gstate.linewidth, (x0, y0, x2, y2), stroke,
-                              fill, evenodd, gstate.scolor, gstate.ncolor)
-                self.cur_item.add(rect)
-
-        elif self.RECTS.match(shape):
-            for paths in zip(*(iter(path),) * 5):
-                self.paint_path(gstate, stroke, fill, evenodd, list(paths))
+        if shape.count('m') > 1:
+            # recurse if there are multiple m's in this shape
+            for m in re.finditer(r'm[^m]+', shape):
+                subpath = path[m.start(0):m.end(0)]
+                self.paint_path(gstate, stroke, fill, evenodd, subpath)
 
         else:
-            pts = []
-            for p in path:
-                for i in range(1, len(p), 2):
-                    pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
-            curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
-                            gstate.scolor, gstate.ncolor)
-            self.cur_item.add(curve)
+            if shape == 'ml':
+                # single line segment
+                (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])
+                (x1, y1) = apply_matrix_pt(self.ctm, path[1][1:])
+                if x0 == x1 or y0 == y1:
+                    line = LTLine(gstate.linewidth, (x0, y0), (x1, y1), stroke,
+                                  fill, evenodd, gstate.scolor, gstate.ncolor)
+                    self.cur_item.add(line)
+
+            elif shape == 'mlllh':
+                (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])
+                (x1, y1) = apply_matrix_pt(self.ctm, path[1][1:])
+                (x2, y2) = apply_matrix_pt(self.ctm, path[2][1:])
+                (x3, y3) = apply_matrix_pt(self.ctm, path[3][1:])
+
+                if (x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or \
+                        (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0):
+                    rect = LTRect(gstate.linewidth, (x0, y0, x2, y2), stroke,
+                                  fill, evenodd, gstate.scolor, gstate.ncolor)
+                    self.cur_item.add(rect)
+                else:
+                    curve = self._create_curve(gstate, stroke, fill, evenodd,
+                                               path)
+                    self.cur_item.add(curve)
+
+            else:
+                curve = self._create_curve(gstate, stroke, fill, evenodd, path)
+                self.cur_item.add(curve)
+
+    def _create_curve(self, gstate, stroke, fill, evenodd, path):
+        """Create a `LTCurve` object for the paint path operator"""
+        pts = [
+            apply_matrix_pt(self.ctm, point)
+            for p in path
+            for point in zip(p[1::2], p[2::2])
+        ]
+        curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
+                        gstate.scolor, gstate.ncolor)
+        return curve
 
     def render_char(self, matrix, font, fontsize, scaling, rise, cid, ncs,
                     graphicstate):
@@ -161,24 +168,22 @@ class PDFConverter(PDFLayoutAnalyzer):
                                    laparams=laparams)
         self.outfp = outfp
         self.codec = codec
-        if hasattr(self.outfp, 'mode'):
-            if 'b' in self.outfp.mode:
-                self.outfp_binary = True
-            else:
-                self.outfp_binary = False
-        else:
-            import io
-            if isinstance(self.outfp, io.BytesIO):
-                self.outfp_binary = True
-            elif isinstance(self.outfp, io.StringIO):
-                self.outfp_binary = False
-            else:
-                try:
-                    self.outfp.write("é")
-                    self.outfp_binary = False
-                except TypeError:
-                    self.outfp_binary = True
-        return
+        self.outfp_binary = self._is_binary_stream(self.outfp)
+
+    @staticmethod
+    def _is_binary_stream(outfp):
+        """Test if an stream is binary or not"""
+        if 'b' in getattr(outfp, 'mode', ''):
+            return True
+        elif hasattr(outfp, 'mode'):
+            # output stream has a mode, but it does not contain 'b'
+            return False
+        elif isinstance(outfp, io.BytesIO):
+            return True
+        elif isinstance(outfp, io.StringIO):
+            return False
+
+        return True
 
 
 class TextConverter(PDFConverter):
