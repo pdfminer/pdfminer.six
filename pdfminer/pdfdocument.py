@@ -99,7 +99,7 @@ class PDFXRef(PDFBaseXRef):
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
             if not line:
                 raise PDFNoValidXRef('Premature eof: %r' % parser)
-            if line.startswith(b'trailer'):
+            if line.strip().startswith(b'trailer'):
                 parser.seek(pos)
                 break
             f = line.strip().split(b' ')
