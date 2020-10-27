@@ -5,6 +5,7 @@ import io
 import pathlib
 import struct
 from html import escape
+import math
 
 import chardet  # For str encoding detection
 
@@ -77,12 +78,31 @@ def compatible_encode_method(bytesorstring, encoding='utf-8',
     return bytesorstring.decode(encoding, erraction)
 
 
+def paeth_predictor(left, up, up_left):
+    # From http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
+    # Initial estimate
+    p = left + up - up_left
+    # Distances to a,b,c
+    pa = abs(p - left)
+    pb = abs(p - up)
+    pc = abs(p - up_left)
+
+    # Return nearest of a,b,c breaking ties in order a,b,c
+    if pa <= pb and pa <= pc:
+        return left
+    elif pb <= pc:
+        return up
+    else:
+        return up_left
+
+
 def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     if bitspercomponent != 8:
         # unsupported
         raise ValueError("Unsupported `bitspercomponent': %d" %
                          bitspercomponent)
     nbytes = colors * columns * bitspercomponent // 8
+    bpp = colors * bitspercomponent // 8
     buf = b''
     line0 = b'\x00' * columns
     for i in range(0, len(data), nbytes + 1):
@@ -94,10 +114,10 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
             # PNG none
             line2 += line1
         elif ft == 1:
-            # PNG sub (UNTESTED)
-            c = 0
-            for b in line1:
-                c = (c + b) & 255
+            # PNG sub
+            for j, r in enumerate(line1):
+                left = int(line2[j-bpp]) if j-bpp >= 0 else 0
+                c = (r + left) & 255
                 line2 += bytes((c,))
         elif ft == 2:
             # PNG up
@@ -105,10 +125,20 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
                 c = (a + b) & 255
                 line2 += bytes((c,))
         elif ft == 3:
-            # PNG average (UNTESTED)
-            c = 0
-            for (a, b) in zip(line0, line1):
-                c = ((c + a + b) // 2) & 255
+            # PNG average
+            for j, r in enumerate(line1):
+                left = int(line2[j-bpp]) if j-bpp >= 0 else 0
+                up = int(line0[j])
+                c = ((r + math.floor(left + up)) // 2) & 255
+                line2 += bytes((c,))
+        elif ft == 4:
+            # PNG paeth
+            for j, r in enumerate(line1):
+                left = int(line2[j-bpp]) if j-bpp >= 0 else 0
+                up = int(line0[j])
+                up_left = int(line0[j-bpp]) if j-bpp >= 0 else 0
+                paeth = paeth_predictor(left, up, up_left)
+                c = (r + paeth) & 255
                 line2 += bytes((c,))
         else:
             # unsupported

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Support for Paeth PNG filter compression (predictor value = 4) ([#](https://github.com/pdfminer/pdfminer.six/pull/))
+
 ### Removed
 - Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
 
