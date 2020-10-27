@@ -1,10 +1,9 @@
 language: python
 python:
-  - "3.4"
-  - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9-dev"
 install:
   - pip install tox==3.14.0 tox-travis flake8
 script:
