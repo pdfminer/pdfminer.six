@@ -56,9 +56,9 @@ bottom-left corner and upper-right corner, i.e. its bounding box. Pdfminer
 Characters that are both horizontally and vertically close are grouped onto
 one line. How close they should be is determined by the `char_margin`
 (M in figure) and the `line_overlap` (not in figure) parameter. The horizontal
-*distance* between the bounding boxes of two characters should be smaller that
+*distance* between the bounding boxes of two characters should be smaller than
 the `char_margin` and the vertical *overlap* between the bounding boxes should
-be smaller the the `line_overlap`.
+be smaller than the `line_overlap`.
 
 
 .. raw:: html
@@ -74,7 +74,7 @@ notion of the space character. A space is inserted if the characters are
 further apart that the `word_margin` (W in the figure). The `word_margin` is
 relative to the maximum width or height of the new character. Having a smaller
 `word_margin` creates smaller words. Note that the `word_margin` should at
-least be smaller than the `char_margin` otherwise none of the characters will
+least be bigger than the `char_margin` otherwise none of the characters will
 be separated by a space.
 
 The result of this stage is a list of lines. Each line consists a list of
