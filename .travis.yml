@@ -1,4 +1,8 @@
 language: python
+dist: bionic
+arch:
+  - AMD64
+  - ppc64le
 python:
   - "3.6"
   - "3.7"
