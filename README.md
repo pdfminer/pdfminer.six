@@ -13,9 +13,9 @@ and analyzing text data. Pdfminer.six extracts the text from a page directly
 from the sourcecode of the PDF. It can also be used to get the exact location, 
 font or color of the text. 
 
-It is build in a modular way such that each component of pdfminer.six can be
+It is built in a modular way such that each component of pdfminer.six can be
 replaced easily. You can implement your own interpreter or rendering device
-to use the power of pdfminer.six for other purposes that text analysis. 
+that uses the power of pdfminer.six for other purposes than text analysis. 
 
 Check out the full documentation on
 [Read the Docs](https://pdfminersix.readthedocs.io).
@@ -40,7 +40,7 @@ Features
 How to use
 ----------
 
- * Install Python 3.6 or newer (3.4 and 3.5 are deprecated)
+ * Install Python 3.6 or newer.
  * Install
 
     `pip install pdfminer.six`

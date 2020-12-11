@@ -1,19 +1,21 @@
 import os
 from shutil import rmtree
-from tempfile import NamedTemporaryFile, mkdtemp
+from tempfile import mkdtemp
 
 import tools.pdf2txt as pdf2txt
 from helpers import absolute_sample_path
+from tempfilepath import TemporaryFilePath
 
 
 def run(sample_path, options=None):
     absolute_path = absolute_sample_path(sample_path)
-    with NamedTemporaryFile() as output_file:
+    with TemporaryFilePath() as output_file_name:
         if options:
             s = 'pdf2txt -o{} {} {}' \
-                .format(output_file.name, options, absolute_path)
+                .format(output_file_name, options, absolute_path)
         else:
-            s = 'pdf2txt -o{} {}'.format(output_file.name, absolute_path)
+            s = 'pdf2txt -o{} {}'.format(output_file_name, absolute_path)
+
         pdf2txt.main(s.split(' ')[1:])
 
 
@@ -109,8 +111,8 @@ class TestDumpImages:
     @staticmethod
     def extract_images(input_file):
         output_dir = mkdtemp()
-        with NamedTemporaryFile() as output_file:
-            commands = ['-o', output_file.name, '--output-dir',
+        with TemporaryFilePath() as output_file_name:
+            commands = ['-o', output_file_name, '--output-dir',
                         output_dir, input_file]
             pdf2txt.main(commands)
         image_files = os.listdir(output_dir)
