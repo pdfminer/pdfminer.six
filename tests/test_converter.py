@@ -6,6 +6,7 @@ from nose.tools import assert_equal, assert_false, assert_true
 from pdfminer.converter import PDFLayoutAnalyzer, PDFConverter
 from pdfminer.layout import LTContainer, LTRect, LTLine, LTCurve
 from pdfminer.pdfinterp import PDFGraphicState
+from pdfminer.high_level import extract_pages
 
 
 class TestPaintPath():
@@ -112,6 +113,25 @@ class TestPaintPath():
             ("l", 30, 30),
             ("h",),
         ]), [LTLine, LTLine, LTLine])
+
+        # Same as above, but 'ml' variation
+        assert_equal(get_types([
+            # Vertical line
+            ("m", 10, 30),
+            ("l", 10, 40),
+            # Horizontal line
+            ("m", 10, 50),
+            ("l", 70, 50),
+            # Diagonal line
+            ("m", 10, 10),
+            ("l", 30, 30),
+        ]), [LTLine, LTLine, LTLine])
+
+        # There are six lines in this one-page PDF;
+        # they all have shape 'ml' not 'mlh'
+        ml_pdf = extract_pages("samples/contrib/pr-00530-ml-lines.pdf")
+        ml_pdf_page = list(ml_pdf)[0]
+        assert sum(type(item) == LTLine for item in ml_pdf_page) == 6
 
     def _get_analyzer(self):
         analyzer = PDFLayoutAnalyzer(None)

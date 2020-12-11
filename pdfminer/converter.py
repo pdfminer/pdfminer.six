@@ -84,8 +84,11 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                 self.paint_path(gstate, stroke, fill, evenodd, subpath)
 
         else:
-            if shape == 'mlh':
+            if shape in {'mlh', 'ml'}:
                 # single line segment
+                # 
+                # Note: 'ml', in conditional above, is a frequent anomaly
+                # that we want to support.
                 (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])
                 (x1, y1) = apply_matrix_pt(self.ctm, path[1][1:])
                 line = LTLine(gstate.linewidth, (x0, y0), (x1, y1), stroke,
