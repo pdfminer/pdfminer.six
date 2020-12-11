@@ -86,7 +86,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         else:
             if shape in {'mlh', 'ml'}:
                 # single line segment
-                # 
+                #
                 # Note: 'ml', in conditional above, is a frequent anomaly
                 # that we want to support.
                 (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])
