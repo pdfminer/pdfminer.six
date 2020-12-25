@@ -17,7 +17,7 @@ setup(
         'cryptography',
     ],
     extras_require={
-        "dev": ["nose", "tox"],
+        "dev": ["nose", "pytest", "tox"],
         "docs": ["sphinx", "sphinx-argparse"],
     },
     description='PDF parser and analyzer',

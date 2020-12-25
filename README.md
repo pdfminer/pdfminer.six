@@ -35,6 +35,7 @@ Features
  * Table of contents extraction.
  * Tagged contents extraction.
  * Automatic layout analysis.
+ * Support for tables.
 
 
 How to use

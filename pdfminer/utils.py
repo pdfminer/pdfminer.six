@@ -4,9 +4,18 @@ Miscellaneous Routines.
 import io
 import pathlib
 import struct
+from bisect import bisect_left, bisect_right
 from html import escape
+from itertools import tee
+from typing import Iterable, Iterator, Tuple, TypeVar, TYPE_CHECKING
 
 import chardet  # For str encoding detection
+
+if TYPE_CHECKING:
+    from .table import LTTable
+    from .layout import LAParams
+
+_T1 = TypeVar("_T1")
 
 # from sys import maxint as INF doesn't work anymore under Python3, but PDF
 # still uses 32 bits ints
@@ -404,3 +413,49 @@ class Plane:
                         or y1 <= obj.y0:
                     continue
                 yield obj
+
+
+def pairwise(elements: Iterable[_T1]) -> Iterator[Tuple[_T1, _T1]]:
+    """s -> (s0,s1), (s1,s2), (s2, s3), ..."""
+    iter1, iter2 = tee(elements)
+    next(iter2, None)
+    return zip(iter1, iter2)
+
+
+def merge_if_no_border(table: "LTTable", _laparams: "LAParams"):
+    for cell in table:
+        while (
+            cell.col + cell.colspan < table.num_cols and not cell.border_right
+        ):
+            cell.merge_right()
+        while (
+            cell.row + cell.rowspan < table.num_rows and not cell.border_bottom
+        ):
+            cell.merge_down()
+
+
+class FloatIntervals:
+    pos_inf = float("inf")
+    neg_inf = float("-inf")
+
+    def __init__(self, eps: float = 0.0):
+        self.eps = eps
+        self._intervals = []
+
+    def add(self, x0, x1):
+        lo = bisect_left(self._intervals, (x0 - self.eps, self.neg_inf))
+        hi = bisect_right(self._intervals, (x1 + self.eps, self.pos_inf), lo)
+        if lo > 0 and x0 - self.eps <= self._intervals[lo - 1][1]:
+            lo -= 1
+        for a, b in self._intervals[lo:hi]:
+            x0 = min(x0, a)
+            x1 = max(x1, b)
+        self._intervals = (
+            self._intervals[:lo] + [(x0, x1)] + self._intervals[hi:]
+        )
+
+    def __iter__(self):
+        return iter(self._intervals)
+
+    def __len__(self):
+        return len(self._intervals)

@@ -1,9 +1,15 @@
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_equal, assert_raises, assert_list_equal
 import pathlib
 
 from helpers import absolute_sample_path
 from pdfminer.layout import LTComponent
-from pdfminer.utils import open_filename, Plane, shorten_str
+from pdfminer.utils import (
+    FloatIntervals,
+    open_filename,
+    pairwise,
+    Plane,
+    shorten_str,
+)
 
 
 class TestOpenFilename:
@@ -65,6 +71,35 @@ class TestPlane:
         return plane, obj
 
 
+class TestInterval:
+    def test_disjoint(self):
+        intv = FloatIntervals(0.5)
+        intv.add(1.0, 2.0)
+        intv.add(5.0, 6.0)
+        intv.add(3.0, 4.0)
+        assert_list_equal(list(intv), [(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
+
+    def test_merge_eps(self):
+        intv = FloatIntervals(0.5)
+        intv.add(1.0, 2.0)
+        intv.add(5.0, 6.0)
+        intv.add(2.25, 3.0)
+        intv.add(4.0, 4.75)
+        assert_list_equal(list(intv), [(1.0, 3.0), (4.0, 6.0)])
+        intv.add(3.25, 3.75)
+        assert_list_equal(list(intv), [(1.0, 6.0)])
+
+    def test_overlap(self):
+        intv = FloatIntervals(0.5)
+        intv.add(1.0, 2.0)
+        intv.add(5.0, 6.0)
+        intv.add(1.75, 3.0)
+        intv.add(4.0, 5.25)
+        assert_list_equal(list(intv), [(1.0, 3.0), (4.0, 6.0)])
+        intv.add(2.0, 5.0)
+        assert_list_equal(list(intv), [(1.0, 6.0)])
+
+
 class TestFunctions(object):
     def test_shorten_str(self):
         s = shorten_str('Hello there World', 15)
@@ -76,3 +111,9 @@ class TestFunctions(object):
 
     def test_shorten_to_really_short(self):
         assert_equal('Hello', shorten_str('Hello World', 5))
+
+    def test_pairwise(self):
+        assert_list_equal(
+            list(pairwise(range(7))),
+            [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]
+        )

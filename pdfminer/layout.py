@@ -1,5 +1,7 @@
 import heapq
 import logging
+from itertools import chain
+from typing import Callable, List, Optional, Tuple, TYPE_CHECKING
 
 from .utils import INF
 from .utils import Plane
@@ -9,6 +11,10 @@ from .utils import fsplit
 from .utils import get_bound
 from .utils import matrix2str
 from .utils import uniq
+from .utils import merge_if_no_border
+
+if TYPE_CHECKING:
+    from .table import LTTable
 
 logger = logging.getLogger(__name__)
 
@@ -55,16 +61,36 @@ class LAParams:
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
         figures.
+    :param table_border_maxwidth: Maximum thickness of a graphical line to be
+        considered as part of a table border. Set to None to disable table
+        detection. Suggestion for the typical thin table borders produced by
+        popular office software is >= 1.2.
+    :param table_border_tolerance: Maximum distance of endpoints when joining
+        table border lines, or allowed error when looking up lines or points at
+        a given location.
+    :param table_postprocess: Callback that is called for each table after
+        table layout analysis and before text layout analysis of its contents.
+        This is the right moment for merging and/or splitting table cells. The
+        decision which cells to merge or split may require customizing
+        depending on the table layout, so it is left to the user. The default
+        is to merge cells where there is no border line to the neighbor cell.
     """
 
-    def __init__(self,
-                 line_overlap=0.5,
-                 char_margin=2.0,
-                 line_margin=0.5,
-                 word_margin=0.1,
-                 boxes_flow=0.5,
-                 detect_vertical=False,
-                 all_texts=False):
+    def __init__(
+        self,
+        line_overlap=0.5,
+        char_margin=2.0,
+        line_margin=0.5,
+        word_margin=0.1,
+        boxes_flow=0.5,
+        detect_vertical=False,
+        all_texts=False,
+        table_border_maxwidth: Optional[float] = None,
+        table_border_tolerance=2.0,
+        table_postprocess: Optional[Callable[
+            ["LTLayoutContainer", "LTTable", "LAParams"], None
+        ]] = merge_if_no_border,
+    ):
         self.line_overlap = line_overlap
         self.char_margin = char_margin
         self.line_margin = line_margin
@@ -72,7 +98,9 @@ class LAParams:
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
-
+        self.table_border_maxwidth = table_border_maxwidth
+        self.table_border_tolerance = table_border_tolerance
+        self.table_postprocess = table_postprocess
         self._validate()
         return
 
@@ -783,19 +811,36 @@ class LTLayoutContainer(LTContainer):
                 plane.add(group)
         return list(plane)
 
-    def analyze(self, laparams):
+    def analyze(self, laparams: LAParams):
+        (tables, others) = self.analyze_tables(self._objs, laparams)
+        (textboxes, empties, others) = self.analyze_text(others, laparams)
+
+        for obj in chain(empties, others):
+            obj.analyze(laparams)
+
+        self._objs = list(chain(textboxes, tables, others, empties))
+
+    def analyze_tables(self, elements: List[LTItem], laparams: LAParams):
+        if laparams.table_border_maxwidth is None:
+            # This setting means table analysis is disabled.
+            return [], elements
+
+        from .table import analyze_tables
+
+        return analyze_tables(self, elements, laparams)
+
+    def analyze_text(
+        self, elements: List[LTItem], laparams: LAParams
+    ) -> Tuple[List[LTTextBox], List[LTChar], List[LTItem]]:
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
-        (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar),
-                                       self)
-        for obj in otherobjs:
-            obj.analyze(laparams)
+        (textobjs, remaining) = fsplit(
+            lambda obj: isinstance(obj, LTChar), elements
+        )
+        (empties, textobjs) = fsplit(lambda obj: obj.is_empty(), textobjs)
         if not textobjs:
-            return
+            return ([], empties, remaining)
         textlines = list(self.group_objects(laparams, textobjs))
-        (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
-        for obj in empties:
-            obj.analyze(laparams)
         textboxes = list(self.group_textlines(laparams, textlines))
         if laparams.boxes_flow is None:
             for textbox in textboxes:
@@ -806,6 +851,7 @@ class LTLayoutContainer(LTContainer):
                     return (0, -box.x1, -box.y0)
                 else:
                     return (1, -box.y0, box.x0)
+
             textboxes.sort(key=getkey)
         else:
             self.groups = self.group_textboxes(laparams, textboxes)
@@ -814,8 +860,7 @@ class LTLayoutContainer(LTContainer):
                 group.analyze(laparams)
                 assigner.run(group)
             textboxes.sort(key=lambda box: box.index)
-        self._objs = textboxes + otherobjs + empties
-        return
+        return (textboxes, empties, remaining)
 
 
 class LTFigure(LTLayoutContainer):

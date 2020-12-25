@@ -2,6 +2,7 @@ import io
 import logging
 import re
 import sys
+from typing import TYPE_CHECKING
 from .pdfdevice import PDFTextDevice
 from .pdffont import PDFUnicodeNotDefined
 from .layout import LTContainer
@@ -23,6 +24,8 @@ from .utils import enc
 from .utils import bbox2str
 from . import utils
 
+if TYPE_CHECKING:
+    from .table import LTTable
 
 log = logging.getLogger(__name__)
 
@@ -285,14 +288,22 @@ class HTMLConverter(PDFConverter):
         return
 
     def write_header(self):
-        self.write('<html><head>\n')
-        if self.codec:
-            s = '<meta http-equiv="Content-Type" content="text/html; ' \
-                'charset=%s">\n' % self.codec
-        else:
-            s = '<meta http-equiv="Content-Type" content="text/html">\n'
-        self.write(s)
-        self.write('</head><body>\n')
+        self.write(
+            "<html><head>\n"
+            '<meta http-equiv="Content-Type" content="text/html'
+            + (f"; charset={self.codec}" if self.codec else "")
+            + '"/>\n'
+            "<style>\n"
+            "table, th, td {\n"
+            "  border: 1px solid black;\n"
+            "  border-collapse: collapse;\n"
+            "  table-layout:fixed;\n"
+            "  margin: 0px;\n"
+            "  padding: 0px;\n"
+            "}\n"
+            "</style>\n"
+            "</head><body>\n"
+        )
         return
 
     def write_footer(self):
@@ -384,6 +395,48 @@ class HTMLConverter(PDFConverter):
         self.write('<br>')
         return
 
+    def put_table(self, table: "LTTable"):
+        self.write(
+            '\n<table style="position: absolute; '
+            f"left:{table.x0 * self.scale:.1f}px; "
+            f"top:{(self._yoffset - table.y1) * self.scale:.1f}px; "
+            f"width:{table.width * self.scale:.1f}px; "
+            f'height:{table.height * self.scale:.1f}px">\n'
+        )
+        row = -1
+        for cell in table:
+            while row < cell.row:
+                if row >= 0:
+                    self.write("</tr>")
+                row += 1
+                h = (
+                    table.cell_to_point(0, row)[1]
+                    - table.cell_to_point(0, row + 1)[1]
+                )
+                self.write(
+                    f'<tr style="height:{(h * self.scale) - 1.0:.1f}px">\n'
+                )
+
+            self.write(
+                f'<td style="width:{(cell.width * self.scale) - 1.0:.1f}px"'
+            )
+            if cell.colspan > 1:
+                self.write(f' colspan="{cell.colspan}"')
+            if cell.rowspan > 1:
+                self.write(f' rowspan="{cell.rowspan}"')
+            self.write(">")
+            # todo: Fix positioning of text inside cells
+            # yield cell
+            self.write("</td>\n")
+        self.write("</tr>\n</table>\n")
+
+        # As a workaround, we put the text in absolutely positioned elements
+        # after the table. That makes them appear in the correct place, but
+        # technically the text is not in the table, so it interferes with e.g.
+        # selecting/copying or screen reading.
+        for cell in table:
+            yield cell
+
     def receive_layout(self, ltpage):
         def show_group(item):
             if isinstance(item, LTTextGroup):
@@ -417,6 +470,10 @@ class HTMLConverter(PDFConverter):
             elif isinstance(item, LTImage):
                 self.place_image(item, 1, item.x0, item.y1, item.width,
                                  item.height)
+            elif isinstance(item, LTTable):
+                for cell in self.put_table(item):
+                    for child in cell:
+                        render(child)
             else:
                 if self.layoutmode == 'exact':
                     if isinstance(item, LTTextLine):
@@ -452,6 +509,9 @@ class HTMLConverter(PDFConverter):
                     elif isinstance(item, LTText):
                         self.write_text(item.get_text())
             return
+
+        from .table import LTTable
+
         render(ltpage)
         self._yoffset += self.pagemargin
         return
