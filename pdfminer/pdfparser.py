@@ -68,7 +68,7 @@ class PDFParser(PSStackParser):
 
         elif token is self.KEYWORD_R:
             # reference to indirect object
-            if len(self.curstack) > 2:
+            if len(self.curstack) >= 2:
                 try:
                     ((_, objid), (_, genno)) = self.pop(2)
                     (objid, genno) = (int(objid), int(genno))
