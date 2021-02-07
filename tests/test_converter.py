@@ -48,6 +48,7 @@ class TestPaintPath():
         def get_types(path):
             return list(map(type, parse(path)))
 
+        # Standard rect
         assert_equal(get_types([
             ("m", 10, 90),
             ("l", 90, 90),
@@ -56,6 +57,7 @@ class TestPaintPath():
             ("h",),
         ]), [LTRect])
 
+        # Bowtie shape
         assert_equal(get_types([
             ("m", 110, 90),
             ("l", 190, 10),
@@ -64,6 +66,7 @@ class TestPaintPath():
             ("h",),
         ]), [LTCurve])
 
+        # Quadrilateral with one slanted side
         assert_equal(get_types([
             ("m", 210, 90),
             ("l", 290, 60),
@@ -72,6 +75,7 @@ class TestPaintPath():
             ("h",),
         ]), [LTCurve])
 
+        # Path with two rect subpaths
         assert_equal(get_types([
             ("m", 310, 90),
             ("l", 350, 90),
@@ -85,6 +89,7 @@ class TestPaintPath():
             ("h",),
         ]), [LTRect, LTRect])
 
+        # Path with one rect subpath and one pentagon
         assert_equal(get_types([
             ("m", 410, 90),
             ("l", 445, 90),
@@ -99,6 +104,7 @@ class TestPaintPath():
             ("h",),
         ]), [LTRect, LTCurve])
 
+        # Three types of simple lines
         assert_equal(get_types([
             # Vertical line
             ("m", 10, 30),
