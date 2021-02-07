@@ -9,12 +9,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fix issue of TypeError: cannot unpack non-iterable PDFObjRef object, when unpacking the value of 'DW2' ([#529](https://github.com/pdfminer/pdfminer.six/pull/529))
 - `PermissionError` when creating temporary filepaths on windows when running tests ([#469](https://github.com/pdfminer/pdfminer.six/issues/469))
 - Fix `.paint_path` logic for handling single line segments
+- Fix `.paint_path` logic for extracting point-on-curve positions of Beziér path commands
 
 ## Removed
 - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
 - Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
 - Support for non-standard output streams that are not binary ([#523](https://github.com/pdfminer/pdfminer.six/pull/523))
->>>>>>> develop
 
 ## [20201018]
 

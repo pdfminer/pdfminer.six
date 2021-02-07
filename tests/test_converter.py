@@ -138,6 +138,42 @@ class TestPaintPath():
         analyzer.set_ctm([1, 0, 0, 1, 0, 0])
         return analyzer
 
+    def test_paint_path_beziers(self):
+        """See section 4.4, table 4.9 of the PDF reference manual"""
+
+        def parse(path):
+            analyzer = self._get_analyzer()
+            analyzer.cur_item = LTContainer([0, 1000, 0, 1000])
+            analyzer.paint_path(PDFGraphicState(), False, False, False, path)
+            return analyzer.cur_item._objs
+
+        # "c" operator
+        assert parse([
+            ("m", 72.41, 433.89),
+            ("c", 72.41, 434.45, 71.96, 434.89, 71.41, 434.89),
+        ])[0].pts == [
+            (72.41, 433.89),
+            (71.41, 434.89),
+        ]
+
+        # "v" operator
+        assert parse([
+            ("m", 72.41, 433.89),
+            ("v", 71.96, 434.89, 71.41, 434.89),
+        ])[0].pts == [
+            (72.41, 433.89),
+            (71.41, 434.89),
+        ]
+
+        # "y" operator
+        assert parse([
+            ("m", 72.41, 433.89),
+            ("y", 72.41, 434.45, 71.41, 434.89),
+        ])[0].pts == [
+            (72.41, 433.89),
+            (71.41, 434.89),
+        ]
+
 
 class TestBinaryDetector():
     def test_stringio(self):
