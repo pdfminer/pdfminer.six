@@ -20,7 +20,6 @@ interactive elements and higher-level application data. A PDF file contains
 the objects making up a PDF document along with associated structural
 information, all represented as a single self-contained sequence of bytes. [1]_
 
-
 .. _topic_pdf_to_text_layout:
 
 Layout analysis algorithm
@@ -41,7 +40,6 @@ of layout objects on a PDF page.
 
     The output of the layout analysis is a hierarchy of layout objects.
 
-
 The output of the layout analysis heavily depends on a couple of parameters.
 All these parameters are part of the :ref:`api_laparams` class.
 
@@ -59,7 +57,6 @@ one line. How close they should be is determined by the `char_margin`
 *distance* between the bounding boxes of two characters should be smaller than
 the `char_margin` and the vertical *overlap* between the bounding boxes should
 be smaller than the `line_overlap`.
-
 
 .. raw:: html
     :file: ../_static/layout_analysis.html
@@ -117,7 +114,6 @@ boxes of the individual lines.
 
 .. raw:: html
     :file: ../_static/layout_analysis_group_boxes.html
-
 
 Working with rotated characters
 ===============================
