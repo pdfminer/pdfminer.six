@@ -125,7 +125,7 @@ def maketheparser():
              "is specified relative to the width of the character.")
     la_params.add_argument(
         "--line-margin", "-L", type=float, default=0.5,
-        help="If two lines are are close together they are considered to "
+        help="If two lines are close together they are considered to "
              "be part of the same paragraph. The margin is specified "
              "relative to the height of a line.")
     la_params.add_argument(
