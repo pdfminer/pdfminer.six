@@ -56,9 +56,9 @@ bottom-left corner and upper-right corner, i.e. its bounding box. Pdfminer
 Characters that are both horizontally and vertically close are grouped onto
 one line. How close they should be is determined by the `char_margin`
 (M in figure) and the `line_overlap` (not in figure) parameter. The horizontal
-*distance* between the bounding boxes of two characters should be smaller that
+*distance* between the bounding boxes of two characters should be smaller than
 the `char_margin` and the vertical *overlap* between the bounding boxes should
-be smaller the the `line_overlap`.
+be smaller than the `line_overlap`.
 
 
 .. raw:: html
