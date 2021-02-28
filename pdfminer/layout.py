@@ -34,23 +34,27 @@ class LAParams:
 
     :param line_overlap: If two characters have more overlap than this they
         are considered to be on the same line. The overlap is specified
-        relative to the minimum height of both characters.
+        as a fraction of the minimum height of both characters.
     :param char_margin: If two characters are closer together than this
         margin they are considered part of the same line. The margin is
-        specified relative to the width of the character.
+        specified as a fraction of the width of the character.
     :param word_margin: If two characters on the same line are further apart
         than this margin then they are considered to be two separate words, and
         an intermediate space will be added for readability. The margin is
-        specified relative to the width of the character.
+        specified as a fraction of the width of the character.
     :param line_margin: If two lines are are close together they are
         considered to be part of the same paragraph. The margin is
-        specified relative to the height of a line.
+        specified as a fraction of the height of a line.
     :param boxes_flow: Specifies how much a horizontal and vertical position
         of a text matters when determining the order of text boxes. The value
         should be within the range of -1.0 (only horizontal position
         matters) to +1.0 (only vertical position matters). You can also pass
         `None` to disable advanced layout analysis, and instead return text
         based on the position of the bottom left corner of the text box.
+    :param lines_merge: A function that determines when to merge lines
+        (`Plane, LTTextLine, LTTextLine -> bool`).
+    :param boxes_merge: A function that determines when to merge boxes
+        (`Plane, LTTextBox, LTTextBox -> bool`).
     :param detect_vertical: If vertical text should be considered during
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
@@ -63,6 +67,8 @@ class LAParams:
                  line_margin=0.5,
                  word_margin=0.1,
                  boxes_flow=0.5,
+                 lines_merge=None,
+                 boxes_merge=None,
                  detect_vertical=False,
                  all_texts=False):
         self.line_overlap = line_overlap
@@ -70,6 +76,8 @@ class LAParams:
         self.line_margin = line_margin
         self.word_margin = word_margin
         self.boxes_flow = boxes_flow
+        self.lines_merge = lines_merge
+        self.boxes_merge = boxes_merge
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
 
@@ -408,6 +416,9 @@ class LTTextLine(LTTextContainer):
         LTContainer.add(self, LTAnno('\n'))
         return
 
+    def get_bbox_plus_tolerance(self, d):
+        raise NotImplementedError
+
     def find_neighbors(self, plane, ratio):
         raise NotImplementedError
 
@@ -427,6 +438,9 @@ class LTTextLineHorizontal(LTTextLine):
         LTTextLine.add(self, obj)
         return
 
+    def get_bbox_with_tolerance(self, d):
+        return (self.x0, self.y0 - d, self.x1, self.y1 + d)
+
     def find_neighbors(self, plane, ratio):
         """
         Finds neighboring LTTextLineHorizontals in the plane.
@@ -437,7 +451,7 @@ class LTTextLineHorizontal(LTTextLine):
         centrally-aligned.
         """
         d = ratio * self.height
-        objs = plane.find((self.x0, self.y0 - d, self.x1, self.y1 + d))
+        objs = plane.find(self.get_bbox_plus_tolerance(d))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal) and
                     self._is_same_height_as(obj, tolerance=d) and
@@ -483,6 +497,9 @@ class LTTextLineVertical(LTTextLine):
         LTTextLine.add(self, obj)
         return
 
+    def get_bbox_with_tolerance(self, d):
+        return (self.x0 - d, self.y0, self.x1 + d, self.y1)
+
     def find_neighbors(self, plane, ratio):
         """
         Finds neighboring LTTextLineVerticals in the plane.
@@ -493,7 +510,7 @@ class LTTextLineVertical(LTTextLine):
         centrally-aligned.
         """
         d = ratio * self.width
-        objs = plane.find((self.x0 - d, self.y0, self.x1 + d, self.y1))
+        objs = plane.find(self.get_bbox_plus_tolerance(d))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineVertical) and
                     self._is_same_width_as(obj, tolerance=d) and
@@ -596,8 +613,8 @@ class LTLayoutContainer(LTContainer):
         self.groups = None
         return
 
-    # group_objects: group text object to textlines.
     def group_objects(self, laparams, objs):
+        """Group text object into textlines."""
         obj0 = None
         line = None
         for obj1 in objs:
@@ -672,14 +689,22 @@ class LTLayoutContainer(LTContainer):
         return
 
     def group_textlines(self, laparams, lines):
-        """Group neighboring lines to textboxes"""
+        """Group neighboring lines into textboxes."""
+
         plane = Plane(self.bbox)
         plane.extend(lines)
+        plane.extend(o for o in self._objs if isinstance(o, LTCurve))
         boxes = {}
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
             members = [line]
             for obj1 in neighbors:
+                if laparams.lines_merge and \
+                        not laparams.lines_merge(plane, line, obj1):
+                    continue
+                if laparams.lines_merge and \
+                        not laparams.lines_merge(plane, line, obj1):
+                    continue
                 members.append(obj1)
                 if obj1 in boxes:
                     members.extend(boxes.pop(obj1))
@@ -722,7 +747,7 @@ class LTLayoutContainer(LTContainer):
         """
 
         def dist(obj1, obj2):
-            """A distance function between two TextBoxes.
+            """Compute the distance between two textboxes.
 
             Consider the bounding rectangle for obj1 and obj2.
             Return its area less the areas of obj1 and obj2,
@@ -740,8 +765,8 @@ class LTLayoutContainer(LTContainer):
             return (x1 - x0) * (y1 - y0) \
                 - obj1.width*obj1.height - obj2.width*obj2.height
 
-        def isany(obj1, obj2):
-            """Check if there's any other object between obj1 and obj2."""
+        def any_between(obj1, obj2):
+            """Get the set of objects between obj1 and obj2."""
             x0 = min(obj1.x0, obj2.x0)
             y0 = min(obj1.y0, obj2.y0)
             x1 = max(obj1.x1, obj2.x1)
@@ -762,12 +787,16 @@ class LTLayoutContainer(LTContainer):
         plane.extend(boxes)
         done = set()
         while len(dists) > 0:
-            (skip_isany, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
+            (check_any_between, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
             # Skip objects that are already merged
             if (id1 not in done) and (id2 not in done):
-                if skip_isany and isany(obj1, obj2):
+                if check_any_between and any_between(obj1, obj2):
                     heapq.heappush(dists, (True, d, id1, id2, obj1, obj2))
                     continue
+                if laparams.boxes_merge and \
+                        not laparams.boxes_merge(plane, obj1, obj2):
+                    continue
+
                 if isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or \
                         isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL)):
                     group = LTTextGroupTBRL([obj1, obj2])

@@ -369,7 +369,7 @@ class Plane:
             self.add(obj)
 
     def add(self, obj):
-        """place an object."""
+        """Add an object."""
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
             if k not in self._grid:
                 r = []
@@ -381,7 +381,7 @@ class Plane:
         self._objs.add(obj)
 
     def remove(self, obj):
-        """displace an object."""
+        """Remove an object."""
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
             try:
                 self._grid[k].remove(obj)
@@ -390,7 +390,7 @@ class Plane:
         self._objs.remove(obj)
 
     def find(self, bbox):
-        """finds objects that are in a certain area."""
+        """Find objects that intersect a specified bounding box."""
         (x0, y0, x1, y1) = bbox
         done = set()
         for k in self._getrange(bbox):
