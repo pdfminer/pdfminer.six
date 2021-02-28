@@ -1,5 +1,5 @@
 """
-Miscellaneous Routines.
+Miscellaneous Routines
 """
 import io
 import pathlib

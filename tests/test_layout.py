@@ -2,7 +2,7 @@ import unittest
 
 from pdfminer.layout import (
     LTLayoutContainer,
-    LAParams,
+    LAParams, LTLine,
     LTTextLineHorizontal,
     LTTextLineVertical,
 )
@@ -22,6 +22,44 @@ class TestGroupTextLines(unittest.TestCase):
         line1.set_bbox((0, 0, 50, 5))
         line2 = LTTextLineHorizontal(laparams.word_margin)
         line2.set_bbox((0, 50, 50, 55))
+        lines = [line1, line2]
+
+        textboxes = list(layout.group_textlines(laparams, lines))
+
+        self.assertEqual(len(textboxes), 2)
+
+    def test_curve_between_textlines(self):
+        """
+        LTTextLines should not be grouped into a single LTTextBox when there is
+        an LTCurve between.
+        """
+
+        def any_in_overlap(plane, obj1, obj2):
+            """Check if there are any objects in the overlap between obj1 and
+            obj2.
+
+            This augments the bounding boxes of the LTTextLines with
+            line_margin, as in find_neighbors.
+            """
+            bbox1 = obj1.get_bbox_plus_tolerance(
+                laparams.line_margin * obj1.height)
+            bbox2 = obj2.get_bbox_plus_tolerance(
+                laparams.line_margin * obj2.height)
+            x0 = max(bbox1[0], bbox2[0])
+            y0 = max(bbox1[1], bbox2[1])
+            x1 = min(bbox1[2], bbox2[2])
+            y1 = min(bbox1[3], bbox2[3])
+            objs = set(plane.find((x0, y0, x1, y1)))
+            return not bool(objs.difference((obj1, obj2)))
+
+        laparams = LAParams(lines_merge=any_in_overlap)
+        layout = LTLayoutContainer((0, 0, 50, 50))
+        separator_curve = LTLine(1, (0, 5), (50, 5))
+        layout.add(separator_curve)
+        line1 = LTTextLineHorizontal(laparams.word_margin)
+        line1.set_bbox((0, 0, 50, 5))
+        line2 = LTTextLineHorizontal(laparams.word_margin)
+        line2.set_bbox((0, 5, 50, 10))
         lines = [line1, line2]
 
         textboxes = list(layout.group_textlines(laparams, lines))
