@@ -1,8 +1,9 @@
 import unittest
 
-from helpers import absolute_sample_path
 from pdfminer.high_level import extract_text, extract_pages
 from pdfminer.layout import LAParams, LTTextContainer
+
+from .helpers import absolute_sample_path
 
 
 def run_with_string(sample_path, laparams=None):

@@ -1,9 +1,10 @@
 import warnings
 
-from helpers import absolute_sample_path
-from tempfilepath import TemporaryFilePath
 from pdfminer.pdfdocument import PDFNoValidXRefWarning
 from tools import dumppdf
+
+from .helpers import absolute_sample_path
+from .tempfilepath import TemporaryFilePath
 
 
 def run(filename, options=None):

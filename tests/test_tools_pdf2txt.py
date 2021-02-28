@@ -3,8 +3,9 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 import tools.pdf2txt as pdf2txt
-from helpers import absolute_sample_path
-from tempfilepath import TemporaryFilePath
+
+from .helpers import absolute_sample_path
+from .tempfilepath import TemporaryFilePath
 
 
 def run(sample_path, options=None):

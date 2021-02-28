@@ -4,6 +4,7 @@ See: https://github.com/adobe-type-tools/agl-specification#2-the-mapping
 While not in the specification, lowercase unicode often occurs in pdf's.
 Therefore lowercase unittest variants are added.
 """
+
 from nose.tools import assert_raises
 
 from pdfminer.encodingdb import name2unicode, EncodingDB

@@ -1,9 +1,10 @@
 from nose.tools import assert_equal, assert_raises
 import pathlib
 
-from helpers import absolute_sample_path
 from pdfminer.layout import LTComponent
 from pdfminer.utils import open_filename, Plane, shorten_str
+
+from .helpers import absolute_sample_path
 
 
 class TestOpenFilename:

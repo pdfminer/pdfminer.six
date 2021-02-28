@@ -1,9 +1,10 @@
 from nose.tools import raises
 
-from helpers import absolute_sample_path
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import PDFObjectNotFound
+
+from .helpers import absolute_sample_path
 
 
 class TestPdfDocument(object):

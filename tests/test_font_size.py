@@ -1,6 +1,7 @@
-from helpers import absolute_sample_path
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTChar, LTTextBox
+
+from .helpers import absolute_sample_path
 
 
 def test_font_size():

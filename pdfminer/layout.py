@@ -30,7 +30,7 @@ class IndexAssigner:
 
 
 class LAParams:
-    """Parameters for layout analysis
+    """Parameters for layout analysis.
 
     :param line_overlap: If two characters have more overlap than this they
         are considered to be on the same line. The overlap is specified
@@ -102,7 +102,7 @@ class LAParams:
 
 
 class LTItem:
-    """Interface for things that can be analyzed"""
+    """Interface for things that can be analyzed."""
 
     def analyze(self, laparams):
         """Perform the layout analysis."""
@@ -110,7 +110,7 @@ class LTItem:
 
 
 class LTText:
-    """Interface for things that have text"""
+    """Interface for things that have text."""
 
     def __repr__(self):
         return ('<%s %r>' %
@@ -122,7 +122,7 @@ class LTText:
 
 
 class LTComponent(LTItem):
-    """Object with a bounding box"""
+    """Object with a bounding box."""
 
     def __init__(self, bbox):
         LTItem.__init__(self)
@@ -198,7 +198,7 @@ class LTComponent(LTItem):
 
 
 class LTCurve(LTComponent):
-    """A generic Bezier curve"""
+    """A generic Bezier curve."""
 
     def __init__(self, linewidth, pts, stroke=False, fill=False, evenodd=False,
                  stroking_color=None, non_stroking_color=None):
@@ -236,7 +236,7 @@ class LTRect(LTCurve):
     """
 
     def __init__(self, linewidth, bbox, stroke=False, fill=False,
-                 evenodd=False, stroking_color=None,  non_stroking_color=None):
+                 evenodd=False, stroking_color=None, non_stroking_color=None):
         (x0, y0, x1, y1) = bbox
         LTCurve.__init__(self, linewidth,
                          [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke,
@@ -270,7 +270,7 @@ class LTImage(LTComponent):
 
 
 class LTAnno(LTItem, LTText):
-    """Actual letter in the text as a Unicode string.
+    """An annotational letter in the text, as a Unicode string.
 
     Note that, while a LTChar object has actual boundaries, LTAnno objects does
     not, as these are "virtual" characters, inserted by a layout analyzer
@@ -286,7 +286,7 @@ class LTAnno(LTItem, LTText):
 
 
 class LTChar(LTComponent, LTText):
-    """Actual letter in the text as a Unicode string."""
+    """An actual letter in the text, as a Unicode string."""
 
     def __init__(self, matrix, font, fontsize, scaling, rise,
                  text, textwidth, textdisp, ncs, graphicstate):
@@ -343,7 +343,7 @@ class LTChar(LTComponent, LTText):
 
 
 class LTContainer(LTComponent):
-    """Object that can be extended and analyzed"""
+    """An object that can be extended and analyzed."""
 
     def __init__(self, bbox):
         LTComponent.__init__(self, bbox)
@@ -438,12 +438,12 @@ class LTTextLineHorizontal(LTTextLine):
         LTTextLine.add(self, obj)
         return
 
-    def get_bbox_with_tolerance(self, d):
+    def get_bbox_plus_tolerance(self, d):
         return (self.x0, self.y0 - d, self.x1, self.y1 + d)
 
     def find_neighbors(self, plane, ratio):
         """
-        Finds neighboring LTTextLineHorizontals in the plane.
+        Find neighboring LTTextLineHorizontals in the plane.
 
         Returns a list of other LTTestLineHorizontals in the plane which are
         close to self. "Close" can be controlled by ratio. The returned objects
@@ -461,19 +461,19 @@ class LTTextLineHorizontal(LTTextLine):
 
     def _is_left_aligned_with(self, other, tolerance=0):
         """
-        Whether the left-hand edge of `other` is within `tolerance`.
+        Check whether the left-hand edge of `other` is within `tolerance`.
         """
         return abs(other.x0 - self.x0) <= tolerance
 
     def _is_right_aligned_with(self, other, tolerance=0):
         """
-        Whether the right-hand edge of `other` is within `tolerance`.
+        Check whether the right-hand edge of `other` is within `tolerance`.
         """
         return abs(other.x1 - self.x1) <= tolerance
 
     def _is_centrally_aligned_with(self, other, tolerance=0):
         """
-        Whether the horizontal center of `other` is within `tolerance`.
+        Check whether the horizontal center of `other` is within `tolerance`.
         """
         return abs(
             (other.x0 + other.x1) / 2 - (self.x0 + self.x1) / 2) <= tolerance
@@ -497,12 +497,12 @@ class LTTextLineVertical(LTTextLine):
         LTTextLine.add(self, obj)
         return
 
-    def get_bbox_with_tolerance(self, d):
+    def get_bbox_plus_tolerance(self, d):
         return (self.x0 - d, self.y0, self.x1 + d, self.y1)
 
     def find_neighbors(self, plane, ratio):
         """
-        Finds neighboring LTTextLineVerticals in the plane.
+        Find neighboring LTTextLineVerticals in the plane.
 
         Returns a list of other LTTextLineVerticals in the plane which are
         close to self. "Close" can be controlled by ratio. The returned objects
@@ -520,19 +520,19 @@ class LTTextLineVertical(LTTextLine):
 
     def _is_lower_aligned_with(self, other, tolerance=0):
         """
-        Whether the lower edge of `other` is within `tolerance`.
+        Check whether the lower edge of `other` is within `tolerance`.
         """
         return abs(other.y0 - self.y0) <= tolerance
 
     def _is_upper_aligned_with(self, other, tolerance=0):
         """
-        Whether the upper edge of `other` is within `tolerance`.
+        Check whether the upper edge of `other` is within `tolerance`.
         """
         return abs(other.y1 - self.y1) <= tolerance
 
     def _is_centrally_aligned_with(self, other, tolerance=0):
         """
-        Whether the vertical center of `other` is within `tolerance`.
+        Check whether the vertical center of `other` is within `tolerance`.
         """
         return abs(
             (other.y0 + other.y1) / 2 - (self.y0 + self.y1) / 2) <= tolerance

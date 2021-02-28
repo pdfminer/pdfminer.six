@@ -16,6 +16,7 @@ class TestGroupTextLines(unittest.TestCase):
         separate LTTextBoxes if they do not overlap. Even when the bounding box
         of the parent container does not contain all the lines.
         """
+
         laparams = LAParams()
         layout = LTLayoutContainer((0, 0, 50, 50))
         line1 = LTTextLineHorizontal(laparams.word_margin)

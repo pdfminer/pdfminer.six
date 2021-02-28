@@ -308,7 +308,7 @@ class PDFContentParser(PSStackParser):
 
 
 class PDFPageInterpreter:
-    """Processor for the content of a PDF page
+    """Processor for the content of a PDF page.
 
     Reference: PDF Reference, Appendix A, Operator Summary
     """
@@ -398,94 +398,94 @@ class PDFPageInterpreter:
         return
 
     def do_q(self):
-        """Save graphics state"""
+        """Save graphics state."""
         self.gstack.append(self.get_current_state())
         return
 
     def do_Q(self):
-        """Restore graphics state"""
+        """Restore graphics state."""
         if self.gstack:
             self.set_current_state(self.gstack.pop())
         return
 
     def do_cm(self, a1, b1, c1, d1, e1, f1):
-        """Concatenate matrix to current transformation matrix"""
+        """Concatenate matrix to current transformation matrix."""
         self.ctm = mult_matrix((a1, b1, c1, d1, e1, f1), self.ctm)
         self.device.set_ctm(self.ctm)
         return
 
     def do_w(self, linewidth):
-        """Set line width"""
+        """Set line width."""
         self.graphicstate.linewidth = linewidth
         return
 
     def do_J(self, linecap):
-        """Set line cap style"""
+        """Set line cap style."""
         self.graphicstate.linecap = linecap
         return
 
     def do_j(self, linejoin):
-        """Set line join style"""
+        """Set line join style."""
         self.graphicstate.linejoin = linejoin
         return
 
     def do_M(self, miterlimit):
-        """Set miter limit"""
+        """Set miter limit."""
         self.graphicstate.miterlimit = miterlimit
         return
 
     def do_d(self, dash, phase):
-        """Set line dash pattern"""
+        """Set line dash pattern."""
         self.graphicstate.dash = (dash, phase)
         return
 
     def do_ri(self, intent):
-        """Set color rendering intent"""
+        """Set color rendering intent."""
         self.graphicstate.intent = intent
         return
 
     def do_i(self, flatness):
-        """Set flatness tolerance"""
+        """Set flatness tolerance."""
         self.graphicstate.flatness = flatness
         return
 
     def do_gs(self, name):
-        """Set parameters from graphics state parameter dictionary"""
+        """Set parameters from graphics state parameter dictionary."""
         # todo
         return
 
     def do_m(self, x, y):
-        """Begin new subpath"""
+        """Begin new subpath."""
         self.curpath.append(('m', x, y))
         return
 
     def do_l(self, x, y):
-        """Append straight line segment to path"""
+        """Append straight line segment to path."""
         self.curpath.append(('l', x, y))
         return
 
     def do_c(self, x1, y1, x2, y2, x3, y3):
-        """Append curved segment to path (three control points)"""
+        """Append curved segment to path (three control points)."""
         self.curpath.append(('c', x1, y1, x2, y2, x3, y3))
         return
 
     def do_v(self, x2, y2, x3, y3):
-        """Append curved segment to path (initial point replicated)"""
+        """Append curved segment to path (initial point replicated)."""
         self.curpath.append(('v', x2, y2, x3, y3))
         return
 
     def do_y(self, x1, y1, x3, y3):
-        """Append curved segment to path (final point replicated)"""
+        """Append curved segment to path (final point replicated)."""
         self.curpath.append(('y', x1, y1, x3, y3))
         return
 
     def do_h(self):
-        """Close subpath"""
+        """Close subpath."""
         self.curpath.append(('h',))
         return
 
     def do_re(self, x, y, w, h):
-        """Append rectangle to path"""
+        """Append rectangle to path."""
         self.curpath.append(('m', x, y))
         self.curpath.append(('l', x+w, y))
         self.curpath.append(('l', x+w, y+h))
@@ -494,77 +494,77 @@ class PDFPageInterpreter:
         return
 
     def do_S(self):
-        """Stroke path"""
+        """Stroke path."""
         self.device.paint_path(self.graphicstate, True, False, False,
                                self.curpath)
         self.curpath = []
         return
 
     def do_s(self):
-        """Close and stroke path"""
+        """Close and stroke path."""
         self.do_h()
         self.do_S()
         return
 
     def do_f(self):
-        """Fill path using nonzero winding number rule"""
+        """Fill path using nonzero winding number rule."""
         self.device.paint_path(self.graphicstate, False, True, False,
                                self.curpath)
         self.curpath = []
         return
 
     def do_F(self):
-        """Fill path using nonzero winding number rule (obsolete)"""
+        """Fill path using nonzero winding number rule (obsolete)."""
         return self.do_f()
 
     def do_f_a(self):
-        """Fill path using even-odd rule"""
+        """Fill path using even-odd rule."""
         self.device.paint_path(self.graphicstate, False, True, True,
                                self.curpath)
         self.curpath = []
         return
 
     def do_B(self):
-        """Fill and stroke path using nonzero winding number rule"""
+        """Fill and stroke path using nonzero winding number rule."""
         self.device.paint_path(self.graphicstate, True, True, False,
                                self.curpath)
         self.curpath = []
         return
 
     def do_B_a(self):
-        """Fill and stroke path using even-odd rule"""
+        """Fill and stroke path using even-odd rule."""
         self.device.paint_path(self.graphicstate, True, True, True,
                                self.curpath)
         self.curpath = []
         return
 
     def do_b(self):
-        """Close, fill, and stroke path using nonzero winding number rule"""
+        """Close, fill, and stroke path using nonzero winding number rule."""
         self.do_h()
         self.do_B()
         return
 
     def do_b_a(self):
-        """Close, fill, and stroke path using even-odd rule"""
+        """Close, fill, and stroke path using even-odd rule."""
         self.do_h()
         self.do_B_a()
         return
 
     def do_n(self):
-        """End path without filling or stroking"""
+        """End path without filling or stroking."""
         self.curpath = []
         return
 
     def do_W(self):
-        """Set clipping path using nonzero winding number rule"""
+        """Set clipping path using nonzero winding number rule."""
         return
 
     def do_W_a(self):
-        """Set clipping path using even-odd rule"""
+        """Set clipping path using even-odd rule."""
         return
 
     def do_CS(self, name):
-        """Set color space for stroking operations
+        """Set color space for stroking operations.
 
         Introduced in PDF 1.1
         """
@@ -576,7 +576,7 @@ class PDFPageInterpreter:
         return
 
     def do_cs(self, name):
-        """Set color space for nonstroking operations"""
+        """Set color space for nonstroking operations."""
         try:
             self.ncs = self.csmap[literal_name(name)]
         except KeyError:
@@ -585,32 +585,32 @@ class PDFPageInterpreter:
         return
 
     def do_G(self, gray):
-        """Set gray level for stroking operations"""
+        """Set gray level for stroking operations."""
         self.graphicstate.scolor = gray
         return
 
     def do_g(self, gray):
-        """Set gray level for nonstroking operations"""
+        """Set gray level for nonstroking operations."""
         self.graphicstate.ncolor = gray
         return
 
     def do_RG(self, r, g, b):
-        """Set RGB color for stroking operations"""
+        """Set RGB color for stroking operations."""
         self.graphicstate.scolor = (r, g, b)
         return
 
     def do_rg(self, r, g, b):
-        """Set RGB color for nonstroking operations"""
+        """Set RGB color for nonstroking operations."""
         self.graphicstate.ncolor = (r, g, b)
         return
 
     def do_K(self, c, m, y, k):
-        """Set CMYK color for stroking operations"""
+        """Set CMYK color for stroking operations."""
         self.graphicstate.scolor = (c, m, y, k)
         return
 
     def do_k(self, c, m, y, k):
-        """Set CMYK color for nonstroking operations"""
+        """Set CMYK color for nonstroking operations."""
         self.graphicstate.ncolor = (c, m, y, k)
         return
 
@@ -626,7 +626,7 @@ class PDFPageInterpreter:
         return
 
     def do_scn(self):
-        """Set color for nonstroking operations"""
+        """Set color for nonstroking operations."""
         if self.ncs:
             n = self.ncs.ncomponents
         else:
@@ -637,21 +637,21 @@ class PDFPageInterpreter:
         return
 
     def do_SC(self):
-        """Set color for stroking operations"""
+        """Set color for stroking operations."""
         self.do_SCN()
         return
 
     def do_sc(self):
-        """Set color for nonstroking operations"""
+        """Set color for nonstroking operations."""
         self.do_scn()
         return
 
     def do_sh(self, name):
-        """Paint area defined by shading pattern"""
+        """Paint area defined by shading pattern."""
         return
 
     def do_BT(self):
-        """Begin text object
+        """Begin text object.
 
         Initializing the text matrix, Tm, and the text line matrix, Tlm, to
         the identity matrix. Text objects cannot be nested; a second BT cannot
@@ -661,39 +661,39 @@ class PDFPageInterpreter:
         return
 
     def do_ET(self):
-        """End a text object"""
+        """End a text object."""
         return
 
     def do_BX(self):
-        """Begin compatibility section"""
+        """Begin compatibility section."""
         return
 
     def do_EX(self):
-        """End compatibility section"""
+        """End compatibility section."""
         return
 
     def do_MP(self, tag):
-        """Define marked-content point"""
+        """Define marked-content point."""
         self.device.do_tag(tag)
         return
 
     def do_DP(self, tag, props):
-        """Define marked-content point with property list"""
+        """Define marked-content point with property list."""
         self.device.do_tag(tag, props)
         return
 
     def do_BMC(self, tag):
-        """Begin marked-content sequence"""
+        """Begin marked-content sequence."""
         self.device.begin_tag(tag)
         return
 
     def do_BDC(self, tag, props):
-        """Begin marked-content sequence with property list"""
+        """Begin marked-content sequence with property list."""
         self.device.begin_tag(tag, props)
         return
 
     def do_EMC(self):
-        """End marked-content sequence"""
+        """End marked-content sequence."""
         self.device.end_tag()
         return
 
@@ -736,7 +736,7 @@ class PDFPageInterpreter:
         return
 
     def do_Tf(self, fontid, fontsize):
-        """Set the text font
+        """Set the text font.
 
         :param fontid: the name of a font resource in the Font subdictionary
             of the current resource dictionary
@@ -752,12 +752,12 @@ class PDFPageInterpreter:
         return
 
     def do_Tr(self, render):
-        """Set the text rendering mode"""
+        """Set the text rendering mode."""
         self.textstate.render = render
         return
 
     def do_Ts(self, rise):
-        """Set the text rise
+        """Set the text rise.
 
         :param rise: a number expressed in unscaled text space units
         """
@@ -765,14 +765,14 @@ class PDFPageInterpreter:
         return
 
     def do_Td(self, tx, ty):
-        """Move text position"""
+        """Move text position."""
         (a, b, c, d, e, f) = self.textstate.matrix
         self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
         self.textstate.linematrix = (0, 0)
         return
 
     def do_TD(self, tx, ty):
-        """Move text position and set leading"""
+        """Move text position and set leading."""
         (a, b, c, d, e, f) = self.textstate.matrix
         self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
         self.textstate.leading = ty
@@ -780,13 +780,13 @@ class PDFPageInterpreter:
         return
 
     def do_Tm(self, a, b, c, d, e, f):
-        """Set text matrix and text line matrix"""
+        """Set text matrix and text line matrix."""
         self.textstate.matrix = (a, b, c, d, e, f)
         self.textstate.linematrix = (0, 0)
         return
 
     def do_T_a(self):
-        """Move to start of next text line"""
+        """Move to start of next text line."""
         (a, b, c, d, e, f) = self.textstate.matrix
         self.textstate.matrix = (a, b, c, d, self.textstate.leading*c+e,
                                  self.textstate.leading*d+f)
@@ -794,7 +794,7 @@ class PDFPageInterpreter:
         return
 
     def do_TJ(self, seq):
-        """Show text, allowing individual glyph positioning"""
+        """Show text, allowing individual glyph positioning."""
         if self.textstate.font is None:
             if settings.STRICT:
                 raise PDFInterpreterError('No font specified!')
@@ -804,12 +804,12 @@ class PDFPageInterpreter:
         return
 
     def do_Tj(self, s):
-        """Show text"""
+        """Show text."""
         self.do_TJ([s])
         return
 
     def do__q(self, s):
-        """Move to next line and show text
+        """Move to next line and show text.
 
         The ' (single quote) operator.
         """
@@ -818,7 +818,7 @@ class PDFPageInterpreter:
         return
 
     def do__w(self, aw, ac, s):
-        """Set word and character spacing, move to next line, and show text
+        """Set word and character spacing, move to next line, and show text.
 
         The " (double quote) operator.
         """
@@ -828,15 +828,15 @@ class PDFPageInterpreter:
         return
 
     def do_BI(self):
-        """Begin inline image object"""
+        """Begin inline image object."""
         return
 
     def do_ID(self):
-        """Begin inline image data"""
+        """Begin inline image data."""
         return
 
     def do_EI(self, obj):
-        """End inline image object"""
+        """End inline image object."""
         if isinstance(obj, PDFStream) and 'W' in obj and 'H' in obj:
             iobjid = str(id(obj))
             self.device.begin_figure(iobjid, (0, 0, 1, 1), MATRIX_IDENTITY)
@@ -845,7 +845,7 @@ class PDFPageInterpreter:
         return
 
     def do_Do(self, xobjid):
-        """Invoke named XObject"""
+        """Invoke named XObject."""
         xobjid = literal_name(xobjid)
         try:
             xobj = stream_value(self.xobjmap[xobjid])
