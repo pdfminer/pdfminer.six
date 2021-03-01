@@ -81,12 +81,12 @@ class TestExtractText(unittest.TestCase):
         test_file = "simple4.pdf"
         s = run_with_file(test_file)
         self.assertEqual(s, test_strings[test_file])
-    
+
     def test_issue_566_cmap_bytes(self):
         test_file = "contrib/issue_566_test_1.pdf"
         s = run_with_file(test_file)
         self.assertEqual(s.strip(), test_strings[test_file])
-    
+
     def test_issue_566_cid_range(self):
         test_file = "contrib/issue_566_test_2.pdf"
         s = run_with_file(test_file)
