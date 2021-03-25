@@ -161,7 +161,7 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
                             'D'):
                         dest = resolve_dest(action['D'])
                         pageno = pages[dest[0].objid]
-            s = e(title).encode('utf-8', 'xmlcharrefreplace')
+            s = e(title)
             outfp.write('<outline level="{!r}" title="{}">\n'.format(level, s))
             if dest is not None:
                 outfp.write('<dest>')
