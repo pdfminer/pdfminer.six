@@ -135,7 +135,7 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
              in enumerate(PDFPage.create_pages(doc), 1)}
 
     def resolve_dest(dest):
-        if isinstance(dest, str):
+        if isinstance(dest, str) or isinstance(dest, bytes):
             dest = resolve1(doc.get_dest(dest))
         elif isinstance(dest, PSLiteral):
             dest = resolve1(doc.get_dest(dest.name))
