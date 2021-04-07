@@ -43,13 +43,14 @@ def ascii85decode(data):
 
 
 # asciihexdecode(data)
-hex_re = re.compile(br'([a-f\d]{2})', re.IGNORECASE)
-trail_re = re.compile(br'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
+hex_re = re.compile(br'([\da-fA-F]{2})')
+trail_re = re.compile(br'^(?:[\da-fA-F]{2}|\s)*([\da-fA-F])[\s>]*$')
 
 
 def asciihexdecode(data):
     """
-    ASCIIHexDecode filter: PDFReference v1.4 section 3.3.1
+    ASCIIHexDecode filter from PDFReference v1.4, section 3.3.1:
+
     For each pair of ASCII hexadecimal digits (0-9 and A-F or a-f), the
     ASCIIHexDecode filter produces one byte of binary data. All white-space
     characters are ignored. A right angle bracket character (>) indicates
@@ -57,15 +58,9 @@ def asciihexdecode(data):
     the EOD marker after reading an odd number of hexadecimal digits, it
     will behave as if a 0 followed the last digit.
     """
-    def decode(x):
-        i = int(x, 16)
-        return bytes((i,))
 
-    out = b''
-    for x in hex_re.findall(data):
-        out += decode(x)
-
+    out = bytes(int(i, 16) for i in hex_re.findall(data))
     m = trail_re.search(data)
     if m:
-        out += decode(m.group(1)+b'0')
+        out += bytes((int(m.group(1)+b'0', 16), ))
     return out
