@@ -56,6 +56,7 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
         imagewriter = ImageWriter(output_dir)
 
     rsrcmgr = PDFResourceManager(caching=not disable_caching)
+    device = None
 
     if output_type == 'text':
         device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
@@ -74,6 +75,8 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
                                imagewriter=imagewriter)
     elif output_type == 'tag':
         device = TagExtractor(rsrcmgr, outfp, codec=codec)
+    elif device is None:
+        raise ValueError(f"{output_type=} does not make sense")
 
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     for page in PDFPage.get_pages(inf,
