@@ -46,6 +46,7 @@ To read text from a PDF and print it on the command line:
     ...     from io import StringIO
     ... else:
     ...     from io import BytesIO as StringIO
+    >>> from pdfminer.high_level import extract_text_to_fp
     >>> output_string = StringIO()
     >>> with open('samples/simple1.pdf', 'rb') as fin:
     ...     extract_text_to_fp(fin, output_string)
