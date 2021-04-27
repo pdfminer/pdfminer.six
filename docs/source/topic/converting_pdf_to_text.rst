@@ -3,7 +3,7 @@
 Converting a PDF file to text
 *****************************
 
-Most PDF files look like they contain well structured text. But the reality  is
+Most PDF files look like they contain well structured text. But the reality is
 that a PDF file does not contain anything that resembles paragraphs,
 sentences or even words. When it comes to text, a PDF file is only aware of
 the characters and their placement.
@@ -33,7 +33,7 @@ paragraphs because meaningful groups of nearby characters can be made.
 The layout analysis consists of three different stages: it groups characters
 into words and lines, then it groups lines into boxes and finally it groups
 textboxes hierarchically. These stages are discussed in the following
-sections.  The resulting output of the layout analysis is an ordered hierarchy
+sections. The resulting output of the layout analysis is an ordered hierarchy
 of layout objects on a PDF page.
 
 .. figure:: ../_static/layout_analysis_output.png
