@@ -182,6 +182,8 @@ class PDFConverter(PDFLayoutAnalyzer):
             return True
         elif isinstance(outfp, io.StringIO):
             return False
+        elif isinstance(outfp, io.TextIOBase):
+            return False
 
         return True
 
