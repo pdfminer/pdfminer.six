@@ -444,6 +444,28 @@ class PSBaseParser:
         return j+1
 
     def _parse_string_1(self, s, i):
+
+        # https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf
+        # *7.2.4.2 Literal Strings*
+
+#         Within a literal string, the REVERSE SOLIDUS is used as an
+#         escape character. The character immediately following the
+#         REVERSE SOLIDUS determines its precise interpretation as shown
+#         in Table 3. If the character following the REVERSE SOLIDUS is
+#         not one of those shown in Table 3, the REVERSE SOLIDUS shall
+#         be ignored.
+
+#         ...
+
+#         A conforming writer may split a literal string across
+#         multiple lines. The REVERSE SOLIDUS (5Ch) (backslash
+#         character) at the end of a line shall be used to indicate
+#         that the string continues on the following line. A
+#         conforming reader shall disregard the REVERSE SOLIDUS and
+#         the end-of-line marker following it when reading the string;
+#         the resulting string value shall be identical to that which
+#         would be read if the string were not split.
+
         c = s[i:i+1]
         if OCT_STRING.match(c) and len(self.oct) < 3:
             self.oct += c
@@ -454,6 +476,11 @@ class PSBaseParser:
             return i
         if c in ESC_STRING:
             self._curtoken += bytes((ESC_STRING[c],))
+        # Anything else after a \\ (including \n) will be ignored (see above)
+        #   because of the return i+1 below,
+        #   but we have to handle \r\n as well
+        elif c == b'\r' and s[i+1:i+2]== b'\n':
+            i+=1
         self._parse1 = self._parse_string
         return i+1
 
