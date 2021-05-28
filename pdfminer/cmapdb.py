@@ -111,6 +111,10 @@ class CMap(CMapBase):
 
 class IdentityCMap(CMapBase):
 
+    def get_unichr(self, cid):
+        log.debug('get_unichr: %r, %r', self, cid)
+        return chr(cid)
+
     def decode(self, code):
         n = len(code)//2
         if n:
