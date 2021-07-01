@@ -1,5 +1,6 @@
 import zlib
 import logging
+import io
 from .lzw import lzwdecode
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
@@ -185,6 +186,23 @@ def stream_value(x):
     return x
 
 
+def decompress_corrupted(data):
+    d = zlib.decompressobj(zlib.MAX_WBITS | 32)
+    f = io.BytesIO(data)
+    result_str = b''
+    buffer = f.read(1)
+    i = 0
+    try:
+        while buffer:
+            result_str += d.decompress(buffer)
+            buffer = f.read(1)
+            i += 1
+    except zlib.error:
+        if i < len(data) - 3:
+            raise
+    return result_str
+
+
 class PDFStream(PDFObject):
 
     def __init__(self, attrs, rawdata, decipher=None):
@@ -266,11 +284,14 @@ class PDFStream(PDFObject):
                 try:
                     data = zlib.decompress(data)
                 except zlib.error as e:
-                    if settings.STRICT:
-                        error_msg = 'Invalid zlib bytes: {!r}, {!r}'\
-                            .format(e, data)
-                        raise PDFException(error_msg)
-                    data = b''
+                    try:
+                        data = decompress_corrupted(data)
+                    except zlib.error:
+                        if settings.STRICT:
+                            error_msg = 'Invalid zlib bytes: {!r}, {!r}'\
+                                .format(e, data)
+                            raise PDFException(error_msg)
+                        data = b''
             elif f in LITERALS_LZW_DECODE:
                 data = lzwdecode(data)
             elif f in LITERALS_ASCII85_DECODE:
