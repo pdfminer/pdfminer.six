@@ -1,6 +1,6 @@
 from nose.tools import assert_equal
 
-from pdfminer.ccitt import CCITTG4Parser
+from pdfminer.ccitt import CCITTG4Parser, CCITTFaxDecoder
 
 
 class TestCCITTG4Parser():
@@ -152,4 +152,18 @@ class TestCCITTG4Parser():
         parser._do_vertical(1)
         parser._do_vertical(1)
         assert_equal(parser._get_bits(), '00000001')
+        return
+
+
+class TestCCITTFaxDecoder():
+    def get_decoder(self, bits):
+        decoder = CCITTFaxDecoder(len(bits))
+        decoder._curline = [int(c) for c in bits]
+        decoder._reset_line()
+        return decoder
+
+    def test_b1(self):
+        parser = self.get_decoder('00000')
+        parser.output_line(0, b'0')
+        assert_equal(parser._buf, b'\x80')
         return
