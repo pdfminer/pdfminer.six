@@ -7,7 +7,9 @@ from .jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from .pdfcolor import LITERAL_DEVICE_CMYK
 from .pdfcolor import LITERAL_DEVICE_GRAY
 from .pdfcolor import LITERAL_DEVICE_RGB
-from .pdftypes import LITERALS_DCT_DECODE, LITERALS_JBIG2_DECODE
+from .pdftypes import (LITERALS_DCT_DECODE,
+                       LITERALS_JBIG2_DECODE,
+                       LITERALS_JPX_DECODE)
 
 
 def align32(x):
@@ -90,6 +92,12 @@ class ImageWriter:
                 i.save(fp, 'JPEG')
             else:
                 fp.write(raw_data)
+        elif ext == '.jp2':
+            from PIL import Image
+            raw_data = image.stream.get_rawdata()
+            ifp = BytesIO(raw_data)
+            i = Image.open(ifp)
+            i.save(fp, 'JPEG2000')
         elif is_jbig2:
             input_stream = BytesIO()
             input_stream.write(image.stream.get_data())
@@ -142,6 +150,8 @@ class ImageWriter:
         filters = image.stream.get_filters()
         if len(filters) == 1 and filters[0][0] in LITERALS_DCT_DECODE:
             ext = '.jpg'
+        elif len(filters) == 1 and filters[0][0] in LITERALS_JPX_DECODE:
+            ext = '.jp2'
         elif is_jbig2:
             ext = '.jb2'
         elif (image.bits == 1 or
