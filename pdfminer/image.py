@@ -95,7 +95,7 @@ class ImageWriter:
         elif ext == '.jp2':
             # if we just write the raw data, most image programs
             # that I have tried cannot open the file. However,
-            # if open and saving with PIL produces a file that
+            # open and saving with PIL produces a file that
             # seems to be easily opened by other programs            
             from PIL import Image
             raw_data = image.stream.get_rawdata()
