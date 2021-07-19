@@ -26,6 +26,7 @@ LITERALS_RUNLENGTH_DECODE = (LIT('RunLengthDecode'), LIT('RL'))
 LITERALS_CCITTFAX_DECODE = (LIT('CCITTFaxDecode'), LIT('CCF'))
 LITERALS_DCT_DECODE = (LIT('DCTDecode'), LIT('DCT'))
 LITERALS_JBIG2_DECODE = (LIT('JBIG2Decode'),)
+LITERALS_JPX_DECODE = (LIT('JPXDecode'),)
 
 
 class PDFObject(PSObject):
@@ -287,6 +288,8 @@ class PDFStream(PDFObject):
                 # Just return the stream to the user.
                 pass
             elif f in LITERALS_JBIG2_DECODE:
+                pass
+            elif f in LITERALS_JPX_DECODE:
                 pass
             elif f == LITERAL_CRYPT:
                 # not yet..
