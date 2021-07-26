@@ -880,7 +880,7 @@ class PDFPageInterpreter:
             pass
         return
 
-    def process_page(self, page):
+    def process_page(self, page, maxobjects=0):
         log.info('Processing page: %r', page)
         (x0, y0, x1, y1) = page.mediabox
         if page.rotate == 90:
@@ -892,11 +892,13 @@ class PDFPageInterpreter:
         else:
             ctm = (1, 0, 0, 1, -x0, -y0)
         self.device.begin_page(page, ctm)
-        self.render_contents(page.resources, page.contents, ctm=ctm)
+        self.render_contents(page.resources, page.contents, ctm=ctm,
+                             maxobjects=maxobjects)
         self.device.end_page(page)
         return
 
-    def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY):
+    def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY,
+                        maxobjects=0):
         """Render the content streams.
 
         This method may be called recursively.
@@ -905,20 +907,24 @@ class PDFPageInterpreter:
                  resources, streams, ctm)
         self.init_resources(resources)
         self.init_state(ctm)
-        self.execute(list_value(streams))
+        self.execute(list_value(streams), maxobjects=maxobjects)
         return
 
-    def execute(self, streams):
+    def execute(self, streams, maxobjects=0):
         try:
             parser = PDFContentParser(streams)
         except PSEOF:
             # empty page
             return
+        object = 1
         while 1:
+            if maxobjects and maxobjects < object:
+                break
             try:
                 (_, obj) = parser.nextobject()
             except PSEOF:
                 break
+            object += 1
             if isinstance(obj, PSKeyword):
                 name = keyword_name(obj)
                 method = 'do_%s' % name.replace('*', '_a').replace('"', '_w')\

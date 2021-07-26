@@ -124,7 +124,7 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
 
 
 def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
-                  caching=True, laparams=None):
+                  caching=True, laparams=None, maxobjects=0):
     """Extract and yield LTPage objects
 
     :param pdf_file: Either a file path or a file-like object for the PDF file
@@ -135,6 +135,8 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
     :param caching: If resources should be cached
     :param laparams: An LAParams object from pdfminer.layout. If None, uses
         some default settings that often work well.
+    :param maxobjects: Maximum objects to process in a page.
+        0 (default) = all objects
     :return:
     """
     if laparams is None:
@@ -146,6 +148,6 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
         interpreter = PDFPageInterpreter(resource_manager, device)
         for page in PDFPage.get_pages(fp, page_numbers, maxpages=maxpages,
                                       password=password, caching=caching):
-            interpreter.process_page(page)
+            interpreter.process_page(page, maxobjects=maxobjects)
             layout = device.get_result()
             yield layout
