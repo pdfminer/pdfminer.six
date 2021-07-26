@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
 ## [Unreleased]
+- Added maxobjects parameter to high_level.extract_pages, to limit the number of objects processed in a page.
+ This allows to process a document faster by intentionally skipping objects in 
+  complex pages.
 
 ### Fixed
 - Fix issue of TypeError: cannot unpack non-iterable PDFObjRef object, when unpacking the value of 'DW2' ([#529](https://github.com/pdfminer/pdfminer.six/pull/529))
