@@ -113,19 +113,14 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                                   fill, evenodd, gstate.scolor, gstate.ncolor)
                     self.cur_item.add(rect)
                 else:
-                    curve = self._create_curve(gstate, stroke, fill, evenodd,
-                                               pts)
+                    curve = LTCurve(gstate.linewidth, pts, stroke, fill,
+                                    evenodd, gstate.scolor, gstate.ncolor)
                     self.cur_item.add(curve)
 
             else:
-                curve = self._create_curve(gstate, stroke, fill, evenodd, pts)
+                curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
+                                gstate.scolor, gstate.ncolor)
                 self.cur_item.add(curve)
-
-    def _create_curve(self, gstate, stroke, fill, evenodd, pts):
-        """Create a `LTCurve` object for the paint path operator"""
-        curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
-                        gstate.scolor, gstate.ncolor)
-        return curve
 
     def render_char(self, matrix, font, fontsize, scaling, rise, cid, ncs,
                     graphicstate):
