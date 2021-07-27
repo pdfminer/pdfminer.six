@@ -4,9 +4,9 @@ from tempfile import TemporaryFile
 from nose.tools import assert_equal, assert_false, assert_true
 
 from pdfminer.converter import PDFLayoutAnalyzer, PDFConverter
+from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTContainer, LTRect, LTLine, LTCurve
 from pdfminer.pdfinterp import PDFGraphicState
-from pdfminer.high_level import extract_pages
 
 
 class TestPaintPath():

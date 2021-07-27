@@ -2,27 +2,27 @@ import io
 import logging
 import re
 import sys
-from .pdfdevice import PDFTextDevice
-from .pdffont import PDFUnicodeNotDefined
+
+from . import utils
+from .layout import LTChar
 from .layout import LTContainer
-from .layout import LTPage
-from .layout import LTText
-from .layout import LTLine
-from .layout import LTRect
 from .layout import LTCurve
 from .layout import LTFigure
 from .layout import LTImage
-from .layout import LTChar
-from .layout import LTTextLine
+from .layout import LTLine
+from .layout import LTPage
+from .layout import LTRect
+from .layout import LTText
 from .layout import LTTextBox
 from .layout import LTTextBoxVertical
 from .layout import LTTextGroup
+from .layout import LTTextLine
+from .pdfdevice import PDFTextDevice
+from .pdffont import PDFUnicodeNotDefined
 from .utils import apply_matrix_pt
-from .utils import mult_matrix
-from .utils import enc
 from .utils import bbox2str
-from . import utils
-
+from .utils import enc
+from .utils import mult_matrix
 
 log = logging.getLogger(__name__)
 
