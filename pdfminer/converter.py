@@ -104,11 +104,13 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                 self.cur_item.add(line)
 
             elif shape in {'mlllh', 'mllll'}:
-                (x0, y0), (x1, y1), (x2, y2), (x3, y3), (x4, y4) = pts
+                (x0, y0), (x1, y1), (x2, y2), (x3, y3), _ = pts
 
-                if (pts[0] == pts[4]) and (
-                        (x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
-                        (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
+                is_closed_loop = (pts[0] == pts[4])
+                has_square_coordinates = \
+                    (x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) \
+                    or (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)
+                if is_closed_loop and has_square_coordinates:
                     rect = LTRect(gstate.linewidth, (*pts[0], *pts[2]), stroke,
                                   fill, evenodd, gstate.scolor, gstate.ncolor)
                     self.cur_item.add(rect)
