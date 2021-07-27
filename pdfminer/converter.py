@@ -89,8 +89,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             # subpath's starting point.
             #
             # And, per Section 4.4's Table 4.9, all other path commands place
-            # their point-position in their final two arguments. Any preceding
-            # arguments represent control points on Bézier curves.
+            # their point-position in their final two arguments. (Any preceding
+            # arguments represent control points on Bézier curves.)
             raw_pts = [p[-2:] if p[0] != 'h' else path[0][-2:] for p in path]
             pts = [apply_matrix_pt(self.ctm, pt) for pt in raw_pts]
 
