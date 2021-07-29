@@ -5,7 +5,7 @@ import sys
 from io import StringIO
 
 from .converter import XMLConverter, HTMLConverter, TextConverter, \
-    PDFPageAggregator
+    HOCRConverter, PDFPageAggregator
 from .image import ImageWriter
 from .layout import LAParams
 from .pdfdevice import TagExtractor
@@ -28,8 +28,8 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
     :param inf: a file-like object to read PDF structure from, such as a
         file handler (using the builtin `open()` function) or a `BytesIO`.
     :param outfp: a file-like object to write the text to.
-    :param output_type: May be 'text', 'xml', 'html', 'tag'. Only 'text' works
-        properly.
+    :param output_type: May be 'text', 'xml', 'html', 'hocr', 'tag'.
+        Only 'text' works properly.
     :param codec: Text decoding codec
     :param laparams: An LAParams object from pdfminer.layout. Default is None
         but may not layout correctly.
@@ -72,6 +72,9 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
         device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
                                layoutmode=layoutmode, laparams=laparams,
                                imagewriter=imagewriter)
+    elif output_type == 'hocr':
+        device = HOCRConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
+                               stripcontrol=strip_control)
     elif output_type == 'tag':
         device = TagExtractor(rsrcmgr, outfp, codec=codec)
 

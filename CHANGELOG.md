@@ -1,16 +1,19 @@
 # Changelog
-All notable changes in pdfminer.six will be documented in this file. 
+All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+### Added
+- New converter for the hOCR format
 
 ### Fixed
 - Fix issue of TypeError: cannot unpack non-iterable PDFObjRef object, when unpacking the value of 'DW2' ([#529](https://github.com/pdfminer/pdfminer.six/pull/529))
 - `PermissionError` when creating temporary filepaths on windows when running tests ([#469](https://github.com/pdfminer/pdfminer.six/issues/469))
 - Fix `.paint_path` logic for handling single line segments and extracting point-on-curve positions of Beziér path commands ([#530](https://github.com/pdfminer/pdfminer.six/pull/530))
 
-## Removed
+### Removed
 - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
 - Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
 - Support for non-standard output streams that are not binary ([#523](https://github.com/pdfminer/pdfminer.six/pull/523))
@@ -51,7 +54,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Hiding fallback xref by default from dumppdf.py output ([#431](https://github.com/pdfminer/pdfminer.six/pull/431))
 - Raise a warning instead of an error when extracting text from a non-extractable PDF ([#453](https://github.com/pdfminer/pdfminer.six/pull/453))
 - Switched from pycryptodome to cryptography package for AES decryption ([#456](https://github.com/pdfminer/pdfminer.six/pull/456))
-  
+
 ## [20200517]
 
 ### Added
@@ -108,18 +111,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Deprecated
 - The argument `_py2_no_more_posargs` because Python2 is removed on January
-, 2020 ([#328](https://github.com/pdfminer/pdfminer.six/pull/328) and 
+, 2020 ([#328](https://github.com/pdfminer/pdfminer.six/pull/328) and
 [#307](https://github.com/pdfminer/pdfminer.six/pull/307))
 
 ### Added
 - Simple wrapper to easily extract text from a PDF file [#330](https://github.com/pdfminer/pdfminer.six/pull/330)
 - Support for extracting JBIG2 encoded images ([#311](https://github.com/pdfminer/pdfminer.six/pull/311) and [#46](https://github.com/pdfminer/pdfminer.six/pull/46))
-- Sphinx documentation that is published on 
+- Sphinx documentation that is published on
   [Read the Docs](https://pdfminersix.readthedocs.io/)
   ([#329](https://github.com/pdfminer/pdfminer.six/pull/329))
 
 ### Fixed
-- Unhandled AssertionError when dumping pdf containing reference to object id 0 
+- Unhandled AssertionError when dumping pdf containing reference to object id 0
  ([#318](https://github.com/pdfminer/pdfminer.six/pull/318))
 - Debug flag actually changes logging level to debug for pdf2txt.py and
  dumppdf.py ([#325](https://github.com/pdfminer/pdfminer.six/pull/325))
