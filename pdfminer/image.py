@@ -96,7 +96,7 @@ class ImageWriter:
             # if we just write the raw data, most image programs
             # that I have tried cannot open the file. However,
             # open and saving with PIL produces a file that
-            # seems to be easily opened by other programs            
+            # seems to be easily opened by other programs
             from PIL import Image
             raw_data = image.stream.get_rawdata()
             ifp = BytesIO(raw_data)
