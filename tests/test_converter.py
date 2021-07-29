@@ -4,7 +4,8 @@ from tempfile import TemporaryFile
 from nose.tools import assert_equal, assert_false, assert_true
 
 from pdfminer.converter import PDFLayoutAnalyzer, PDFConverter
-from pdfminer.layout import LTContainer, LTRect, LTCurve
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTContainer, LTRect, LTLine, LTCurve
 from pdfminer.pdfinterp import PDFGraphicState
 
 
@@ -47,6 +48,7 @@ class TestPaintPath():
         def get_types(path):
             return list(map(type, parse(path)))
 
+        # Standard rect
         assert_equal(get_types([
             ("m", 10, 90),
             ("l", 90, 90),
@@ -55,6 +57,16 @@ class TestPaintPath():
             ("h",),
         ]), [LTRect])
 
+        # Same but mllll variation
+        assert_equal(get_types([
+            ("m", 10, 90),
+            ("l", 90, 90),
+            ("l", 90, 10),
+            ("l", 10, 10),
+            ("l", 10, 90),
+        ]), [LTRect])
+
+        # Bowtie shape
         assert_equal(get_types([
             ("m", 110, 90),
             ("l", 190, 10),
@@ -63,6 +75,7 @@ class TestPaintPath():
             ("h",),
         ]), [LTCurve])
 
+        # Quadrilateral with one slanted side
         assert_equal(get_types([
             ("m", 210, 90),
             ("l", 290, 60),
@@ -71,6 +84,7 @@ class TestPaintPath():
             ("h",),
         ]), [LTCurve])
 
+        # Path with two rect subpaths
         assert_equal(get_types([
             ("m", 310, 90),
             ("l", 350, 90),
@@ -84,6 +98,7 @@ class TestPaintPath():
             ("h",),
         ]), [LTRect, LTRect])
 
+        # Path with one rect subpath and one pentagon
         assert_equal(get_types([
             ("m", 410, 90),
             ("l", 445, 90),
@@ -98,10 +113,81 @@ class TestPaintPath():
             ("h",),
         ]), [LTRect, LTCurve])
 
+        # Three types of simple lines
+        assert_equal(get_types([
+            # Vertical line
+            ("m", 10, 30),
+            ("l", 10, 40),
+            ("h",),
+            # Horizontal line
+            ("m", 10, 50),
+            ("l", 70, 50),
+            ("h",),
+            # Diagonal line
+            ("m", 10, 10),
+            ("l", 30, 30),
+            ("h",),
+        ]), [LTLine, LTLine, LTLine])
+
+        # Same as above, but 'ml' variation
+        assert_equal(get_types([
+            # Vertical line
+            ("m", 10, 30),
+            ("l", 10, 40),
+            # Horizontal line
+            ("m", 10, 50),
+            ("l", 70, 50),
+            # Diagonal line
+            ("m", 10, 10),
+            ("l", 30, 30),
+        ]), [LTLine, LTLine, LTLine])
+
+        # There are six lines in this one-page PDF;
+        # they all have shape 'ml' not 'mlh'
+        ml_pdf = extract_pages("samples/contrib/pr-00530-ml-lines.pdf")
+        ml_pdf_page = list(ml_pdf)[0]
+        assert sum(type(item) == LTLine for item in ml_pdf_page) == 6
+
     def _get_analyzer(self):
         analyzer = PDFLayoutAnalyzer(None)
         analyzer.set_ctm([1, 0, 0, 1, 0, 0])
         return analyzer
+
+    def test_paint_path_beziers(self):
+        """See section 4.4, table 4.9 of the PDF reference manual"""
+
+        def parse(path):
+            analyzer = self._get_analyzer()
+            analyzer.cur_item = LTContainer([0, 1000, 0, 1000])
+            analyzer.paint_path(PDFGraphicState(), False, False, False, path)
+            return analyzer.cur_item._objs
+
+        # "c" operator
+        assert parse([
+            ("m", 72.41, 433.89),
+            ("c", 72.41, 434.45, 71.96, 434.89, 71.41, 434.89),
+        ])[0].pts == [
+            (72.41, 433.89),
+            (71.41, 434.89),
+        ]
+
+        # "v" operator
+        assert parse([
+            ("m", 72.41, 433.89),
+            ("v", 71.96, 434.89, 71.41, 434.89),
+        ])[0].pts == [
+            (72.41, 433.89),
+            (71.41, 434.89),
+        ]
+
+        # "y" operator
+        assert parse([
+            ("m", 72.41, 433.89),
+            ("y", 72.41, 434.45, 71.41, 434.89),
+        ])[0].pts == [
+            (72.41, 433.89),
+            (71.41, 434.89),
+        ]
 
 
 class TestBinaryDetector():
