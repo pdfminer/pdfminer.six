@@ -92,6 +92,14 @@ class ImageWriter:
                 fp.write(raw_data)
         elif is_jbig2:
             input_stream = BytesIO()
+            global_streams = self.jbig2_global(image)
+            if len(global_streams) == 1:
+                global_stream, = global_streams
+                input_stream.write(global_stream.get_data().rstrip(b'\n'))
+            elif len(global_streams) > 1:
+                raise ValueError('There should never be more than one '
+                                 'JBIG2Globals associated with a JBIG2 '
+                                 'embedded image')
             input_stream.write(image.stream.get_data())
             input_stream.seek(0)
             reader = JBIG2StreamReader(input_stream)
@@ -136,6 +144,15 @@ class ImageWriter:
                 is_jbig2 = True
                 break
         return is_jbig2
+
+    @staticmethod
+    def jbig2_global(image):
+        global_streams = []
+        filters = image.stream.get_filters()
+        for filter_name, params in filters:
+            if filter_name in LITERALS_JBIG2_DECODE:
+                global_streams.append(params['JBIG2Globals'].resolve())
+        return global_streams
 
     @staticmethod
     def _get_image_extension(image, width, height, is_jbig2):
