@@ -1,9 +1,10 @@
+dist: focal
 language: python
 python:
   - "3.6"
   - "3.7"
   - "3.8"
-  - "3.9-dev"
+  - "3.9"
 install:
   - pip install tox==3.14.0 tox-travis flake8
 script:
