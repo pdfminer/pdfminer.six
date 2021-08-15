@@ -78,22 +78,22 @@ def compatible_encode_method(bytesorstring, encoding='utf-8',
     return bytesorstring.decode(encoding, erraction)
 
 
-def paeth_predictor(left, up, up_left):
+def paeth_predictor(left, above, upper_left):
     # From http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
     # Initial estimate
-    p = left + up - up_left
+    p = left + above - upper_left
     # Distances to a,b,c
     pa = abs(p - left)
-    pb = abs(p - up)
-    pc = abs(p - up_left)
+    pb = abs(p - above)
+    pc = abs(p - upper_left)
 
     # Return nearest of a,b,c breaking ties in order a,b,c
     if pa <= pb and pa <= pc:
         return left
     elif pb <= pc:
-        return up
+        return above
     else:
-        return up_left
+        return upper_left
 
 
 def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
