@@ -18,7 +18,7 @@ OUTPUT_TYPES = ((".htm", "html"),
 
 def float_or_disabled(x):
     if x.lower().strip() == "disabled":
-        return x
+        return "disabled"
     try:
         x = float(x)
     except ValueError:
@@ -45,6 +45,9 @@ def extract_text(files=[], outfile='-',
                       "char_margin", "line_margin", "boxes_flow"):
             paramv = locals().get(param, None)
             if paramv is not None:
+                if param == "boxes_flow" and paramv == "disabled":
+                    # Layout analysis explicitly disabled; set to None.
+                    paramv = None
                 setattr(laparams, param, paramv)
     else:
         laparams = None
