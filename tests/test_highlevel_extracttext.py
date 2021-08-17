@@ -31,9 +31,10 @@ test_strings = {
     "simple3.pdf": "Hello\n\nHello\nあ\nい\nう\nえ\nお\nあ\nい\nう\nえ\nお\n"
                    "World\n\nWorld\n\n\f",
     "simple4.pdf": "Text1\nText2\nText3\n\n\f",
-    "simple5.pdf": "Heading\n\nLink to heading that is working with vim-pandoc."
-                   "\n\nLink to heading “that is” not working with vim-pandoc."
-                   "\n\nSubheading\n\nSome “more text”\n\n1\n\n\f"
+    "simple5.pdf": "Heading\n\n"
+                   "Link to heading that is working with vim-pandoc.\n\n"
+                   "Link to heading “that is” not working with vim-pandoc.\n\n"
+                   "Subheading\n\nSome “more text”\n\n1\n\n\f"
 }
 
 
