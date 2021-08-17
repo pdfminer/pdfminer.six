@@ -30,7 +30,10 @@ test_strings = {
     "simple2.pdf": "\f",
     "simple3.pdf": "Hello\n\nHello\nあ\nい\nう\nえ\nお\nあ\nい\nう\nえ\nお\n"
                    "World\n\nWorld\n\n\f",
-    "simple4.pdf": "Text1\nText2\nText3\n\n\f"
+    "simple4.pdf": "Text1\nText2\nText3\n\n\f",
+    "simple5.pdf": "Heading\n\nLink to heading that is working with vim-pandoc."
+                   "\n\nLink to heading “that is” not working with vim-pandoc."
+                   "\n\nSubheading\n\nSome “more text”\n\n1\n\n\f"
 }
 
 
@@ -60,6 +63,11 @@ class TestExtractText(unittest.TestCase):
         s = run_with_string(test_file)
         self.assertEqual(s, test_strings[test_file])
 
+    def test_simple5_with_string(self):
+        test_file = "simple5.pdf"
+        s = run_with_string(test_file)
+        self.assertEqual(s, test_strings[test_file])
+
     def test_simple1_with_file(self):
         test_file = "simple1.pdf"
         s = run_with_file(test_file)
@@ -77,6 +85,11 @@ class TestExtractText(unittest.TestCase):
 
     def test_simple4_with_file(self):
         test_file = "simple4.pdf"
+        s = run_with_file(test_file)
+        self.assertEqual(s, test_strings[test_file])
+
+    def test_simple5_with_file(self):
+        test_file = "simple5.pdf"
         s = run_with_file(test_file)
         self.assertEqual(s, test_strings[test_file])
 
