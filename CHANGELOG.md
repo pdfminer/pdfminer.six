@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `PermissionError` when creating temporary filepaths on windows when running tests ([#469](https://github.com/pdfminer/pdfminer.six/issues/469))
 - Detecting trailer correctly when surrounded with needless whitespace ([#535](https://github.com/pdfminer/pdfminer.six/pull/535))
 - Fix `.paint_path` logic for handling single line segments and extracting point-on-curve positions of Beziér path commands ([#530](https://github.com/pdfminer/pdfminer.six/pull/530))
+- Fix regression in `LTLayoutContainer.group_textboxes` (introduced in 20191107) that sometimes returned text lines out of order ([#659](https://github.com/pdfminer/pdfminer.six/pull/659))
 
 ## Removed
 - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
