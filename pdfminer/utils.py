@@ -5,7 +5,6 @@ import io
 import pathlib
 import struct
 from html import escape
-import math
 
 import chardet  # For str encoding detection
 
@@ -102,7 +101,8 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     Documentation: http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
     """
     if bitspercomponent != 8:
-        raise ValueError("Unsupported `bitspercomponent': %d" % bitspercomponent)
+        msg = "Unsupported `bitspercomponent': %d" % bitspercomponent
+        raise ValueError(msg)
 
     nbytes = colors * columns * bitspercomponent // 8
     bpp = colors * bitspercomponent // 8  # number of bytes per complete pixel
@@ -119,51 +119,61 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
 
         elif filter_type == 1:
             # Filter type 1: Sub
-            # To reverse the effect of the Sub() filter after decompression, output the following value:
+            # To reverse the effect of the Sub() filter after decompression,
+            # output the following value:
             #   Raw(x) = Sub(x) + Raw(x - bpp)
-            # (computed mod 256), where Raw() refers to the bytes already decoded.
+            # (computed mod 256), where Raw() refers to the bytes already
+            #  decoded.
             for j, sub_x in enumerate(line_encoded):
                 if j - bpp < 0:
                     raw_x_bpp = 0
                 else:
-                    raw_x_bpp = int(raw[j-bpp])
+                    raw_x_bpp = int(raw[j - bpp])
                 raw_x = (sub_x + raw_x_bpp) & 255
                 raw += bytes((raw_x,))
 
         elif filter_type == 2:
             # Filter type 2: Up
-            # To reverse the effect of the Up() filter after decompression, output the following value:
+            # To reverse the effect of the Up() filter after decompression,
+            # output the following value:
             #   Raw(x) = Up(x) + Prior(x)
-            # (computed mod 256), where Prior() refers to the decoded bytes of the prior scanline.
+            # (computed mod 256), where Prior() refers to the decoded bytes of
+            # the prior scanline.
             for (prior_x, prior_x) in zip(line_above, line_encoded):
                 raw_x = (prior_x + prior_x) & 255
                 raw += bytes((raw_x,))
 
         elif filter_type == 3:
             # Filter type 3: Average
-            # To reverse the effect of the Average() filter after decompression, output the following value:
+            # To reverse the effect of the Average() filter after
+            # decompression, output the following value:
             #    Raw(x) = Average(x) + floor((Raw(x-bpp)+Prior(x))/2)
-            # where the result is computed mod 256, but the prediction is calculated in the same way as for encoding.
-            # Raw() refers to the bytes already decoded, and Prior() refers to the decoded bytes of the prior scanline.
+            # where the result is computed mod 256, but the prediction is
+            # calculated in the same way as for encoding. Raw() refers to the
+            # bytes already decoded, and Prior() refers to the decoded bytes of
+            # the prior scanline.
             for j, average_x in enumerate(line_encoded):
                 if j - bpp < 0:
                     raw_x_bpp = 0
                 else:
-                    raw_x_bpp = int(raw[j-bpp])
+                    raw_x_bpp = int(raw[j - bpp])
                 prior_x = int(line_above[j])
                 raw_x = (average_x + (raw_x_bpp + prior_x) // 2) & 255
                 raw += bytes((raw_x,))
 
         elif filter_type == 4:
             # Filter type 4: Paeth
-            # To reverse the effect of the Paeth() filter after decompression, output the following value:
-            #    Raw(x) = Paeth(x) + PaethPredictor(Raw(x-bpp), Prior(x), Prior(x-bpp))
-            # (computed mod 256), where Raw() and Prior() refer to bytes already decoded. Exactly the same
-            # PaethPredictor() function is used by both encoder and decoder.
+            # To reverse the effect of the Paeth() filter after decompression,
+            # output the following value:
+            #    Raw(x) = Paeth(x)
+            #             + PaethPredictor(Raw(x-bpp), Prior(x), Prior(x-bpp))
+            # (computed mod 256), where Raw() and Prior() refer to bytes
+            # already decoded. Exactly the same PaethPredictor() function is
+            # used by both encoder and decoder.
             for j, paeth_x in enumerate(line_encoded):
                 if j - bpp >= 0:
-                    raw_x_bpp = int(raw[j-bpp])
-                    prior_x_bpp = int(line_above[j-bpp])
+                    raw_x_bpp = int(raw[j - bpp])
+                    prior_x_bpp = int(line_above[j - bpp])
                 else:
                     raw_x_bpp = 0
                     prior_x_bpp = 0
