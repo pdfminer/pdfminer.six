@@ -171,12 +171,12 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
             # already decoded. Exactly the same PaethPredictor() function is
             # used by both encoder and decoder.
             for j, paeth_x in enumerate(line_encoded):
-                if j - bpp >= 0:
-                    raw_x_bpp = int(raw[j - bpp])
-                    prior_x_bpp = int(line_above[j - bpp])
-                else:
+                if j - bpp < 0:
                     raw_x_bpp = 0
                     prior_x_bpp = 0
+                else:
+                    raw_x_bpp = int(raw[j - bpp])
+                    prior_x_bpp = int(line_above[j - bpp])
                 prior_x = int(line_above[j])
                 paeth = paeth_predictor(raw_x_bpp, prior_x, prior_x_bpp)
                 raw_x = (paeth_x + paeth) & 255
