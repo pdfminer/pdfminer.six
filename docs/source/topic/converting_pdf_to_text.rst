@@ -4,11 +4,11 @@ Converting a PDF file to text
 *****************************
 
 Most PDF files look like they contain well structured text. But the reality  is
-that a PDF file does not contain anything that resembles a paragraphs,
+that a PDF file does not contain anything that resembles paragraphs,
 sentences or even words. When it comes to text, a PDF file is only aware of
 the characters and their placement.
 
-This makes extracting meaningful pieces of text from PDF's files difficult.
+This makes extracting meaningful pieces of text from PDF files difficult.
 The characters that compose a paragraph are no different from those that
 compose the table, the page footer or the description of a figure. Unlike
 other documents formats, like a `.txt` file or a word document, the PDF format
@@ -19,7 +19,6 @@ the appearance of one or more pages, possibly accompanied by additional
 interactive elements and higher-level application data. A PDF file contains
 the objects making up a PDF document along with associated structural
 information, all represented as a single self-contained sequence of bytes. [1]_
-
 
 .. _topic_pdf_to_text_layout:
 
@@ -41,7 +40,6 @@ of layout objects on a PDF page.
 
     The output of the layout analysis is a hierarchy of layout objects.
 
-
 The output of the layout analysis heavily depends on a couple of parameters.
 All these parameters are part of the :ref:`api_laparams` class.
 
@@ -56,10 +54,9 @@ bottom-left corner and upper-right corner, i.e. its bounding box. Pdfminer
 Characters that are both horizontally and vertically close are grouped onto
 one line. How close they should be is determined by the `char_margin`
 (M in figure) and the `line_overlap` (not in figure) parameter. The horizontal
-*distance* between the bounding boxes of two characters should be smaller that
+*distance* between the bounding boxes of two characters should be smaller than
 the `char_margin` and the vertical *overlap* between the bounding boxes should
-be smaller the the `line_overlap`.
-
+be smaller than the `line_overlap`.
 
 .. raw:: html
     :file: ../_static/layout_analysis.html
@@ -71,14 +68,14 @@ relative to the minimum height of either one of the bounding boxes.
 
 Spaces need to be inserted between characters because the PDF format has no
 notion of the space character. A space is inserted if the characters are
-further apart that the `word_margin` (W in the figure). The `word_margin` is
+further apart than the `word_margin` (W in the figure). The `word_margin` is
 relative to the maximum width or height of the new character. Having a smaller
 `word_margin` creates smaller words. Note that the `word_margin` should at
 least be smaller than the `char_margin` otherwise none of the characters will
 be separated by a space.
 
 The result of this stage is a list of lines. Each line consists a list of
-characters. These characters either original `LTChar` characters that
+characters. These characters are either original `LTChar` characters that
 originate from the PDF file, or inserted `LTAnno` characters that
 represent spaces between words or newlines at the end of each line.
 
@@ -107,7 +104,7 @@ of lines.
 Grouping textboxes hierarchically
 ---------------------------------
 
-the last step is to group the text boxes in a meaningful way. This step
+The last step is to group the text boxes in a meaningful way. This step
 repeatedly merges the two text boxes that are closest to each other.
 
 The closeness of bounding boxes is computed as the area that is between the
@@ -117,7 +114,6 @@ boxes of the individual lines.
 
 .. raw:: html
     :file: ../_static/layout_analysis_group_boxes.html
-
 
 Working with rotated characters
 ===============================
