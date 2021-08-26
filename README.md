@@ -1,7 +1,7 @@
 pdfminer.six
 ============
 
-[![Build Status](https://travis-ci.org/pdfminer/pdfminer.six.svg?branch=master)](https://travis-ci.org/pdfminer/pdfminer.six)
+[![Build Status](https://travis-ci.com/pdfminer/pdfminer.six.svg?branch=develop)](https://travis-ci.com/pdfminer/pdfminer.six)
 [![PyPI version](https://img.shields.io/pypi/v/pdfminer.six.svg)](https://pypi.python.org/pypi/pdfminer.six/)
 [![gitter](https://badges.gitter.im/pdfminer-six/Lobby.svg)](https://gitter.im/pdfminer-six/Lobby?utm_source=badge&utm_medium)
 
@@ -11,8 +11,8 @@ Pdfminer.six is a community maintained fork of the original PDFMiner. It is a to
 documents. It focuses on getting and analyzing text data. Pdfminer.six extracts the text from a page directly from the
 sourcecode of the PDF. It can also be used to get the exact location, font or color of the text.
 
-It is build in a modular way such that each component of pdfminer.six can be replaced easily. You can implement your own
-interpreter or rendering device to use the power of pdfminer.six for other purposes that text analysis.
+It is built in a modular way such that each component of pdfminer.six can be replaced easily. You can implement your own
+interpreter or rendering device that uses the power of pdfminer.six for other purposes than text analysis.
 
 Check out the full documentation on
 [Read the Docs](https://pdfminersix.readthedocs.io).
