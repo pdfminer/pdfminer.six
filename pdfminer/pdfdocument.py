@@ -230,7 +230,7 @@ class PDFXRefStream(PDFBaseXRef):
         (_, kwd) = parser.nexttoken()
         (_, stream) = parser.nextobject()
         if not isinstance(stream, PDFStream) \
-                or stream['Type'] is not LITERAL_XREF:
+                or stream.get('Type') is not LITERAL_XREF:
             raise PDFNoValidXRef('Invalid PDF stream spec.')
         size = stream['Size']
         index_array = stream.get('Index', (0, size))
