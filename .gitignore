@@ -21,5 +21,7 @@ tests/*.txt
 # python venv management tools
 Pipfile
 Pipfile.lock
+.noseids
+.vscode/
 pyproject.toml
 poetry.lock
