@@ -139,8 +139,8 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
             #   Raw(x) = Up(x) + Prior(x)
             # (computed mod 256), where Prior() refers to the decoded bytes of
             # the prior scanline.
-            for (prior_x, prior_x) in zip(line_above, line_encoded):
-                raw_x = (prior_x + prior_x) & 255
+            for (up_x, prior_x) in zip(line_encoded, line_above):
+                raw_x = (up_x + prior_x) & 255
                 raw += bytes((raw_x,))
 
         elif filter_type == 3:
