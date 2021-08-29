@@ -583,7 +583,14 @@ class PDFDocument:
                 continue
             # If there's an encryption info, remember it.
             if 'Encrypt' in trailer:
-                self.encryption = (list_value(trailer['ID']),
+                if 'ID' in trailer:
+                    id_value = list_value(trailer['ID'])
+                else:
+                    # Some documents may not have a /ID, use two empty
+                    # byte strings instead. Solves
+                    # https://github.com/pdfminer/pdfminer.six/issues/594
+                    id_value = (b'', b'')
+                self.encryption = (id_value,
                                    dict_value(trailer['Encrypt']))
                 self._initialize_password(password)
             if 'Info' in trailer:
