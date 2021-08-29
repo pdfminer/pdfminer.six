@@ -77,44 +77,116 @@ def compatible_encode_method(bytesorstring, encoding='utf-8',
     return bytesorstring.decode(encoding, erraction)
 
 
+def paeth_predictor(left, above, upper_left):
+    # From http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
+    # Initial estimate
+    p = left + above - upper_left
+    # Distances to a,b,c
+    pa = abs(p - left)
+    pb = abs(p - above)
+    pc = abs(p - upper_left)
+
+    # Return nearest of a,b,c breaking ties in order a,b,c
+    if pa <= pb and pa <= pc:
+        return left
+    elif pb <= pc:
+        return above
+    else:
+        return upper_left
+
+
 def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
+    """Reverse the effect of the PNG predictor
+
+    Documentation: http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
+    """
     if bitspercomponent != 8:
-        # unsupported
-        raise ValueError("Unsupported `bitspercomponent': %d" %
-                         bitspercomponent)
+        msg = "Unsupported `bitspercomponent': %d" % bitspercomponent
+        raise ValueError(msg)
+
     nbytes = colors * columns * bitspercomponent // 8
+    bpp = colors * bitspercomponent // 8  # number of bytes per complete pixel
     buf = b''
-    line0 = b'\x00' * columns
-    for i in range(0, len(data), nbytes + 1):
-        ft = data[i]
-        i += 1
-        line1 = data[i:i + nbytes]
-        line2 = b''
-        if ft == 0:
-            # PNG none
-            line2 += line1
-        elif ft == 1:
-            # PNG sub (UNTESTED)
-            c = 0
-            for b in line1:
-                c = (c + b) & 255
-                line2 += bytes((c,))
-        elif ft == 2:
-            # PNG up
-            for (a, b) in zip(line0, line1):
-                c = (a + b) & 255
-                line2 += bytes((c,))
-        elif ft == 3:
-            # PNG average (UNTESTED)
-            c = 0
-            for (a, b) in zip(line0, line1):
-                c = ((c + a + b) // 2) & 255
-                line2 += bytes((c,))
+    line_above = b'\x00' * columns
+    for scanline_i in range(0, len(data), nbytes + 1):
+        filter_type = data[scanline_i]
+        line_encoded = data[scanline_i + 1:scanline_i + 1 + nbytes]
+        raw = b''
+
+        if filter_type == 0:
+            # Filter type 0: None
+            raw += line_encoded
+
+        elif filter_type == 1:
+            # Filter type 1: Sub
+            # To reverse the effect of the Sub() filter after decompression,
+            # output the following value:
+            #   Raw(x) = Sub(x) + Raw(x - bpp)
+            # (computed mod 256), where Raw() refers to the bytes already
+            #  decoded.
+            for j, sub_x in enumerate(line_encoded):
+                if j - bpp < 0:
+                    raw_x_bpp = 0
+                else:
+                    raw_x_bpp = int(raw[j - bpp])
+                raw_x = (sub_x + raw_x_bpp) & 255
+                raw += bytes((raw_x,))
+
+        elif filter_type == 2:
+            # Filter type 2: Up
+            # To reverse the effect of the Up() filter after decompression,
+            # output the following value:
+            #   Raw(x) = Up(x) + Prior(x)
+            # (computed mod 256), where Prior() refers to the decoded bytes of
+            # the prior scanline.
+            for (up_x, prior_x) in zip(line_encoded, line_above):
+                raw_x = (up_x + prior_x) & 255
+                raw += bytes((raw_x,))
+
+        elif filter_type == 3:
+            # Filter type 3: Average
+            # To reverse the effect of the Average() filter after
+            # decompression, output the following value:
+            #    Raw(x) = Average(x) + floor((Raw(x-bpp)+Prior(x))/2)
+            # where the result is computed mod 256, but the prediction is
+            # calculated in the same way as for encoding. Raw() refers to the
+            # bytes already decoded, and Prior() refers to the decoded bytes of
+            # the prior scanline.
+            for j, average_x in enumerate(line_encoded):
+                if j - bpp < 0:
+                    raw_x_bpp = 0
+                else:
+                    raw_x_bpp = int(raw[j - bpp])
+                prior_x = int(line_above[j])
+                raw_x = (average_x + (raw_x_bpp + prior_x) // 2) & 255
+                raw += bytes((raw_x,))
+
+        elif filter_type == 4:
+            # Filter type 4: Paeth
+            # To reverse the effect of the Paeth() filter after decompression,
+            # output the following value:
+            #    Raw(x) = Paeth(x)
+            #             + PaethPredictor(Raw(x-bpp), Prior(x), Prior(x-bpp))
+            # (computed mod 256), where Raw() and Prior() refer to bytes
+            # already decoded. Exactly the same PaethPredictor() function is
+            # used by both encoder and decoder.
+            for j, paeth_x in enumerate(line_encoded):
+                if j - bpp < 0:
+                    raw_x_bpp = 0
+                    prior_x_bpp = 0
+                else:
+                    raw_x_bpp = int(raw[j - bpp])
+                    prior_x_bpp = int(line_above[j - bpp])
+                prior_x = int(line_above[j])
+                paeth = paeth_predictor(raw_x_bpp, prior_x, prior_x_bpp)
+                raw_x = (paeth_x + paeth) & 255
+                raw += bytes((raw_x,))
+
         else:
-            # unsupported
-            raise ValueError("Unsupported predictor value: %d" % ft)
-        buf += line2
-        line0 = line2
+            raise ValueError("Unsupported predictor value: %d" % filter_type)
+
+        buf += raw
+        line_above = raw
     return buf
 
 

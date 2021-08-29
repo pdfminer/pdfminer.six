@@ -403,9 +403,9 @@ class TrueTypeFont:
         return
 
     def create_unicode_map(self):
-        if 'cmap' not in self.tables:
+        if b'cmap' not in self.tables:
             raise TrueTypeFont.CMapNotFound
-        (base_offset, length) = self.tables['cmap']
+        (base_offset, length) = self.tables[b'cmap']
         fp = self.fp
         fp.seek(base_offset)
         (version, nsubtables) = struct.unpack('>HH', fp.read(4))
