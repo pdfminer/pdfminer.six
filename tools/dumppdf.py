@@ -66,7 +66,8 @@ def dumpxml(out, obj, codec=None):
             out.write('\n</props>\n')
             if codec == 'text':
                 data = obj.get_data()
-                out.write('<data size="%d">%s</data>\n' % (len(data), escape(data)))
+                out.write('<data size="%d">%s</data>\n'
+                          % (len(data), escape(data)))
             out.write('</stream>')
         return
 
