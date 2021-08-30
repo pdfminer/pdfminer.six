@@ -279,8 +279,6 @@ class HTMLConverter(PDFConverter):
     def write(self, text):
         if self.codec:
             text = text.encode(self.codec)
-        if sys.version_info < (3, 0):
-            text = str(text)
         self.outfp.write(text)
         return
 
