@@ -1,7 +1,6 @@
 import io
 import logging
 import re
-import sys
 from .pdfdevice import PDFTextDevice
 from .pdffont import PDFUnicodeNotDefined
 from .layout import LTContainer
