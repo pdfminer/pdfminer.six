@@ -22,8 +22,8 @@ Check out the source on `github <https://github.com/pdfminer/pdfminer.six>`_.
 Content
 =======
 
-This documentation is organized into four sections (according to the `Divio
-documentation system <https://documentation.divio.com>`_). The
+This documentation is organized into four sections (according to the `Diátaxis
+documentation framework <https://diataxis.fr>`_). The
 :ref:`tutorial` section helps you setup and use pdfminer.six for the first
 time. Read this section if this is your first time working with pdfminer.six.
 The :ref:`howto` offers specific recipies for solving common problems.
