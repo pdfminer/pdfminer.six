@@ -1,8 +1,3 @@
-.. testsetup::
-
-    import sys
-    from pdfminer.high_level import extract_text_to_fp, extract_text
-
 .. _tutorial_highlevel:
 
 Extract text from a PDF using Python
@@ -15,6 +10,7 @@ The most simple way to extract text from a PDF is to use
 
 .. doctest::
 
+    >>> from pdfminer.high_level import extract_text
     >>> text = extract_text('samples/simple1.pdf')
     >>> print(repr(text))
     'Hello \n\nWorld\n\nHello \n\nWorld\n\nH e l l o  \n\nW o r l d\n\nH e l l o  \n\nW o r l d\n\n\x0c'
@@ -42,10 +38,7 @@ To read text from a PDF and print it on the command line:
 
 .. doctest::
 
-    >>> if sys.version_info > (3, 0):
-    ...     from io import StringIO
-    ... else:
-    ...     from io import BytesIO as StringIO
+    >>> from io import StringIO
     >>> from pdfminer.high_level import extract_text_to_fp
     >>> output_string = StringIO()
     >>> with open('samples/simple1.pdf', 'rb') as fin:
@@ -57,10 +50,8 @@ Or to convert it to html and use layout analysis:
 
 .. doctest::
 
-    >>> if sys.version_info > (3, 0):
-    ...     from io import StringIO
-    ... else:
-    ...     from io import BytesIO as StringIO
+    >>> from io import StringIO
+    >>> from pdfminer.high_level import extract_text_to_fp
     >>> from pdfminer.layout import LAParams
     >>> output_string = StringIO()
     >>> with open('samples/simple1.pdf', 'rb') as fin:
