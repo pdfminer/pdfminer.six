@@ -2,8 +2,6 @@ import io
 import logging
 import re
 
-from .pdfdevice import PDFTextDevice
-from .pdffont import PDFUnicodeNotDefined
 from . import utils
 from .layout import LTChar
 from .layout import LTContainer
