@@ -46,13 +46,13 @@ def make_compat_bytes(in_str):
     return in_str.encode()
 
 
-def make_compat_str(in_str):
-    """Converts to string, guessing encoding."""
-    assert isinstance(in_str, (bytes, str)), str(type(in_str))
-    if isinstance(in_str, bytes):
-        enc = chardet.detect(in_str)
-        in_str = in_str.decode(enc['encoding'])
-    return in_str
+def make_compat_str(o):
+    """Converts everything to string, if bytes guessing the encoding."""
+    if isinstance(o, bytes):
+        enc = chardet.detect(o)
+        return o.decode(enc['encoding'])
+    else:
+        return str(o)
 
 
 def shorten_str(s, size):
