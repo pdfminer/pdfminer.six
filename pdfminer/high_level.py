@@ -57,26 +57,31 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
 
     rsrcmgr = PDFResourceManager(caching=not disable_caching)
     device = None
-
+    
+    if output_type != 'text' and outfp == sys.stdout:
+        outfp = sys.stdout.buffer
+        
     if output_type == 'text':
         device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
                                imagewriter=imagewriter)
 
-    if outfp == sys.stdout:
-        outfp = sys.stdout.buffer
-
-    if output_type == 'xml':
+    elif output_type == 'xml':
         device = XMLConverter(rsrcmgr, outfp, codec=codec, laparams=laparams,
                               imagewriter=imagewriter,
                               stripcontrol=strip_control)
+    
     elif output_type == 'html':
         device = HTMLConverter(rsrcmgr, outfp, codec=codec, scale=scale,
                                layoutmode=layoutmode, laparams=laparams,
                                imagewriter=imagewriter)
+    
     elif output_type == 'tag':
         device = TagExtractor(rsrcmgr, outfp, codec=codec)
-    elif device is None:
-        raise ValueError(f"{output_type=} does not make sense")
+    
+    else:
+        msg = f"Output type can be text, html, xml or tag but is " \ 
+              f"{output_type}"
+        raise ValueError(msg)
 
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     for page in PDFPage.get_pages(inf,
