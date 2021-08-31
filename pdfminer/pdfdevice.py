@@ -154,29 +154,30 @@ class TagExtractor(PDFDevice):
                     char = font.to_unichr(cid)
                     text += char
                 except PDFUnicodeNotDefined:
-                    print(chars)
                     pass
-        self.outfp.write(utils.enc(text))
+        self._write(utils.enc(text))
         return
 
     def begin_page(self, page, ctm):
         output = '<page id="%s" bbox="%s" rotate="%d">' %\
                  (self.pageno, utils.bbox2str(page.mediabox), page.rotate)
-        self.outfp.write(utils.make_compat_bytes(output))
+        self._write(output)
         return
 
     def end_page(self, page):
-        self.outfp.write(utils.make_compat_bytes('</page>\n'))
+        self._write('</page>\n')
         self.pageno += 1
         return
 
     def begin_tag(self, tag, props=None):
         s = ''
         if isinstance(props, dict):
-            s = ''.join(' {}="{}"'.format(utils.enc(k), utils.enc(str(v)))
-                        for (k, v) in sorted(props.items()))
+            s = ''.join([
+                ' {}="{}"'.format(utils.enc(k), utils.make_compat_str(v))
+                for (k, v) in sorted(props.items())
+            ])
         out_s = '<{}{}>'.format(utils.enc(tag.name), s)
-        self.outfp.write(utils.make_compat_bytes(out_s))
+        self._write(out_s)
         self._stack.append(tag)
         return
 
@@ -184,10 +185,13 @@ class TagExtractor(PDFDevice):
         assert self._stack, str(self.pageno)
         tag = self._stack.pop(-1)
         out_s = '</%s>' % utils.enc(tag.name)
-        self.outfp.write(utils.make_compat_bytes(out_s))
+        self._write(out_s)
         return
 
     def do_tag(self, tag, props=None):
         self.begin_tag(tag, props)
         self._stack.pop(-1)
         return
+
+    def _write(self, s: str):
+        self.outfp.write(s.encode(self.codec))
