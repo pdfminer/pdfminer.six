@@ -79,7 +79,7 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
         device = TagExtractor(rsrcmgr, outfp, codec=codec)
     
     else:
-        msg = f"Output type can be text, html, xml or tag but is " \ 
+        msg = f"Output type can be text, html, xml or tag but is " \
               f"{output_type}"
         raise ValueError(msg)
 
