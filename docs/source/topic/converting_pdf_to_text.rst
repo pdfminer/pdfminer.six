@@ -3,7 +3,7 @@
 Converting a PDF file to text
 *****************************
 
-Most PDF files look like they contain well structured text. But the reality is
+Most PDF files look like they contain well structured text. But the reality  is
 that a PDF file does not contain anything that resembles paragraphs,
 sentences or even words. When it comes to text, a PDF file is only aware of
 the characters and their placement.
@@ -19,7 +19,6 @@ the appearance of one or more pages, possibly accompanied by additional
 interactive elements and higher-level application data. A PDF file contains
 the objects making up a PDF document along with associated structural
 information, all represented as a single self-contained sequence of bytes. [1]_
-
 
 .. _topic_pdf_to_text_layout:
 
@@ -41,7 +40,6 @@ of layout objects on a PDF page.
 
     The output of the layout analysis is a hierarchy of layout objects.
 
-
 The output of the layout analysis heavily depends on a couple of parameters.
 All these parameters are part of the :ref:`api_laparams` class.
 
@@ -59,7 +57,6 @@ one line. How close they should be is determined by the `char_margin`
 *distance* between the bounding boxes of two characters should be smaller than
 the `char_margin` and the vertical *overlap* between the bounding boxes should
 be smaller than the `line_overlap`.
-
 
 .. raw:: html
     :file: ../_static/layout_analysis.html
@@ -107,7 +104,7 @@ of lines.
 Grouping textboxes hierarchically
 ---------------------------------
 
-the last step is to group the text boxes in a meaningful way. This step
+The last step is to group the text boxes in a meaningful way. This step
 repeatedly merges the two text boxes that are closest to each other.
 
 The closeness of bounding boxes is computed as the area that is between the
@@ -117,7 +114,6 @@ boxes of the individual lines.
 
 .. raw:: html
     :file: ../_static/layout_analysis_group_boxes.html
-
 
 Working with rotated characters
 ===============================

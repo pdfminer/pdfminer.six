@@ -1,28 +1,27 @@
 import io
 import logging
 import re
-import sys
-from .pdfdevice import PDFTextDevice
-from .pdffont import PDFUnicodeNotDefined
+
+from . import utils
+from .layout import LTChar
 from .layout import LTContainer
-from .layout import LTPage
-from .layout import LTText
-from .layout import LTLine
-from .layout import LTRect
 from .layout import LTCurve
 from .layout import LTFigure
 from .layout import LTImage
-from .layout import LTChar
-from .layout import LTTextLine
+from .layout import LTLine
+from .layout import LTPage
+from .layout import LTRect
+from .layout import LTText
 from .layout import LTTextBox
 from .layout import LTTextBoxVertical
 from .layout import LTTextGroup
+from .layout import LTTextLine
+from .pdfdevice import PDFTextDevice
+from .pdffont import PDFUnicodeNotDefined
 from .utils import apply_matrix_pt
-from .utils import mult_matrix
-from .utils import enc
 from .utils import bbox2str
-from . import utils
-
+from .utils import enc
+from .utils import mult_matrix
 
 log = logging.getLogger(__name__)
 
@@ -84,45 +83,45 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                 self.paint_path(gstate, stroke, fill, evenodd, subpath)
 
         else:
-            if shape == 'ml':
+            # Although the 'h' command does not not literally provide a
+            # point-position, its position is (by definition) equal to the
+            # subpath's starting point.
+            #
+            # And, per Section 4.4's Table 4.9, all other path commands place
+            # their point-position in their final two arguments. (Any preceding
+            # arguments represent control points on Bézier curves.)
+            raw_pts = [p[-2:] if p[0] != 'h' else path[0][-2:] for p in path]
+            pts = [apply_matrix_pt(self.ctm, pt) for pt in raw_pts]
+
+            if shape in {'mlh', 'ml'}:
                 # single line segment
-                (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])
-                (x1, y1) = apply_matrix_pt(self.ctm, path[1][1:])
-                if x0 == x1 or y0 == y1:
-                    line = LTLine(gstate.linewidth, (x0, y0), (x1, y1), stroke,
-                                  fill, evenodd, gstate.scolor, gstate.ncolor)
-                    self.cur_item.add(line)
+                #
+                # Note: 'ml', in conditional above, is a frequent anomaly
+                # that we want to support.
+                line = LTLine(gstate.linewidth, pts[0], pts[1], stroke,
+                              fill, evenodd, gstate.scolor, gstate.ncolor)
+                self.cur_item.add(line)
 
-            elif shape == 'mlllh':
-                (x0, y0) = apply_matrix_pt(self.ctm, path[0][1:])
-                (x1, y1) = apply_matrix_pt(self.ctm, path[1][1:])
-                (x2, y2) = apply_matrix_pt(self.ctm, path[2][1:])
-                (x3, y3) = apply_matrix_pt(self.ctm, path[3][1:])
+            elif shape in {'mlllh', 'mllll'}:
+                (x0, y0), (x1, y1), (x2, y2), (x3, y3), _ = pts
 
-                if (x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or \
-                        (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0):
-                    rect = LTRect(gstate.linewidth, (x0, y0, x2, y2), stroke,
+                is_closed_loop = (pts[0] == pts[4])
+                has_square_coordinates = \
+                    (x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) \
+                    or (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)
+                if is_closed_loop and has_square_coordinates:
+                    rect = LTRect(gstate.linewidth, (*pts[0], *pts[2]), stroke,
                                   fill, evenodd, gstate.scolor, gstate.ncolor)
                     self.cur_item.add(rect)
                 else:
-                    curve = self._create_curve(gstate, stroke, fill, evenodd,
-                                               path)
+                    curve = LTCurve(gstate.linewidth, pts, stroke, fill,
+                                    evenodd, gstate.scolor, gstate.ncolor)
                     self.cur_item.add(curve)
 
             else:
-                curve = self._create_curve(gstate, stroke, fill, evenodd, path)
+                curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
+                                gstate.scolor, gstate.ncolor)
                 self.cur_item.add(curve)
-
-    def _create_curve(self, gstate, stroke, fill, evenodd, path):
-        """Create a `LTCurve` object for the paint path operator"""
-        pts = [
-            apply_matrix_pt(self.ctm, point)
-            for p in path
-            for point in zip(p[1::2], p[2::2])
-        ]
-        curve = LTCurve(gstate.linewidth, pts, stroke, fill, evenodd,
-                        gstate.scolor, gstate.ncolor)
-        return curve
 
     def render_char(self, matrix, font, fontsize, scaling, rise, cid, ncs,
                     graphicstate):
@@ -279,8 +278,6 @@ class HTMLConverter(PDFConverter):
     def write(self, text):
         if self.codec:
             text = text.encode(self.codec)
-        if sys.version_info < (3, 0):
-            text = str(text)
         self.outfp.write(text)
         return
 
