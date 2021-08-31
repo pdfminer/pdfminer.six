@@ -22,7 +22,7 @@ logging.basicConfig()
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
 
 
-def e(s):
+def escape(s):
     if isinstance(s, bytes):
         s = str(s, 'latin-1')
     return ESC_PAT.sub(lambda m: '&#%d;' % ord(m.group(0)), s)
@@ -52,7 +52,7 @@ def dumpxml(out, obj, codec=None):
         return
 
     if isinstance(obj, ((str,), bytes)):
-        out.write('<string size="%d">%s</string>' % (len(obj), e(obj)))
+        out.write('<string size="%d">%s</string>' % (len(obj), escape(obj)))
         return
 
     if isinstance(obj, PDFStream):
@@ -66,7 +66,8 @@ def dumpxml(out, obj, codec=None):
             out.write('\n</props>\n')
             if codec == 'text':
                 data = obj.get_data()
-                out.write('<data size="%d">%s</data>\n' % (len(data), e(data)))
+                out.write('<data size="%d">%s</data>\n'
+                          % (len(data), escape(data)))
             out.write('</stream>')
         return
 
@@ -135,7 +136,7 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
              in enumerate(PDFPage.create_pages(doc), 1)}
 
     def resolve_dest(dest):
-        if isinstance(dest, str):
+        if isinstance(dest, (str, bytes)):
             dest = resolve1(doc.get_dest(dest))
         elif isinstance(dest, PSLiteral):
             dest = resolve1(doc.get_dest(dest.name))
@@ -161,7 +162,7 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
                             'D'):
                         dest = resolve_dest(action['D'])
                         pageno = pages[dest[0].objid]
-            s = e(title).encode('utf-8', 'xmlcharrefreplace')
+            s = escape(title)
             outfp.write('<outline level="{!r}" title="{}">\n'.format(level, s))
             if dest is not None:
                 outfp.write('<dest>')
