@@ -17,8 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fix issue of some Chinese characters can not be extracted correctly ([#593](https://github.com/pdfminer/pdfminer.six/pull/593))
 - Detecting trailer correctly when surrounded with needless whitespace ([#535](https://github.com/pdfminer/pdfminer.six/pull/535))
 - Fix `.paint_path` logic for handling single line segments and extracting point-on-curve positions of Beziér path commands ([#530](https://github.com/pdfminer/pdfminer.six/pull/530))
-- Cryptic `UnboundLocalError` in `pdfminer.high_level.extract_text_to_fp` when a bad `output_type` is given
-- `TypeError` when using `TagExtractor`
+- Raising `UnboundLocalError` when a bad `--output-type`  is used ([#610](https://github.com/pdfminer/pdfminer.six/pull/610))
+- `TypeError` when using `TagExtractor` with non-string or non-bytes tag values ([#610](https://github.com/pdfminer/pdfminer.six/pull/610))
 
 ## Removed
 - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
