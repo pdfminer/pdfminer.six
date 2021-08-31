@@ -1,9 +1,0 @@
-2021-05-22  Henry S. Thompson  <ht@home.hst.name>
-
-	* psparser.py (PSBaseParser._parse_wopen): 
-	  Delete \\\r\n in Literal Strings (ref. section 7.3.4.2 of PDF32000_2008)
-	
-2021-05-05  Henry S. Thompson  <ht@home.hst.name>
-
-	* converter.py (PDFConverter._is_binary_stream):
-	  Detect TextIOWrapper as non-binary
