@@ -156,7 +156,7 @@ class TagExtractor(PDFDevice):
                 except PDFUnicodeNotDefined:
                     print(chars)
                     pass
-        self.outfp.write(utils.enc(text))
+        self.outfp.write(utils.make_compat_bytes(utils.enc(text)))
         return
 
     def begin_page(self, page, ctm):
