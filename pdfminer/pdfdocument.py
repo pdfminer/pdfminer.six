@@ -93,16 +93,15 @@ class PDFXRef(PDFBaseXRef):
         while True:
             try:
                 (pos, line) = parser.nextline()
-                if not line.strip():
+                line = line.strip()
+                if not line:
                     continue
             except PSEOF:
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
-            if not line:
-                raise PDFNoValidXRef('Premature eof: %r' % parser)
             if line.startswith(b'trailer'):
                 parser.seek(pos)
                 break
-            f = line.strip().split(b' ')
+            f = line.split(b' ')
             if len(f) != 2:
                 error_msg = 'Trailer not found: {!r}: line={!r}'\
                     .format(parser, line)
@@ -116,9 +115,10 @@ class PDFXRef(PDFBaseXRef):
             for objid in range(start, start+nobjs):
                 try:
                     (_, line) = parser.nextline()
+                    line = line.strip()
                 except PSEOF:
                     raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
-                f = line.strip().split(b' ')
+                f = line.split(b' ')
                 if len(f) != 3:
                     error_msg = 'Invalid XRef format: {!r}, line={!r}'\
                         .format(parser, line)
@@ -230,7 +230,7 @@ class PDFXRefStream(PDFBaseXRef):
         (_, kwd) = parser.nexttoken()
         (_, stream) = parser.nextobject()
         if not isinstance(stream, PDFStream) \
-                or stream['Type'] is not LITERAL_XREF:
+                or stream.get('Type') is not LITERAL_XREF:
             raise PDFNoValidXRef('Invalid PDF stream spec.')
         size = stream['Size']
         index_array = stream.get('Index', (0, size))
@@ -629,7 +629,14 @@ class PDFDocument:
                 continue
             # If there's an encryption info, remember it.
             if 'Encrypt' in trailer:
-                self.encryption = (list_value(trailer['ID']),
+                if 'ID' in trailer:
+                    id_value = list_value(trailer['ID'])
+                else:
+                    # Some documents may not have a /ID, use two empty
+                    # byte strings instead. Solves
+                    # https://github.com/pdfminer/pdfminer.six/issues/594
+                    id_value = (b'', b'')
+                self.encryption = (id_value,
                                    dict_value(trailer['Encrypt']))
                 self._initialize_password(password)
             if 'Info' in trailer:
