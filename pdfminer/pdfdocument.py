@@ -499,7 +499,7 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
             return None
 
     def authenticate(self, password):
-        password = password.encode('utf-8')[:127]
+        password = self._normalize_password(password)
         hash = self._password_hash(password, self.o_validation_salt, self.u)
         if hash == self.o_hash:
             hash = self._password_hash(password, self.o_key_salt, self.u)
@@ -516,7 +516,16 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
             return cipher.decryptor().update(self.ue)
         return None
 
-    def _password_hash(self, password, salt, vector=b""):
+    def _normalize_password(self, password):
+        if self.r == 6:
+            # saslprep expects non-empty strings, apparently
+            if not password:
+                return b''
+            from ._saslprep import saslprep
+            password = saslprep(password)
+        return password.encode('utf-8')[:127]
+
+    def _password_hash(self, password, salt, vector=None):
         """
         Compute password hash depending on revision number
         """
@@ -530,7 +539,7 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         """
         hash = sha256(password)
         hash.update(salt)
-        if vector:
+        if vector is not None:
             hash.update(vector)
         return hash.digest()
 
@@ -540,7 +549,7 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         """
         initial_hash = sha256(password)
         initial_hash.update(salt)
-        if vector:
+        if vector is not None:
             initial_hash.update(vector)
         k = initial_hash.digest()
         hashes = (sha256, sha384, sha512)

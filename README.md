@@ -51,3 +51,8 @@ Contributing
 ------------
 
 Be sure to read the [contribution guidelines](https://github.com/pdfminer/pdfminer.six/blob/master/CONTRIBUTING.md). 
+
+Acknowledgement
+---------------
+
+This repository includes code from `pyHanko` ; the original license has been included [here](/docs/licenses/LICENSE.pyHanko).
