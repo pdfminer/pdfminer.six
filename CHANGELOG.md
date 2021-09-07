@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Add support for PDF 2.0 (ISO 32000-2) AES-256 encryption ([#614](https://github.com/pdfminer/pdfminer.six/pull/614))
 - Support for Paeth PNG filter compression (predictor value = 4) ([#537](https://github.com/pdfminer/pdfminer.six/pull/537))
+- Type annotations ([#661](https://github.com/pdfminer/pdfminer.six/pull/661))
 
 ### Fixed
 - `KeyError` when `'Encrypt'` but not `'ID'` present in `trailer` ([#594](https://github.com/pdfminer/pdfminer.six/pull/594))
