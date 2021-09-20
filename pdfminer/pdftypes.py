@@ -187,7 +187,10 @@ def stream_value(x):
 
 
 def decompress_corrupted(data):
-    d = zlib.decompressobj(zlib.MAX_WBITS | 32)
+    """Called on some data that can't be properly decoded because of CRC checksum
+    error. Attempt to decode it skipping the CRC.
+    """
+    d = zlib.decompressobj()
     f = io.BytesIO(data)
     result_str = b''
     buffer = f.read(1)
@@ -198,6 +201,7 @@ def decompress_corrupted(data):
             buffer = f.read(1)
             i += 1
     except zlib.error:
+        # Let the error propagates if we're not yet in the CRC checksum
         if i < len(data) - 3:
             raise
     return result_str
