@@ -1,4 +1,5 @@
 import logging
+import warnings
 from . import settings
 from .psparser import LIT
 from .pdftypes import PDFObjectNotFound
@@ -8,6 +9,7 @@ from .pdftypes import list_value
 from .pdftypes import dict_value
 from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument, PDFTextExtractionNotAllowed
+from .pdfdocument import PDFTextExtractionNotAllowedWarning
 
 
 log = logging.getLogger(__name__)
@@ -120,20 +122,6 @@ class PDFPage:
     def get_pages(cls, fp,
                   pagenos=None, maxpages=0, password='',
                   caching=True, check_extractable=False):
-        '''Build and return page objects from a PDF file
-        :param fp: Source for a PDF
-        :type fp: Seekable stream
-        :param pagenos: if present, only these pages [0-origin]
-        :type pagenos: list(int) OR None
-        :param maxpages: If present, maximum number of pages to process
-        :type maximum: int
-        :param password: password for PDF document
-        :type password: str
-        :param caching: passed to PDFDocument, q.v.
-        :type caching: bool
-        :param check_extractable: if true and the document does not allow extraction,
-                                  raise PDFTextExtractionNotAllowed exception
-        :type check_extractable: bool''' 
         # Create a PDF parser object associated with the file object.
         parser = PDFParser(fp)
         # Create a PDF document object that stores the document structure.
@@ -148,9 +136,8 @@ class PDFPage:
                 warning_msg = 'The PDF %r contains a metadata field '\
                             'indicating that it should not allow '   \
                             'text extraction. Ignoring this field '  \
-                            'and proceeding.  Use the check_extractable arg ' \
-                            'if you want to force an error in this case' % fp
-                log.warning(warning_msg)
+                            'and proceeding.' % fp
+                warnings.warn(warning_msg, PDFTextExtractionNotAllowedWarning)
         # Process each page contained in the document.
         for (pageno, page) in enumerate(cls.create_pages(doc)):
             if pagenos and (pageno not in pagenos):

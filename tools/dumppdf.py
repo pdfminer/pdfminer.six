@@ -4,10 +4,12 @@ import logging
 import os.path
 import re
 import sys
+import warnings
 from argparse import ArgumentParser
 
 import pdfminer
-from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback
+from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback, \
+    PDFNoValidXRefWarning
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import PDFObjectNotFound, PDFValueError
@@ -16,7 +18,6 @@ from pdfminer.psparser import PSKeyword, PSLiteral, LIT
 from pdfminer.utils import isnumber
 
 logging.basicConfig()
-log = logging.getLogger(__name__)
 
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
 
@@ -100,7 +101,7 @@ def dumptrailers(out, doc, show_fallback_xref=False):
         msg = 'This PDF does not have an xref. Use --show-fallback-xref if ' \
               'you want to display the content of a fallback xref that ' \
               'contains all objects.'
-        log.warning(msg)
+        warnings.warn(msg, PDFNoValidXRefWarning)
     return
 
 
