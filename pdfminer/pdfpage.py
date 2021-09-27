@@ -131,9 +131,9 @@ class PDFPage:
         :type password: str
         :param caching: passed to PDFDocument, q.v.
         :type caching: bool
-        :param check_extractable: if true and the document does not allow
-                  extraction, raise PDFTextExtractionNotAllowed exception
-        :type check_extractable: bool'''
+        :param check_extractable: if true and the document does not allow extraction,
+                                  raise PDFTextExtractionNotAllowed exception
+        :type check_extractable: bool''' 
         # Create a PDF parser object associated with the file object.
         parser = PDFParser(fp)
         # Create a PDF document object that stores the document structure.
