@@ -1,7 +1,7 @@
 import logging
 import re
 import struct
-from hashlib import sha256, md5
+from hashlib import sha256, md5, sha384, sha512
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -93,16 +93,15 @@ class PDFXRef(PDFBaseXRef):
         while True:
             try:
                 (pos, line) = parser.nextline()
-                if not line.strip():
+                line = line.strip()
+                if not line:
                     continue
             except PSEOF:
                 raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
-            if not line:
-                raise PDFNoValidXRef('Premature eof: %r' % parser)
             if line.startswith(b'trailer'):
                 parser.seek(pos)
                 break
-            f = line.strip().split(b' ')
+            f = line.split(b' ')
             if len(f) != 2:
                 error_msg = 'Trailer not found: {!r}: line={!r}'\
                     .format(parser, line)
@@ -116,9 +115,10 @@ class PDFXRef(PDFBaseXRef):
             for objid in range(start, start+nobjs):
                 try:
                     (_, line) = parser.nextline()
+                    line = line.strip()
                 except PSEOF:
                     raise PDFNoValidXRef('Unexpected EOF - file corrupted?')
-                f = line.strip().split(b' ')
+                f = line.split(b' ')
                 if len(f) != 3:
                     error_msg = 'Invalid XRef format: {!r}, line={!r}'\
                         .format(parser, line)
@@ -230,7 +230,7 @@ class PDFXRefStream(PDFBaseXRef):
         (_, kwd) = parser.nexttoken()
         (_, stream) = parser.nextobject()
         if not isinstance(stream, PDFStream) \
-                or stream['Type'] is not LITERAL_XREF:
+                or stream.get('Type') is not LITERAL_XREF:
             raise PDFNoValidXRef('Invalid PDF stream spec.')
         size = stream['Size']
         index_array = stream.get('Index', (0, size))
@@ -477,7 +477,7 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
 
 class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
 
-    supported_revisions = (5,)
+    supported_revisions = (5, 6)
 
     def init_params(self):
         super().init_params()
@@ -499,28 +499,83 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
             return None
 
     def authenticate(self, password):
-        password = password.encode('utf-8')[:127]
-        hash = sha256(password)
-        hash.update(self.o_validation_salt)
-        hash.update(self.u)
-        if hash.digest() == self.o_hash:
-            hash = sha256(password)
-            hash.update(self.o_key_salt)
-            hash.update(self.u)
-            cipher = Cipher(algorithms.AES(hash.digest()),
+        password = self._normalize_password(password)
+        hash = self._password_hash(password, self.o_validation_salt, self.u)
+        if hash == self.o_hash:
+            hash = self._password_hash(password, self.o_key_salt, self.u)
+            cipher = Cipher(algorithms.AES(hash),
                             modes.CBC(b'\0' * 16),
                             backend=default_backend())
             return cipher.decryptor().update(self.oe)
-        hash = sha256(password)
-        hash.update(self.u_validation_salt)
-        if hash.digest() == self.u_hash:
-            hash = sha256(password)
-            hash.update(self.u_key_salt)
-            cipher = Cipher(algorithms.AES(hash.digest()),
+        hash = self._password_hash(password, self.u_validation_salt)
+        if hash == self.u_hash:
+            hash = self._password_hash(password, self.u_key_salt)
+            cipher = Cipher(algorithms.AES(hash),
                             modes.CBC(b'\0' * 16),
                             backend=default_backend())
             return cipher.decryptor().update(self.ue)
         return None
+
+    def _normalize_password(self, password):
+        if self.r == 6:
+            # saslprep expects non-empty strings, apparently
+            if not password:
+                return b''
+            from ._saslprep import saslprep
+            password = saslprep(password)
+        return password.encode('utf-8')[:127]
+
+    def _password_hash(self, password, salt, vector=None):
+        """
+        Compute password hash depending on revision number
+        """
+        if self.r == 5:
+            return self._r5_password(password, salt, vector)
+        return self._r6_password(password, salt[0:8], vector)
+
+    def _r5_password(self, password, salt, vector):
+        """
+        Compute the password for revision 5
+        """
+        hash = sha256(password)
+        hash.update(salt)
+        if vector is not None:
+            hash.update(vector)
+        return hash.digest()
+
+    def _r6_password(self, password, salt, vector):
+        """
+        Compute the password for revision 6
+        """
+        initial_hash = sha256(password)
+        initial_hash.update(salt)
+        if vector is not None:
+            initial_hash.update(vector)
+        k = initial_hash.digest()
+        hashes = (sha256, sha384, sha512)
+        round_no = last_byte_val = 0
+        while round_no < 64 or last_byte_val > round_no - 32:
+            k1 = (password + k + (vector or b'')) * 64
+            e = self._aes_cbc_encrypt(
+                key=k[:16], iv=k[16:32], data=k1
+            )
+            # compute the first 16 bytes of e,
+            # interpreted as an unsigned integer mod 3
+            next_hash = hashes[self._bytes_mod_3(e[:16])]
+            k = next_hash(e).digest()
+            last_byte_val = e[len(e) - 1]
+            round_no += 1
+        return k[:32]
+
+    @staticmethod
+    def _bytes_mod_3(input_bytes):
+        # 256 is 1 mod 3, so we can just sum 'em
+        return sum(b % 3 for b in input_bytes) % 3
+
+    def _aes_cbc_encrypt(self, key, iv, data):
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+        encryptor = cipher.encryptor()
+        return encryptor.update(data) + encryptor.finalize()
 
     def decrypt_aes256(self, objid, genno, data):
         initialization_vector = data[:16]
@@ -583,7 +638,14 @@ class PDFDocument:
                 continue
             # If there's an encryption info, remember it.
             if 'Encrypt' in trailer:
-                self.encryption = (list_value(trailer['ID']),
+                if 'ID' in trailer:
+                    id_value = list_value(trailer['ID'])
+                else:
+                    # Some documents may not have a /ID, use two empty
+                    # byte strings instead. Solves
+                    # https://github.com/pdfminer/pdfminer.six/issues/594
+                    id_value = (b'', b'')
+                self.encryption = (id_value,
                                    dict_value(trailer['Encrypt']))
                 self._initialize_password(password)
             if 'Info' in trailer:
