@@ -1,4 +1,5 @@
 import zlib
+import warnings
 import logging
 import io
 from .lzw import lzwdecode
@@ -203,7 +204,8 @@ def decompress_corrupted(data):
     except zlib.error:
         # Let the error propagates if we're not yet in the CRC checksum
         if i < len(data) - 3:
-            raise
+            from .pdfdocument import PDFEncryptionError
+            warnings.warn("Data-loss while decompressing corrupted data", PDFEncryptionError)
     return result_str
 
 
