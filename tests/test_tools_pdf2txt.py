@@ -96,6 +96,12 @@ class TestPdf2Txt():
     def test_encryption_aes256m(self):
         run('encryption/aes-256-m.pdf', '-P foo')
 
+    def test_encryption_aes256_r6_user(self):
+        run('encryption/aes-256-r6.pdf', '-P usersecret')
+
+    def test_encryption_aes256_r6_owner(self):
+        run('encryption/aes-256-r6.pdf', '-P ownersecret')
+
     def test_encryption_base(self):
         run('encryption/base.pdf', '-P foo')
 

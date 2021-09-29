@@ -1,4 +1,4 @@
-from nose.tools import raises
+from nose.tools import assert_equal, raises
 
 from helpers import absolute_sample_path
 from pdfminer.pdfdocument import PDFDocument
@@ -14,3 +14,14 @@ class TestPdfDocument(object):
             parser = PDFParser(in_file)
             doc = PDFDocument(parser)
             doc.getobj(0)
+
+    def test_encrypted_no_id(self):
+        # Some documents may be encrypted but not have an /ID key in
+        # their trailer. Tests
+        # https://github.com/pdfminer/pdfminer.six/issues/594
+        path = absolute_sample_path('encryption/encrypted_doc_no_id.pdf')
+        with open(path, 'rb') as fp:
+            parser = PDFParser(fp)
+            doc = PDFDocument(parser)
+            assert_equal(doc.info,
+                         [{'Producer': b'European Patent Office'}])
