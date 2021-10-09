@@ -1,5 +1,6 @@
 import logging
 import re
+from typing import Dict, Iterable, Optional, cast
 
 from .glyphlist import glyphname2unicode
 from .latin_enc import ENCODING
@@ -10,7 +11,7 @@ HEXADECIMAL = re.compile(r'[0-9a-fA-F]+')
 log = logging.getLogger(__name__)
 
 
-def name2unicode(name):
+def name2unicode(name: str) -> str:
     """Converts Adobe glyph names to Unicode numbers.
 
     In contrast to the specification, this raises a KeyError instead of return
@@ -32,7 +33,7 @@ def name2unicode(name):
 
     else:
         if name in glyphname2unicode:
-            return glyphname2unicode.get(name)
+            return glyphname2unicode[name]
 
         elif name.startswith('uni'):
             name_without_uni = name.strip('uni')
@@ -59,7 +60,7 @@ def name2unicode(name):
                    'it does not match specification' % name)
 
 
-def raise_key_error_for_invalid_unicode(unicode_digit):
+def raise_key_error_for_invalid_unicode(unicode_digit: int) -> None:
     """Unicode values should not be in the range D800 through DFFF because
     that is used for surrogate pairs in UTF-16
 
@@ -72,10 +73,10 @@ def raise_key_error_for_invalid_unicode(unicode_digit):
 
 class EncodingDB:
 
-    std2unicode = {}
-    mac2unicode = {}
-    win2unicode = {}
-    pdf2unicode = {}
+    std2unicode: Dict[int, str] = {}
+    mac2unicode: Dict[int, str] = {}
+    win2unicode: Dict[int, str] = {}
+    pdf2unicode: Dict[int, str] = {}
     for (name, std, mac, win, pdf) in ENCODING:
         c = name2unicode(name)
         if std:
@@ -95,7 +96,11 @@ class EncodingDB:
     }
 
     @classmethod
-    def get_encoding(cls, name, diff=None):
+    def get_encoding(
+        cls,
+        name: str,
+        diff: Optional[Iterable[object]] = None
+    ) -> Dict[int, str]:
         cid2unicode = cls.encodings.get(name, cls.std2unicode)
         if diff:
             cid2unicode = cid2unicode.copy()
@@ -105,7 +110,7 @@ class EncodingDB:
                     cid = x
                 elif isinstance(x, PSLiteral):
                     try:
-                        cid2unicode[cid] = name2unicode(x.name)
+                        cid2unicode[cid] = name2unicode(cast(str, x.name))
                     except (KeyError, ValueError) as e:
                         log.debug(str(e))
                     cid += 1

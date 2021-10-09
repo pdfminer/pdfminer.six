@@ -3,22 +3,36 @@
 import logging
 import sys
 from io import StringIO
+from typing import Any, BinaryIO, Container, Iterator, Optional, cast
 
 from .converter import XMLConverter, HTMLConverter, TextConverter, \
     PDFPageAggregator
 from .image import ImageWriter
-from .layout import LAParams
-from .pdfdevice import TagExtractor
+from .layout import LAParams, LTPage
+from .pdfdevice import PDFDevice, TagExtractor
 from .pdfinterp import PDFResourceManager, PDFPageInterpreter
 from .pdfpage import PDFPage
-from .utils import open_filename
+from .utils import open_filename, FileOrName, AnyIO
 
 
-def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
-                       laparams=None, maxpages=0, page_numbers=None,
-                       password="", scale=1.0, rotation=0, layoutmode='normal',
-                       output_dir=None, strip_control=False, debug=False,
-                       disable_caching=False, **kwargs):
+def extract_text_to_fp(
+    inf: BinaryIO,
+    outfp: AnyIO,
+    output_type: str = 'text',
+    codec: str = 'utf-8',
+    laparams: Optional[LAParams] = None,
+    maxpages: int = 0,
+    page_numbers: Optional[Container[int]] = None,
+    password: str = "",
+    scale: float = 1.0,
+    rotation: int = 0,
+    layoutmode: str = 'normal',
+    output_dir: Optional[str] = None,
+    strip_control: bool = False,
+    debug: bool = False,
+    disable_caching: bool = False,
+    **kwargs: Any
+) -> None:
     """Parses text from inf-file and writes to outfp file-like object.
 
     Takes loads of optional arguments but the defaults are somewhat sane.
@@ -56,7 +70,7 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
         imagewriter = ImageWriter(output_dir)
 
     rsrcmgr = PDFResourceManager(caching=not disable_caching)
-    device = None
+    device: Optional[PDFDevice] = None
 
     if output_type != 'text' and outfp == sys.stdout:
         outfp = sys.stdout.buffer
@@ -76,13 +90,15 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
                                imagewriter=imagewriter)
 
     elif output_type == 'tag':
-        device = TagExtractor(rsrcmgr, outfp, codec=codec)
+        # Binary I/O is required, but we have no good way to test it here.
+        device = TagExtractor(rsrcmgr, cast(BinaryIO, outfp), codec=codec)
 
     else:
         msg = f"Output type can be text, html, xml or tag but is " \
               f"{output_type}"
         raise ValueError(msg)
 
+    assert device is not None
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     for page in PDFPage.get_pages(inf,
                                   page_numbers,
@@ -95,8 +111,15 @@ def extract_text_to_fp(inf, outfp, output_type='text', codec='utf-8',
     device.close()
 
 
-def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
-                 caching=True, codec='utf-8', laparams=None):
+def extract_text(
+    pdf_file: FileOrName,
+    password: str = '',
+    page_numbers: Optional[Container[int]] = None,
+    maxpages: int = 0,
+    caching: bool = True,
+    codec: str = 'utf-8',
+    laparams: Optional[LAParams] = None
+) -> str:
     """Parse and return the text contained in a PDF file.
 
     :param pdf_file: Either a file path or a file-like object for the PDF file
@@ -114,6 +137,7 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
         laparams = LAParams()
 
     with open_filename(pdf_file, "rb") as fp, StringIO() as output_string:
+        fp = cast(BinaryIO, fp)  # we opened in binary mode
         rsrcmgr = PDFResourceManager(caching=caching)
         device = TextConverter(rsrcmgr, output_string, codec=codec,
                                laparams=laparams)
@@ -131,8 +155,14 @@ def extract_text(pdf_file, password='', page_numbers=None, maxpages=0,
         return output_string.getvalue()
 
 
-def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
-                  caching=True, laparams=None):
+def extract_pages(
+    pdf_file: FileOrName,
+    password: str = '',
+    page_numbers: Optional[Container[int]] = None,
+    maxpages: int = 0,
+    caching: bool = True,
+    laparams: Optional[LAParams] = None
+) -> Iterator[LTPage]:
     """Extract and yield LTPage objects
 
     :param pdf_file: Either a file path or a file-like object for the PDF file
@@ -149,6 +179,7 @@ def extract_pages(pdf_file, password='', page_numbers=None, maxpages=0,
         laparams = LAParams()
 
     with open_filename(pdf_file, "rb") as fp:
+        fp = cast(BinaryIO, fp)  # we opened in binary mode
         resource_manager = PDFResourceManager(caching=caching)
         device = PDFPageAggregator(resource_manager, laparams=laparams)
         interpreter = PDFPageInterpreter(resource_manager, device)
