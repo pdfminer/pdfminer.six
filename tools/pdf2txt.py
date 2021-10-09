@@ -4,9 +4,12 @@ output it to plain text, html, xml or tags."""
 import argparse
 import logging
 import sys
+from typing import Any, Container, Iterable, List, Optional, Union
+from typing_extensions import Literal
 
 import pdfminer.high_level
-import pdfminer.layout
+from pdfminer.layout import LAParams
+from pdfminer.utils import AnyIO
 
 logging.basicConfig()
 
@@ -15,24 +18,42 @@ OUTPUT_TYPES = ((".htm", "html"),
                 (".xml", "xml"),
                 (".tag", "tag"))
 
+FloatOrDisabled = Union[float, Literal["disabled"]]
 
-def float_or_disabled(x):
+
+def float_or_disabled(x: str) -> FloatOrDisabled:
     if x.lower().strip() == "disabled":
         return "disabled"
     try:
-        x = float(x)
+        return float(x)
     except ValueError:
         raise argparse.ArgumentTypeError("invalid float value: {}".format(x))
 
 
-def extract_text(files=[], outfile='-',
-                 no_laparams=False, all_texts=None, detect_vertical=None,
-                 word_margin=None, char_margin=None, line_margin=None,
-                 boxes_flow=None, output_type='text', codec='utf-8',
-                 strip_control=False, maxpages=0, page_numbers=None,
-                 password="", scale=1.0, rotation=0, layoutmode='normal',
-                 output_dir=None, debug=False, disable_caching=False,
-                 **kwargs):
+def extract_text(
+    files: Iterable[str] = [],
+    outfile: str = '-',
+    no_laparams: bool = False,
+    all_texts: Optional[bool] = None,
+    detect_vertical: Optional[bool] = None,
+    word_margin: Optional[float] = None,
+    char_margin: Optional[float] = None,
+    line_margin: Optional[float] = None,
+    boxes_flow: Optional[FloatOrDisabled] = None,
+    output_type: str = 'text',
+    codec: str = 'utf-8',
+    strip_control: bool = False,
+    maxpages: int = 0,
+    page_numbers: Optional[Container[int]] = None,
+    password: str = "",
+    scale: float = 1.0,
+    rotation: int = 0,
+    layoutmode: str = 'normal',
+    output_dir: Optional[str] = None,
+    debug: bool = False,
+    disable_caching: bool = False,
+    **kwargs: Any
+) -> AnyIO:
     if not files:
         raise ValueError("Must provide files to work upon!")
 
@@ -40,7 +61,7 @@ def extract_text(files=[], outfile='-',
     # create an LAParams object and
     # populate with given args. Otherwise, set it to None.
     if not no_laparams:
-        laparams = pdfminer.layout.LAParams()
+        laparams: Optional[LAParams] = LAParams()
         for param in ("all_texts", "detect_vertical", "word_margin",
                       "char_margin", "line_margin", "boxes_flow"):
             paramv = locals().get(param, None)
@@ -58,8 +79,8 @@ def extract_text(files=[], outfile='-',
                 output_type = alttype
 
     if outfile == "-":
-        outfp = sys.stdout
-        if outfp.encoding is not None:
+        outfp: AnyIO = sys.stdout
+        if sys.stdout.encoding is not None:
             codec = 'utf-8'
     else:
         outfp = open(outfile, "wb")
@@ -70,7 +91,7 @@ def extract_text(files=[], outfile='-',
     return outfp
 
 
-def maketheparser():
+def maketheparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__, add_help=True)
     parser.add_argument(
         "files", type=str, default=None, nargs="+",
@@ -183,7 +204,7 @@ def maketheparser():
 # main
 
 
-def main(args=None):
+def main(args: Optional[List[str]] = None) -> int:
 
     P = maketheparser()
     A = P.parse_args(args=args)
