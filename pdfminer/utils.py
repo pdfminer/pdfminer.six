@@ -7,7 +7,6 @@ import struct
 from typing import (Any, BinaryIO, Callable, Dict, Generic, Iterable, Iterator,
                     List, Optional, Set, TextIO, Tuple, TypeVar, Union,
                     TYPE_CHECKING, cast)
-from typing_extensions import Literal
 from html import escape
 
 if TYPE_CHECKING:
@@ -55,10 +54,10 @@ class open_filename(object):
         exc_type: object,
         exc_val: object,
         exc_tb: object
-    ) -> Literal[False]:
+    ) -> None:
         if self.closing:
             self.file_handler.close()
-        return False
+        return
 
 
 def make_compat_bytes(in_str: str) -> bytes:
