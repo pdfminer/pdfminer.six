@@ -222,6 +222,8 @@ class PDFResourceManager:
                 font = PDFType1Font(self, spec)  # this is so wrong!
             if objid and self.caching:
                 self._cached_fonts[objid] = font
+                # font object add id attribute
+                font.id = objid
         return font
 
 

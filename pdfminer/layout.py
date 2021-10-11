@@ -329,12 +329,16 @@ class LTChar(LTComponent, LTText):
         textwidth: float,
         textdisp: Union[float, Tuple[Optional[float], float]],
         ncs: PDFColorSpace,
-        graphicstate: PDFGraphicState
+        graphicstate: PDFGraphicState,
+        cid: int
     ) -> None:
         LTText.__init__(self)
         self._text = text
         self.matrix = matrix
         self.fontname = font.fontname
+        self.cid = cid
+        # Because the font name can be the same on a page, so add fontid attribute
+        if hasattr(font, "id"): self.fontid = font.id
         self.ncs = ncs
         self.graphicstate = graphicstate
         self.adv = textwidth * fontsize * scaling
