@@ -5,7 +5,6 @@ import argparse
 import logging
 import sys
 from typing import Any, Container, Iterable, List, Optional, Union
-from typing_extensions import Literal
 
 import pdfminer.high_level
 from pdfminer.layout import LAParams
@@ -18,7 +17,7 @@ OUTPUT_TYPES = ((".htm", "html"),
                 (".xml", "xml"),
                 (".tag", "tag"))
 
-FloatOrDisabled = Union[float, Literal["disabled"]]
+FloatOrDisabled = Union[float, str]  # Union[float, Literal["disabled"]]
 
 
 def float_or_disabled(x: str) -> FloatOrDisabled:
