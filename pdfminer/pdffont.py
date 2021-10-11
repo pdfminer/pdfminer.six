@@ -630,6 +630,7 @@ class PDFSimpleFont(PDFFont):
             encoding = resolve1(spec['Encoding'])
         else:
             encoding = LITERAL_STANDARD_ENCODING
+        self.encoding = encoding
         if isinstance(encoding, dict):
             name = literal_name(encoding.get('BaseEncoding',
                                              LITERAL_STANDARD_ENCODING))

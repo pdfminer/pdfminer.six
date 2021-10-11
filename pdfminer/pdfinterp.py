@@ -221,9 +221,8 @@ class PDFResourceManager:
                     raise PDFFontError('Invalid Font spec: %r' % spec)
                 font = PDFType1Font(self, spec)  # this is so wrong!
             if objid and self.caching:
+                font.id = objid                
                 self._cached_fonts[objid] = font
-                # font object add id attribute
-                font.id = objid
         return font
 
 
