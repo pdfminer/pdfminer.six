@@ -15,6 +15,7 @@ setup(
     install_requires=[
         'chardet ; python_version > "3.0"',
         'cryptography',
+        'typing-extensions',
     ],
     extras_require={
         "dev": ["nose", "tox", "mypy == 0.910"],
