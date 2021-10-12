@@ -6,6 +6,6 @@ python:
   - "3.8"
   - "3.9"
 install:
-  - pip install tox==3.14.0 tox-travis flake8
+  - pip install tox tox-travis
 script:
   - tox -r
