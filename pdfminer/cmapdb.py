@@ -16,7 +16,6 @@ import gzip
 import pickle as pickle
 import struct
 import logging
-from abc import ABC, abstractmethod
 from typing import (Any, BinaryIO, Dict, Iterable, Iterator, List,
                     MutableMapping, Optional, TextIO, Tuple, Union, cast)
 from .psparser import PSStackParser
@@ -163,6 +162,7 @@ class UnicodeMap(CMapBase):
 
 class IdentityUnicodeMap(UnicodeMap):
     def get_unichr(self, cid: int) -> str:
+        """Interpret character id as unicode codepoint"""
         log.debug('get_unichr: %r, %r', self, cid)
         return chr(cid)
 
