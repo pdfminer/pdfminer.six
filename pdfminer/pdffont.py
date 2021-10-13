@@ -691,9 +691,9 @@ class PDFCIDFont(PDFFont):
             else:
                 cmap_name = literal_name(spec['ToUnicode'])
                 encoding = literal_name(spec['Encoding'])
-                if any([cid_ordering.find('Identity') > -1,
-                       cmap_name.find('Identity') > -1,
-                       encoding.find('Identity') > -1]):
+                if cid_ordering.find('Identity') > -1 \
+                        or cmap_name.find('Identity') > -1 \
+                        or encoding.find('Identity') > -1:
                     self.unicode_map = self.cmap
         elif self.cidcoding in ('Adobe-Identity', 'Adobe-UCS'):
             if ttf:
