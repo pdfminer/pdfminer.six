@@ -3,6 +3,11 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+- Add support for PDF page labels ([#680](https://github.com/pdfminer/pdfminer.six/pull/680))
+
 ## [20211012]
 
 ### Added
