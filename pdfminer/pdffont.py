@@ -180,7 +180,7 @@ def getdict(data):
                     value = b1 << 8 | b2
                 else:
                     value = b1 << 24 | b2 << 16 | \
-                        struct.unpack('>H', fp.read(2))[0]
+                            struct.unpack('>H', fp.read(2))[0]
         stack.append(value)
     return d
 
