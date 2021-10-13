@@ -126,10 +126,6 @@ class CMap(CMapBase):
 
 class IdentityCMap(CMapBase):
 
-    def get_unichr(self, cid: int) -> str:
-        log.debug('get_unichr: %r, %r', self, cid)
-        return chr(cid)
-
     def decode(self, code: bytes) -> Tuple[int, ...]:
         n = len(code)//2
         if n:
@@ -166,6 +162,13 @@ class UnicodeMap(CMapBase):
         for (k, v) in sorted(self.cid2unichr.items()):
             out.write('cid %d = unicode %r\n' % (k, v))
         return
+
+
+class IdentityUnicodeMap(UnicodeMap):
+    def get_unichr(self, cid: int) -> str:
+        log.debug('get_unichr: %r, %r', self, cid)
+        return chr(cid)
+
 
 
 class FileCMap(CMap):
