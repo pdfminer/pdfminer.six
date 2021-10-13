@@ -935,33 +935,39 @@ class PDFDocument:
             label_dicts.append(d)
 
         # Emit page labels
-        for i in range(len(range_indices)):
-            range_start = range_indices[i]
-            if i + 1 < len(range_indices):
-                range_limit = range_indices[i + 1]
-            else:
-                range_limit = total_pages
-
-            d = label_dicts[i]
-            style = d.get('S')
-            prefix = decode_text(str_value(d.get('P', b'')))
-            first = int_value(d.get('St', 1))
-
-            for value in range(first, first + range_limit - range_start):
-                if style is LIT('D'):    # Decimal arabic numerals
-                    label = str(value)
-                elif style is LIT('R'):  # Uppercase roman numerals
-                    label = format_int_roman(value).upper()
-                elif style is LIT('r'):  # Lowercase roman numerals
-                    label = format_int_roman(value)
-                elif style is LIT('A'):  # Uppercase letters A-Z, AA-ZZ, etc.
-                    label = format_int_alpha(value).upper()
-                elif style is LIT('a'):  # Lowercase letters a-z, aa-zz, etc.
-                    label = format_int_alpha(value)
+        def iterate(
+            range_indices: List[int],
+            label_dicts: List[Dict[Any, Any]]
+        ) -> Iterator[str]:
+            for i in range(len(range_indices)):
+                range_start = range_indices[i]
+                if i + 1 < len(range_indices):
+                    range_limit = range_indices[i + 1]
                 else:
-                    label = ''
+                    range_limit = total_pages
 
-                yield prefix + label
+                d = label_dicts[i]
+                style = d.get('S')
+                prefix = decode_text(str_value(d.get('P', b'')))
+                first = int_value(d.get('St', 1))
+
+                for value in range(first, first + range_limit - range_start):
+                    if style is LIT('D'):    # Decimal arabic numerals
+                        label = str(value)
+                    elif style is LIT('R'):  # Uppercase roman numerals
+                        label = format_int_roman(value).upper()
+                    elif style is LIT('r'):  # Lowercase roman numerals
+                        label = format_int_roman(value)
+                    elif style is LIT('A'):  # Uppercase letters A-Z, AA-ZZ...
+                        label = format_int_alpha(value).upper()
+                    elif style is LIT('a'):  # Lowercase letters a-z, aa-zz...
+                        label = format_int_alpha(value)
+                    else:
+                        label = ''
+
+                    yield prefix + label
+
+        return iterate(range_indices, label_dicts)
 
     def lookup_name(
         self,

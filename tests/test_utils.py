@@ -3,7 +3,8 @@ import pathlib
 
 from helpers import absolute_sample_path
 from pdfminer.layout import LTComponent
-from pdfminer.utils import open_filename, Plane, shorten_str
+from pdfminer.utils import (format_int_alpha, format_int_roman, open_filename,
+                            Plane, shorten_str)
 
 
 class TestOpenFilename:
@@ -76,3 +77,34 @@ class TestFunctions(object):
 
     def test_shorten_to_really_short(self):
         assert_equal('Hello', shorten_str('Hello World', 5))
+
+    def test_format_int_alpha(self):
+        assert_equal('a', format_int_alpha(1))
+        assert_equal('b', format_int_alpha(2))
+        assert_equal('z', format_int_alpha(26))
+        assert_equal('aa', format_int_alpha(27))
+        assert_equal('ab', format_int_alpha(28))
+        assert_equal('az', format_int_alpha(26*2))
+        assert_equal('ba', format_int_alpha(26*2 + 1))
+        assert_equal('zz', format_int_alpha(26*27))
+        assert_equal('aaa', format_int_alpha(26*27 + 1))
+
+    def test_format_int_roman(self):
+        assert_equal('i', format_int_roman(1))
+        assert_equal('ii', format_int_roman(2))
+        assert_equal('iii', format_int_roman(3))
+        assert_equal('iv', format_int_roman(4))
+        assert_equal('v', format_int_roman(5))
+        assert_equal('vi', format_int_roman(6))
+        assert_equal('vii', format_int_roman(7))
+        assert_equal('viii', format_int_roman(8))
+        assert_equal('ix', format_int_roman(9))
+        assert_equal('x', format_int_roman(10))
+        assert_equal('xi', format_int_roman(11))
+        assert_equal('xx', format_int_roman(20))
+        assert_equal('xl', format_int_roman(40))
+        assert_equal('xlv', format_int_roman(45))
+        assert_equal('l', format_int_roman(50))
+        assert_equal('xc', format_int_roman(90))
+        assert_equal('xci', format_int_roman(91))
+        assert_equal('c', format_int_roman(100))

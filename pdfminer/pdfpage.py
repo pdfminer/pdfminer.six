@@ -118,28 +118,20 @@ class PDFPage:
                 log.info('Page: %r', tree)
                 yield (objid, tree)
 
-        page_labels: Optional[Iterator[str]] = document.get_page_labels()
-
-        def next_label() -> Optional[str]:
-            #  Retrieve the next label, unless we already failed to do so.
-            label = None
-            nonlocal page_labels
-            if page_labels is not None:
-                try:
-                    label = page_labels.__next__()
-                except PDFNoPageLabels:
-                    page_labels = None
-                except Exception as ex:
-                    log.warning("Failed to parse page labels", exc_info=ex)
-                    page_labels = None
-
-            return label
+        page_labels: Optional[Iterator[str]] = None
+        try:
+            page_labels = document.get_page_labels()
+        except PDFNoPageLabels:
+            pass
+        except Exception as ex:
+            log.warning("Failed to parse page labels", exc_info=ex)
 
         pages = False
         if 'Pages' in document.catalog:
             objects = search(document.catalog['Pages'], document.catalog)
             for (objid, tree) in objects:
-                yield cls(document, objid, tree, next_label())
+                yield cls(document, objid, tree,
+                          next(page_labels) if page_labels else None)
                 pages = True
         if not pages:
             # fallback when /Pages is missing.
@@ -149,7 +141,9 @@ class PDFPage:
                         obj = document.getobj(objid)
                         if isinstance(obj, dict) \
                                 and obj.get('Type') is LITERAL_PAGE:
-                            yield cls(document, objid, obj, next_label())
+                            yield cls(
+                                document, objid, obj,
+                                next(page_labels) if page_labels else None)
                     except PDFObjectNotFound:
                         pass
         return
