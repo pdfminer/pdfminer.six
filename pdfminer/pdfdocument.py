@@ -15,7 +15,8 @@ from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream,\
     PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
     uint_value, dict_value, stream_value
 from .psparser import PSEOF, literal_name, LIT, KWD
-from .utils import choplist, nunpack, decode_text
+from .utils import (choplist, decode_text, format_int_alpha, format_int_roman,
+                    nunpack)
 
 log = logging.getLogger(__name__)
 
@@ -29,6 +30,10 @@ class PDFNoValidXRefWarning(SyntaxWarning):
 
 
 class PDFNoOutlines(PDFException):
+    pass
+
+
+class PDFNoPageLabels(PDFException):
     pass
 
 
@@ -882,6 +887,81 @@ class PDFDocument:
                 yield from search(entry['Next'], level)
             return
         return search(self.catalog['Outlines'], 0)
+
+    def get_page_labels(self) -> Iterator[str]:
+        """
+        Generate page label strings for the PDF document.
+
+        If the document includes page labels, generates strings, one per page.
+        If not, raises PDFNoPageLabels.
+        """
+        assert self.catalog is not None
+
+        try:
+            labels_tree = dict_value(self.catalog['PageLabels'])
+        except (PDFTypeError, KeyError):
+            raise PDFNoPageLabels
+
+        total_pages = int_value(dict_value(self.catalog['Pages'])['Count'])
+
+        def walk_number_tree(
+            td: Dict[Any, Any]
+        ) -> Iterator[Tuple[int, Dict[Any, Any]]]:
+            """
+            Walk number tree node dictionary yielding (page index, dict) pairs.
+
+            See PDF spec, section 3.8.5.
+            """
+            if 'Nums' in td:  # Leaf node
+                objs = list_value(td['Nums'])
+                for (k, v) in choplist(2, objs):
+                    yield int_value(k), dict_value(v)
+
+            if 'Kids' in td:  # Intermediate node
+                for child_ref in list_value(td['Kids']):
+                    yield from walk_number_tree(dict_value(child_ref))
+
+        # Find index ranges
+        range_indices: List[int] = []
+        label_dicts: List[Dict[Any, Any]] = []
+        for (index, d) in walk_number_tree(labels_tree):
+            assert 0 <= index < total_pages
+            if range_indices == []:
+                assert index == 0  # Tree must include page index 0
+            else:
+                assert index > range_indices[-1]  # Tree must be sorted
+
+            range_indices.append(index)
+            label_dicts.append(d)
+
+        # Emit page labels
+        for i in range(len(range_indices)):
+            range_start = range_indices[i]
+            if i + 1 < len(range_indices):
+                range_limit = range_indices[i + 1]
+            else:
+                range_limit = total_pages
+
+            d = label_dicts[i]
+            style = d.get('S')
+            prefix = decode_text(str_value(d.get('P', b'')))
+            first = int_value(d.get('St', 1))
+
+            for value in range(first, first + range_limit - range_start):
+                if style is LIT('D'):    # Decimal arabic numerals
+                    label = str(value)
+                elif style is LIT('R'):  # Uppercase roman numerals
+                    label = format_int_roman(value).upper()
+                elif style is LIT('r'):  # Lowercase roman numerals
+                    label = format_int_roman(value)
+                elif style is LIT('A'):  # Uppercase letters A-Z, AA-ZZ, etc.
+                    label = format_int_alpha(value).upper()
+                elif style is LIT('a'):  # Lowercase letters a-z, aa-zz, etc.
+                    label = format_int_alpha(value)
+                else:
+                    label = ''
+
+                yield prefix + label
 
     def lookup_name(
         self,

@@ -12,6 +12,7 @@ from .pdftypes import dict_value
 from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument, PDFTextExtractionNotAllowed
 from .pdfdocument import PDFTextExtractionNotAllowedWarning
+from .pdfdocument import PDFNoPageLabels
 
 
 log = logging.getLogger(__name__)
@@ -40,23 +41,27 @@ class PDFPage:
       rotate: the page rotation (in degree).
       annots: the page annotations.
       beads: a chain that represents natural reading order.
+      label: the page's label (typically, the logical page number).
     """
 
     def __init__(
         self,
         doc: PDFDocument,
         pageid: object,
-        attrs: object
+        attrs: object,
+        label: Optional[str]
     ) -> None:
         """Initialize a page object.
 
         doc: a PDFDocument object.
         pageid: any Python object that can uniquely identify the page.
         attrs: a dictionary of page attributes.
+        label: page label string.
         """
         self.doc = doc
         self.pageid = pageid
         self.attrs = dict_value(attrs)
+        self.label = label
         self.lastmod = resolve1(self.attrs.get('LastModified'))
         self.resources: Dict[object, object] = \
             resolve1(self.attrs.get('Resources', dict()))
@@ -112,11 +117,29 @@ class PDFPage:
             elif tree_type is LITERAL_PAGE:
                 log.info('Page: %r', tree)
                 yield (objid, tree)
+
+        page_labels: Optional[Iterator[str]] = document.get_page_labels()
+
+        def next_label() -> Optional[str]:
+            #  Retrieve the next label, unless we already failed to do so.
+            label = None
+            nonlocal page_labels
+            if page_labels is not None:
+                try:
+                    label = page_labels.__next__()
+                except PDFNoPageLabels:
+                    page_labels = None
+                except Exception as ex:
+                    log.warning("Failed to parse page labels", exc_info=ex)
+                    page_labels = None
+
+            return label
+
         pages = False
         if 'Pages' in document.catalog:
             objects = search(document.catalog['Pages'], document.catalog)
             for (objid, tree) in objects:
-                yield cls(document, objid, tree)
+                yield cls(document, objid, tree, next_label())
                 pages = True
         if not pages:
             # fallback when /Pages is missing.
@@ -126,7 +149,7 @@ class PDFPage:
                         obj = document.getobj(objid)
                         if isinstance(obj, dict) \
                                 and obj.get('Type') is LITERAL_PAGE:
-                            yield cls(document, objid, obj)
+                            yield cls(document, objid, obj, next_label())
                     except PDFObjectNotFound:
                         pass
         return
