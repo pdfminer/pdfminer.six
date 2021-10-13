@@ -3,17 +3,32 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [20211012]
 
-## [Unreleased]
+### Added
+- Add support for PDF 2.0 (ISO 32000-2) AES-256 encryption ([#614](https://github.com/pdfminer/pdfminer.six/pull/614))
+- Support for Paeth PNG filter compression (predictor value = 4) ([#537](https://github.com/pdfminer/pdfminer.six/pull/537))
+- Type annotations ([#661](https://github.com/pdfminer/pdfminer.six/pull/661))
 
 ### Fixed
+- `KeyError` when `'Encrypt'` but not `'ID'` present in `trailer` ([#594](https://github.com/pdfminer/pdfminer.six/pull/594))
+- Fix issue of ValueError and KeyError rasied in PDFdocument and PDFparser ([#573](https://github.com/pdfminer/pdfminer.six/pull/574))
 - Fix issue of TypeError: cannot unpack non-iterable PDFObjRef object, when unpacking the value of 'DW2' ([#529](https://github.com/pdfminer/pdfminer.six/pull/529))
-- `PermissionError` when creating temporary filepaths on windows when running tests ([#469](https://github.com/pdfminer/pdfminer.six/issues/469))
+- Fix `PermissionError` when creating temporary filepaths on windows when running tests ([#484](https://github.com/pdfminer/pdfminer.six/pull/484))
+- Fix `AttributeError` when dumping a TOC with bytes destinations ([#600](https://github.com/pdfminer/pdfminer.six/pull/600))
+- Fix issue of some Chinese characters can not be extracted correctly ([#593](https://github.com/pdfminer/pdfminer.six/pull/593))
+- Detecting trailer correctly when surrounded with needless whitespace ([#535](https://github.com/pdfminer/pdfminer.six/pull/535))
+- Fix `.paint_path` logic for handling single line segments and extracting point-on-curve positions of Beziér path commands ([#530](https://github.com/pdfminer/pdfminer.six/pull/530))
+- Raising `UnboundLocalError` when a bad `--output-type`  is used ([#610](https://github.com/pdfminer/pdfminer.six/pull/610))
+- `TypeError` when using `TagExtractor` with non-string or non-bytes tag values ([#610](https://github.com/pdfminer/pdfminer.six/pull/610))
+- Using `io.TextIOBase` as the file to write to ([#616](https://github.com/pdfminer/pdfminer.six/pull/616))
+- Parsing \r\n after the escape character in a literal string ([#616](https://github.com/pdfminer/pdfminer.six/pull/616))
 
 ## Removed
 - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
 - Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
 - Support for non-standard output streams that are not binary ([#523](https://github.com/pdfminer/pdfminer.six/pull/523))
+- Dependency on typing-extensions introduced by [#661](https://github.com/pdfminer/pdfminer.six/pull/661) ([#677](https://github.com/pdfminer/pdfminer.six/pull/677))
 
 ## [20201018]
 
