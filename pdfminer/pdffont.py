@@ -684,7 +684,7 @@ class PDFCIDFont(PDFFont):
                                BytesIO(self.fontfile.get_data()))
         self.unicode_map = None
         if 'ToUnicode' in spec:
-            if type(spec['ToUnicode']) is PDFStream:
+            if isinstance(spec['ToUnicode'], PDFStream):
                 strm = stream_value(spec['ToUnicode'])
                 self.unicode_map = FileUnicodeMap()
                 CMapParser(self.unicode_map, BytesIO(strm.get_data())).run()
