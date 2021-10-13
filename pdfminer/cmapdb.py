@@ -167,7 +167,6 @@ class IdentityUnicodeMap(UnicodeMap):
         return chr(cid)
 
 
-
 class FileCMap(CMap):
 
     def add_code2cid(self, code: str, cid: int) -> None:
