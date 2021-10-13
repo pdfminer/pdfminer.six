@@ -38,7 +38,7 @@ class CMapError(Exception):
     pass
 
 
-class CMapBase(ABC):
+class CMapBase:
 
     debug = 0
 
@@ -59,9 +59,6 @@ class CMapBase(ABC):
     def add_cid2unichr(self, cid: int, code: Union[PSLiteral, bytes, int]
                        ) -> None:
         return
-
-    def get_unichr(self, cid: int) -> str:
-        return f'(cid:{cid})'
 
     def use_cmap(self, cmap: "CMapBase") -> None:
         return
