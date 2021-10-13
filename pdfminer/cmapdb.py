@@ -16,6 +16,7 @@ import gzip
 import pickle as pickle
 import struct
 import logging
+from abc import ABC, abstractmethod
 from typing import (Any, BinaryIO, Dict, Iterable, Iterator, List,
                     MutableMapping, Optional, TextIO, Tuple, Union, cast)
 from .psparser import PSStackParser
@@ -37,7 +38,7 @@ class CMapError(Exception):
     pass
 
 
-class CMapBase:
+class CMapBase(ABC):
 
     debug = 0
 
@@ -58,6 +59,9 @@ class CMapBase:
     def add_cid2unichr(self, cid: int, code: Union[PSLiteral, bytes, int]
                        ) -> None:
         return
+
+    def get_unichr(self, cid: int) -> str:
+        return f'(cid:{cid})'
 
     def use_cmap(self, cmap: "CMapBase") -> None:
         return

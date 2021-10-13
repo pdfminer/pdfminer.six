@@ -761,7 +761,7 @@ class PDFCIDFont(PDFFont):
             self.fontfile = stream_value(descriptor.get('FontFile2'))
             ttf = TrueTypeFont(self.basefont,
                                BytesIO(self.fontfile.get_data()))
-        self.unicode_map: Optional[UnicodeMap] = None
+        self.unicode_map: Optional[CMapBase] = None
         if 'ToUnicode' in spec:
             if isinstance(spec['ToUnicode'], PDFStream):
                 strm = stream_value(spec['ToUnicode'])
