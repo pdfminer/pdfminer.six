@@ -122,7 +122,7 @@ class CMap(CMapBase):
 
 class IdentityCMap(CMapBase):
 
-    def get_unichr(self, cid):
+    def get_unichr(self, cid: int) -> str:
         log.debug('get_unichr: %r, %r', self, cid)
         return chr(cid)
 
