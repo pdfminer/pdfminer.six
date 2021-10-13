@@ -1,3 +1,4 @@
+import itertools
 import logging
 import re
 import struct
@@ -888,12 +889,18 @@ class PDFDocument:
             return
         return search(self.catalog['Outlines'], 0)
 
-    def get_page_labels(self) -> Iterator[str]:
+    def get_page_labels(
+        self,
+        total_pages: Optional[int] = None
+    ) -> Iterator[str]:
         """
         Generate page label strings for the PDF document.
 
         If the document includes page labels, generates strings, one per page.
         If not, raises PDFNoPageLabels.
+
+        If total_pages is specified, it is used to determine when the iteration
+        stops; if not, the iteration is unbounded.
         """
         assert self.catalog is not None
 
@@ -901,8 +908,6 @@ class PDFDocument:
             labels_tree = dict_value(self.catalog['PageLabels'])
         except (PDFTypeError, KeyError):
             raise PDFNoPageLabels
-
-        total_pages = int_value(dict_value(self.catalog['Pages'])['Count'])
 
         def walk_number_tree(
             td: Dict[Any, Any]
@@ -921,37 +926,51 @@ class PDFDocument:
                 for child_ref in list_value(td['Kids']):
                     yield from walk_number_tree(dict_value(child_ref))
 
-        # Find index ranges
-        range_indices: List[int] = []
-        label_dicts: List[Dict[Any, Any]] = []
-        for (index, d) in walk_number_tree(labels_tree):
-            assert 0 <= index < total_pages
-            if range_indices == []:
-                assert index == 0  # Tree must include page index 0
-            else:
-                assert index > range_indices[-1]  # Tree must be sorted
+        # Extract and sanity-check ranges
+        ranges = list(walk_number_tree(labels_tree))
 
-            range_indices.append(index)
-            label_dicts.append(d)
+        # The tree should be sorted
+        if settings.STRICT:
+            if not all(a[0] <= b[0] for a, b in zip(ranges, ranges[1:])):
+                raise PDFSyntaxError('PageLabels are out of order')
+        else:
+            ranges.sort(key=lambda t: t[0])
 
-        # Emit page labels
-        def iterate(
-            range_indices: List[int],
-            label_dicts: List[Dict[Any, Any]]
+        # The tree must begin with page index 0
+        if len(ranges) == 0 or ranges[0][0] != 0:
+            if settings.STRICT:
+                raise PDFSyntaxError('PageLabels is missing page index 0')
+
+            # Try to cope, by assuming empty labels for the initial pages
+            ranges.insert(0, (0, {}))
+
+        def emit_labels(
+            ranges: List[Tuple[int, Dict[Any, Any]]],
+            total_pages: Optional[int]
         ) -> Iterator[str]:
-            for i in range(len(range_indices)):
-                range_start = range_indices[i]
-                if i + 1 < len(range_indices):
-                    range_limit = range_indices[i + 1]
+            """
+            Walk a list of ranges and label dicts, yielding label strings.
+            """
+            for (i, (range_start, label_dict)) in enumerate(ranges):
+                style = label_dict.get('S')
+                prefix = decode_text(str_value(label_dict.get('P', b'')))
+                first = int_value(label_dict.get('St', 1))
+
+                def mkrange(limit: int) -> range:
+                    "Construct a suitable range for the values to format."
+                    return range(first, first + limit - range_start)
+
+                if i + 1 == len(ranges):
+                    # This is the last specified range. It continues until
+                    # the end of the document, which may be unknown.
+                    if total_pages is None:
+                        values: Iterable[int] = itertools.count(first)
+                    else:
+                        values = mkrange(total_pages)
                 else:
-                    range_limit = total_pages
+                    values = mkrange(ranges[i + 1][0])
 
-                d = label_dicts[i]
-                style = d.get('S')
-                prefix = decode_text(str_value(d.get('P', b'')))
-                first = int_value(d.get('St', 1))
-
-                for value in range(first, first + range_limit - range_start):
+                for value in values:
                     if style is LIT('D'):    # Decimal arabic numerals
                         label = str(value)
                     elif style is LIT('R'):  # Uppercase roman numerals
@@ -967,7 +986,7 @@ class PDFDocument:
 
                     yield prefix + label
 
-        return iterate(range_indices, label_dicts)
+        return emit_labels(ranges, total_pages)
 
     def lookup_name(
         self,

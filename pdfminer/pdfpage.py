@@ -118,13 +118,10 @@ class PDFPage:
                 log.info('Page: %r', tree)
                 yield (objid, tree)
 
-        page_labels: Optional[Iterator[str]] = None
         try:
-            page_labels = document.get_page_labels()
+            page_labels: Optional[Iterator[str]] = document.get_page_labels()
         except PDFNoPageLabels:
-            pass
-        except Exception as ex:
-            log.warning("Failed to parse page labels", exc_info=ex)
+            page_labels = None
 
         pages = False
         if 'Pages' in document.catalog:
