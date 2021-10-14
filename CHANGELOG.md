@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Support for identity cmap's ([#626](https://github.com/pdfminer/pdfminer.six/pull/626))
 
+### Fixed
+- Regression (since 20191107) in `LTLayoutContainer.group_textboxes` that returned some text lines out of order ([#659](https://github.com/pdfminer/pdfminer.six/pull/659))
+
 ## [20211012]
 
 ### Added
@@ -28,7 +31,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `TypeError` when using `TagExtractor` with non-string or non-bytes tag values ([#610](https://github.com/pdfminer/pdfminer.six/pull/610))
 - Using `io.TextIOBase` as the file to write to ([#616](https://github.com/pdfminer/pdfminer.six/pull/616))
 - Parsing \r\n after the escape character in a literal string ([#616](https://github.com/pdfminer/pdfminer.six/pull/616))
-- Fix regression since 20191107 in `LTLayoutContainer.group_textboxes` that returned some text lines out of order ([#659](https://github.com/pdfminer/pdfminer.six/pull/659))
 
 ## Removed
 - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
