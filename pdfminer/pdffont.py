@@ -7,6 +7,7 @@ from typing import (Any, BinaryIO, Dict, Iterable, Iterator, List, Mapping,
 
 from . import settings
 from .cmapdb import CMap
+from .cmapdb import IdentityUnicodeMap
 from .cmapdb import CMapBase
 from .cmapdb import CMapDB
 from .cmapdb import CMapParser
@@ -763,9 +764,17 @@ class PDFCIDFont(PDFFont):
                                BytesIO(self.fontfile.get_data()))
         self.unicode_map: Optional[UnicodeMap] = None
         if 'ToUnicode' in spec:
-            strm = stream_value(spec['ToUnicode'])
-            self.unicode_map = FileUnicodeMap()
-            CMapParser(self.unicode_map, BytesIO(strm.get_data())).run()
+            if isinstance(spec['ToUnicode'], PDFStream):
+                strm = stream_value(spec['ToUnicode'])
+                self.unicode_map = FileUnicodeMap()
+                CMapParser(self.unicode_map, BytesIO(strm.get_data())).run()
+            else:
+                cmap_name = literal_name(spec['ToUnicode'])
+                encoding = literal_name(spec['Encoding'])
+                if 'Identity' in cid_ordering \
+                        or 'Identity' in cmap_name \
+                        or 'Identity' in encoding:
+                    self.unicode_map = IdentityUnicodeMap()
         elif self.cidcoding in ('Adobe-Identity', 'Adobe-UCS'):
             if ttf:
                 try:
