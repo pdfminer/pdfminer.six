@@ -182,10 +182,11 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
     if parsed_args.no_laparams:
         parsed_args.laparams = None
     else:
+        kwargs = {}
         for param in ("all_texts", "detect_vertical", "word_margin",
                       "char_margin", "line_margin", "boxes_flow"):
-            setattr(la_params, param, getattr(parsed_args, param))
-        parsed_args.laparams = la_params
+            kwargs[param] = getattr(parsed_args, param)
+        parsed_args.laparams = LAParams(**kwargs)
 
     return parsed_args
 
