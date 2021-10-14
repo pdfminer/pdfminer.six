@@ -4,7 +4,7 @@ output it to plain text, html, xml or tags."""
 import argparse
 import logging
 import sys
-from typing import Any, Container, Iterable, List, Optional, Union
+from typing import Any, Container, Iterable, List, Optional
 
 import pdfminer.high_level
 from pdfminer.layout import LAParams
@@ -17,12 +17,10 @@ OUTPUT_TYPES = ((".htm", "html"),
                 (".xml", "xml"),
                 (".tag", "tag"))
 
-FloatOrDisabled = Union[float, str]  # Union[float, Literal["disabled"]]
 
-
-def float_or_disabled(x: str) -> FloatOrDisabled:
+def float_or_disabled(x: str) -> Optional[float]:
     if x.lower().strip() == "disabled":
-        return "disabled"
+        return None
     try:
         return float(x)
     except ValueError:
@@ -32,13 +30,7 @@ def float_or_disabled(x: str) -> FloatOrDisabled:
 def extract_text(
     files: Iterable[str] = [],
     outfile: str = '-',
-    no_laparams: bool = False,
-    all_texts: Optional[bool] = None,
-    detect_vertical: Optional[bool] = None,
-    word_margin: Optional[float] = None,
-    char_margin: Optional[float] = None,
-    line_margin: Optional[float] = None,
-    boxes_flow: Optional[FloatOrDisabled] = None,
+    laparams: Optional[LAParams] = None,
     output_type: str = 'text',
     codec: str = 'utf-8',
     strip_control: bool = False,
@@ -55,22 +47,6 @@ def extract_text(
 ) -> AnyIO:
     if not files:
         raise ValueError("Must provide files to work upon!")
-
-    # If any LAParams group arguments were passed,
-    # create an LAParams object and
-    # populate with given args. Otherwise, set it to None.
-    if not no_laparams:
-        laparams: Optional[LAParams] = LAParams()
-        for param in ("all_texts", "detect_vertical", "word_margin",
-                      "char_margin", "line_margin", "boxes_flow"):
-            paramv = locals().get(param, None)
-            if paramv is not None:
-                if param == "boxes_flow" and paramv == "disabled":
-                    # Layout analysis explicitly disabled; set to None.
-                    paramv = None
-                setattr(laparams, param, paramv)
-    else:
-        laparams = None
 
     if output_type == "text" and outfile != "-":
         for override, alttype in OUTPUT_TYPES:
@@ -90,7 +66,7 @@ def extract_text(
     return outfp
 
 
-def maketheparser() -> argparse.ArgumentParser:
+def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, add_help=True)
     parser.add_argument(
         "files", type=str, default=None, nargs="+",
@@ -127,32 +103,34 @@ def maketheparser() -> argparse.ArgumentParser:
         help="The number of degrees to rotate the PDF "
              "before other types of processing.")
 
-    la_params = parser.add_argument_group(
+    la_params = LAParams()  # will be used for defaults
+    la_param_group = parser.add_argument_group(
         'Layout analysis', description='Used during layout analysis.')
-    la_params.add_argument(
+    la_param_group.add_argument(
         "--no-laparams", "-n", default=False, action="store_true",
         help="If layout analysis parameters should be ignored.")
-    la_params.add_argument(
+    la_param_group.add_argument(
         "--detect-vertical", "-V", default=False, action="store_true",
         help="If vertical text should be considered during layout analysis")
-    la_params.add_argument(
-        "--char-margin", "-M", type=float, default=2.0,
+    la_param_group.add_argument(
+        "--char-margin", "-M", type=float, default=la_params.char_margin,
         help="If two characters are closer together than this margin they "
              "are considered to be part of the same line. The margin is "
              "specified relative to the width of the character.")
-    la_params.add_argument(
-        "--word-margin", "-W", type=float, default=0.1,
+    la_param_group.add_argument(
+        "--word-margin", "-W", type=float, default=la_params.word_margin,
         help="If two characters on the same line are further apart than this "
              "margin then they are considered to be two separate words, and "
              "an intermediate space will be added for readability. The margin "
              "is specified relative to the width of the character.")
-    la_params.add_argument(
-        "--line-margin", "-L", type=float, default=0.5,
-        help="If two lines are are close together they are considered to "
+    la_param_group.add_argument(
+        "--line-margin", "-L", type=float, default=la_params.line_margin,
+        help="If two lines are close together they are considered to "
              "be part of the same paragraph. The margin is specified "
              "relative to the height of a line.")
-    la_params.add_argument(
-        "--boxes-flow", "-F", type=float_or_disabled, default=0.5,
+    la_param_group.add_argument(
+        "--boxes-flow", "-F", type=float_or_disabled,
+        default=la_params.boxes_flow,
         help="Specifies how much a horizontal and vertical position of a "
              "text matters when determining the order of lines. The value "
              "should be within the range of -1.0 (only horizontal position "
@@ -160,7 +138,7 @@ def maketheparser() -> argparse.ArgumentParser:
              "pass `disabled` to disable advanced layout analysis, and "
              "instead return text based on the position of the bottom left "
              "corner of the text box.")
-    la_params.add_argument(
+    la_param_group.add_argument(
         "--all-texts", "-A", default=False, action="store_true",
         help="If layout analysis should be performed on text in figures.")
 
@@ -197,7 +175,19 @@ def maketheparser() -> argparse.ArgumentParser:
         "--strip-control", "-S", default=False, action="store_true",
         help="Remove control statement from text. "
              "Only used when output_type is xml.")
-    return parser
+
+    parsed_args = parser.parse_args(args=args)
+
+    # Propagate parsed layout parameters to LAParams object
+    if parsed_args.no_laparams:
+        parsed_args.laparams = None
+    else:
+        for param in ("all_texts", "detect_vertical", "word_margin",
+                      "char_margin", "line_margin", "boxes_flow"):
+            setattr(la_params, param, getattr(parsed_args, param))
+        parsed_args.laparams = la_params
+
+    return parsed_args
 
 
 # main
@@ -205,8 +195,7 @@ def maketheparser() -> argparse.ArgumentParser:
 
 def main(args: Optional[List[str]] = None) -> int:
 
-    P = maketheparser()
-    A = P.parse_args(args=args)
+    A = parse_args(args)
 
     if A.page_numbers:
         A.page_numbers = {x-1 for x in A.page_numbers}
