@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Support for identity cmap's ([#626](https://github.com/pdfminer/pdfminer.six/pull/626))
 
+### Fixed
+- In case when PDFNoValidXRef is raised, change fallback to be True.
+
 ## [20211012]
 
 ### Added
