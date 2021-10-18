@@ -5,9 +5,12 @@ This code is in the public domain.
 """
 
 
+from typing import Sequence
+
+
 class Arcfour:
 
-    def __init__(self, key):
+    def __init__(self, key: Sequence[int]) -> None:
         # because Py3 range is not indexable
         s = [i for i in range(256)]
         j = 0
@@ -19,7 +22,7 @@ class Arcfour:
         (self.i, self.j) = (0, 0)
         return
 
-    def process(self, data):
+    def process(self, data: bytes) -> bytes:
         (i, j) = (self.i, self.j)
         s = self.s
         r = b''

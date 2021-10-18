@@ -1,5 +1,8 @@
 import zlib
 import logging
+import sys
+from typing import (TYPE_CHECKING, Any, Dict, Iterable, Optional, Union, List,
+                    Tuple, cast)
 from .lzw import lzwdecode
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
@@ -10,7 +13,9 @@ from .psparser import PSObject
 from .psparser import LIT
 from . import settings
 from .utils import apply_png_predictor
-from .utils import isnumber
+
+if TYPE_CHECKING:
+    from .pdfdocument import PDFDocument
 
 
 log = logging.getLogger(__name__)
@@ -26,6 +31,21 @@ LITERALS_RUNLENGTH_DECODE = (LIT('RunLengthDecode'), LIT('RL'))
 LITERALS_CCITTFAX_DECODE = (LIT('CCITTFaxDecode'), LIT('CCF'))
 LITERALS_DCT_DECODE = (LIT('DCTDecode'), LIT('DCT'))
 LITERALS_JBIG2_DECODE = (LIT('JBIG2Decode'),)
+
+
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+
+    class DecipherCallable(Protocol):
+        """Fully typed a decipher callback, with optional parameter."""
+        def __call__(self, objid: int, genno: int, data: bytes,
+                     attrs: Optional[Dict[str, Any]] = None) -> bytes:
+            raise NotImplementedError
+
+else:  # Fallback for older Python
+    from typing import Callable
+
+    DecipherCallable = Callable[..., bytes]
 
 
 class PDFObject(PSObject):
@@ -54,7 +74,12 @@ class PDFNotImplementedError(PDFException):
 
 class PDFObjRef(PDFObject):
 
-    def __init__(self, doc, objid, _):
+    def __init__(
+        self,
+        doc: Optional["PDFDocument"],
+        objid: int,
+        _: object
+    ) -> None:
         if objid == 0:
             if settings.STRICT:
                 raise PDFValueError('PDF object id cannot be 0.')
@@ -62,17 +87,18 @@ class PDFObjRef(PDFObject):
         self.objid = objid
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<PDFObjRef:%d>' % (self.objid)
 
-    def resolve(self, default=None):
+    def resolve(self, default: object = None) -> Any:
+        assert self.doc is not None
         try:
             return self.doc.getobj(self.objid)
         except PDFObjectNotFound:
             return default
 
 
-def resolve1(x, default=None):
+def resolve1(x: object, default: object = None) -> Any:
     """Resolves an object.
 
     If this is an array or dictionary, it may still contains
@@ -83,7 +109,7 @@ def resolve1(x, default=None):
     return x
 
 
-def resolve_all(x, default=None):
+def resolve_all(x: object, default: object = None) -> Any:
     """Recursively resolves the given object and all the internals.
 
     Make sure there is no indirect reference within the nested object.
@@ -99,7 +125,12 @@ def resolve_all(x, default=None):
     return x
 
 
-def decipher_all(decipher, objid, genno, x):
+def decipher_all(
+    decipher: DecipherCallable,
+    objid: int,
+    genno: int,
+    x: object
+) -> Any:
     """Recursively deciphers the given object.
     """
     if isinstance(x, bytes):
@@ -112,7 +143,7 @@ def decipher_all(decipher, objid, genno, x):
     return x
 
 
-def int_value(x):
+def int_value(x: object) -> int:
     x = resolve1(x)
     if not isinstance(x, int):
         if settings.STRICT:
@@ -121,7 +152,7 @@ def int_value(x):
     return x
 
 
-def float_value(x):
+def float_value(x: object) -> float:
     x = resolve1(x)
     if not isinstance(x, float):
         if settings.STRICT:
@@ -130,34 +161,34 @@ def float_value(x):
     return x
 
 
-def num_value(x):
+def num_value(x: object) -> float:
     x = resolve1(x)
-    if not isnumber(x):
+    if not isinstance(x, (int, float)):  # == utils.isnumber(x)
         if settings.STRICT:
             raise PDFTypeError('Int or Float required: %r' % x)
         return 0
     return x
 
 
-def uint_value(x, n_bits):
+def uint_value(x: object, n_bits: int) -> int:
     """Resolve number and interpret it as a two's-complement unsigned number"""
-    x = int_value(x)
-    if x > 0:
-        return x
+    xi = int_value(x)
+    if xi > 0:
+        return xi
     else:
-        return x + 2**n_bits
+        return xi + cast(int, 2**n_bits)
 
 
-def str_value(x):
+def str_value(x: object) -> bytes:
     x = resolve1(x)
     if not isinstance(x, bytes):
         if settings.STRICT:
             raise PDFTypeError('String required: %r' % x)
-        return ''
+        return b''
     return x
 
 
-def list_value(x):
+def list_value(x: object) -> Union[List[Any], Tuple[Any, ...]]:
     x = resolve1(x)
     if not isinstance(x, (list, tuple)):
         if settings.STRICT:
@@ -166,7 +197,7 @@ def list_value(x):
     return x
 
 
-def dict_value(x):
+def dict_value(x: object) -> Dict[Any, Any]:
     x = resolve1(x)
     if not isinstance(x, dict):
         if settings.STRICT:
@@ -176,7 +207,7 @@ def dict_value(x):
     return x
 
 
-def stream_value(x):
+def stream_value(x: object) -> "PDFStream":
     x = resolve1(x)
     if not isinstance(x, PDFStream):
         if settings.STRICT:
@@ -187,22 +218,27 @@ def stream_value(x):
 
 class PDFStream(PDFObject):
 
-    def __init__(self, attrs, rawdata, decipher=None):
+    def __init__(
+        self,
+        attrs: Dict[str, Any],
+        rawdata: bytes,
+        decipher: Optional[DecipherCallable] = None
+    ) -> None:
         assert isinstance(attrs, dict), str(type(attrs))
         self.attrs = attrs
-        self.rawdata = rawdata
+        self.rawdata: Optional[bytes] = rawdata
         self.decipher = decipher
-        self.data = None
-        self.objid = None
-        self.genno = None
+        self.data: Optional[bytes] = None
+        self.objid: Optional[int] = None
+        self.genno: Optional[int] = None
         return
 
-    def set_objid(self, objid, genno):
+    def set_objid(self, objid: int, genno: int) -> None:
         self.objid = objid
         self.genno = genno
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.data is None:
             assert self.rawdata is not None
             return '<PDFStream(%r): raw=%d, %r>' % \
@@ -212,22 +248,22 @@ class PDFStream(PDFObject):
             return '<PDFStream(%r): len=%d, %r>' % \
                    (self.objid, len(self.data), self.attrs)
 
-    def __contains__(self, name):
+    def __contains__(self, name: object) -> bool:
         return name in self.attrs
 
-    def __getitem__(self, name):
+    def __getitem__(self, name: str) -> Any:
         return self.attrs[name]
 
-    def get(self, name, default=None):
+    def get(self, name: str, default: object = None) -> Any:
         return self.attrs.get(name, default)
 
-    def get_any(self, names, default=None):
+    def get_any(self, names: Iterable[str], default: object = None) -> Any:
         for name in names:
             if name in self.attrs:
                 return self.attrs[name]
         return default
 
-    def get_filters(self):
+    def get_filters(self) -> List[Tuple[Any, Any]]:
         filters = self.get_any(('F', 'Filter'))
         params = self.get_any(('DP', 'DecodeParms', 'FDecodeParms'), {})
         if not filters:
@@ -248,12 +284,14 @@ class PDFStream(PDFObject):
         # return list solves https://github.com/pdfminer/pdfminer.six/issues/15
         return list(zip(_filters, params))
 
-    def decode(self):
+    def decode(self) -> None:
         assert self.data is None \
                and self.rawdata is not None, str((self.data, self.rawdata))
         data = self.rawdata
         if self.decipher:
             # Handle encryption
+            assert self.objid is not None
+            assert self.genno is not None
             data = self.decipher(self.objid, self.genno, data, self.attrs)
         filters = self.get_filters()
         if not filters:
@@ -314,10 +352,11 @@ class PDFStream(PDFObject):
         self.rawdata = None
         return
 
-    def get_data(self):
+    def get_data(self) -> bytes:
         if self.data is None:
             self.decode()
+            assert self.data is not None
         return self.data
 
-    def get_rawdata(self):
+    def get_rawdata(self) -> Optional[bytes]:
         return self.rawdata

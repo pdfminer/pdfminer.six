@@ -2,20 +2,28 @@ import os
 import os.path
 import struct
 from io import BytesIO
+from typing import BinaryIO, Tuple
 
 from .jbig2 import JBIG2StreamReader, JBIG2StreamWriter
+from .layout import LTImage
 from .pdfcolor import LITERAL_DEVICE_CMYK
 from .pdfcolor import LITERAL_DEVICE_GRAY
 from .pdfcolor import LITERAL_DEVICE_RGB
 from .pdftypes import LITERALS_DCT_DECODE, LITERALS_JBIG2_DECODE
 
 
-def align32(x):
+def align32(x: int) -> int:
     return ((x+3)//4)*4
 
 
 class BMPWriter:
-    def __init__(self, fp, bits, width, height):
+    def __init__(
+        self,
+        fp: BinaryIO,
+        bits: int,
+        width: int,
+        height: int
+    ) -> None:
         self.fp = fp
         self.bits = bits
         self.width = width
@@ -51,7 +59,7 @@ class BMPWriter:
         self.pos1 = self.pos0 + self.datasize
         return
 
-    def write_line(self, y, data):
+    def write_line(self, y: int, data: bytes) -> None:
         self.fp.seek(self.pos1 - (y+1)*self.linesize)
         self.fp.write(data)
         return
@@ -63,13 +71,13 @@ class ImageWriter:
     Supports various image types: JPEG, JBIG2 and bitmaps
     """
 
-    def __init__(self, outdir):
+    def __init__(self, outdir: str) -> None:
         self.outdir = outdir
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
         return
 
-    def export_image(self, image):
+    def export_image(self, image: LTImage) -> str:
         (width, height) = image.srcsize
 
         is_jbig2 = self.is_jbig2_image(image)
@@ -80,8 +88,9 @@ class ImageWriter:
         fp = open(path, 'wb')
         if ext == '.jpg':
             raw_data = image.stream.get_rawdata()
+            assert raw_data is not None
             if LITERAL_DEVICE_CMYK in image.colorspace:
-                from PIL import Image
+                from PIL import Image  # type: ignore[import]
                 from PIL import ImageChops
                 ifp = BytesIO(raw_data)
                 i = Image.open(ifp)
@@ -128,7 +137,7 @@ class ImageWriter:
         return name
 
     @staticmethod
-    def is_jbig2_image(image):
+    def is_jbig2_image(image: LTImage) -> bool:
         filters = image.stream.get_filters()
         is_jbig2 = False
         for filter_name, params in filters:
@@ -138,7 +147,12 @@ class ImageWriter:
         return is_jbig2
 
     @staticmethod
-    def _get_image_extension(image, width, height, is_jbig2):
+    def _get_image_extension(
+        image: LTImage,
+        width: int,
+        height: int,
+        is_jbig2: bool
+    ) -> str:
         filters = image.stream.get_filters()
         if len(filters) == 1 and filters[0][0] in LITERALS_DCT_DECODE:
             ext = '.jpg'
@@ -154,7 +168,11 @@ class ImageWriter:
         return ext
 
     @staticmethod
-    def _create_unique_image_name(dirname, image_name, ext):
+    def _create_unique_image_name(
+        dirname: str,
+        image_name: str,
+        ext: str
+    ) -> Tuple[str, str]:
         name = image_name + ext
         path = os.path.join(dirname, name)
         img_index = 0
