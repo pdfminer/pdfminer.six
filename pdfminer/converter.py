@@ -122,7 +122,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         elif shape.count("m") > 1:
             # recurse if there are multiple m's in this shape
             for m in re.finditer(r"m[^m]+", shape):
-                subpath = path[m.start(0) : m.end(0)]
+                subpath = path[m.start(0): m.end(0)]
                 self.paint_path(gstate, stroke, fill, evenodd, subpath)
 
         else:
@@ -246,6 +246,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             textdisp,
             ncs,
             graphicstate,
+            cid,
         )
         self.cur_item.add(item)
         return item.adv

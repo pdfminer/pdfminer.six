@@ -1,3 +1,4 @@
+from .pdftypes import PDFStream, uint_value
 import heapq
 import logging
 from typing import (
@@ -369,6 +370,7 @@ class LTChar(LTComponent, LTText):
         textdisp: Union[float, Tuple[Optional[float], float]],
         ncs: PDFColorSpace,
         graphicstate: PDFGraphicState,
+        cid: int
     ) -> None:
         LTText.__init__(self)
         self._text = text
@@ -377,6 +379,7 @@ class LTChar(LTComponent, LTText):
         self.ncs = ncs
         self.graphicstate = graphicstate
         self.adv = textwidth * fontsize * scaling
+        self.cid = cid
         # compute the boundary rectangle.
         if font.is_vertical():
             # vertical
