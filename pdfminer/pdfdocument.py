@@ -690,12 +690,13 @@ class PDFDocument:
         self.is_printable = self.is_modifiable = self.is_extractable = True
         # Retrieve the information of each header that was appended
         # (maybe multiple times) at the end of the document.
+        no_valid_xref_found = False
         try:
             pos = self.find_xref(parser)
             self.read_xref_from(parser, pos, self.xrefs)
         except PDFNoValidXRef:
-            fallback = True
-        if fallback:
+            no_valid_xref_found = True
+        if fallback and no_valid_xref_found:
             parser.fallback = True
             newxref = PDFXRefFallback()
             newxref.load(parser)
