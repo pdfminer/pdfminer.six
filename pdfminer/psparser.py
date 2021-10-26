@@ -2,8 +2,9 @@
 
 # -*- coding: utf-8 -*-
 
-import re
 import logging
+import re
+from enum import Enum
 from typing import (Any, BinaryIO, Dict, Generic, Iterator, List,
                     Optional, Tuple, Type, TypeVar, Union)
 
@@ -40,7 +41,6 @@ class PSObject:
 
 
 class PSLiteral(PSObject):
-
     """A class that represents a PostScript literal.
 
     Postscript literals are used as identifiers, such as
@@ -63,7 +63,6 @@ class PSLiteral(PSObject):
 
 
 class PSKeyword(PSObject):
-
     """A class that represents a PostScript keyword.
 
     PostScript keywords are a dozen of predefined words.
@@ -169,12 +168,25 @@ ESC_STRING = {
     b'\\': 92
 }
 
-
 PSBaseParserToken = Union[float, bool, PSLiteral, PSKeyword, bytes]
 
 
-class PSBaseParser:
+class ParseType(Enum):
+    MAIN = 0
+    COMMENT = 1
+    LITERAL = 2
+    LITERAL_HEX = 3
+    NUMBER = 4
+    FLOAT = 5
+    KEYWORD = 6
+    STRING = 7
+    STRING_1 = 8
+    WOPEN = 9
+    WCLOSE = 10
+    HEXSTRING = 11
 
+
+class PSBaseParser:
     """Most basic PostScript parser that performs only tokenization.
     """
     BUFSIZ = 4096
@@ -196,12 +208,12 @@ class PSBaseParser:
         return
 
     def tell(self) -> int:
-        return self.bufpos+self.charpos
+        return self.bufpos + self.charpos
 
     def poll(self, pos: Optional[int] = None, n: int = 80) -> None:
         pos0 = self.fp.tell()
         if not pos:
-            pos = self.bufpos+self.charpos
+            pos = self.bufpos + self.charpos
         self.fp.seek(pos)
         log.info('poll(%d): %r', pos, self.fp.read(n))
         self.fp.seek(pos0)
@@ -217,7 +229,7 @@ class PSBaseParser:
         self.buf = b''
         self.charpos = 0
         # reset the status for nexttoken()
-        self._parse1 = self._parse_main
+        self._parse_type = ParseType.MAIN
         self._curtoken = b''
         self._curtokenpos = 0
         self._tokens: List[Tuple[int, PSBaseParserToken]] = []
@@ -243,7 +255,7 @@ class PSBaseParser:
         while 1:
             self.fillbuf()
             if eol:
-                c = self.buf[self.charpos:self.charpos+1]
+                c = self.buf[self.charpos:self.charpos + 1]
                 # handle b'\r\n'
                 if c == b'\n':
                     linebuf += c
@@ -274,9 +286,9 @@ class PSBaseParser:
         buf = b''
         while 0 < pos:
             prevpos = pos
-            pos = max(0, pos-self.BUFSIZ)
+            pos = max(0, pos - self.BUFSIZ)
             self.fp.seek(pos)
-            s = self.fp.read(prevpos-pos)
+            s = self.fp.read(prevpos - pos)
             if not s:
                 break
             while 1:
@@ -294,44 +306,44 @@ class PSBaseParser:
         if not m:
             return len(s)
         j = m.start(0)
-        c = s[j:j+1]
-        self._curtokenpos = self.bufpos+j
+        c = s[j:j + 1]
+        self._curtokenpos = self.bufpos + j
         if c == b'%':
             self._curtoken = b'%'
-            self._parse1 = self._parse_comment
-            return j+1
+            self._parse_type = ParseType.COMMENT
+            return j + 1
         elif c == b'/':
             self._curtoken = b''
-            self._parse1 = self._parse_literal
-            return j+1
+            self._parse_type = ParseType.LITERAL
+            return j + 1
         elif c in b'-+' or c.isdigit():
             self._curtoken = c
-            self._parse1 = self._parse_number
-            return j+1
+            self._parse_type = ParseType.NUMBER
+            return j + 1
         elif c == b'.':
             self._curtoken = c
-            self._parse1 = self._parse_float
-            return j+1
+            self._parse_type = ParseType.FLOAT
+            return j + 1
         elif c.isalpha():
             self._curtoken = c
-            self._parse1 = self._parse_keyword
-            return j+1
+            self._parse_type = ParseType.KEYWORD
+            return j + 1
         elif c == b'(':
             self._curtoken = b''
             self.paren = 1
-            self._parse1 = self._parse_string
-            return j+1
+            self._parse_type = ParseType.STRING
+            return j + 1
         elif c == b'<':
             self._curtoken = b''
-            self._parse1 = self._parse_wopen
-            return j+1
+            self._parse_type = ParseType.WOPEN
+            return j + 1
         elif c == b'>':
             self._curtoken = b''
-            self._parse1 = self._parse_wclose
-            return j+1
+            self._parse_type = ParseType.WCLOSE
+            return j + 1
         else:
             self._add_token(KWD(c))
-            return j+1
+            return j + 1
 
     def _add_token(self, obj: PSBaseParserToken) -> None:
         self._tokens.append((self._curtokenpos, obj))
@@ -344,7 +356,7 @@ class PSBaseParser:
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        self._parse1 = self._parse_main
+        self._parse_type = ParseType.MAIN
         # We ignore comments.
         # self._tokens.append(self._curtoken)
         return j
@@ -356,27 +368,27 @@ class PSBaseParser:
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        c = s[j:j+1]
+        c = s[j:j + 1]
         if c == b'#':
             self.hex = b''
-            self._parse1 = self._parse_literal_hex
-            return j+1
+            self._parse_type = ParseType.LITERAL_HEX
+            return j + 1
         try:
             name: Union[str, bytes] = str(self._curtoken, 'utf-8')
         except Exception:
             name = self._curtoken
         self._add_token(LIT(name))
-        self._parse1 = self._parse_main
+        self._parse_type = ParseType.MAIN
         return j
 
     def _parse_literal_hex(self, s: bytes, i: int) -> int:
-        c = s[i:i+1]
+        c = s[i:i + 1]
         if HEX.match(c) and len(self.hex) < 2:
             self.hex += c
-            return i+1
+            return i + 1
         if self.hex:
             self._curtoken += bytes((int(self.hex, 16),))
-        self._parse1 = self._parse_literal
+        self._parse_type = ParseType.LITERAL
         return i
 
     def _parse_number(self, s: bytes, i: int) -> int:
@@ -386,16 +398,16 @@ class PSBaseParser:
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        c = s[j:j+1]
+        c = s[j:j + 1]
         if c == b'.':
             self._curtoken += c
-            self._parse1 = self._parse_float
-            return j+1
+            self._parse_type = ParseType.FLOAT
+            return j + 1
         try:
             self._add_token(int(self._curtoken))
         except ValueError:
             pass
-        self._parse1 = self._parse_main
+        self._parse_type = ParseType.MAIN
         return j
 
     def _parse_float(self, s: bytes, i: int) -> int:
@@ -409,7 +421,7 @@ class PSBaseParser:
             self._add_token(float(self._curtoken))
         except ValueError:
             pass
-        self._parse1 = self._parse_main
+        self._parse_type = ParseType.MAIN
         return j
 
     def _parse_keyword(self, s: bytes, i: int) -> int:
@@ -426,7 +438,7 @@ class PSBaseParser:
         else:
             token = KWD(self._curtoken)
         self._add_token(token)
-        self._parse1 = self._parse_main
+        self._parse_type = ParseType.MAIN
         return j
 
     def _parse_string(self, s: bytes, i: int) -> int:
@@ -436,68 +448,68 @@ class PSBaseParser:
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        c = s[j:j+1]
+        c = s[j:j + 1]
         if c == b'\\':
             self.oct = b''
-            self._parse1 = self._parse_string_1
-            return j+1
+            self._parse_type = ParseType.STRING_1
+            return j + 1
         if c == b'(':
             self.paren += 1
             self._curtoken += c
-            return j+1
+            return j + 1
         if c == b')':
             self.paren -= 1
             if self.paren:
                 # WTF, they said balanced parens need no special treatment.
                 self._curtoken += c
-                return j+1
+                return j + 1
         self._add_token(self._curtoken)
-        self._parse1 = self._parse_main
-        return j+1
+        self._parse_type = ParseType.MAIN
+        return j + 1
 
     def _parse_string_1(self, s: bytes, i: int) -> int:
         """Parse literal strings
 
         PDF Reference 3.2.3
         """
-        c = s[i:i+1]
+        c = s[i:i + 1]
         if OCT_STRING.match(c) and len(self.oct) < 3:
             self.oct += c
-            return i+1
+            return i + 1
 
         elif self.oct:
             self._curtoken += bytes((int(self.oct, 8),))
-            self._parse1 = self._parse_string
+            self._parse_type = ParseType.STRING
             return i
 
         elif c in ESC_STRING:
             self._curtoken += bytes((ESC_STRING[c],))
 
-        elif c == b'\r' and len(s) > i+1 and s[i+1:i+2] == b'\n':
+        elif c == b'\r' and len(s) > i + 1 and s[i + 1:i + 2] == b'\n':
             # If current and next character is \r\n skip both because enters
             # after a \ are ignored
             i += 1
 
         # default action
-        self._parse1 = self._parse_string
-        return i+1
+        self._parse_type = ParseType.STRING
+        return i + 1
 
     def _parse_wopen(self, s: bytes, i: int) -> int:
-        c = s[i:i+1]
+        c = s[i:i + 1]
         if c == b'<':
             self._add_token(KEYWORD_DICT_BEGIN)
-            self._parse1 = self._parse_main
+            self._parse_type = ParseType.MAIN
             i += 1
         else:
-            self._parse1 = self._parse_hexstring
+            self._parse_type = ParseType.HEXSTRING
         return i
 
     def _parse_wclose(self, s: bytes, i: int) -> int:
-        c = s[i:i+1]
+        c = s[i:i + 1]
         if c == b'>':
             self._add_token(KEYWORD_DICT_END)
             i += 1
-        self._parse1 = self._parse_main
+        self._parse_type = ParseType.MAIN
         return i
 
     def _parse_hexstring(self, s: bytes, i: int) -> int:
@@ -510,16 +522,45 @@ class PSBaseParser:
         token = HEX_PAIR.sub(lambda m: bytes((int(m.group(0), 16),)),
                              SPC.sub(b'', self._curtoken))
         self._add_token(token)
-        self._parse1 = self._parse_main
+        self._parse_type = ParseType.MAIN
         return j
 
     def nexttoken(self) -> Tuple[int, PSBaseParserToken]:
         while not self._tokens:
             self.fillbuf()
-            self.charpos = self._parse1(self.buf, self.charpos)
+            self.charpos = self.parse_token(self.buf, self.charpos)
         token = self._tokens.pop(0)
         log.debug('nexttoken: %r', token)
         return token
+
+    def parse_token(self, s: bytes, i: int) -> int:
+        if self._parse_type == ParseType.MAIN:
+            r = self._parse_main(s, i)
+        elif self._parse_type == ParseType.COMMENT:
+            r = self._parse_comment(s, i)
+        elif self._parse_type == ParseType.LITERAL:
+            r = self._parse_literal(s, i)
+        elif self._parse_type == ParseType.LITERAL_HEX:
+            r = self._parse_literal_hex(s, i)
+        elif self._parse_type == ParseType.NUMBER:
+            r = self._parse_number(s, i)
+        elif self._parse_type == ParseType.FLOAT:
+            r = self._parse_float(s, i)
+        elif self._parse_type == ParseType.KEYWORD:
+            r = self._parse_keyword(s, i)
+        elif self._parse_type == ParseType.STRING:
+            r = self._parse_string(s, i)
+        elif self._parse_type == ParseType.STRING_1:
+            r = self._parse_string_1(s, i)
+        elif self._parse_type == ParseType.WOPEN:
+            r = self._parse_wopen(s, i)
+        elif self._parse_type == ParseType.WCLOSE:
+            r = self._parse_wclose(s, i)
+        elif self._parse_type == ParseType.HEXSTRING:
+            r = self._parse_hexstring(s, i)
+        else:
+            raise ValueError(f"Unrecognized parse type {self._parse_type}")
+        return r
 
 
 # Stack slots may by occupied by any of:
@@ -541,7 +582,7 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
 
     def reset(self) -> None:
         self.context: List[Tuple[int, Optional[str],
-                           List[PSStackEntry[ExtraT]]]] = []
+                                 List[PSStackEntry[ExtraT]]]] = []
         self.curtype: Optional[str] = None
         self.curstack: List[PSStackEntry[ExtraT]] = []
         self.results: List[PSStackEntry[ExtraT]] = []
