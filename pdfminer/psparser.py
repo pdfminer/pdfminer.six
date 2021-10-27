@@ -4,6 +4,7 @@
 
 import re
 import logging
+import weakref
 from typing import (Any, BinaryIO, Dict, Generic, Iterator, List,
                     Optional, Tuple, Type, TypeVar, Union)
 
@@ -217,7 +218,7 @@ class PSBaseParser:
         self.buf = b''
         self.charpos = 0
         # reset the status for nexttoken()
-        self._parse1 = self._parse_main
+        self._parse1 = weakref.WeakMethod(self._parse_main)
         self._curtoken = b''
         self._curtokenpos = 0
         self._tokens: List[Tuple[int, PSBaseParserToken]] = []
@@ -298,36 +299,36 @@ class PSBaseParser:
         self._curtokenpos = self.bufpos+j
         if c == b'%':
             self._curtoken = b'%'
-            self._parse1 = self._parse_comment
+            self._parse1 = weakref.WeakMethod(self._parse_comment)
             return j+1
         elif c == b'/':
             self._curtoken = b''
-            self._parse1 = self._parse_literal
+            self._parse1 = weakref.WeakMethod(self._parse_literal)
             return j+1
         elif c in b'-+' or c.isdigit():
             self._curtoken = c
-            self._parse1 = self._parse_number
+            self._parse1 = weakref.WeakMethod(self._parse_number)
             return j+1
         elif c == b'.':
             self._curtoken = c
-            self._parse1 = self._parse_float
+            self._parse1 = weakref.WeakMethod(self._parse_float)
             return j+1
         elif c.isalpha():
             self._curtoken = c
-            self._parse1 = self._parse_keyword
+            self._parse1 = weakref.WeakMethod(self._parse_keyword)
             return j+1
         elif c == b'(':
             self._curtoken = b''
             self.paren = 1
-            self._parse1 = self._parse_string
+            self._parse1 = weakref.WeakMethod(self._parse_string)
             return j+1
         elif c == b'<':
             self._curtoken = b''
-            self._parse1 = self._parse_wopen
+            self._parse1 = weakref.WeakMethod(self._parse_wopen)
             return j+1
         elif c == b'>':
             self._curtoken = b''
-            self._parse1 = self._parse_wclose
+            self._parse1 = weakref.WeakMethod(self._parse_wclose)
             return j+1
         else:
             self._add_token(KWD(c))
@@ -344,7 +345,7 @@ class PSBaseParser:
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        self._parse1 = self._parse_main
+        self._parse1 = weakref.WeakMethod(self._parse_main)
         # We ignore comments.
         # self._tokens.append(self._curtoken)
         return j
@@ -359,14 +360,14 @@ class PSBaseParser:
         c = s[j:j+1]
         if c == b'#':
             self.hex = b''
-            self._parse1 = self._parse_literal_hex
+            self._parse1 = weakref.WeakMethod(self._parse_literal_hex)
             return j+1
         try:
             name: Union[str, bytes] = str(self._curtoken, 'utf-8')
         except Exception:
             name = self._curtoken
         self._add_token(LIT(name))
-        self._parse1 = self._parse_main
+        self._parse1 = weakref.WeakMethod(self._parse_main)
         return j
 
     def _parse_literal_hex(self, s: bytes, i: int) -> int:
@@ -376,7 +377,7 @@ class PSBaseParser:
             return i+1
         if self.hex:
             self._curtoken += bytes((int(self.hex, 16),))
-        self._parse1 = self._parse_literal
+        self._parse1 = weakref.WeakMethod(self._parse_literal)
         return i
 
     def _parse_number(self, s: bytes, i: int) -> int:
@@ -389,13 +390,13 @@ class PSBaseParser:
         c = s[j:j+1]
         if c == b'.':
             self._curtoken += c
-            self._parse1 = self._parse_float
+            self._parse1 = weakref.WeakMethod(self._parse_float)
             return j+1
         try:
             self._add_token(int(self._curtoken))
         except ValueError:
             pass
-        self._parse1 = self._parse_main
+        self._parse1 = weakref.WeakMethod(self._parse_main)
         return j
 
     def _parse_float(self, s: bytes, i: int) -> int:
@@ -409,7 +410,7 @@ class PSBaseParser:
             self._add_token(float(self._curtoken))
         except ValueError:
             pass
-        self._parse1 = self._parse_main
+        self._parse1 = weakref.WeakMethod(self._parse_main)
         return j
 
     def _parse_keyword(self, s: bytes, i: int) -> int:
@@ -426,7 +427,7 @@ class PSBaseParser:
         else:
             token = KWD(self._curtoken)
         self._add_token(token)
-        self._parse1 = self._parse_main
+        self._parse1 = weakref.WeakMethod(self._parse_main)
         return j
 
     def _parse_string(self, s: bytes, i: int) -> int:
@@ -439,7 +440,7 @@ class PSBaseParser:
         c = s[j:j+1]
         if c == b'\\':
             self.oct = b''
-            self._parse1 = self._parse_string_1
+            self._parse1 = weakref.WeakMethod(self._parse_string_1)
             return j+1
         if c == b'(':
             self.paren += 1
@@ -452,7 +453,7 @@ class PSBaseParser:
                 self._curtoken += c
                 return j+1
         self._add_token(self._curtoken)
-        self._parse1 = self._parse_main
+        self._parse1 = weakref.WeakMethod(self._parse_main)
         return j+1
 
     def _parse_string_1(self, s: bytes, i: int) -> int:
@@ -467,7 +468,7 @@ class PSBaseParser:
 
         elif self.oct:
             self._curtoken += bytes((int(self.oct, 8),))
-            self._parse1 = self._parse_string
+            self._parse1 = weakref.WeakMethod(self._parse_string)
             return i
 
         elif c in ESC_STRING:
@@ -479,17 +480,17 @@ class PSBaseParser:
             i += 1
 
         # default action
-        self._parse1 = self._parse_string
+        self._parse1 = weakref.WeakMethod(self._parse_string)
         return i+1
 
     def _parse_wopen(self, s: bytes, i: int) -> int:
         c = s[i:i+1]
         if c == b'<':
             self._add_token(KEYWORD_DICT_BEGIN)
-            self._parse1 = self._parse_main
+            self._parse1 = weakref.WeakMethod(self._parse_main)
             i += 1
         else:
-            self._parse1 = self._parse_hexstring
+            self._parse1 = weakref.WeakMethod(self._parse_hexstring)
         return i
 
     def _parse_wclose(self, s: bytes, i: int) -> int:
@@ -497,7 +498,7 @@ class PSBaseParser:
         if c == b'>':
             self._add_token(KEYWORD_DICT_END)
             i += 1
-        self._parse1 = self._parse_main
+        self._parse1 = weakref.WeakMethod(self._parse_main)
         return i
 
     def _parse_hexstring(self, s: bytes, i: int) -> int:
@@ -510,13 +511,13 @@ class PSBaseParser:
         token = HEX_PAIR.sub(lambda m: bytes((int(m.group(0), 16),)),
                              SPC.sub(b'', self._curtoken))
         self._add_token(token)
-        self._parse1 = self._parse_main
+        self._parse1 = weakref.WeakMethod(self._parse_main)
         return j
 
     def nexttoken(self) -> Tuple[int, PSBaseParserToken]:
         while not self._tokens:
             self.fillbuf()
-            self.charpos = self._parse1(self.buf, self.charpos)
+            self.charpos = self._parse1()(self.buf, self.charpos)
         token = self._tokens.pop(0)
         log.debug('nexttoken: %r', token)
         return token
