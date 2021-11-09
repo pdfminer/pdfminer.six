@@ -505,10 +505,23 @@ class LTTextLineHorizontal(LTTextLine):
         objs = plane.find((self.x0, self.y0 - d, self.x1, self.y1 + d))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal) and
+                    self._is_non_empty_as(obj) and
                     self._is_same_height_as(obj, tolerance=d) and
                     (self._is_left_aligned_with(obj, tolerance=d) or
                      self._is_right_aligned_with(obj, tolerance=d) or
                      self._is_centrally_aligned_with(obj, tolerance=d)))]
+
+    def _is_non_empty_as(
+        self,
+        other: LTComponent
+    ) -> bool:
+        """
+        Whether the `other` element is non-empty.
+        """
+        try:
+            return other.get_text().strip() != ''
+        except:
+            return True
 
     def _is_left_aligned_with(
         self,
@@ -785,6 +798,20 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         yield line
         return
 
+    def _exclude_lines(
+        self,
+        lines: Iterable[LTTextLine]
+    ) -> Iterable[LTTextLine]:
+        """Remove any spurious horizontal lines without text"""
+        include_lines: List[LTTextLine] = []
+        for line in lines:
+            if isinstance(line, LTTextLineHorizontal):
+                if line.get_text().strip() != '':
+                    include_lines.append(line)
+            else:
+                include_lines.append(line)
+        return(include_lines)
+
     def group_textlines(
         self,
         laparams: LAParams,
@@ -792,6 +819,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
     ) -> Iterator[LTTextBox]:
         """Group neighboring lines to textboxes"""
         plane: Plane[LTTextLine] = Plane(self.bbox)
+        lines = self._exclude_lines(lines)
         plane.extend(lines)
         boxes: Dict[LTTextLine, LTTextBox] = {}
         for line in lines:
