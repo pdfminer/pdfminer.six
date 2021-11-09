@@ -596,10 +596,23 @@ class LTTextLineVertical(LTTextLine):
         objs = plane.find((self.x0 - d, self.y0, self.x1 + d, self.y1))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineVertical) and
+                    self._is_non_empty_as(obj) and
                     self._is_same_width_as(obj, tolerance=d) and
                     (self._is_lower_aligned_with(obj, tolerance=d) or
                      self._is_upper_aligned_with(obj, tolerance=d) or
                      self._is_centrally_aligned_with(obj, tolerance=d)))]
+
+    def _is_non_empty_as(
+        self,
+        other: LTComponent
+    ) -> bool:
+        """
+        Whether the `other` element is non-empty.
+        """
+        try:
+            return other.get_text().strip() != ''
+        except:
+            return True
 
     def _is_lower_aligned_with(
         self,
@@ -805,7 +818,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         """Remove any spurious horizontal lines without text"""
         include_lines: List[LTTextLine] = []
         for line in lines:
-            if isinstance(line, LTTextLineHorizontal):
+            if isinstance(line, LTTextLineHorizontal) or isinstance(line, LTTextLineVertical):
                 if line.get_text().strip() != '':
                     include_lines.append(line)
             else:
