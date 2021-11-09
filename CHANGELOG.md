@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [20211109]
+
+### Added
+- Support for removal of spurious lines that have posed issues in some malformed PDF files ([#499](https://github.com/pdfminer/pdfminer.six/pull/499))
+
 ### Added
 - Support for identity cmap's ([#626](https://github.com/pdfminer/pdfminer.six/pull/626))
 
