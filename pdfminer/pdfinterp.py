@@ -184,7 +184,7 @@ class PDFResourceManager:
         if objid and objid in self._cached_fonts:
             font = self._cached_fonts[objid]
         else:
-            log.info('get_font: create: objid=%r, spec=%r', objid, spec)
+            log.debug('get_font: create: objid=%r, spec=%r', objid, spec)
             if settings.STRICT:
                 if spec['Type'] is not LITERAL_FONT:
                     raise PDFFontError('Type is not /Font')
@@ -962,7 +962,7 @@ class PDFPageInterpreter:
             if settings.STRICT:
                 raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
             return
-        log.info('Processing xobj: %r', xobj)
+        log.debug('Processing xobj: %r', xobj)
         subtype = xobj.get('Subtype')
         if subtype is LITERAL_FORM and 'BBox' in xobj:
             interpreter = self.dup()
@@ -991,7 +991,7 @@ class PDFPageInterpreter:
         return
 
     def process_page(self, page: PDFPage) -> None:
-        log.info('Processing page: %r', page)
+        log.debug('Processing page: %r', page)
         (x0, y0, x1, y1) = page.mediabox
         if page.rotate == 90:
             ctm = (0, -1, 1, 0, -y0, x1)
@@ -1016,7 +1016,7 @@ class PDFPageInterpreter:
 
         This method may be called recursively.
         """
-        log.info('render_contents: resources=%r, streams=%r, ctm=%r',
+        log.debug('render_contents: resources=%r, streams=%r, ctm=%r',
                  resources, streams, ctm)
         self.init_resources(resources)
         self.init_state(ctm)
