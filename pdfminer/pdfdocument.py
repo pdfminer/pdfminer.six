@@ -251,8 +251,8 @@ class PDFXRefStream(PDFBaseXRef):
         self.entlen = self.fl1+self.fl2+self.fl3
         self.trailer = stream.attrs
         log.debug('xref stream: objid=%s, fields=%d,%d,%d',
-                 ', '.join(map(repr, self.ranges)),
-                 self.fl1, self.fl2, self.fl3)
+                  ', '.join(map(repr, self.ranges)),
+                  self.fl1, self.fl2, self.fl3)
         return
 
     def get_trailer(self) -> Dict[str, Any]:

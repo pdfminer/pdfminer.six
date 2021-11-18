@@ -1017,7 +1017,7 @@ class PDFPageInterpreter:
         This method may be called recursively.
         """
         log.debug('render_contents: resources=%r, streams=%r, ctm=%r',
-                 resources, streams, ctm)
+                  resources, streams, ctm)
         self.init_resources(resources)
         self.init_state(ctm)
         self.execute(list_value(streams))
