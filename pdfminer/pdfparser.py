@@ -1,6 +1,8 @@
 import logging
 from io import BytesIO
+from typing import BinaryIO, TYPE_CHECKING, Optional, Union
 from .psparser import PSStackParser
+from .psparser import PSKeyword
 from .psparser import PSSyntaxError
 from .psparser import PSEOF
 from .psparser import KWD
@@ -11,6 +13,9 @@ from .pdftypes import PDFObjRef
 from .pdftypes import int_value
 from .pdftypes import dict_value
 
+if TYPE_CHECKING:
+    from .pdfdocument import PDFDocument
+
 log = logging.getLogger(__name__)
 
 
@@ -18,7 +23,8 @@ class PDFSyntaxError(PDFException):
     pass
 
 
-class PDFParser(PSStackParser):
+# PDFParser stack holds all the base types plus PDFStream, PDFObjRef, and None
+class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
     """
     PDFParser fetch PDF objects from a file stream.
     It can handle indirect references by referring to
@@ -35,13 +41,13 @@ class PDFParser(PSStackParser):
 
     """
 
-    def __init__(self, fp):
+    def __init__(self, fp: BinaryIO) -> None:
         PSStackParser.__init__(self, fp)
-        self.doc = None
+        self.doc: Optional["PDFDocument"] = None
         self.fallback = False
         return
 
-    def set_document(self, doc):
+    def set_document(self, doc: "PDFDocument") -> None:
         """Associates the parser with a PDFDocument object."""
         self.doc = doc
         return
@@ -53,7 +59,7 @@ class PDFParser(PSStackParser):
     KEYWORD_XREF = KWD(b'xref')
     KEYWORD_STARTXREF = KWD(b'startxref')
 
-    def do_keyword(self, pos, token):
+    def do_keyword(self, pos: int, token: PSKeyword) -> None:
         """Handles PDF-related keywords."""
 
         if token in (self.KEYWORD_XREF, self.KEYWORD_STARTXREF):
@@ -71,7 +77,9 @@ class PDFParser(PSStackParser):
             if len(self.curstack) >= 2:
                 try:
                     ((_, objid), (_, genno)) = self.pop(2)
-                    (objid, genno) = (int(objid), int(genno))
+                    (objid, genno) = (
+                        int(objid), int(genno))  # type: ignore[arg-type]
+                    assert self.doc is not None
                     obj = PDFObjRef(self.doc, objid, genno)
                     self.push((pos, obj))
                 except PSSyntaxError:
@@ -114,13 +122,13 @@ class PDFParser(PSStackParser):
                 objlen += len(line)
                 if self.fallback:
                     data += line
-            data = bytes(data)
             self.seek(pos+objlen)
             # XXX limit objlen not to exceed object boundary
             log.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...', pos,
                       objlen, dic, data[:10])
-            obj = PDFStream(dic, data, self.doc.decipher)
-            self.push((pos, obj))
+            assert self.doc is not None
+            stream = PDFStream(dic, bytes(data), self.doc.decipher)
+            self.push((pos, stream))
 
         else:
             # others
@@ -138,22 +146,23 @@ class PDFStreamParser(PDFParser):
     indirect references to other objects in the same document.
     """
 
-    def __init__(self, data):
+    def __init__(self, data: bytes) -> None:
         PDFParser.__init__(self, BytesIO(data))
         return
 
-    def flush(self):
+    def flush(self) -> None:
         self.add_results(*self.popall())
         return
 
     KEYWORD_OBJ = KWD(b'obj')
 
-    def do_keyword(self, pos, token):
+    def do_keyword(self, pos: int, token: PSKeyword) -> None:
         if token is self.KEYWORD_R:
             # reference to indirect object
             try:
                 ((_, objid), (_, genno)) = self.pop(2)
-                (objid, genno) = (int(objid), int(genno))
+                (objid, genno) = (
+                    int(objid), int(genno))  # type: ignore[arg-type]
                 obj = PDFObjRef(self.doc, objid, genno)
                 self.push((pos, obj))
             except PSSyntaxError:

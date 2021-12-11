@@ -21,10 +21,11 @@
 __all__ = ['saslprep']
 
 import stringprep
+from typing import Callable, Tuple
 import unicodedata
 
 # RFC4013 section 2.3 prohibited output.
-_PROHIBITED = (
+_PROHIBITED: Tuple[Callable[[str], bool], ...] = (
     # A strict reading of RFC 4013 requires table c12 here, but
     # characters from it are mapped to SPACE in the Map step. Can
     # normalization reintroduce them somehow?
@@ -39,7 +40,7 @@ _PROHIBITED = (
     stringprep.in_table_c9)
 
 
-def saslprep(data: str, prohibit_unassigned_code_points=True) -> str:
+def saslprep(data: str, prohibit_unassigned_code_points: bool = True) -> str:
     """An implementation of RFC4013 SASLprep.
     :param data:
         The string to SASLprep.

@@ -6,6 +6,7 @@ compares two pdf files.
 import io
 import logging
 import sys
+from typing import Any, Iterable, List, Optional
 
 import pdfminer.settings
 from pdfminer import high_level, layout
@@ -16,7 +17,7 @@ pdfminer.settings.STRICT = False
 logging.basicConfig()
 
 
-def compare(file1, file2, **kwargs):
+def compare(file1: str, file2: str, **kwargs: Any) -> Iterable[str]:
     # If any LAParams group arguments were passed,
     # create an LAParams object and
     # populate with given args. Otherwise, set it to None.
@@ -26,7 +27,7 @@ def compare(file1, file2, **kwargs):
                       "char_margin", "line_margin", "boxes_flow"):
             paramv = kwargs.get(param, None)
             if paramv is not None:
-                laparams[param] = paramv
+                setattr(laparams, param, paramv)
         kwargs['laparams'] = laparams
 
     s1 = io.StringIO()
@@ -40,20 +41,20 @@ def compare(file1, file2, **kwargs):
     import difflib
     s1.seek(0)
     s2.seek(0)
-    s1, s2 = s1.readlines(), s2.readlines()
+    s1_lines, s2_lines = s1.readlines(), s2.readlines()
 
     import os.path
     try:
         extension = os.path.splitext(kwargs['outfile'])[1][1:4]
         if extension.lower() == 'htm':
-            return difflib.HtmlDiff().make_file(s1, s2)
+            return difflib.HtmlDiff().make_file(s1_lines, s2_lines)
     except KeyError:
         pass
-    return difflib.unified_diff(s1, s2, n=kwargs['context_lines'])
+    return difflib.unified_diff(s1_lines, s2_lines, n=kwargs['context_lines'])
 
 
 # main
-def main(args=None):
+def main(args: Optional[List[str]] = None) -> int:
     import argparse
     P = argparse.ArgumentParser(description=__doc__)
     P.add_argument("file1", type=str, default=None, help="File 1 to compare.")

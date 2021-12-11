@@ -1,5 +1,6 @@
 from io import BytesIO
 import logging
+from typing import BinaryIO, Iterator, List, Optional, cast
 
 
 logger = logging.getLogger(__name__)
@@ -11,16 +12,17 @@ class CorruptDataError(Exception):
 
 class LZWDecoder:
 
-    def __init__(self, fp):
+    def __init__(self, fp: BinaryIO) -> None:
         self.fp = fp
         self.buff = 0
         self.bpos = 8
         self.nbits = 9
-        self.table = None
-        self.prevbuf = None
+        # NB: self.table stores None only in indices 256 and 257
+        self.table: Optional[List[Optional[bytes]]] = None
+        self.prevbuf: Optional[bytes] = None
         return
 
-    def readbits(self, bits):
+    def readbits(self, bits: int) -> int:
         v = 0
         while 1:
             # the number of remaining bits we can get from the current buffer.
@@ -45,7 +47,7 @@ class LZWDecoder:
                 self.bpos = 0
         return v
 
-    def feed(self, code):
+    def feed(self, code: int) -> bytes:
         x = b''
         if code == 256:
             self.table = [bytes((c,)) for c in range(256)]  # 0-255
@@ -56,14 +58,16 @@ class LZWDecoder:
         elif code == 257:
             pass
         elif not self.prevbuf:
-            x = self.prevbuf = self.table[code]
+            assert self.table is not None
+            x = self.prevbuf = cast(bytes, self.table[code])  # assume not None
         else:
+            assert self.table is not None
             if code < len(self.table):
-                x = self.table[code]
+                x = cast(bytes, self.table[code])  # assume not None
                 self.table.append(self.prevbuf+x[:1])
             elif code == len(self.table):
                 self.table.append(self.prevbuf+self.prevbuf[:1])
-                x = self.table[code]
+                x = cast(bytes, self.table[code])
             else:
                 raise CorruptDataError
             table_length = len(self.table)
@@ -76,7 +80,7 @@ class LZWDecoder:
             self.prevbuf = x
         return x
 
-    def run(self):
+    def run(self) -> Iterator[bytes]:
         while 1:
             try:
                 code = self.readbits(self.nbits)
@@ -88,12 +92,13 @@ class LZWDecoder:
                 # just ignore corrupt data and stop yielding there
                 break
             yield x
+            assert self.table is not None
             logger.debug('nbits=%d, code=%d, output=%r, table=%r'
                          % (self.nbits, code, x, self.table[258:]))
         return
 
 
-def lzwdecode(data):
+def lzwdecode(data: bytes) -> bytes:
     fp = BytesIO(data)
     s = LZWDecoder(fp).run()
     return b''.join(s)

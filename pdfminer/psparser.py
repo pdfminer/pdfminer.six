@@ -4,7 +4,8 @@
 
 import re
 import logging
-
+from typing import (Any, BinaryIO, Dict, Generic, Iterator, List,
+                    Optional, Tuple, Type, TypeVar, Union)
 
 from . import settings
 from .utils import choplist
@@ -51,10 +52,12 @@ class PSLiteral(PSObject):
     Always use PSLiteralTable.intern().
     """
 
-    def __init__(self, name):
+    NameType = Union[str, bytes]
+
+    def __init__(self, name: NameType) -> None:
         self.name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         name = self.name
         return '/%r' % name
 
@@ -71,31 +74,36 @@ class PSKeyword(PSObject):
     Always use PSKeywordTable.intern().
     """
 
-    def __init__(self, name):
+    def __init__(self, name: bytes) -> None:
         self.name = name
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         name = self.name
         return '/%r' % name
 
 
-class PSSymbolTable:
+_SymbolT = TypeVar('_SymbolT', PSLiteral, PSKeyword)
+
+
+class PSSymbolTable(Generic[_SymbolT]):
     """A utility class for storing PSLiteral/PSKeyword objects.
 
     Interned objects can be checked its identity with "is" operator.
     """
 
-    def __init__(self, klass):
-        self.dict = {}
-        self.klass = klass
+    def __init__(self, klass: Type[_SymbolT]) -> None:
+        self.dict: Dict[PSLiteral.NameType, _SymbolT] = {}
+        self.klass: Type[_SymbolT] = klass
         return
 
-    def intern(self, name):
+    def intern(self, name: PSLiteral.NameType) -> _SymbolT:
         if name in self.dict:
             lit = self.dict[name]
         else:
-            lit = self.klass(name)
+            # Type confusion issue: PSKeyword always takes bytes as name
+            #                       PSLiteral uses either str or bytes
+            lit = self.klass(name)  # type: ignore[arg-type]
             self.dict[name] = lit
         return lit
 
@@ -112,7 +120,7 @@ KEYWORD_DICT_BEGIN = KWD(b'<<')
 KEYWORD_DICT_END = KWD(b'>>')
 
 
-def literal_name(x):
+def literal_name(x: object) -> Any:
     if not isinstance(x, PSLiteral):
         if settings.STRICT:
             raise PSTypeError('Literal required: {!r}'.format(x))
@@ -120,14 +128,15 @@ def literal_name(x):
             name = x
     else:
         name = x.name
-        try:
-            name = str(name, 'utf-8')
-        except Exception:
-            pass
+        if not isinstance(name, str):
+            try:
+                name = str(name, 'utf-8')
+            except Exception:
+                pass
     return name
 
 
-def keyword_name(x):
+def keyword_name(x: object) -> Any:
     if not isinstance(x, PSKeyword):
         if settings.STRICT:
             raise PSTypeError('Keyword required: %r' % x)
@@ -161,32 +170,35 @@ ESC_STRING = {
 }
 
 
+PSBaseParserToken = Union[float, bool, PSLiteral, PSKeyword, bytes]
+
+
 class PSBaseParser:
 
     """Most basic PostScript parser that performs only tokenization.
     """
     BUFSIZ = 4096
 
-    def __init__(self, fp):
+    def __init__(self, fp: BinaryIO) -> None:
         self.fp = fp
         self.seek(0)
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<%s: %r, bufpos=%d>' % (self.__class__.__name__, self.fp,
                                         self.bufpos)
 
-    def flush(self):
+    def flush(self) -> None:
         return
 
-    def close(self):
+    def close(self) -> None:
         self.flush()
         return
 
-    def tell(self):
+    def tell(self) -> int:
         return self.bufpos+self.charpos
 
-    def poll(self, pos=None, n=80):
+    def poll(self, pos: Optional[int] = None, n: int = 80) -> None:
         pos0 = self.fp.tell()
         if not pos:
             pos = self.bufpos+self.charpos
@@ -195,7 +207,7 @@ class PSBaseParser:
         self.fp.seek(pos0)
         return
 
-    def seek(self, pos):
+    def seek(self, pos: int) -> None:
         """Seeks the parser to the given position.
         """
         log.debug('seek: %r', pos)
@@ -208,10 +220,10 @@ class PSBaseParser:
         self._parse1 = self._parse_main
         self._curtoken = b''
         self._curtokenpos = 0
-        self._tokens = []
+        self._tokens: List[Tuple[int, PSBaseParserToken]] = []
         return
 
-    def fillbuf(self):
+    def fillbuf(self) -> None:
         if self.charpos < len(self.buf):
             return
         # fetch next chunk.
@@ -222,7 +234,7 @@ class PSBaseParser:
         self.charpos = 0
         return
 
-    def nextline(self):
+    def nextline(self) -> Tuple[int, bytes]:
         """Fetches a next line that ends either with \\r or \\n.
         """
         linebuf = b''
@@ -252,7 +264,7 @@ class PSBaseParser:
 
         return (linepos, linebuf)
 
-    def revreadlines(self):
+    def revreadlines(self) -> Iterator[bytes]:
         """Fetches a next line backword.
 
         This is used to locate the trailers at the end of a file.
@@ -277,7 +289,7 @@ class PSBaseParser:
                 buf = b''
         return
 
-    def _parse_main(self, s, i):
+    def _parse_main(self, s: bytes, i: int) -> int:
         m = NONSPC.search(s, i)
         if not m:
             return len(s)
@@ -321,11 +333,11 @@ class PSBaseParser:
             self._add_token(KWD(c))
             return j+1
 
-    def _add_token(self, obj):
+    def _add_token(self, obj: PSBaseParserToken) -> None:
         self._tokens.append((self._curtokenpos, obj))
         return
 
-    def _parse_comment(self, s, i):
+    def _parse_comment(self, s: bytes, i: int) -> int:
         m = EOL.search(s, i)
         if not m:
             self._curtoken += s[i:]
@@ -337,7 +349,7 @@ class PSBaseParser:
         # self._tokens.append(self._curtoken)
         return j
 
-    def _parse_literal(self, s, i):
+    def _parse_literal(self, s: bytes, i: int) -> int:
         m = END_LITERAL.search(s, i)
         if not m:
             self._curtoken += s[i:]
@@ -350,14 +362,14 @@ class PSBaseParser:
             self._parse1 = self._parse_literal_hex
             return j+1
         try:
-            self._curtoken = str(self._curtoken, 'utf-8')
+            name: Union[str, bytes] = str(self._curtoken, 'utf-8')
         except Exception:
-            pass
-        self._add_token(LIT(self._curtoken))
+            name = self._curtoken
+        self._add_token(LIT(name))
         self._parse1 = self._parse_main
         return j
 
-    def _parse_literal_hex(self, s, i):
+    def _parse_literal_hex(self, s: bytes, i: int) -> int:
         c = s[i:i+1]
         if HEX.match(c) and len(self.hex) < 2:
             self.hex += c
@@ -367,7 +379,7 @@ class PSBaseParser:
         self._parse1 = self._parse_literal
         return i
 
-    def _parse_number(self, s, i):
+    def _parse_number(self, s: bytes, i: int) -> int:
         m = END_NUMBER.search(s, i)
         if not m:
             self._curtoken += s[i:]
@@ -386,7 +398,7 @@ class PSBaseParser:
         self._parse1 = self._parse_main
         return j
 
-    def _parse_float(self, s, i):
+    def _parse_float(self, s: bytes, i: int) -> int:
         m = END_NUMBER.search(s, i)
         if not m:
             self._curtoken += s[i:]
@@ -400,7 +412,7 @@ class PSBaseParser:
         self._parse1 = self._parse_main
         return j
 
-    def _parse_keyword(self, s, i):
+    def _parse_keyword(self, s: bytes, i: int) -> int:
         m = END_KEYWORD.search(s, i)
         if not m:
             self._curtoken += s[i:]
@@ -408,7 +420,7 @@ class PSBaseParser:
         j = m.start(0)
         self._curtoken += s[i:j]
         if self._curtoken == b'true':
-            token = True
+            token: Union[bool, PSKeyword] = True
         elif self._curtoken == b'false':
             token = False
         else:
@@ -417,7 +429,7 @@ class PSBaseParser:
         self._parse1 = self._parse_main
         return j
 
-    def _parse_string(self, s, i):
+    def _parse_string(self, s: bytes, i: int) -> int:
         m = END_STRING.search(s, i)
         if not m:
             self._curtoken += s[i:]
@@ -443,7 +455,7 @@ class PSBaseParser:
         self._parse1 = self._parse_main
         return j+1
 
-    def _parse_string_1(self, s, i):
+    def _parse_string_1(self, s: bytes, i: int) -> int:
         """Parse literal strings
 
         PDF Reference 3.2.3
@@ -470,7 +482,7 @@ class PSBaseParser:
         self._parse1 = self._parse_string
         return i+1
 
-    def _parse_wopen(self, s, i):
+    def _parse_wopen(self, s: bytes, i: int) -> int:
         c = s[i:i+1]
         if c == b'<':
             self._add_token(KEYWORD_DICT_BEGIN)
@@ -480,7 +492,7 @@ class PSBaseParser:
             self._parse1 = self._parse_hexstring
         return i
 
-    def _parse_wclose(self, s, i):
+    def _parse_wclose(self, s: bytes, i: int) -> int:
         c = s[i:i+1]
         if c == b'>':
             self._add_token(KEYWORD_DICT_END)
@@ -488,7 +500,7 @@ class PSBaseParser:
         self._parse1 = self._parse_main
         return i
 
-    def _parse_hexstring(self, s, i):
+    def _parse_hexstring(self, s: bytes, i: int) -> int:
         m = END_HEX_STRING.search(s, i)
         if not m:
             self._curtoken += s[i:]
@@ -501,7 +513,7 @@ class PSBaseParser:
         self._parse1 = self._parse_main
         return j
 
-    def nexttoken(self):
+    def nexttoken(self) -> Tuple[int, PSBaseParserToken]:
         while not self._tokens:
             self.fillbuf()
             self.charpos = self._parse1(self.buf, self.charpos)
@@ -510,39 +522,51 @@ class PSBaseParser:
         return token
 
 
-class PSStackParser(PSBaseParser):
-    def __init__(self, fp):
+# Stack slots may by occupied by any of:
+#  * the PSBaseParserToken types
+#  * list (via KEYWORD_ARRAY)
+#  * dict (via KEYWORD_DICT)
+#  * subclass-specific extensions (e.g. PDFStream, PDFObjRef) via ExtraT
+ExtraT = TypeVar("ExtraT")
+PSStackType = Union[float, bool, PSLiteral, bytes, List, Dict, ExtraT]
+PSStackEntry = Tuple[int, PSStackType[ExtraT]]
+
+
+class PSStackParser(PSBaseParser, Generic[ExtraT]):
+
+    def __init__(self, fp: BinaryIO) -> None:
         PSBaseParser.__init__(self, fp)
         self.reset()
         return
 
-    def reset(self):
-        self.context = []
-        self.curtype = None
-        self.curstack = []
-        self.results = []
+    def reset(self) -> None:
+        self.context: List[Tuple[int, Optional[str],
+                           List[PSStackEntry[ExtraT]]]] = []
+        self.curtype: Optional[str] = None
+        self.curstack: List[PSStackEntry[ExtraT]] = []
+        self.results: List[PSStackEntry[ExtraT]] = []
         return
 
-    def seek(self, pos):
+    def seek(self, pos: int) -> None:
         PSBaseParser.seek(self, pos)
         self.reset()
         return
 
-    def push(self, *objs):
+    def push(self, *objs: PSStackEntry[ExtraT]) -> None:
         self.curstack.extend(objs)
         return
 
-    def pop(self, n):
+    def pop(self, n: int) -> List[PSStackEntry[ExtraT]]:
         objs = self.curstack[-n:]
         self.curstack[-n:] = []
         return objs
 
-    def popall(self):
+    def popall(self) -> List[PSStackEntry[ExtraT]]:
         objs = self.curstack
         self.curstack = []
         return objs
 
-    def add_results(self, *objs):
+    def add_results(self, *objs: PSStackEntry[ExtraT]) -> None:
         try:
             log.debug('add_results: %r', objs)
         except Exception:
@@ -550,13 +574,13 @@ class PSStackParser(PSBaseParser):
         self.results.extend(objs)
         return
 
-    def start_type(self, pos, type):
+    def start_type(self, pos: int, type: str) -> None:
         self.context.append((pos, self.curtype, self.curstack))
         (self.curtype, self.curstack) = (type, [])
         log.debug('start_type: pos=%r, type=%r', pos, type)
         return
 
-    def end_type(self, type):
+    def end_type(self, type: str) -> Tuple[int, List[PSStackType[ExtraT]]]:
         if self.curtype != type:
             raise PSTypeError('Type mismatch: {!r} != {!r}'
                               .format(self.curtype, type))
@@ -565,10 +589,10 @@ class PSStackParser(PSBaseParser):
         log.debug('end_type: pos=%r, type=%r, objs=%r', pos, type, objs)
         return (pos, objs)
 
-    def do_keyword(self, pos, token):
+    def do_keyword(self, pos: int, token: PSKeyword) -> None:
         return
 
-    def nextobject(self):
+    def nextobject(self) -> PSStackEntry[ExtraT]:
         """Yields a list of objects.
 
         Arrays and dictionaries are represented as Python lists and
