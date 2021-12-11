@@ -328,15 +328,18 @@ class PDFStream(PDFObject):
                 # will get errors if the document is encrypted.
                 try:
                     data = zlib.decompress(data)
+
                 except zlib.error as e:
+                    if settings.STRICT:
+                        error_msg = 'Invalid zlib bytes: {!r}, {!r}'\
+                            .format(e, data)
+                        raise PDFException(error_msg)
+
                     try:
                         data = decompress_corrupted(data)
                     except zlib.error:
-                        if settings.STRICT:
-                            error_msg = 'Invalid zlib bytes: {!r}, {!r}'\
-                                .format(e, data)
-                            raise PDFException(error_msg)
                         data = b''
+
             elif f in LITERALS_LZW_DECODE:
                 data = lzwdecode(data)
             elif f in LITERALS_ASCII85_DECODE:
