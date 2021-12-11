@@ -1,8 +1,11 @@
 import zlib
+import warnings
 import logging
+import io
 import sys
 from typing import (TYPE_CHECKING, Any, Dict, Iterable, Optional, Union, List,
                     Tuple, cast)
+
 from .lzw import lzwdecode
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
@@ -216,6 +219,29 @@ def stream_value(x: object) -> "PDFStream":
     return x
 
 
+def decompress_corrupted(data):
+    """Called on some data that can't be properly decoded because of CRC checksum
+    error. Attempt to decode it skipping the CRC.
+    """
+    d = zlib.decompressobj()
+    f = io.BytesIO(data)
+    result_str = b''
+    buffer = f.read(1)
+    i = 0
+    try:
+        while buffer:
+            result_str += d.decompress(buffer)
+            buffer = f.read(1)
+            i += 1
+    except zlib.error:
+        # Let the error propagates if we're not yet in the CRC checksum
+        if i < len(data) - 3:
+            # Import here to prevent circualr import
+            from .pdfdocument import PDFEncryptionWarning
+            warnings.warn("Data-loss while decompressing corrupted data", PDFEncryptionWarning)
+    return result_str
+
+
 class PDFStream(PDFObject):
 
     def __init__(
@@ -303,12 +329,18 @@ class PDFStream(PDFObject):
                 # will get errors if the document is encrypted.
                 try:
                     data = zlib.decompress(data)
+
                 except zlib.error as e:
                     if settings.STRICT:
                         error_msg = 'Invalid zlib bytes: {!r}, {!r}'\
                             .format(e, data)
                         raise PDFException(error_msg)
-                    data = b''
+
+                    try:
+                        data = decompress_corrupted(data)
+                    except zlib.error:
+                        data = b''
+
             elif f in LITERALS_LZW_DECODE:
                 data = lzwdecode(data)
             elif f in LITERALS_ASCII85_DECODE:
