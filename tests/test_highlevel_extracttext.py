@@ -35,6 +35,7 @@ test_strings = {
                    "Link to heading that is working with vim-pandoc.\n\n"
                    "Link to heading “that is” not working with vim-pandoc.\n\n"
                    "Subheading\n\nSome “more text”\n\n1\n\n\f",
+    "zen_of_python_corrupted.pdf": "Mai 30, 18 13:27\n\nzen_of_python.txt",
     "contrib/issue_566_test_1.pdf": "ISSUE Date：2019-4-25 Buyer：黎荣",
     "contrib/issue_566_test_2.pdf": "甲方：中国饮料有限公司（盖章）",
     "contrib/issue-625-identity-cmap.pdf": "Termin płatności: 2021-05-03",
@@ -96,6 +97,12 @@ class TestExtractText(unittest.TestCase):
         test_file = "simple5.pdf"
         s = run_with_file(test_file)
         self.assertEqual(s, test_strings[test_file])
+
+    def test_zlib_corrupted(self):
+        test_file = "zen_of_python_corrupted.pdf"
+        s = run_with_file(test_file)
+        expected = test_strings[test_file]
+        self.assertEqual(s[:len(expected)], expected)
 
     def test_issue_566_cmap_bytes(self):
         test_file = "contrib/issue_566_test_1.pdf"
