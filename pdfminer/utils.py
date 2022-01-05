@@ -4,7 +4,13 @@ Miscellaneous Routines.
 import io
 import pathlib
 import struct
+from typing import (Any, BinaryIO, Callable, Dict, Generic, Iterable, Iterator,
+                    List, Optional, Set, TextIO, Tuple, TypeVar, Union,
+                    TYPE_CHECKING, cast)
 from html import escape
+
+if TYPE_CHECKING:
+    from .layout import LTComponent
 
 import chardet  # For str encoding detection
 
@@ -13,40 +19,54 @@ import chardet  # For str encoding detection
 INF = (1 << 31) - 1
 
 
+FileOrName = Union[pathlib.PurePath, str, io.IOBase]
+AnyIO = Union[TextIO, BinaryIO]
+
+
 class open_filename(object):
     """
     Context manager that allows opening a filename
     (str or pathlib.PurePath type is supported) and closes it on exit,
     (just like `open`), but does nothing for file-like objects.
     """
-    def __init__(self, filename, *args, **kwargs):
+    def __init__(
+        self,
+        filename: FileOrName,
+        *args: Any,
+        **kwargs: Any
+    ) -> None:
         if isinstance(filename, pathlib.PurePath):
             filename = str(filename)
         if isinstance(filename, str):
-            self.file_handler = open(filename, *args, **kwargs)
+            self.file_handler: AnyIO = open(filename, *args, **kwargs)
             self.closing = True
         elif isinstance(filename, io.IOBase):
-            self.file_handler = filename
+            self.file_handler = cast(AnyIO, filename)
             self.closing = False
         else:
             raise TypeError('Unsupported input type: %s' % type(filename))
 
-    def __enter__(self):
+    def __enter__(self) -> AnyIO:
         return self.file_handler
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: object,
+        exc_val: object,
+        exc_tb: object
+    ) -> None:
         if self.closing:
             self.file_handler.close()
-        return False
+        return
 
 
-def make_compat_bytes(in_str):
+def make_compat_bytes(in_str: str) -> bytes:
     "Converts to bytes, encoding to unicode."
     assert isinstance(in_str, str), str(type(in_str))
     return in_str.encode()
 
 
-def make_compat_str(o):
+def make_compat_str(o: object) -> str:
     """Converts everything to string, if bytes guessing the encoding."""
     if isinstance(o, bytes):
         enc = chardet.detect(o)
@@ -55,7 +75,7 @@ def make_compat_str(o):
         return str(o)
 
 
-def shorten_str(s, size):
+def shorten_str(s: str, size: int) -> str:
     if size < 7:
         return s[:size]
     if len(s) > size:
@@ -65,8 +85,11 @@ def shorten_str(s, size):
         return s
 
 
-def compatible_encode_method(bytesorstring, encoding='utf-8',
-                             erraction='ignore'):
+def compatible_encode_method(
+    bytesorstring: Union[bytes, str],
+    encoding: str = 'utf-8',
+    erraction: str = 'ignore'
+) -> str:
     """When Py2 str.encode is called, it often means bytes.encode in Py3.
 
      This does either.
@@ -77,7 +100,7 @@ def compatible_encode_method(bytesorstring, encoding='utf-8',
     return bytesorstring.decode(encoding, erraction)
 
 
-def paeth_predictor(left, above, upper_left):
+def paeth_predictor(left: int, above: int, upper_left: int) -> int:
     # From http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
     # Initial estimate
     p = left + above - upper_left
@@ -95,7 +118,13 @@ def paeth_predictor(left, above, upper_left):
         return upper_left
 
 
-def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
+def apply_png_predictor(
+    pred: int,
+    colors: int,
+    columns: int,
+    bitspercomponent: int,
+    data: bytes
+) -> bytes:
     """Reverse the effect of the PNG predictor
 
     Documentation: http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
@@ -190,11 +219,20 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     return buf
 
 
+Point = Tuple[float, float]
+Rect = Tuple[float, float, float, float]
+Matrix = Tuple[float, float, float, float, float, float]
+PathSegment = Union[
+    Tuple[str],                                             # Literal['h']
+    Tuple[str, float, float],                               # Literal['m', 'l']
+    Tuple[str, float, float, float, float],                 # Literal['v', 'y']
+    Tuple[str, float, float, float, float, float, float]]   # Literal['c']
+
 #  Matrix operations
-MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
+MATRIX_IDENTITY: Matrix = (1, 0, 0, 1, 0, 0)
 
 
-def mult_matrix(m1, m0):
+def mult_matrix(m1: Matrix, m0: Matrix) -> Matrix:
     (a1, b1, c1, d1, e1, f1) = m1
     (a0, b0, c0, d0, e0, f0) = m0
     """Returns the multiplication of two matrices."""
@@ -203,21 +241,21 @@ def mult_matrix(m1, m0):
             a0 * e1 + c0 * f1 + e0, b0 * e1 + d0 * f1 + f0)
 
 
-def translate_matrix(m, v):
+def translate_matrix(m: Matrix, v: Point) -> Matrix:
     """Translates a matrix by (x, y)."""
     (a, b, c, d, e, f) = m
     (x, y) = v
     return a, b, c, d, x * a + y * c + e, x * b + y * d + f
 
 
-def apply_matrix_pt(m, v):
+def apply_matrix_pt(m: Matrix, v: Point) -> Point:
     (a, b, c, d, e, f) = m
     (x, y) = v
     """Applies a matrix to a point."""
     return a * x + c * y + e, b * x + d * y + f
 
 
-def apply_matrix_norm(m, v):
+def apply_matrix_norm(m: Matrix, v: Point) -> Point:
     """Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))"""
     (a, b, c, d, e, f) = m
     (p, q) = v
@@ -226,11 +264,14 @@ def apply_matrix_norm(m, v):
 
 #  Utility functions
 
-def isnumber(x):
+def isnumber(x: object) -> bool:
     return isinstance(x, (int, float))
 
 
-def uniq(objs):
+_T = TypeVar('_T')
+
+
+def uniq(objs: Iterable[_T]) -> Iterator[_T]:
     """Eliminates duplicated elements."""
     done = set()
     for obj in objs:
@@ -241,7 +282,10 @@ def uniq(objs):
     return
 
 
-def fsplit(pred, objs):
+def fsplit(
+    pred: Callable[[_T], bool],
+    objs: Iterable[_T]
+) -> Tuple[List[_T], List[_T]]:
     """Split a list into two classes according to the predicate."""
     t = []
     f = []
@@ -253,14 +297,15 @@ def fsplit(pred, objs):
     return t, f
 
 
-def drange(v0, v1, d):
+def drange(v0: float, v1: float, d: int) -> range:
     """Returns a discrete range."""
     return range(int(v0) // d, int(v1 + d) // d)
 
 
-def get_bound(pts):
+def get_bound(pts: Iterable[Point]) -> Rect:
     """Compute a minimal rectangle that covers all the points."""
-    (x0, y0, x1, y1) = (INF, INF, -INF, -INF)
+    limit: Rect = (INF, INF, -INF, -INF)
+    (x0, y0, x1, y1) = limit
     for (x, y) in pts:
         x0 = min(x0, x)
         y0 = min(y0, y)
@@ -269,7 +314,11 @@ def get_bound(pts):
     return x0, y0, x1, y1
 
 
-def pick(seq, func, maxobj=None):
+def pick(
+    seq: Iterable[_T],
+    func: Callable[[_T], float],
+    maxobj: Optional[_T] = None
+) -> Optional[_T]:
     """Picks the object obj where func(obj) has the highest value."""
     maxscore = None
     for obj in seq:
@@ -279,7 +328,7 @@ def pick(seq, func, maxobj=None):
     return maxobj
 
 
-def choplist(n, seq):
+def choplist(n: int, seq: Iterable[_T]) -> Iterator[Tuple[_T, ...]]:
     """Groups every n elements of the list."""
     r = []
     for x in seq:
@@ -290,7 +339,7 @@ def choplist(n, seq):
     return
 
 
-def nunpack(s, default=0):
+def nunpack(s: bytes, default: int = 0) -> int:
     """Unpacks 1 to 4 or 8 byte integers (big endian)."""
     length = len(s)
     if not length:
@@ -298,13 +347,13 @@ def nunpack(s, default=0):
     elif length == 1:
         return ord(s)
     elif length == 2:
-        return struct.unpack('>H', s)[0]
+        return cast(int, struct.unpack('>H', s)[0])
     elif length == 3:
-        return struct.unpack('>L', b'\x00' + s)[0]
+        return cast(int, struct.unpack('>L', b'\x00' + s)[0])
     elif length == 4:
-        return struct.unpack('>L', s)[0]
+        return cast(int, struct.unpack('>L', s)[0])
     elif length == 8:
-        return struct.unpack('>Q', s)[0]
+        return cast(int, struct.unpack('>Q', s)[0])
     else:
         raise TypeError('invalid length: %d' % length)
 
@@ -345,7 +394,7 @@ PDFDocEncoding = ''.join(chr(x) for x in (
 ))
 
 
-def decode_text(s):
+def decode_text(s: bytes) -> str:
     """Decodes a PDFDocEncoding string to Unicode."""
     if s.startswith(b'\xfe\xff'):
         return str(s[2:], 'utf-16be', 'ignore')
@@ -353,25 +402,25 @@ def decode_text(s):
         return ''.join(PDFDocEncoding[c] for c in s)
 
 
-def enc(x):
+def enc(x: str) -> str:
     """Encodes a string for SGML/XML/HTML"""
     if isinstance(x, bytes):
         return ''
     return escape(x)
 
 
-def bbox2str(bbox):
+def bbox2str(bbox: Rect) -> str:
     (x0, y0, x1, y1) = bbox
     return '{:.3f},{:.3f},{:.3f},{:.3f}'.format(x0, y0, x1, y1)
 
 
-def matrix2str(m):
+def matrix2str(m: Matrix) -> str:
     (a, b, c, d, e, f) = m
     return '[{:.2f},{:.2f},{:.2f},{:.2f}, ({:.2f},{:.2f})]'\
         .format(a, b, c, d, e, f)
 
 
-def vecBetweenBoxes(obj1, obj2):
+def vecBetweenBoxes(obj1: "LTComponent", obj2: "LTComponent") -> Point:
     """A distance function between two TextBoxes.
 
     Consider the bounding rectangle for obj1 and obj2.
@@ -397,7 +446,10 @@ def vecBetweenBoxes(obj1, obj2):
         return max(0, iw), max(0, ih)
 
 
-class Plane:
+LTComponentT = TypeVar('LTComponentT', bound='LTComponent')
+
+
+class Plane(Generic[LTComponentT]):
     """A set-like data structure for objects placed on a plane.
 
     Can efficiently find objects in a certain rectangular area.
@@ -405,26 +457,26 @@ class Plane:
     which is sorted by its x or y coordinate.
     """
 
-    def __init__(self, bbox, gridsize=50):
-        self._seq = []  # preserve the object order.
-        self._objs = set()
-        self._grid = {}
+    def __init__(self, bbox: Rect, gridsize: int = 50) -> None:
+        self._seq: List[LTComponentT] = []  # preserve the object order.
+        self._objs: Set[LTComponentT] = set()
+        self._grid: Dict[Point, List[LTComponentT]] = {}
         self.gridsize = gridsize
         (self.x0, self.y0, self.x1, self.y1) = bbox
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<Plane objs=%r>' % list(self)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[LTComponentT]:
         return (obj for obj in self._seq if obj in self._objs)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._objs)
 
-    def __contains__(self, obj):
+    def __contains__(self, obj: object) -> bool:
         return obj in self._objs
 
-    def _getrange(self, bbox):
+    def _getrange(self, bbox: Rect) -> Iterator[Point]:
         (x0, y0, x1, y1) = bbox
         if x1 <= self.x0 or self.x1 <= x0 or y1 <= self.y0 or self.y1 <= y0:
             return
@@ -436,15 +488,15 @@ class Plane:
             for grid_x in drange(x0, x1, self.gridsize):
                 yield (grid_x, grid_y)
 
-    def extend(self, objs):
+    def extend(self, objs: Iterable[LTComponentT]) -> None:
         for obj in objs:
             self.add(obj)
 
-    def add(self, obj):
+    def add(self, obj: LTComponentT) -> None:
         """place an object."""
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
             if k not in self._grid:
-                r = []
+                r: List[LTComponentT] = []
                 self._grid[k] = r
             else:
                 r = self._grid[k]
@@ -452,7 +504,7 @@ class Plane:
         self._seq.append(obj)
         self._objs.add(obj)
 
-    def remove(self, obj):
+    def remove(self, obj: LTComponentT) -> None:
         """displace an object."""
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
             try:
@@ -461,7 +513,7 @@ class Plane:
                 pass
         self._objs.remove(obj)
 
-    def find(self, bbox):
+    def find(self, bbox: Rect) -> Iterator[LTComponentT]:
         """finds objects that are in a certain area."""
         (x0, y0, x1, y1) = bbox
         done = set()

@@ -6,8 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Support for identity cmap's ([#626](https://github.com/pdfminer/pdfminer.six/pull/626))
+
+### Fixed
+- Hande decompression error due to CRC checksum error ([#637](https://github.com/pdfminer/pdfminer.six/pull/637))
+
+## [20211012]
+
+### Added
 - Add support for PDF 2.0 (ISO 32000-2) AES-256 encryption ([#614](https://github.com/pdfminer/pdfminer.six/pull/614))
 - Support for Paeth PNG filter compression (predictor value = 4) ([#537](https://github.com/pdfminer/pdfminer.six/pull/537))
+- Type annotations ([#661](https://github.com/pdfminer/pdfminer.six/pull/661))
 
 ### Fixed
 - `KeyError` when `'Encrypt'` but not `'ID'` present in `trailer` ([#594](https://github.com/pdfminer/pdfminer.six/pull/594))
@@ -28,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
 - Support for non-standard output streams that are not binary ([#523](https://github.com/pdfminer/pdfminer.six/pull/523))
 - Most uses of warnings.warn in favour of logging.Logger.warning, following ([Python 'official' guidance](https://stackoverflow.com/a/14762106/2595465))
+- Dependency on typing-extensions introduced by [#661](https://github.com/pdfminer/pdfminer.six/pull/661) ([#677](https://github.com/pdfminer/pdfminer.six/pull/677))
 
 ## [20201018]
 

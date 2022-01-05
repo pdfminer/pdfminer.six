@@ -4,6 +4,8 @@ import logging
 import os.path
 import re
 import sys
+from typing import Any, Container, Dict, Iterable, List, Optional, TextIO, \
+    Union, cast
 from argparse import ArgumentParser
 
 import pdfminer
@@ -21,13 +23,15 @@ log = logging.getLogger(__name__)
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
 
 
-def escape(s):
+def escape(s: Union[str, bytes]) -> str:
     if isinstance(s, bytes):
-        s = str(s, 'latin-1')
-    return ESC_PAT.sub(lambda m: '&#%d;' % ord(m.group(0)), s)
+        us = str(s, 'latin-1')
+    else:
+        us = s
+    return ESC_PAT.sub(lambda m: '&#%d;' % ord(m.group(0)), us)
 
 
-def dumpxml(out, obj, codec=None):
+def dumpxml(out: TextIO, obj: object, codec: Optional[str] = None) -> None:
     if obj is None:
         out.write('<null />')
         return
@@ -50,15 +54,17 @@ def dumpxml(out, obj, codec=None):
         out.write('</list>')
         return
 
-    if isinstance(obj, ((str,), bytes)):
+    if isinstance(obj, (str, bytes)):
         out.write('<string size="%d">%s</string>' % (len(obj), escape(obj)))
         return
 
     if isinstance(obj, PDFStream):
         if codec == 'raw':
-            out.write(obj.get_rawdata())
+            # Bug: writing bytes to text I/O. This will raise TypeError.
+            out.write(obj.get_rawdata())  # type: ignore [arg-type]
         elif codec == 'binary':
-            out.write(obj.get_data())
+            # Bug: writing bytes to text I/O. This will raise TypeError.
+            out.write(obj.get_data())  # type: ignore [arg-type]
         else:
             out.write('<stream>\n<props>\n')
             dumpxml(out, obj.attrs)
@@ -75,11 +81,15 @@ def dumpxml(out, obj, codec=None):
         return
 
     if isinstance(obj, PSKeyword):
-        out.write('<keyword>%s</keyword>' % obj.name)
+        # Likely bug: obj.name is bytes, not str
+        out.write('<keyword>%s</keyword>'
+                  % obj.name)  # type: ignore [str-bytes-safe]
         return
 
     if isinstance(obj, PSLiteral):
-        out.write('<literal>%s</literal>' % obj.name)
+        # Likely bug: obj.name may be bytes, not str
+        out.write('<literal>%s</literal>'
+                  % obj.name)  # type: ignore [str-bytes-safe]
         return
 
     if isnumber(obj):
@@ -89,11 +99,15 @@ def dumpxml(out, obj, codec=None):
     raise TypeError(obj)
 
 
-def dumptrailers(out, doc, show_fallback_xref=False):
+def dumptrailers(
+    out: TextIO,
+    doc: PDFDocument,
+    show_fallback_xref: bool = False
+) -> None:
     for xref in doc.xrefs:
         if not isinstance(xref, PDFXRefFallback) or show_fallback_xref:
             out.write('<trailer>\n')
-            dumpxml(out, xref.trailer)
+            dumpxml(out, xref.get_trailer())
             out.write('\n</trailer>\n\n')
     no_xrefs = all(isinstance(xref, PDFXRefFallback) for xref in doc.xrefs)
     if no_xrefs and not show_fallback_xref:
@@ -104,7 +118,12 @@ def dumptrailers(out, doc, show_fallback_xref=False):
     return
 
 
-def dumpallobjs(out, doc, codec=None, show_fallback_xref=False):
+def dumpallobjs(
+    out: TextIO,
+    doc: PDFDocument,
+    codec: Optional[str] = None,
+    show_fallback_xref: bool = False
+) -> None:
     visited = set()
     out.write('<pdf>')
     for xref in doc.xrefs:
@@ -126,15 +145,23 @@ def dumpallobjs(out, doc, codec=None, show_fallback_xref=False):
     return
 
 
-def dumpoutline(outfp, fname, objids, pagenos, password='',
-                dumpall=False, codec=None, extractdir=None):
+def dumpoutline(
+    outfp: TextIO,
+    fname: str,
+    objids: Any,
+    pagenos: Container[int],
+    password: str = '',
+    dumpall: bool = False,
+    codec: Optional[str] = None,
+    extractdir: Optional[str] = None
+) -> None:
     fp = open(fname, 'rb')
     parser = PDFParser(fp)
     doc = PDFDocument(parser, password)
     pages = {page.pageid: pageno for (pageno, page)
              in enumerate(PDFPage.create_pages(doc), 1)}
 
-    def resolve_dest(dest):
+    def resolve_dest(dest: object) -> Any:
         if isinstance(dest, (str, bytes)):
             dest = resolve1(doc.get_dest(dest))
         elif isinstance(dest, PSLiteral):
@@ -182,10 +209,10 @@ LITERAL_FILESPEC = LIT('Filespec')
 LITERAL_EMBEDDEDFILE = LIT('EmbeddedFile')
 
 
-def extractembedded(outfp, fname, objids, pagenos, password='',
-                    dumpall=False, codec=None, extractdir=None):
-    def extract1(objid, obj):
-        filename = os.path.basename(obj.get('UF') or obj.get('F').decode())
+def extractembedded(fname: str, password: str, extractdir: str) -> None:
+    def extract1(objid: int, obj: Dict[str, Any]) -> None:
+        filename = os.path.basename(obj.get('UF') or
+                                    cast(bytes, obj.get('F')).decode())
         fileref = obj['EF'].get('UF') or obj['EF'].get('F')
         fileobj = doc.getobj(fileref.objid)
         if not isinstance(fileobj, PDFStream):
@@ -220,8 +247,17 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
     return
 
 
-def dumppdf(outfp, fname, objids, pagenos, password='', dumpall=False,
-            codec=None, extractdir=None, show_fallback_xref=False):
+def dumppdf(
+    outfp: TextIO,
+    fname: str,
+    objids: Iterable[int],
+    pagenos: Container[int],
+    password: str = '',
+    dumpall: bool = False,
+    codec: Optional[str] = None,
+    extractdir: Optional[str] = None,
+    show_fallback_xref: bool = False
+) -> None:
     fp = open(fname, 'rb')
     parser = PDFParser(fp)
     doc = PDFDocument(parser, password)
@@ -248,7 +284,7 @@ def dumppdf(outfp, fname, objids, pagenos, password='', dumpall=False,
     return
 
 
-def create_parser():
+def create_parser() -> ArgumentParser:
     parser = ArgumentParser(description=__doc__, add_help=True)
     parser.add_argument('files', type=str, default=None, nargs='+',
                         help='One or more paths to PDF files.')
@@ -312,7 +348,7 @@ def create_parser():
     return parser
 
 
-def main(argv=None):
+def main(argv: Optional[List[str]] = None) -> None:
     parser = create_parser()
     args = parser.parse_args(args=argv)
 
@@ -339,7 +375,7 @@ def main(argv=None):
     password = args.password
 
     if args.raw_stream:
-        codec = 'raw'
+        codec: Optional[str] = 'raw'
     elif args.binary_stream:
         codec = 'binary'
     elif args.text_stream:
@@ -355,8 +391,7 @@ def main(argv=None):
             )
         elif args.extract_embedded:
             extractembedded(
-                outfp, fname, objids, pagenos, password=password,
-                dumpall=args.all, codec=codec, extractdir=args.extract_embedded
+                fname, password=password, extractdir=args.extract_embedded
             )
         else:
             dumppdf(
@@ -369,4 +404,4 @@ def main(argv=None):
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()

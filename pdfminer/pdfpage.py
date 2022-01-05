@@ -1,4 +1,6 @@
 import logging
+from pdfminer.utils import Rect
+from typing import BinaryIO, Container, Dict, Iterator, List, Optional, Tuple
 from . import settings
 from .psparser import LIT
 from .pdftypes import PDFObjectNotFound
@@ -30,7 +32,7 @@ class PDFPage:
       attrs: a dictionary of page attributes.
       contents: a list of PDFStream objects that represents the page content.
       lastmod: the last modified time of the page.
-      resources: a list of resources used by the page.
+      resources: a dictionary of resources used by the page.
       mediabox: the physical size of the page.
       cropbox: the crop rectangle of the page.
       rotate: the page rotation (in degree).
@@ -38,7 +40,12 @@ class PDFPage:
       beads: a chain that represents natural reading order.
     """
 
-    def __init__(self, doc, pageid, attrs):
+    def __init__(
+        self,
+        doc: PDFDocument,
+        pageid: object,
+        attrs: object
+    ) -> None:
         """Initialize a page object.
 
         doc: a PDFDocument object.
@@ -49,10 +56,11 @@ class PDFPage:
         self.pageid = pageid
         self.attrs = dict_value(attrs)
         self.lastmod = resolve1(self.attrs.get('LastModified'))
-        self.resources = resolve1(self.attrs.get('Resources', dict()))
-        self.mediabox = resolve1(self.attrs['MediaBox'])
+        self.resources: Dict[object, object] = \
+            resolve1(self.attrs.get('Resources', dict()))
+        self.mediabox: Rect = resolve1(self.attrs['MediaBox'])
         if 'CropBox' in self.attrs:
-            self.cropbox = resolve1(self.attrs['CropBox'])
+            self.cropbox: Rect = resolve1(self.attrs['CropBox'])
         else:
             self.cropbox = self.mediabox
         self.rotate = (int_value(self.attrs.get('Rotate', 0))+360) % 360
@@ -64,23 +72,28 @@ class PDFPage:
             contents = []
         if not isinstance(contents, list):
             contents = [contents]
-        self.contents = contents
+        self.contents: List[object] = contents
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<PDFPage: Resources={!r}, MediaBox={!r}>'\
             .format(self.resources, self.mediabox)
 
     INHERITABLE_ATTRS = {'Resources', 'MediaBox', 'CropBox', 'Rotate'}
 
     @classmethod
-    def create_pages(cls, document):
-        def search(obj, parent):
+    def create_pages(cls, document: PDFDocument) -> Iterator["PDFPage"]:
+        def search(
+            obj: object,
+            parent: Dict[str, object]
+        ) -> Iterator[Tuple[int, Dict[object, Dict[object, object]]]]:
             if isinstance(obj, int):
                 objid = obj
                 tree = dict_value(document.getobj(objid)).copy()
             else:
-                objid = obj.objid
+                # This looks broken. obj.objid means obj could be either
+                # PDFObjRef or PDFStream, but neither is valid for dict_value.
+                objid = obj.objid  # type: ignore[attr-defined]
                 tree = dict_value(obj).copy()
             for (k, v) in parent.items():
                 if k in cls.INHERITABLE_ATTRS and k not in tree:
@@ -117,23 +130,15 @@ class PDFPage:
         return
 
     @classmethod
-    def get_pages(cls, fp,
-                  pagenos=None, maxpages=0, password='',
-                  caching=True, check_extractable=False):
-        '''Build and return page objects from a PDF file
-        :param fp: Source for a PDF
-        :type fp: Seekable stream
-        :param pagenos: if present, only these pages [0-origin]
-        :type pagenos: list(int) OR None
-        :param maxpages: If present, maximum number of pages to process
-        :type maximum: int
-        :param password: password for PDF document
-        :type password: str
-        :param caching: passed to PDFDocument, q.v.
-        :type caching: bool
-        :param check_extractable: if true and the document does not allow
-                  extraction, raise PDFTextExtractionNotAllowed exception
-        :type check_extractable: bool'''
+    def get_pages(
+        cls,
+        fp: BinaryIO,
+        pagenos: Optional[Container[int]] = None,
+        maxpages: int = 0,
+        password: str = '',
+        caching: bool = True,
+        check_extractable: bool = False
+    ) -> Iterator["PDFPage"]:
         # Create a PDF parser object associated with the file object.
         parser = PDFParser(fp)
         # Create a PDF document object that stores the document structure.
