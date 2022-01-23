@@ -30,7 +30,10 @@ test_strings = {
     "simple2.pdf": "\f",
     "simple3.pdf": "Hello\n\nHello\nあ\nい\nう\nえ\nお\nあ\nい\nう\nえ\nお\n"
                    "World\n\nWorld\n\n\f",
-    "simple4.pdf": "Text1\nText2\nText3\n\n\f"
+    "simple4.pdf": "Text1\nText2\nText3\n\n\f",
+    "contrib/issue_566_test_1.pdf": "ISSUE Date：2019-4-25 Buyer：黎荣",
+    "contrib/issue_566_test_2.pdf": "甲方：中国饮料有限公司（盖章）",
+    "contrib/issue-625-identity-cmap.pdf": "Termin płatności: 2021-05-03",
 }
 
 
@@ -79,6 +82,22 @@ class TestExtractText(unittest.TestCase):
         test_file = "simple4.pdf"
         s = run_with_file(test_file)
         self.assertEqual(s, test_strings[test_file])
+
+    def test_issue_566_cmap_bytes(self):
+        test_file = "contrib/issue_566_test_1.pdf"
+        s = run_with_file(test_file)
+        self.assertEqual(s.strip(), test_strings[test_file])
+
+    def test_issue_566_cid_range(self):
+        test_file = "contrib/issue_566_test_2.pdf"
+        s = run_with_file(test_file)
+        self.assertEqual(s.strip(), test_strings[test_file])
+
+    def test_issue_625_identity_cmap(self):
+        test_file = "contrib/issue-625-identity-cmap.pdf"
+        lines = run_with_file(test_file).splitlines()
+
+        self.assertEqual(lines[6], test_strings[test_file])
 
 
 class TestExtractPages(unittest.TestCase):

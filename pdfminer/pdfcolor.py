@@ -1,4 +1,5 @@
 import collections
+from typing import Dict
 from .psparser import LIT
 
 
@@ -9,17 +10,17 @@ LITERAL_DEVICE_CMYK = LIT('DeviceCMYK')
 
 class PDFColorSpace:
 
-    def __init__(self, name, ncomponents):
+    def __init__(self, name: str, ncomponents: int) -> None:
         self.name = name
         self.ncomponents = ncomponents
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<PDFColorSpace: %s, ncomponents=%d>' % \
                (self.name, self.ncomponents)
 
 
-PREDEFINED_COLORSPACE = collections.OrderedDict()
+PREDEFINED_COLORSPACE: Dict[str, PDFColorSpace] = collections.OrderedDict()
 
 for (name, n) in [
     ('DeviceGray', 1),  # default value first
