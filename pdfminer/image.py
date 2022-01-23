@@ -112,6 +112,13 @@ class ImageWriter:
             i.save(fp, 'JPEG2000')
         elif is_jbig2:
             input_stream = BytesIO()
+            global_streams = self.jbig2_global(image)
+            if len(global_streams) > 1:
+                msg = 'There should never be more than one JBIG2Globals ' \
+                      'associated with a JBIG2 embedded image'
+                raise ValueError(msg)
+            if len(global_streams) == 1:
+                input_stream.write(global_streams[0].get_data().rstrip(b'\n'))
             input_stream.write(image.stream.get_data())
             input_stream.seek(0)
             reader = JBIG2StreamReader(input_stream)
@@ -156,6 +163,15 @@ class ImageWriter:
                 is_jbig2 = True
                 break
         return is_jbig2
+
+    @staticmethod
+    def jbig2_global(image):
+        global_streams = []
+        filters = image.stream.get_filters()
+        for filter_name, params in filters:
+            if filter_name in LITERALS_JBIG2_DECODE:
+                global_streams.append(params['JBIG2Globals'].resolve())
+        return global_streams
 
     @staticmethod
     def _get_image_extension(
