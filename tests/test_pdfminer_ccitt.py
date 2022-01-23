@@ -155,15 +155,9 @@ class TestCCITTG4Parser():
         return
 
 
-class TestCCITTFaxDecoder():
-    def get_decoder(self, bits):
-        decoder = CCITTFaxDecoder(len(bits))
-        decoder._curline = [int(c) for c in bits]
-        decoder._reset_line()
-        return decoder
-
+class TestCCITTFaxDecoder:
     def test_b1(self):
-        parser = self.get_decoder('00000')
-        parser.output_line(0, b'0')
-        assert_equal(parser._buf, b'\x80')
+        decoder = CCITTFaxDecoder(5)
+        decoder.output_line(0, b'0')
+        assert_equal(decoder.close(), b'\x80')
         return
