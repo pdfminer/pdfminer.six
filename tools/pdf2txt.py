@@ -113,6 +113,11 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
         "--detect-vertical", "-V", default=False, action="store_true",
         help="If vertical text should be considered during layout analysis")
     la_param_group.add_argument(
+        "--line-overlap", type=float, default=la_params.line_overlap,
+        help='If two characters have more overlap than this they '
+             'are considered to be on the same line. The overlap is specified '
+             'relative to the minimum height of both characters.')
+    la_param_group.add_argument(
         "--char-margin", "-M", type=float, default=la_params.char_margin,
         help="If two characters are closer together than this margin they "
              "are considered to be part of the same line. The margin is "
