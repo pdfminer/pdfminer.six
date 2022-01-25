@@ -207,3 +207,6 @@ class TestBinaryDetector():
 
     def test_non_file_like_object_defaults_to_binary(self):
         assert_true(PDFConverter._is_binary_stream(object()))
+
+    def test_textiowrapper(self):
+        assert_false(PDFConverter._is_binary_stream(io.TextIOBase()))

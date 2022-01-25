@@ -1,6 +1,7 @@
 import os
 from shutil import rmtree
 from tempfile import mkdtemp
+import filecmp
 
 import tools.pdf2txt as pdf2txt
 from helpers import absolute_sample_path
@@ -96,6 +97,12 @@ class TestPdf2Txt():
     def test_encryption_aes256m(self):
         run('encryption/aes-256-m.pdf', '-P foo')
 
+    def test_encryption_aes256_r6_user(self):
+        run('encryption/aes-256-r6.pdf', '-P usersecret')
+
+    def test_encryption_aes256_r6_owner(self):
+        run('encryption/aes-256-r6.pdf', '-P ownersecret')
+
     def test_encryption_base(self):
         run('encryption/base.pdf', '-P foo')
 
@@ -138,9 +145,21 @@ class TestDumpImages:
 
         Feature test for: https://github.com/pdfminer/pdfminer.six/pull/46
         """
-        image_files = self.extract_images(
-            absolute_sample_path('../samples/contrib/pdf-with-jbig2.pdf'))
-        assert image_files[0].endswith('.jb2')
+        input_file = absolute_sample_path(
+            '../samples/contrib/pdf-with-jbig2.pdf')
+        output_dir = mkdtemp()
+        with TemporaryFilePath() as output_file_name:
+            commands = ['-o', output_file_name, '--output-dir',
+                        output_dir, input_file]
+            pdf2txt.main(commands)
+        image_files = os.listdir(output_dir)
+        try:
+            assert image_files[0].endswith('.jb2')
+            assert filecmp.cmp(output_dir + '/' + image_files[0],
+                               absolute_sample_path(
+                                   '../samples/contrib/XIPLAYER0.jb2'))
+        finally:
+            rmtree(output_dir)
 
     def test_contrib_matplotlib(self):
         """Test a pdf with Type3 font"""
