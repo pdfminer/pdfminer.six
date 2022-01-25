@@ -182,33 +182,33 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
     if parsed_args.no_laparams:
         parsed_args.laparams = None
     else:
-        kwargs = {}
-        for param in ("all_texts", "detect_vertical", "word_margin",
-                      "char_margin", "line_margin", "boxes_flow"):
-            kwargs[param] = getattr(parsed_args, param)
-        parsed_args.laparams = LAParams(**kwargs)
+        parsed_args.laparams = LAParams(
+            line_overlap=parsed_args.line_overlap,
+            char_margin=parsed_args.char_margin,
+            line_margin=parsed_args.line_margin,
+            word_margin=parsed_args.word_margin,
+            boxes_flow=parsed_args.boxes_flow,
+            detect_vertical=parsed_args.detect_vertical,
+            all_texts=parsed_args.all_texts,
+        )
+
+    if parsed_args.page_numbers:
+        parsed_args.page_numbers = {x-1 for x in parsed_args.page_numbers}
+
+    if parsed_args.pagenos:
+        parsed_args.page_numbers = {int(x)-1 for x in parsed_args.pagenos.split(",")}
+
+    if parsed_args.output_type == "text" and parsed_args.outfile != "-":
+        for override, alttype in OUTPUT_TYPES:
+            if parsed_args.outfile.endswith(override):
+                parsed_args.output_type = alttype
 
     return parsed_args
 
 
-# main
-
-
 def main(args: Optional[List[str]] = None) -> int:
-
-    A = parse_args(args)
-
-    if A.page_numbers:
-        A.page_numbers = {x-1 for x in A.page_numbers}
-    if A.pagenos:
-        A.page_numbers = {int(x)-1 for x in A.pagenos.split(",")}
-
-    if A.output_type == "text" and A.outfile != "-":
-        for override, alttype in OUTPUT_TYPES:
-            if A.outfile.endswith(override):
-                A.output_type = alttype
-
-    outfp = extract_text(**vars(A))
+    parsed_args = parse_args(args)
+    outfp = extract_text(**vars(parsed_args))
     outfp.close()
     return 0
 
