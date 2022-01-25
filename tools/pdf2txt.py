@@ -110,7 +110,8 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
         "--no-laparams", "-n", default=False, action="store_true",
         help="If layout analysis parameters should be ignored.")
     la_param_group.add_argument(
-        "--detect-vertical", "-V", default=False, action="store_true",
+        "--detect-vertical", "-V", default=la_params.detect_vertical,
+        action="store_true",
         help="If vertical text should be considered during layout analysis")
     la_param_group.add_argument(
         "--line-overlap", type=float, default=la_params.line_overlap,
@@ -144,7 +145,7 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
              "instead return text based on the position of the bottom left "
              "corner of the text box.")
     la_param_group.add_argument(
-        "--all-texts", "-A", default=False, action="store_true",
+        "--all-texts", "-A", default=la_params.all_texts, action="store_true",
         help="If layout analysis should be performed on text in figures.")
 
     output_params = parser.add_argument_group(
