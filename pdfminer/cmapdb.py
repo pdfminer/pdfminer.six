@@ -160,6 +160,13 @@ class UnicodeMap(CMapBase):
         return
 
 
+class IdentityUnicodeMap(UnicodeMap):
+    def get_unichr(self, cid: int) -> str:
+        """Interpret character id as unicode codepoint"""
+        log.debug('get_unichr: %r, %r', self, cid)
+        return chr(cid)
+
+
 class FileCMap(CMap):
 
     def add_code2cid(self, code: str, cid: int) -> None:

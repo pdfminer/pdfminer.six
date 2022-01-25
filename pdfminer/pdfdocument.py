@@ -40,7 +40,7 @@ class PDFEncryptionError(PDFException):
     pass
 
 
-class PDFPasswordIncorrect(PDFEncryptionError):
+class PDFEncryptionWarning(UserWarning):
     pass
 
 
