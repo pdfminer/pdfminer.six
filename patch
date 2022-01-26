@@ -1,0 +1,153 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 02dc4194..a928b70e 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+ - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
+ - Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
+ - Support for non-standard output streams that are not binary ([#523](https://github.com/pdfminer/pdfminer.six/pull/523))
++- Most uses of warnings.warn in favour of logging.Logger.warning, following ([Python 'official' guidance](https://stackoverflow.com/a/14762106/2595465))
+ - Dependency on typing-extensions introduced by [#661](https://github.com/pdfminer/pdfminer.six/pull/661) ([#677](https://github.com/pdfminer/pdfminer.six/pull/677))
+ 
+ ## [20201018]
+diff --git a/pdfminer/pdfdocument.py b/pdfminer/pdfdocument.py
+index cac09f28..835b6995 100644
+--- a/pdfminer/pdfdocument.py
++++ b/pdfminer/pdfdocument.py
+@@ -24,10 +24,6 @@ class PDFNoValidXRef(PDFSyntaxError):
+     pass
+ 
+ 
+-class PDFNoValidXRefWarning(SyntaxWarning):
+-    pass
+-
+-
+ class PDFNoOutlines(PDFException):
+     pass
+ 
+@@ -44,10 +40,6 @@ class PDFEncryptionWarning(UserWarning):
+     pass
+ 
+ 
+-class PDFTextExtractionNotAllowedWarning(UserWarning):
+-    pass
+-
+-
+ class PDFTextExtractionNotAllowed(PDFEncryptionError):
+     pass
+ 
+diff --git a/pdfminer/pdfpage.py b/pdfminer/pdfpage.py
+index 8380c239..e1eee81f 100644
+--- a/pdfminer/pdfpage.py
++++ b/pdfminer/pdfpage.py
+@@ -1,7 +1,6 @@
+ import logging
+ from pdfminer.utils import Rect
+ from typing import BinaryIO, Container, Dict, Iterator, List, Optional, Tuple
+-import warnings
+ from . import settings
+ from .psparser import LIT
+ from .pdftypes import PDFObjectNotFound
+@@ -11,7 +10,6 @@
+ from .pdftypes import dict_value
+ from .pdfparser import PDFParser
+ from .pdfdocument import PDFDocument, PDFTextExtractionNotAllowed
+-from .pdfdocument import PDFTextExtractionNotAllowedWarning
+ 
+ 
+ log = logging.getLogger(__name__)
+@@ -155,8 +153,9 @@ def get_pages(
+                 warning_msg = 'The PDF %r contains a metadata field '\
+                             'indicating that it should not allow '   \
+                             'text extraction. Ignoring this field '  \
+-                            'and proceeding.' % fp
+-                warnings.warn(warning_msg, PDFTextExtractionNotAllowedWarning)
++                            'and proceeding.  Use the check_extractable arg ' \
++                            'if you want to force an error in this case' % fp
++                log.warning(warning_msg)
+         # Process each page contained in the document.
+         for (pageno, page) in enumerate(cls.create_pages(doc)):
+             if pagenos and (pageno not in pagenos):
+diff --git a/tests/test_tools_dumppdf.py b/tests/test_tools_dumppdf.py
+index df1dc25e..c97b605d 100644
+--- a/tests/test_tools_dumppdf.py
++++ b/tests/test_tools_dumppdf.py
+@@ -1,8 +1,8 @@
+-import warnings
++import unittest
++import logging
+ from nose.tools import raises
+ from helpers import absolute_sample_path
+ from tempfilepath import TemporaryFilePath
+-from pdfminer.pdfdocument import PDFNoValidXRefWarning
+ from tools import dumppdf
+ 
+ 
+@@ -18,12 +18,13 @@ def run(filename, options=None):
+         dumppdf.main(s.split(' ')[1:])
+ 
+ 
+-class TestDumpPDF():
++class TestDumpPDF(unittest.TestCase):
+     def test_simple1(self):
+-        """dumppdf.py simple1.pdf raises a warning because it has no xref"""
+-        with warnings.catch_warnings(record=True) as ws:
++        """dumppdf.py simple1.pdf logs a warning because it has no xref"""
++        with self.assertLogs(None, level=logging.WARN) as cm:
+             run('simple1.pdf', '-t -a')
+-            assert any(w.category == PDFNoValidXRefWarning for w in ws)
++        assert(cm.output[0].startswith('WARNING:tools.dumppdf:'
++                                       'This PDF does not have an xref.'))
+ 
+     def test_simple2(self):
+         run('simple2.pdf', '-t -a')
+@@ -32,10 +33,11 @@ def test_jo(self):
+         run('jo.pdf', '-t -a')
+ 
+     def test_simple3(self):
+-        """dumppdf.py simple3.pdf raises a warning because it has no xref"""
+-        with warnings.catch_warnings(record=True) as ws:
++        """dumppdf.py simple3.pdf logs a warning because it has no xref"""
++        with self.assertLogs(None, level=logging.WARN) as cm:
+             run('simple3.pdf', '-t -a')
+-            assert any(w.category == PDFNoValidXRefWarning for w in ws)
++        assert(cm.output[0].startswith('WARNING:tools.dumppdf:'
++                                       'This PDF does not have an xref.'))
+ 
+     def test_2(self):
+         run('nonfree/dmca.pdf', '-t -a')
+diff --git a/tools/dumppdf.py b/tools/dumppdf.py
+index ffdf4241..b9d60dee 100755
+--- a/tools/dumppdf.py
++++ b/tools/dumppdf.py
+@@ -6,12 +6,10 @@
+ import sys
+ from typing import Any, Container, Dict, Iterable, List, Optional, TextIO, \
+     Union, cast
+-import warnings
+ from argparse import ArgumentParser
+ 
+ import pdfminer
+-from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback, \
+-    PDFNoValidXRefWarning
++from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback
+ from pdfminer.pdfpage import PDFPage
+ from pdfminer.pdfparser import PDFParser
+ from pdfminer.pdftypes import PDFObjectNotFound, PDFValueError
+@@ -20,6 +18,7 @@
+ from pdfminer.utils import isnumber
+ 
+ logging.basicConfig()
++log = logging.getLogger(__name__)
+ 
+ ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
+ 
+@@ -115,7 +114,7 @@ def dumptrailers(
+         msg = 'This PDF does not have an xref. Use --show-fallback-xref if ' \
+               'you want to display the content of a fallback xref that ' \
+               'contains all objects.'
+-        warnings.warn(msg, PDFNoValidXRefWarning)
++        log.warning(msg)
+     return
+ 
+ 
