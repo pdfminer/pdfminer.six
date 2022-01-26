@@ -25,6 +25,10 @@ class PDFNoValidXRef(PDFSyntaxError):
 
 
 class PDFNoValidXRefWarning(SyntaxWarning):
+    """Legacy warning for missing xref.
+
+    Not used anymore because warnings.warn is replaced by logger.Logger.warn.
+    """
     pass
 
 
@@ -41,10 +45,18 @@ class PDFEncryptionError(PDFException):
 
 
 class PDFEncryptionWarning(UserWarning):
+    """Legacy warning for failed decryption.
+
+    Not used anymore because warnings.warn is replaced by logger.Logger.warn.
+    """
     pass
 
 
 class PDFTextExtractionNotAllowedWarning(UserWarning):
+    """Legacy warning for PDF that does not allow extraction.
+
+    Not used anymore because warnings.warn is replaced by logger.Logger.warn.
+    """
     pass
 
 
