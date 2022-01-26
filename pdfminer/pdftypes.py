@@ -1,5 +1,4 @@
 import zlib
-import warnings
 import logging
 import io
 import sys
@@ -21,7 +20,7 @@ if TYPE_CHECKING:
     from .pdfdocument import PDFDocument
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 LITERAL_CRYPT = LIT('Crypt')
 
@@ -205,7 +204,7 @@ def dict_value(x: object) -> Dict[Any, Any]:
     x = resolve1(x)
     if not isinstance(x, dict):
         if settings.STRICT:
-            log.error('PDFTypeError : Dict required: %r', x)
+            logger.error('PDFTypeError : Dict required: %r', x)
             raise PDFTypeError('Dict required: %r' % x)
         return {}
     return x
@@ -237,9 +236,7 @@ def decompress_corrupted(data):
     except zlib.error:
         # Let the error propagates if we're not yet in the CRC checksum
         if i < len(data) - 3:
-            # Import here to prevent circualr import
-            from .pdfdocument import PDFEncryptionWarning
-            warnings.warn("Data-loss while decompressing corrupted data", PDFEncryptionWarning)
+            logger.warning("Data-loss while decompressing corrupted data")
     return result_str
 
 
