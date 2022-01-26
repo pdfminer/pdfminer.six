@@ -20,11 +20,7 @@ def run(filename, options=None):
 
 class TestDumpPDF(unittest.TestCase):
     def test_simple1(self):
-        """dumppdf.py simple1.pdf logs a warning because it has no xref"""
-        with self.assertLogs(None, level=logging.WARN) as cm:
-            run('simple1.pdf', '-t -a')
-        assert(cm.output[0].startswith('WARNING:tools.dumppdf:'
-                                       'This PDF does not have an xref.'))
+        run('simple1.pdf', '-t -a')
 
     def test_simple2(self):
         run('simple2.pdf', '-t -a')
@@ -33,11 +29,7 @@ class TestDumpPDF(unittest.TestCase):
         run('jo.pdf', '-t -a')
 
     def test_simple3(self):
-        """dumppdf.py simple3.pdf logs a warning because it has no xref"""
-        with self.assertLogs(None, level=logging.WARN) as cm:
-            run('simple3.pdf', '-t -a')
-        assert(cm.output[0].startswith('WARNING:tools.dumppdf:'
-                                       'This PDF does not have an xref.'))
+        run('simple3.pdf', '-t -a')
 
     def test_2(self):
         run('nonfree/dmca.pdf', '-t -a')
