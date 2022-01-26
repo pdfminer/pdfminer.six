@@ -153,8 +153,8 @@ class PDFPage:
                 warning_msg = 'The PDF %r contains a metadata field '\
                             'indicating that it should not allow '   \
                             'text extraction. Ignoring this field '  \
-                            'and proceeding.  Use the check_extractable arg ' \
-                            'if you want to force an error in this case' % fp
+                            'and proceeding. Use the check_extractable ' \
+                            'if you want to raise an error in this case' % fp
                 log.warning(warning_msg)
         # Process each page contained in the document.
         for (pageno, page) in enumerate(cls.create_pages(doc)):
