@@ -46,10 +46,10 @@ class TestPdf2Txt():
         run('nonfree/dmca.pdf')
 
     def test_nonfree_f1040nr(self):
-        run('nonfree/f1040nr.pdf')
+        run('nonfree/f1040nr.pdf', '-p 1')
 
     def test_nonfree_i1040nr(self):
-        run('nonfree/i1040nr.pdf')
+        run('nonfree/i1040nr.pdf', '-p 1')
 
     def test_nonfree_kampo(self):
         run('nonfree/kampo.pdf')
@@ -58,7 +58,7 @@ class TestPdf2Txt():
         run('nonfree/naacl06-shinyama.pdf')
 
     def test_nlp2004slides(self):
-        run('nonfree/nlp2004slides.pdf')
+        run('nonfree/nlp2004slides.pdf', '-p 1')
 
     def test_contrib_2b(self):
         run('contrib/2b.pdf', '-A -t xml')
@@ -116,11 +116,11 @@ class TestPdf2Txt():
 class TestDumpImages:
 
     @staticmethod
-    def extract_images(input_file):
+    def extract_images(input_file, *args):
         output_dir = mkdtemp()
         with TemporaryFilePath() as output_file_name:
             commands = ['-o', output_file_name, '--output-dir',
-                        output_dir, input_file]
+                        output_dir, input_file, *args]
             pdf2txt.main(commands)
         image_files = os.listdir(output_dir)
         rmtree(output_dir)
@@ -132,8 +132,8 @@ class TestDumpImages:
         Regression test for:
         https://github.com/pdfminer/pdfminer.six/issues/131
         """
-        image_files = self.extract_images(
-            absolute_sample_path('../samples/nonfree/dmca.pdf'))
+        filepath = absolute_sample_path('../samples/nonfree/dmca.pdf')
+        image_files = self.extract_images(filepath, '-p', '1')
         assert image_files[0].endswith('bmp')
 
     def test_nonfree_175(self):
