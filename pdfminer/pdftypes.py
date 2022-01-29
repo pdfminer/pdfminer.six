@@ -219,7 +219,7 @@ def stream_value(x: object) -> "PDFStream":
     return x
 
 
-def decompress_corrupted(data):
+def decompress_corrupted(data: bytes) -> bytes:
     """Called on some data that can't be properly decoded because of CRC checksum
     error. Attempt to decode it skipping the CRC.
     """

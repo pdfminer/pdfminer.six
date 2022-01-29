@@ -1,5 +1,4 @@
 import unittest
-import logging
 from nose.tools import raises
 from helpers import absolute_sample_path
 from tempfilepath import TemporaryFilePath

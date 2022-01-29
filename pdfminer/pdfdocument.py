@@ -44,6 +44,10 @@ class PDFEncryptionError(PDFException):
     pass
 
 
+class PDFPasswordIncorrect(PDFEncryptionError):
+    pass
+
+
 class PDFEncryptionWarning(UserWarning):
     """Legacy warning for failed decryption.
 

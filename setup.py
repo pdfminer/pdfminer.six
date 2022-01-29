@@ -1,6 +1,10 @@
+import sys
+from pathlib import Path
+
 from setuptools import setup
 from os import path
 
+sys.path.append(str(Path(__file__).parent))
 import pdfminer as package
 
 
