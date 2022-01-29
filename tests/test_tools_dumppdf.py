@@ -1,5 +1,7 @@
 import unittest
-from nose.tools import raises
+
+import pytest
+
 from helpers import absolute_sample_path
 from tempfilepath import TemporaryFilePath
 from tools import dumppdf
@@ -45,12 +47,12 @@ class TestDumpPDF(unittest.TestCase):
     def test_6(self):
         run('nonfree/naacl06-shinyama.pdf', '-t -a')
 
-    @raises(TypeError)
     def test_simple1_raw(self):
         """Known issue: crash in dumpxml writing binary to text stream."""
-        run('simple1.pdf', '-r -a')
+        with pytest.raises(TypeError):
+            run('simple1.pdf', '-r -a')
 
-    @raises(TypeError)
     def test_simple1_binary(self):
         """Known issue: crash in dumpxml writing binary to text stream."""
-        run('simple1.pdf', '-b -a')
+        with pytest.raises(TypeError):
+            run('simple1.pdf', '-b -a')

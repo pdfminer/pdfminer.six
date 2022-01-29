@@ -21,7 +21,7 @@ setup(
         'cryptography',
     ],
     extras_require={
-        "dev": ["pytest", "nose", "nox", "mypy == 0.910"],
+        "dev": ["pytest", "nox", "mypy == 0.931"],
         "docs": ["sphinx", "sphinx-argparse"],
     },
     description='PDF parser and analyzer',

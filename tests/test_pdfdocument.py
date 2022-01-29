@@ -1,4 +1,4 @@
-from nose.tools import assert_equal, raises
+import pytest
 
 from helpers import absolute_sample_path
 from pdfminer.pdfdocument import PDFDocument
@@ -8,12 +8,12 @@ from pdfminer.pdftypes import PDFObjectNotFound
 
 class TestPdfDocument(object):
 
-    @raises(PDFObjectNotFound)
     def test_get_zero_objid_raises_pdfobjectnotfound(self):
         with open(absolute_sample_path('simple1.pdf'), 'rb') as in_file:
             parser = PDFParser(in_file)
             doc = PDFDocument(parser)
-            doc.getobj(0)
+            with pytest.raises(PDFObjectNotFound):
+                doc.getobj(0)
 
     def test_encrypted_no_id(self):
         # Some documents may be encrypted but not have an /ID key in
@@ -23,5 +23,4 @@ class TestPdfDocument(object):
         with open(path, 'rb') as fp:
             parser = PDFParser(fp)
             doc = PDFDocument(parser)
-            assert_equal(doc.info,
-                         [{'Producer': b'European Patent Office'}])
+            assert doc.info == [{'Producer': b'European Patent Office'}]
