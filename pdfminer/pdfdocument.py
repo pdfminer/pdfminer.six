@@ -11,13 +11,14 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from . import settings
 from .arcfour import Arcfour
+from .data_structures import NumberTree
 from .pdfparser import PDFSyntaxError, PDFParser, PDFStreamParser
 from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream,\
     PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
     uint_value, dict_value, stream_value
 from .psparser import PSEOF, literal_name, LIT, KWD
-from .utils import (choplist, decode_text, format_int_alpha, format_int_roman,
-                    nunpack)
+from .utils import choplist, decode_text, nunpack, format_int_roman, \
+    format_int_alpha
 
 log = logging.getLogger(__name__)
 
@@ -913,86 +914,12 @@ class PDFDocument:
         assert self.catalog is not None
 
         try:
-            labels_tree = dict_value(self.catalog['PageLabels'])
+            page_label_tree = NumberTree(self.catalog['PageLabels'])
         except (PDFTypeError, KeyError):
             raise PDFNoPageLabels
 
-        def walk_number_tree(
-            td: Dict[Any, Any]
-        ) -> Iterator[Tuple[int, Dict[Any, Any]]]:
-            """
-            Walk number tree node dictionary yielding (page index, dict) pairs.
-
-            See PDF spec, section 3.8.5.
-            """
-            if 'Nums' in td:  # Leaf node
-                objs = list_value(td['Nums'])
-                for (k, v) in choplist(2, objs):
-                    yield int_value(k), dict_value(v)
-
-            if 'Kids' in td:  # Intermediate node
-                for child_ref in list_value(td['Kids']):
-                    yield from walk_number_tree(dict_value(child_ref))
-
-        # Extract and sanity-check ranges
-        ranges = list(walk_number_tree(labels_tree))
-
-        # The tree should be sorted
-        if settings.STRICT:
-            if not all(a[0] <= b[0] for a, b in zip(ranges, ranges[1:])):
-                raise PDFSyntaxError('PageLabels are out of order')
-        else:
-            ranges.sort(key=lambda t: t[0])
-
-        # The tree must begin with page index 0
-        if len(ranges) == 0 or ranges[0][0] != 0:
-            if settings.STRICT:
-                raise PDFSyntaxError('PageLabels is missing page index 0')
-
-            # Try to cope, by assuming empty labels for the initial pages
-            ranges.insert(0, (0, {}))
-
-        def emit_labels(
-            ranges: List[Tuple[int, Dict[Any, Any]]]
-        ) -> Iterator[str]:
-            """
-            Walk a list of ranges and label dicts, yielding label strings.
-            """
-            for (i, (range_start, label_dict)) in enumerate(ranges):
-                style = label_dict.get('S')
-                prefix = decode_text(str_value(label_dict.get('P', b'')))
-                first = int_value(label_dict.get('St', 1))
-
-                def mkrange(limit: int) -> range:
-                    "Construct a suitable range for the values to format."
-                    return range(first, first + limit - range_start)
-
-                if i + 1 == len(ranges):
-                    # This is the last specified range. It continues until
-                    # the end of the document.
-                    values: Iterable[int] = itertools.count(first)
-                else:
-                    values = mkrange(ranges[i + 1][0])
-
-                for value in values:
-                    if style is None:
-                        label = ''
-                    elif style is LIT('D'):  # Decimal arabic numerals
-                        label = str(value)
-                    elif style is LIT('R'):  # Uppercase roman numerals
-                        label = format_int_roman(value).upper()
-                    elif style is LIT('r'):  # Lowercase roman numerals
-                        label = format_int_roman(value)
-                    elif style is LIT('A'):  # Uppercase letters A-Z, AA-ZZ...
-                        label = format_int_alpha(value).upper()
-                    elif style is LIT('a'):  # Lowercase letters a-z, aa-zz...
-                        label = format_int_alpha(value)
-                    else:
-                        log.warning('Unknown page label style: %r', style)
-                        label = ''
-                    yield prefix + label
-
-        return emit_labels(ranges)
+        page_labels = PageLabels(page_label_tree)
+        return page_labels.iter()
 
     def lookup_name(
         self,
@@ -1093,3 +1020,62 @@ class PDFDocument:
             pos = int_value(trailer['Prev'])
             self.read_xref_from(parser, pos, xrefs)
         return
+
+
+class PageLabels:
+    """PageLabels from the document catalog.
+
+    See Section 8.3.1 in the PDF Reference.
+    """
+    def __init__(self, obj: NumberTree):
+        self.obj = obj
+
+    def iter(self) -> Iterator[str]:
+        ranges = list(self.obj.items())
+
+        # The tree must begin with page index 0
+        if len(ranges) == 0 or ranges[0][0] != 0:
+            if settings.STRICT:
+                raise PDFSyntaxError('PageLabels is missing page index 0')
+            else:
+                # Try to cope, by assuming empty labels for the initial pages
+                ranges.insert(0, (0, {}))
+
+        ranges.append((None, (0, {})))  # marker for last range
+        for (start, label_dict), (end, _) in zip(ranges, ranges[1:]):
+            style = label_dict.get('S')
+            prefix = decode_text(str_value(label_dict.get('P', b'')))
+            first_value = int_value(label_dict.get('St', 1))
+
+            if end is None:
+                # This is the last specified range. It continues until the end
+                # of the document.
+                values: Iterable[int] = itertools.count(first_value)
+            else:
+                range_length = end - start
+                values = range(first_value, first_value + range_length)
+
+            for value in values:
+                label = self._format_page_label(value, style)
+                yield prefix + label
+
+    @staticmethod
+    def _format_page_label(value, style):
+        """Format page label value in a specific style"""
+        if style is None:
+            label = ''
+        elif style is LIT('D'):  # Decimal arabic numerals
+            label = str(value)
+        elif style is LIT('R'):  # Uppercase roman numerals
+            label = format_int_roman(value).upper()
+        elif style is LIT('r'):  # Lowercase roman numerals
+            label = format_int_roman(value)
+        elif style is LIT('A'):  # Uppercase letters A-Z, AA-ZZ...
+            label = format_int_alpha(value).upper()
+        elif style is LIT('a'):  # Lowercase letters a-z, aa-zz...
+            label = format_int_alpha(value)
+        else:
+            log.warning('Unknown page label style: %r', style)
+            label = ''
+        return label
+
