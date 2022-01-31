@@ -901,18 +901,14 @@ class PDFDocument:
             return
         return search(self.catalog['Outlines'], 0)
 
-    def get_page_labels(
-        self,
-        total_pages: Optional[int] = None
-    ) -> Iterator[str]:
+    def get_page_labels(self) -> Iterator[str]:
         """
         Generate page label strings for the PDF document.
 
         If the document includes page labels, generates strings, one per page.
         If not, raises PDFNoPageLabels.
 
-        If total_pages is specified, it is used to determine when the iteration
-        stops; if not, the iteration is unbounded.
+        The resulting iteration is unbounded.
         """
         assert self.catalog is not None
 
@@ -957,8 +953,7 @@ class PDFDocument:
             ranges.insert(0, (0, {}))
 
         def emit_labels(
-            ranges: List[Tuple[int, Dict[Any, Any]]],
-            total_pages: Optional[int]
+            ranges: List[Tuple[int, Dict[Any, Any]]]
         ) -> Iterator[str]:
             """
             Walk a list of ranges and label dicts, yielding label strings.
@@ -974,16 +969,15 @@ class PDFDocument:
 
                 if i + 1 == len(ranges):
                     # This is the last specified range. It continues until
-                    # the end of the document, which may be unknown.
-                    if total_pages is None:
-                        values: Iterable[int] = itertools.count(first)
-                    else:
-                        values = mkrange(total_pages)
+                    # the end of the document.
+                    values: Iterable[int] = itertools.count(first)
                 else:
                     values = mkrange(ranges[i + 1][0])
 
                 for value in values:
-                    if style is LIT('D'):    # Decimal arabic numerals
+                    if style is None:
+                        label = ''
+                    elif style is LIT('D'):  # Decimal arabic numerals
                         label = str(value)
                     elif style is LIT('R'):  # Uppercase roman numerals
                         label = format_int_roman(value).upper()
@@ -994,11 +988,11 @@ class PDFDocument:
                     elif style is LIT('a'):  # Lowercase letters a-z, aa-zz...
                         label = format_int_alpha(value)
                     else:
+                        log.warning('Unknown page label style: %r', style)
                         label = ''
-
                     yield prefix + label
 
-        return emit_labels(ranges, total_pages)
+        return emit_labels(ranges)
 
     def lookup_name(
         self,

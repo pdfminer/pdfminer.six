@@ -1,3 +1,4 @@
+import itertools
 import logging
 from pdfminer.utils import Rect
 from typing import BinaryIO, Container, Dict, Iterator, List, Optional, Tuple
@@ -117,16 +118,15 @@ class PDFPage:
                 yield (objid, tree)
 
         try:
-            page_labels: Optional[Iterator[str]] = document.get_page_labels()
+            page_labels: Iterator[Optional[str]] = document.get_page_labels()
         except PDFNoPageLabels:
-            page_labels = None
+            page_labels = itertools.repeat(None)
 
         pages = False
         if 'Pages' in document.catalog:
             objects = search(document.catalog['Pages'], document.catalog)
             for (objid, tree) in objects:
-                yield cls(document, objid, tree,
-                          next(page_labels) if page_labels else None)
+                yield cls(document, objid, tree, next(page_labels))
                 pages = True
         if not pages:
             # fallback when /Pages is missing.
@@ -136,9 +136,7 @@ class PDFPage:
                         obj = document.getobj(objid)
                         if isinstance(obj, dict) \
                                 and obj.get('Type') is LITERAL_PAGE:
-                            yield cls(
-                                document, objid, obj,
-                                next(page_labels) if page_labels else None)
+                            yield cls(document, objid, obj, next(page_labels))
                     except PDFObjectNotFound:
                         pass
         return

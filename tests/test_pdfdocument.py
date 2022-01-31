@@ -1,3 +1,5 @@
+import itertools
+
 from nose.tools import assert_equal, raises
 
 from helpers import absolute_sample_path
@@ -33,7 +35,7 @@ class TestPdfDocument(object):
             doc = PDFDocument(parser)
             total_pages = int_value(dict_value(doc.catalog['Pages'])['Count'])
             assert_equal(
-                list(doc.get_page_labels(total_pages)),
+                list(itertools.islice(doc.get_page_labels(), total_pages)),
                 ['iii', 'iv', '1', '2', '1'])
 
     @raises(PDFNoPageLabels)
