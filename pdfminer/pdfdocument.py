@@ -348,7 +348,7 @@ class PDFStandardSecurityHandler:
     def init_key(self) -> None:
         self.key = self.authenticate(self.password)
         if self.key is None:
-            raise PDFPasswordIncorrect
+            raise PDFEncryptionWarning
         return
 
     def is_printable(self) -> bool:
