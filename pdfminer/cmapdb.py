@@ -9,26 +9,26 @@ More information is available on the Adobe website:
 
 """
 
-import sys
+import gzip
+import logging
 import os
 import os.path
-import gzip
 import pickle as pickle
 import struct
-import logging
+import sys
 from typing import (Any, BinaryIO, Dict, Iterable, Iterator, List,
                     MutableMapping, Optional, TextIO, Tuple, Union, cast)
-from .psparser import PSStackParser
-from .psparser import PSSyntaxError
+
+from .encodingdb import name2unicode
+from .psparser import KWD
 from .psparser import PSEOF
 from .psparser import PSKeyword
 from .psparser import PSLiteral
+from .psparser import PSStackParser
+from .psparser import PSSyntaxError
 from .psparser import literal_name
-from .psparser import KWD
-from .encodingdb import name2unicode
 from .utils import choplist
 from .utils import nunpack
-
 
 log = logging.getLogger(__name__)
 
@@ -43,24 +43,22 @@ class CMapBase:
 
     def __init__(self, **kwargs: object) -> None:
         self.attrs: MutableMapping[str, object] = kwargs.copy()
-        return
 
     def is_vertical(self) -> bool:
         return self.attrs.get('WMode', 0) != 0
 
     def set_attr(self, k: str, v: object) -> None:
         self.attrs[k] = v
-        return
 
     def add_code2cid(self, code: str, cid: int) -> None:
-        return
+        pass
 
     def add_cid2unichr(self, cid: int, code: Union[PSLiteral, bytes, int]
                        ) -> None:
-        return
+        pass
 
     def use_cmap(self, cmap: "CMapBase") -> None:
-        return
+        pass
 
     def decode(self, code: bytes) -> Iterable[int]:
         raise NotImplementedError
@@ -71,7 +69,6 @@ class CMap(CMapBase):
     def __init__(self, **kwargs: Union[str, int]) -> None:
         CMapBase.__init__(self, **kwargs)
         self.code2cid: Dict[int, object] = {}
-        return
 
     def __repr__(self) -> str:
         return '<CMap: %s>' % self.attrs.get('CMapName')
@@ -88,7 +85,6 @@ class CMap(CMapBase):
                 else:
                     dst[k] = v
         copy(self.code2cid, cmap.code2cid)
-        return
 
     def decode(self, code: bytes) -> Iterator[int]:
         log.debug('decode: %r, %r', self, code)
@@ -103,7 +99,6 @@ class CMap(CMapBase):
                     d = cast(Dict[int, object], x)
             else:
                 d = self.code2cid
-        return
 
     def dump(self, out: TextIO = sys.stdout,
              code2cid: Optional[Dict[int, object]] = None,
@@ -117,7 +112,6 @@ class CMap(CMapBase):
                 out.write('code %r = cid %d\n' % (c, v))
             else:
                 self.dump(out=out, code2cid=cast(Dict[int, object], v), code=c)
-        return
 
 
 class IdentityCMap(CMapBase):
@@ -145,7 +139,6 @@ class UnicodeMap(CMapBase):
     def __init__(self, **kwargs: Union[str, int]) -> None:
         CMapBase.__init__(self, **kwargs)
         self.cid2unichr: Dict[int, str] = {}
-        return
 
     def __repr__(self) -> str:
         return '<UnicodeMap: %s>' % self.attrs.get('CMapName')
@@ -157,7 +150,6 @@ class UnicodeMap(CMapBase):
     def dump(self, out: TextIO = sys.stdout) -> None:
         for (k, v) in sorted(self.cid2unichr.items()):
             out.write('cid %d = unicode %r\n' % (k, v))
-        return
 
 
 class IdentityUnicodeMap(UnicodeMap):
@@ -183,7 +175,6 @@ class FileCMap(CMap):
                 d = t
         ci = ord(code[-1])
         d[ci] = cid
-        return
 
 
 class FileUnicodeMap(UnicodeMap):
@@ -202,7 +193,6 @@ class FileUnicodeMap(UnicodeMap):
             self.cid2unichr[cid] = chr(code)
         else:
             raise TypeError(code)
-        return
 
 
 class PyCMap(CMap):
@@ -212,7 +202,6 @@ class PyCMap(CMap):
         self.code2cid = module.CODE2CID
         if module.IS_VERTICAL:
             self.attrs['WMode'] = 1
-        return
 
 
 class PyUnicodeMap(UnicodeMap):
@@ -224,7 +213,6 @@ class PyUnicodeMap(UnicodeMap):
             self.attrs['WMode'] = 1
         else:
             self.cid2unichr = module.CID2UNICHR_H
-        return
 
 
 class CMapDB:

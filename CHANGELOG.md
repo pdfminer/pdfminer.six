@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add handling of JPXDecode filter to enable extraction of images for some pdfs ([#645](https://github.com/pdfminer/pdfminer.six/pull/645))
 - Fix extraction of jbig2 files, which was producing invalid files ([#652](https://github.com/pdfminer/pdfminer.six/pull/653))
 - Crash in `pdf2txt.py --boxes-flow=disabled` ([#682](https://github.com/pdfminer/pdfminer.six/pull/682))
+- Only use xref fallback if `PDFNoValidXRef` is raised and `fallback` is True ([#684](https://github.com/pdfminer/pdfminer.six/pull/684))
+
+### Changed
+- Replace warnings.warn with logging.Logger.warning in line with [recommended use](https://docs.python.org/3/howto/logging.html#when-to-use-logging) ([#673](https://github.com/pdfminer/pdfminer.six/pull/673))
+
+### Removed
+- Unnecessary return statements without argument at the end of functions ([#707](https://github.com/pdfminer/pdfminer.six/pull/707))
 
 ### Changed
 - Switched from nose to pytest, from tox to nox and from Travis CI to GitHub Actions ([#704](https://github.com/pdfminer/pdfminer.six/pull/704))
@@ -44,7 +51,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
 - Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
 - Support for non-standard output streams that are not binary ([#523](https://github.com/pdfminer/pdfminer.six/pull/523))
-- Replace warnings.warn with logging.Logger.warning in line with [recommended use](https://docs.python.org/3/howto/logging.html#when-to-use-logging) ([#673](https://github.com/pdfminer/pdfminer.six/pull/673))
 - Dependency on typing-extensions introduced by [#661](https://github.com/pdfminer/pdfminer.six/pull/661) ([#677](https://github.com/pdfminer/pdfminer.six/pull/677))
 
 ## [20201018]

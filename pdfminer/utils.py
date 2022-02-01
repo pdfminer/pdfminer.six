@@ -4,10 +4,10 @@ Miscellaneous Routines.
 import io
 import pathlib
 import struct
+from html import escape
 from typing import (Any, BinaryIO, Callable, Dict, Generic, Iterable, Iterator,
                     List, Optional, Set, TextIO, Tuple, TypeVar, Union,
                     TYPE_CHECKING, cast)
-from html import escape
 
 if TYPE_CHECKING:
     from .layout import LTComponent
@@ -57,7 +57,6 @@ class open_filename(object):
     ) -> None:
         if self.closing:
             self.file_handler.close()
-        return
 
 
 def make_compat_bytes(in_str: str) -> bytes:

@@ -1,24 +1,23 @@
-import zlib
-import logging
 import io
+import logging
 import sys
+import zlib
 from typing import (TYPE_CHECKING, Any, Dict, Iterable, Optional, Union, List,
                     Tuple, cast)
 
-from .lzw import lzwdecode
+from . import settings
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
-from .runlength import rldecode
 from .ccitt import ccittfaxdecode
+from .lzw import lzwdecode
+from .psparser import LIT
 from .psparser import PSException
 from .psparser import PSObject
-from .psparser import LIT
-from . import settings
+from .runlength import rldecode
 from .utils import apply_png_predictor
 
 if TYPE_CHECKING:
     from .pdfdocument import PDFDocument
-
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +87,6 @@ class PDFObjRef(PDFObject):
                 raise PDFValueError('PDF object id cannot be 0.')
         self.doc = doc
         self.objid = objid
-        return
 
     def __repr__(self) -> str:
         return '<PDFObjRef:%d>' % (self.objid)
@@ -255,12 +253,10 @@ class PDFStream(PDFObject):
         self.data: Optional[bytes] = None
         self.objid: Optional[int] = None
         self.genno: Optional[int] = None
-        return
 
     def set_objid(self, objid: int, genno: int) -> None:
         self.objid = objid
         self.genno = genno
-        return
 
     def __repr__(self) -> str:
         if self.data is None:
