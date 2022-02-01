@@ -11,9 +11,9 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from . import settings
 from .arcfour import Arcfour
 from .pdfparser import PDFSyntaxError, PDFParser, PDFStreamParser
-from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream, \
-    PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
-    uint_value, dict_value, stream_value
+from .pdftypes import DecipherCallable, PDFException, PDFTypeError, \
+    PDFStream, PDFObjectNotFound, decipher_all, int_value, str_value, \
+    list_value, uint_value, dict_value, stream_value
 from .psparser import PSEOF, literal_name, LIT, KWD
 from .utils import choplist, nunpack, decode_text
 
