@@ -1,11 +1,12 @@
 import io
 import logging
-from pdfminer.pdfcolor import PDFColorSpace
+import re
 from typing import (BinaryIO, Dict, Generic, List, Optional, Sequence, TextIO,
                     Tuple, TypeVar, Union, cast)
-import re
 
+from pdfminer.pdfcolor import PDFColorSpace
 from . import utils
+from .image import ImageWriter
 from .layout import LAParams, LTComponent, TextGroupElement
 from .layout import LTChar
 from .layout import LTContainer
@@ -33,7 +34,6 @@ from .utils import apply_matrix_pt
 from .utils import bbox2str
 from .utils import enc
 from .utils import mult_matrix
-from .image import ImageWriter
 
 log = logging.getLogger(__name__)
 
@@ -61,7 +61,6 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         mediabox = (0, 0, abs(x0-x1), abs(y0-y1))
         self.cur_item = LTPage(self.pageno, mediabox)
 
-
     def end_page(self, page: PDFPage) -> None:
         assert not self._stack, str(len(self._stack))
         assert isinstance(self.cur_item, LTPage), str(type(self.cur_item))
@@ -70,11 +69,9 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         self.pageno += 1
         self.receive_layout(self.cur_item)
 
-
     def begin_figure(self, name: str, bbox: Rect, matrix: Matrix) -> None:
         self._stack.append(self.cur_item)
         self.cur_item = LTFigure(name, bbox, mult_matrix(matrix, self.ctm))
-
 
     def end_figure(self, _: str) -> None:
         fig = self.cur_item
@@ -82,14 +79,12 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         self.cur_item = self._stack.pop()
         self.cur_item.add(fig)
 
-
     def render_image(self, name: str, stream: PDFStream) -> None:
         assert isinstance(self.cur_item, LTFigure), str(type(self.cur_item))
         item = LTImage(name, stream,
                        (self.cur_item.x0, self.cur_item.y0,
                         self.cur_item.x1, self.cur_item.y1))
         self.cur_item.add(item)
-
 
     def paint_path(
         self,
@@ -192,10 +187,8 @@ class PDFPageAggregator(PDFLayoutAnalyzer):
                                    laparams=laparams)
         self.result: Optional[LTPage] = None
 
-
     def receive_layout(self, ltpage: LTPage) -> None:
         self.result = ltpage
-
 
     def get_result(self) -> LTPage:
         assert self.result is not None
@@ -255,14 +248,12 @@ class TextConverter(PDFConverter[AnyIO]):
         self.showpageno = showpageno
         self.imagewriter = imagewriter
 
-
     def write_text(self, text: str) -> None:
         text = utils.compatible_encode_method(text, self.codec, 'ignore')
         if self.outfp_binary:
             cast(BinaryIO, self.outfp).write(text.encode())
         else:
             cast(TextIO, self.outfp).write(text)
-
 
     def receive_layout(self, ltpage: LTPage) -> None:
         def render(item: LTItem) -> None:
@@ -280,7 +271,6 @@ class TextConverter(PDFConverter[AnyIO]):
             self.write_text('Page %s\n' % ltpage.pageid)
         render(ltpage)
         self.write_text('\f')
-
 
     # Some dummy functions to save memory/CPU when all that is wanted
     # is text.  This stops all the image and drawing output from being

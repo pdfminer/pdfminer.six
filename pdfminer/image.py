@@ -59,11 +59,9 @@ class BMPWriter:
         self.pos0 = self.fp.tell()
         self.pos1 = self.pos0 + self.datasize
 
-
     def write_line(self, y: int, data: bytes) -> None:
         self.fp.seek(self.pos1 - (y+1)*self.linesize)
         self.fp.write(data)
-
 
 
 class ImageWriter:
@@ -76,7 +74,6 @@ class ImageWriter:
         self.outdir = outdir
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
-
 
     def export_image(self, image: LTImage) -> str:
         (width, height) = image.srcsize

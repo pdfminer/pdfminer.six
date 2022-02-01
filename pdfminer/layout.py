@@ -3,6 +3,11 @@ import logging
 from typing import (Dict, Generic, Iterable, Iterator, List, Optional,
                     Sequence, Set, Tuple, TypeVar, Union, cast)
 
+from .pdfcolor import PDFColorSpace
+from .pdffont import PDFFont
+from .pdfinterp import Color
+from .pdfinterp import PDFGraphicState
+from .pdftypes import PDFStream
 from .utils import INF
 from .utils import LTComponentT
 from .utils import Matrix
@@ -15,11 +20,6 @@ from .utils import fsplit
 from .utils import get_bound
 from .utils import matrix2str
 from .utils import uniq
-from .pdfcolor import PDFColorSpace
-from .pdftypes import PDFStream
-from .pdfinterp import Color
-from .pdfinterp import PDFGraphicState
-from .pdffont import PDFFont
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,6 @@ class IndexAssigner:
         elif isinstance(obj, LTTextGroup):
             for x in obj:
                 self.run(x)
-
 
 
 class LAParams:
@@ -88,7 +87,6 @@ class LAParams:
 
         self._validate()
 
-
     def _validate(self) -> None:
         if self.boxes_flow is not None:
             boxes_flow_err_msg = ("LAParam boxes_flow should be None, or a "
@@ -133,7 +131,6 @@ class LTComponent(LTItem):
         LTItem.__init__(self)
         self.set_bbox(bbox)
 
-
     def __repr__(self) -> str:
         return ('<%s %s>' %
                 (self.__class__.__name__, bbox2str(self.bbox)))
@@ -160,7 +157,6 @@ class LTComponent(LTItem):
         self.width = x1-x0
         self.height = y1-y0
         self.bbox = bbox
-
 
     def is_empty(self) -> bool:
         return self.width <= 0 or self.height <= 0
@@ -224,7 +220,6 @@ class LTCurve(LTComponent):
         self.stroking_color = stroking_color
         self.non_stroking_color = non_stroking_color
 
-
     def get_pts(self) -> str:
         return ','.join('%.3f,%.3f' % p for p in self.pts)
 
@@ -250,7 +245,6 @@ class LTLine(LTCurve):
                          stroking_color, non_stroking_color)
 
 
-
 class LTRect(LTCurve):
     """A rectangle.
 
@@ -273,7 +267,6 @@ class LTRect(LTCurve):
                          fill, evenodd, stroking_color, non_stroking_color)
 
 
-
 class LTImage(LTComponent):
     """An image object.
 
@@ -291,7 +284,6 @@ class LTImage(LTComponent):
         self.colorspace = stream.get_any(('CS', 'ColorSpace'))
         if not isinstance(self.colorspace, list):
             self.colorspace = [self.colorspace]
-
 
     def __repr__(self) -> str:
         return ('<%s(%s) %s %r>' %

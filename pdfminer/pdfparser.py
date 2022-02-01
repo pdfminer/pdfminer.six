@@ -1,17 +1,18 @@
 import logging
 from io import BytesIO
 from typing import BinaryIO, TYPE_CHECKING, Optional, Union
-from .psparser import PSStackParser
-from .psparser import PSKeyword
-from .psparser import PSSyntaxError
-from .psparser import PSEOF
-from .psparser import KWD
+
 from . import settings
 from .pdftypes import PDFException
-from .pdftypes import PDFStream
 from .pdftypes import PDFObjRef
-from .pdftypes import int_value
+from .pdftypes import PDFStream
 from .pdftypes import dict_value
+from .pdftypes import int_value
+from .psparser import KWD
+from .psparser import PSEOF
+from .psparser import PSKeyword
+from .psparser import PSStackParser
+from .psparser import PSSyntaxError
 
 if TYPE_CHECKING:
     from .pdfdocument import PDFDocument
@@ -46,11 +47,9 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
         self.doc: Optional["PDFDocument"] = None
         self.fallback = False
 
-
     def set_document(self, doc: "PDFDocument") -> None:
         """Associates the parser with a PDFDocument object."""
         self.doc = doc
-
 
     KEYWORD_R = KWD(b'R')
     KEYWORD_NULL = KWD(b'null')
@@ -135,8 +134,6 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
             self.push((pos, token))
 
 
-
-
 class PDFStreamParser(PDFParser):
     """
     PDFStreamParser is used to parse PDF content streams
@@ -149,10 +146,8 @@ class PDFStreamParser(PDFParser):
     def __init__(self, data: bytes) -> None:
         PDFParser.__init__(self, BytesIO(data))
 
-
     def flush(self) -> None:
         self.add_results(*self.popall())
-
 
     KEYWORD_OBJ = KWD(b'obj')
 
@@ -176,4 +171,3 @@ class PDFStreamParser(PDFParser):
             return
         # others
         self.push((pos, token))
-

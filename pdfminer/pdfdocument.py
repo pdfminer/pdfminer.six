@@ -101,7 +101,6 @@ class PDFXRef(PDFBaseXRef):
         self.offsets: Dict[int, Tuple[Optional[int], int, int]] = {}
         self.trailer: Dict[str, Any] = {}
 
-
     def __repr__(self) -> str:
         return '<PDFXRef: offsets=%r>' % (self.offsets.keys())
 
@@ -146,7 +145,6 @@ class PDFXRef(PDFBaseXRef):
         log.info('xref objects: %r', self.offsets)
         self.load_trailer(parser)
 
-
     def load_trailer(self, parser: PDFParser) -> None:
         try:
             (_, kwd) = parser.nexttoken()
@@ -159,7 +157,6 @@ class PDFXRef(PDFBaseXRef):
             (_, dic) = x[0]
         self.trailer.update(dict_value(dic))
         log.debug('trailer=%r', self.trailer)
-
 
     def get_trailer(self) -> Dict[str, Any]:
         return self.trailer
@@ -227,7 +224,6 @@ class PDFXRefFallback(PDFXRef):
                     self.offsets[objid1] = (objid, index, 0)
 
 
-
 class PDFXRefStream(PDFBaseXRef):
 
     def __init__(self) -> None:
@@ -237,7 +233,6 @@ class PDFXRefStream(PDFBaseXRef):
         self.fl2: Optional[int] = None
         self.fl3: Optional[int] = None
         self.ranges: List[Tuple[int, int]] = []
-
 
     def __repr__(self) -> str:
         return '<PDFXRefStream: ranges=%r>' % (self.ranges)

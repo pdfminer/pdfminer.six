@@ -21,7 +21,6 @@ class Arcfour:
         self.s = s
         (self.i, self.j) = (0, 0)
 
-
     def process(self, data: bytes) -> bytes:
         (i, j) = (self.i, self.j)
         s = self.s

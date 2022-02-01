@@ -1,43 +1,43 @@
-import re
 import logging
-from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union, cast
+import re
 from io import BytesIO
-from .cmapdb import CMapDB
+from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union, cast
+
+from . import settings
 from .cmapdb import CMap
 from .cmapdb import CMapBase
-from .psparser import PSLiteral, PSTypeError
-from .psparser import PSStackType
-from .psparser import PSEOF
-from .psparser import PSKeyword
-from .psparser import literal_name
-from .psparser import keyword_name
-from .psparser import PSStackParser
-from .psparser import LIT
-from .psparser import KWD
-from . import settings
-from .pdfdevice import PDFDevice
-from .pdfdevice import PDFTextSeq
-from .pdfpage import PDFPage
-from .pdftypes import PDFException
-from .pdftypes import PDFStream
-from .pdftypes import PDFObjRef
-from .pdftypes import resolve1
-from .pdftypes import list_value
-from .pdftypes import dict_value
-from .pdftypes import stream_value
-from .pdffont import PDFFont
-from .pdffont import PDFFontError
-from .pdffont import PDFType1Font
-from .pdffont import PDFTrueTypeFont
-from .pdffont import PDFType3Font
-from .pdffont import PDFCIDFont
+from .cmapdb import CMapDB
 from .pdfcolor import PDFColorSpace
 from .pdfcolor import PREDEFINED_COLORSPACE
+from .pdfdevice import PDFDevice
+from .pdfdevice import PDFTextSeq
+from .pdffont import PDFCIDFont
+from .pdffont import PDFFont
+from .pdffont import PDFFontError
+from .pdffont import PDFTrueTypeFont
+from .pdffont import PDFType1Font
+from .pdffont import PDFType3Font
+from .pdfpage import PDFPage
+from .pdftypes import PDFException
+from .pdftypes import PDFObjRef
+from .pdftypes import PDFStream
+from .pdftypes import dict_value
+from .pdftypes import list_value
+from .pdftypes import resolve1
+from .pdftypes import stream_value
+from .psparser import KWD
+from .psparser import LIT
+from .psparser import PSEOF
+from .psparser import PSKeyword
+from .psparser import PSLiteral, PSTypeError
+from .psparser import PSStackParser
+from .psparser import PSStackType
+from .psparser import keyword_name
+from .psparser import literal_name
+from .utils import MATRIX_IDENTITY
 from .utils import Matrix, Point, PathSegment, Rect
 from .utils import choplist
 from .utils import mult_matrix
-from .utils import MATRIX_IDENTITY
-
 
 log = logging.getLogger(__name__)
 
@@ -74,7 +74,6 @@ class PDFTextState:
         # self.matrix is set
         # self.linematrix is set
 
-
     def __repr__(self) -> str:
         return '<PDFTextState: font=%r, fontsize=%r, charspace=%r, ' \
                'wordspace=%r, scaling=%r, leading=%r, render=%r, rise=%r, ' \
@@ -102,7 +101,6 @@ class PDFTextState:
         self.linematrix = (0, 0)
 
 
-
 Color = Union[
     float,                              # Greyscale
     Tuple[float, float, float],         # R, G, B
@@ -125,7 +123,6 @@ class PDFGraphicState:
 
         # non stroking color
         self.ncolor: Optional[Color] = None
-
 
     def copy(self) -> "PDFGraphicState":
         obj = PDFGraphicState()
@@ -161,7 +158,6 @@ class PDFResourceManager:
         self.caching = caching
         self._cached_fonts: Dict[object, PDFFont] = {}
 
-
     def get_procset(self, procs: Sequence[object]) -> None:
         for proc in procs:
             if proc is LITERAL_PDF:
@@ -170,7 +166,6 @@ class PDFResourceManager:
                 pass
             else:
                 pass
-
 
     def get_cmap(self, cmapname: str, strict: bool = False) -> CMapBase:
         try:
@@ -235,7 +230,6 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
         # calling self.fillfp().
         PSStackParser.__init__(self, None)  # type: ignore[arg-type]
 
-
     def fillfp(self) -> None:
         if not self.fp:
             if self.istream < len(self.streams):
@@ -245,11 +239,9 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 raise PSEOF('Unexpected EOF, file truncated?')
             self.fp = BytesIO(strm.get_data())
 
-
     def seek(self, pos: int) -> None:
         self.fillfp()
         PSStackParser.seek(self, pos)
-
 
     def fillbuf(self) -> None:
         if self.charpos < len(self.buf):
@@ -262,7 +254,6 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 break
             self.fp = None  # type: ignore[assignment]
         self.charpos = 0
-
 
     def get_inline_data(
         self,
@@ -301,7 +292,6 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
     def flush(self) -> None:
         self.add_results(*self.popall())
 
-
     KEYWORD_BI = KWD(b'BI')
     KEYWORD_ID = KWD(b'ID')
     KEYWORD_EI = KWD(b'EI')
@@ -327,7 +317,6 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                     raise
         else:
             self.push((pos, token))
-
 
 
 PDFStackT = PSStackType[PDFStream]

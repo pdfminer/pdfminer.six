@@ -1,13 +1,14 @@
-from pdfminer.psparser import PSLiteral
 from typing import (BinaryIO, Iterable, List, Optional, Sequence,
                     TYPE_CHECKING, Union, cast)
+
+from pdfminer.psparser import PSLiteral
 from . import utils
-from .utils import Matrix, Point, Rect, PathSegment
 from .pdfcolor import PDFColorSpace
 from .pdffont import PDFFont
 from .pdffont import PDFUnicodeNotDefined
 from .pdfpage import PDFPage
 from .pdftypes import PDFStream
+from .utils import Matrix, Point, Rect, PathSegment
 
 if TYPE_CHECKING:
     from .pdfinterp import PDFGraphicState
@@ -133,7 +134,6 @@ class PDFTextDevice(PDFDevice):
                 scaling, charspace, wordspace, rise, dxscale, ncs,
                 graphicstate)
 
-
     def render_string_horizontal(
         self,
         seq: PDFTextSeq,
@@ -228,7 +228,6 @@ class TagExtractor(PDFDevice):
         self.pageno = 0
         self._stack: List[PSLiteral] = []
 
-
     def render_string(
         self,
         textstate: "PDFTextState",
@@ -252,7 +251,6 @@ class TagExtractor(PDFDevice):
                 except PDFUnicodeNotDefined:
                     pass
         self._write(utils.enc(text))
-
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
         output = '<page id="%s" bbox="%s" rotate="%d">' %\

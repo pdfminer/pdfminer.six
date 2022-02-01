@@ -2,8 +2,8 @@
 
 # -*- coding: utf-8 -*-
 
-import re
 import logging
+import re
 from typing import (Any, BinaryIO, Dict, Generic, Iterator, List,
                     Optional, Tuple, Type, TypeVar, Union)
 
@@ -77,7 +77,6 @@ class PSKeyword(PSObject):
     def __init__(self, name: bytes) -> None:
         self.name = name
 
-
     def __repr__(self) -> str:
         name = self.name
         return '/%r' % name
@@ -95,7 +94,6 @@ class PSSymbolTable(Generic[_SymbolT]):
     def __init__(self, klass: Type[_SymbolT]) -> None:
         self.dict: Dict[PSLiteral.NameType, _SymbolT] = {}
         self.klass: Type[_SymbolT] = klass
-
 
     def intern(self, name: PSLiteral.NameType) -> _SymbolT:
         if name in self.dict:
@@ -182,7 +180,6 @@ class PSBaseParser:
     def __init__(self, fp: BinaryIO) -> None:
         self.fp = fp
         self.seek(0)
-
 
     def __repr__(self) -> str:
         return '<%s: %r, bufpos=%d>' % (self.__class__.__name__, self.fp,
