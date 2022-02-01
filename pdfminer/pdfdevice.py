@@ -26,7 +26,7 @@ class PDFDevice:
     def __init__(self, rsrcmgr: "PDFResourceManager") -> None:
         self.rsrcmgr = rsrcmgr
         self.ctm: Optional[Matrix] = None
-
+        return
 
     def __repr__(self) -> str:
         return '<PDFDevice>'
@@ -43,40 +43,40 @@ class PDFDevice:
         self.close()
 
     def close(self) -> None:
-        pass
+        return
 
     def set_ctm(self, ctm: Matrix) -> None:
         self.ctm = ctm
-
+        return
 
     def begin_tag(
         self,
         tag: PSLiteral,
         props: Optional["PDFStackT"] = None
     ) -> None:
-        pass
+        return
 
     def end_tag(self) -> None:
-        pass
+        return
 
     def do_tag(
         self,
         tag: PSLiteral,
         props: Optional["PDFStackT"] = None
     ) -> None:
-        pass
+        return
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
-        pass
+        return
 
     def end_page(self, page: PDFPage) -> None:
-        pass
+        return
 
     def begin_figure(self, name: str, bbox: Rect, matrix: Matrix) -> None:
-        pass
+        return
 
     def end_figure(self, name: str) -> None:
-        pass
+        return
 
     def paint_path(
         self,
@@ -86,10 +86,10 @@ class PDFDevice:
         evenodd: bool,
         path: Sequence[PathSegment]
     ) -> None:
-        pass
+        return
 
     def render_image(self, name: str, stream: PDFStream) -> None:
-        pass
+        return
 
     def render_string(
         self,
@@ -98,7 +98,7 @@ class PDFDevice:
         ncs: PDFColorSpace,
         graphicstate: "PDFGraphicState"
     ) -> None:
-        pass
+        return
 
 
 class PDFTextDevice(PDFDevice):
@@ -132,7 +132,7 @@ class PDFTextDevice(PDFDevice):
                 seq, matrix, textstate.linematrix, font, fontsize,
                 scaling, charspace, wordspace, rise, dxscale, ncs,
                 graphicstate)
-
+        return
 
     def render_string_horizontal(
         self,
@@ -227,7 +227,7 @@ class TagExtractor(PDFDevice):
         self.codec = codec
         self.pageno = 0
         self._stack: List[PSLiteral] = []
-
+        return
 
     def render_string(
         self,
@@ -252,7 +252,7 @@ class TagExtractor(PDFDevice):
                 except PDFUnicodeNotDefined:
                     pass
         self._write(utils.enc(text))
-
+        return
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
         output = '<page id="%s" bbox="%s" rotate="%d">' %\

@@ -73,7 +73,7 @@ class PDFPage:
         if not isinstance(contents, list):
             contents = [contents]
         self.contents: List[object] = contents
-
+        return
 
     def __repr__(self) -> str:
         return '<PDFPage: Resources={!r}, MediaBox={!r}>'\

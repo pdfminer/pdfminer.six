@@ -35,7 +35,7 @@ class BitParser:
 
     def __init__(self) -> None:
         self._pos = 0
-
+        return
 
     @classmethod
     def add(cls, root: BitParserState, v: Union[int, str], bits: str) -> None:
@@ -53,13 +53,13 @@ class BitParser:
                 b = 0
         assert b is not None
         p[b] = v
-
+        return
 
     def feedbytes(self, data: bytes) -> None:
         for byte in get_bytes(data):
             for m in (128, 64, 32, 16, 8, 4, 2, 1):
                 self._parse_bit(byte & m)
-
+        return
 
     def _parse_bit(self, x: object) -> None:
         if x:
@@ -72,7 +72,7 @@ class BitParser:
         else:
             assert self._accept is not None
             self._state = self._accept(v)
-
+        return
 
 
 class CCITTG4Parser(BitParser):

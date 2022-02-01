@@ -88,7 +88,7 @@ class PDFObjRef(PDFObject):
                 raise PDFValueError('PDF object id cannot be 0.')
         self.doc = doc
         self.objid = objid
-
+        return
 
     def __repr__(self) -> str:
         return '<PDFObjRef:%d>' % (self.objid)
@@ -255,12 +255,12 @@ class PDFStream(PDFObject):
         self.data: Optional[bytes] = None
         self.objid: Optional[int] = None
         self.genno: Optional[int] = None
-
+        return
 
     def set_objid(self, objid: int, genno: int) -> None:
         self.objid = objid
         self.genno = genno
-
+        return
 
     def __repr__(self) -> str:
         if self.data is None:

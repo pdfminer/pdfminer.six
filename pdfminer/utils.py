@@ -57,7 +57,7 @@ class open_filename(object):
     ) -> None:
         if self.closing:
             self.file_handler.close()
-
+        return
 
 
 def make_compat_bytes(in_str: str) -> bytes:

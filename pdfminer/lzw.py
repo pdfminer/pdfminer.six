@@ -20,7 +20,7 @@ class LZWDecoder:
         # NB: self.table stores None only in indices 256 and 257
         self.table: Optional[List[Optional[bytes]]] = None
         self.prevbuf: Optional[bytes] = None
-
+        return
 
     def readbits(self, bits: int) -> int:
         v = 0
@@ -95,7 +95,7 @@ class LZWDecoder:
             assert self.table is not None
             logger.debug('nbits=%d, code=%d, output=%r, table=%r'
                          % (self.nbits, code, x, self.table[258:]))
-
+        return
 
 
 def lzwdecode(data: bytes) -> bytes:
