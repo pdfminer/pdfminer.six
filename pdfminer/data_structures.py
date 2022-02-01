@@ -1,5 +1,5 @@
 import functools
-from typing import Tuple, Any, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from pdfminer import settings
 from pdfminer.pdfparser import PDFSyntaxError
@@ -14,9 +14,9 @@ class NumberTree:
     """
     def __init__(self, obj: Any):
         self._obj = dict_value(obj)
-        self.nums: Optional[List[Any]] = None
-        self.kids: Optional[List[int]] = None
-        self.limits: Optional[List[int]] = None
+        self.nums: Optional[Iterable[Any]] = None
+        self.kids: Optional[Iterable[Any]] = None
+        self.limits: Optional[Iterable[Any]] = None
 
         if 'Nums' in self._obj:
             self.nums = list_value(self._obj['Nums'])
@@ -29,23 +29,24 @@ class NumberTree:
         l = []
         if self.nums:  # Leaf node
             for k, v in choplist(2, self.nums):
-                l.append((int_value(k), dict_value(v)))
+                l.append((int_value(k), v))
 
         if self.kids:  # Root or intermediate node
             for child_ref in self.kids:
-                for k, v in NumberTree(child_ref).values:
-                    l.append(([k], v))
+                l += NumberTree(child_ref)._parse()
 
         return l
 
-    @property
+    values: List[Tuple[int, Any]]  # workaround decorators unsupported by mypy
+
+    @property  # type: ignore [no-redef,misc]
     @functools.lru_cache
     def values(self) -> List[Tuple[int, Any]]:
         values = self._parse()
 
         if settings.STRICT:
             if not all(a[0] <= b[0] for a, b in zip(values, values[1:])):
-                raise PDFSyntaxError('PageLabels are out of order')
+                raise PDFSyntaxError('Number tree elements are out of order')
         else:
             values.sort(key=lambda t: t[0])
 

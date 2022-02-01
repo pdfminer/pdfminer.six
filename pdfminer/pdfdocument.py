@@ -1024,7 +1024,7 @@ class PageLabels(NumberTree):
 
     @property
     def labels(self) -> Iterator[str]:
-        ranges = self.values  # type: List[Tuple[Optional[int], Any]]
+        ranges = self.values
 
         # The tree must begin with page index 0
         if len(ranges) == 0 or ranges[0][0] != 0:
@@ -1034,17 +1034,18 @@ class PageLabels(NumberTree):
                 # Try to cope, by assuming empty labels for the initial pages
                 ranges.insert(0, (0, {}))
 
-        ranges.append((None, (0, {})))  # marker for last range
-        for (start, label_dict), (end, _) in zip(ranges, ranges[1:]):
+        for (next, (start, label_dict_unchecked)) in enumerate(ranges, 1):
+            label_dict = dict_value(label_dict_unchecked)
             style = label_dict.get('S')
             prefix = decode_text(str_value(label_dict.get('P', b'')))
             first_value = int_value(label_dict.get('St', 1))
 
-            if end is None:
+            if next == len(ranges):
                 # This is the last specified range. It continues until the end
                 # of the document.
                 values: Iterable[int] = itertools.count(first_value)
             else:
+                end, _ = ranges[next]
                 range_length = end - start
                 values = range(first_value, first_value + range_length)
 
@@ -1053,7 +1054,7 @@ class PageLabels(NumberTree):
                 yield prefix + label
 
     @staticmethod
-    def _format_page_label(value, style):
+    def _format_page_label(value: int, style: Any) -> str:
         """Format page label value in a specific style"""
         if style is None:
             label = ''
