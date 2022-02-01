@@ -76,7 +76,7 @@ class PSKeyword(PSObject):
 
     def __init__(self, name: bytes) -> None:
         self.name = name
-        return
+
 
     def __repr__(self) -> str:
         name = self.name
@@ -95,7 +95,7 @@ class PSSymbolTable(Generic[_SymbolT]):
     def __init__(self, klass: Type[_SymbolT]) -> None:
         self.dict: Dict[PSLiteral.NameType, _SymbolT] = {}
         self.klass: Type[_SymbolT] = klass
-        return
+
 
     def intern(self, name: PSLiteral.NameType) -> _SymbolT:
         if name in self.dict:
@@ -182,7 +182,7 @@ class PSBaseParser:
     def __init__(self, fp: BinaryIO) -> None:
         self.fp = fp
         self.seek(0)
-        return
+
 
     def __repr__(self) -> str:
         return '<%s: %r, bufpos=%d>' % (self.__class__.__name__, self.fp,

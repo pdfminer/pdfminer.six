@@ -73,7 +73,7 @@ class PDFTextState:
         self.reset()
         # self.matrix is set
         # self.linematrix is set
-        return
+
 
     def __repr__(self) -> str:
         return '<PDFTextState: font=%r, fontsize=%r, charspace=%r, ' \
@@ -100,7 +100,7 @@ class PDFTextState:
     def reset(self) -> None:
         self.matrix = MATRIX_IDENTITY
         self.linematrix = (0, 0)
-        return
+
 
 
 Color = Union[
@@ -125,7 +125,7 @@ class PDFGraphicState:
 
         # non stroking color
         self.ncolor: Optional[Color] = None
-        return
+
 
     def copy(self) -> "PDFGraphicState":
         obj = PDFGraphicState()
@@ -160,7 +160,7 @@ class PDFResourceManager:
     def __init__(self, caching: bool = True) -> None:
         self.caching = caching
         self._cached_fonts: Dict[object, PDFFont] = {}
-        return
+
 
     def get_procset(self, procs: Sequence[object]) -> None:
         for proc in procs:
@@ -170,7 +170,7 @@ class PDFResourceManager:
                 pass
             else:
                 pass
-        return
+
 
     def get_cmap(self, cmapname: str, strict: bool = False) -> CMapBase:
         try:
@@ -234,7 +234,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
         # all the methods that would attempt to access self.fp without first
         # calling self.fillfp().
         PSStackParser.__init__(self, None)  # type: ignore[arg-type]
-        return
+
 
     def fillfp(self) -> None:
         if not self.fp:
@@ -244,12 +244,12 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             else:
                 raise PSEOF('Unexpected EOF, file truncated?')
             self.fp = BytesIO(strm.get_data())
-        return
+
 
     def seek(self, pos: int) -> None:
         self.fillfp()
         PSStackParser.seek(self, pos)
-        return
+
 
     def fillbuf(self) -> None:
         if self.charpos < len(self.buf):
@@ -262,7 +262,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 break
             self.fp = None  # type: ignore[assignment]
         self.charpos = 0
-        return
+
 
     def get_inline_data(
         self,
@@ -300,7 +300,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
 
     def flush(self) -> None:
         self.add_results(*self.popall())
-        return
+
 
     KEYWORD_BI = KWD(b'BI')
     KEYWORD_ID = KWD(b'ID')
@@ -327,7 +327,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                     raise
         else:
             self.push((pos, token))
-        return
+
 
 
 PDFStackT = PSStackType[PDFStream]
