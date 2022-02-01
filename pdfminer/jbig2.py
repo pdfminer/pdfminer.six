@@ -27,12 +27,11 @@ DATA_LEN_UNKNOWN = 0xffffffff
 # segment types
 SEG_TYPE_IMMEDIATE_GEN_REGION = 38
 SEG_TYPE_END_OF_PAGE = 49
-SEG_TYPE_END_OF_FILE = 50
+SEG_TYPE_END_OF_FILE = 51
 
 # file literals
 FILE_HEADER_ID = b'\x97\x4A\x42\x32\x0D\x0A\x1A\x0A'
 FILE_HEAD_FLAG_SEQUENTIAL = 0b00000001
-FILE_HEAD_FLAG_PAGES_UNKNOWN = 0b00000010
 
 
 def bit_set(bit_pos: int, value: int) -> bool:
@@ -243,8 +242,12 @@ class JBIG2StreamWriter:
         fix_last_page: bool = True
     ) -> int:
         header = FILE_HEADER_ID
-        header_flags = FILE_HEAD_FLAG_SEQUENTIAL | FILE_HEAD_FLAG_PAGES_UNKNOWN
+        header_flags = FILE_HEAD_FLAG_SEQUENTIAL
         header += pack(">B", header_flags)
+        # The embedded JBIG2 files in a PDF always
+        # only have one page
+        number_of_pages = pack(">L", 1)
+        header += number_of_pages
         self.stream.write(header)
         data_len = len(header)
 
@@ -254,7 +257,11 @@ class JBIG2StreamWriter:
         for segment in segments:
             seg_num = cast(int, segment["number"])
 
-        eof_segment = self.get_eof_segment(seg_num + 1)
+        if fix_last_page:
+            seg_num_offset = 2
+        else:
+            seg_num_offset = 1
+        eof_segment = self.get_eof_segment(seg_num + seg_num_offset)
         data = self.encode_segment(eof_segment)
 
         self.stream.write(data)
@@ -305,7 +312,8 @@ class JBIG2StreamWriter:
         if ref_count <= 4:
             flags_byte = mask_value(REF_COUNT_SHORT_MASK, ref_count)
             for ref_index, ref_retain in enumerate(retain_segments):
-                flags_byte |= 1 << ref_index
+                if ref_retain:
+                    flags_byte |= 1 << ref_index
             flags.append(flags_byte)
         else:
             bytes_count = math.ceil((ref_count + 1) / 8)

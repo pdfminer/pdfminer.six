@@ -1,8 +1,10 @@
 import zlib
 import logging
+import io
 import sys
 from typing import (TYPE_CHECKING, Any, Dict, Iterable, Optional, Union, List,
                     Tuple, cast)
+
 from .lzw import lzwdecode
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
@@ -18,7 +20,7 @@ if TYPE_CHECKING:
     from .pdfdocument import PDFDocument
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 LITERAL_CRYPT = LIT('Crypt')
 
@@ -31,6 +33,7 @@ LITERALS_RUNLENGTH_DECODE = (LIT('RunLengthDecode'), LIT('RL'))
 LITERALS_CCITTFAX_DECODE = (LIT('CCITTFaxDecode'), LIT('CCF'))
 LITERALS_DCT_DECODE = (LIT('DCTDecode'), LIT('DCT'))
 LITERALS_JBIG2_DECODE = (LIT('JBIG2Decode'),)
+LITERALS_JPX_DECODE = (LIT('JPXDecode'),)
 
 
 if sys.version_info >= (3, 8):
@@ -201,7 +204,7 @@ def dict_value(x: object) -> Dict[Any, Any]:
     x = resolve1(x)
     if not isinstance(x, dict):
         if settings.STRICT:
-            log.error('PDFTypeError : Dict required: %r', x)
+            logger.error('PDFTypeError : Dict required: %r', x)
             raise PDFTypeError('Dict required: %r' % x)
         return {}
     return x
@@ -214,6 +217,27 @@ def stream_value(x: object) -> "PDFStream":
             raise PDFTypeError('PDFStream required: %r' % x)
         return PDFStream({}, b'')
     return x
+
+
+def decompress_corrupted(data):
+    """Called on some data that can't be properly decoded because of CRC checksum
+    error. Attempt to decode it skipping the CRC.
+    """
+    d = zlib.decompressobj()
+    f = io.BytesIO(data)
+    result_str = b''
+    buffer = f.read(1)
+    i = 0
+    try:
+        while buffer:
+            result_str += d.decompress(buffer)
+            buffer = f.read(1)
+            i += 1
+    except zlib.error:
+        # Let the error propagates if we're not yet in the CRC checksum
+        if i < len(data) - 3:
+            logger.warning("Data-loss while decompressing corrupted data")
+    return result_str
 
 
 class PDFStream(PDFObject):
@@ -303,12 +327,18 @@ class PDFStream(PDFObject):
                 # will get errors if the document is encrypted.
                 try:
                     data = zlib.decompress(data)
+
                 except zlib.error as e:
                     if settings.STRICT:
                         error_msg = 'Invalid zlib bytes: {!r}, {!r}'\
                             .format(e, data)
                         raise PDFException(error_msg)
-                    data = b''
+
+                    try:
+                        data = decompress_corrupted(data)
+                    except zlib.error:
+                        data = b''
+
             elif f in LITERALS_LZW_DECODE:
                 data = lzwdecode(data)
             elif f in LITERALS_ASCII85_DECODE:
@@ -325,6 +355,8 @@ class PDFStream(PDFObject):
                 # Just return the stream to the user.
                 pass
             elif f in LITERALS_JBIG2_DECODE:
+                pass
+            elif f in LITERALS_JPX_DECODE:
                 pass
             elif f == LITERAL_CRYPT:
                 # not yet..
