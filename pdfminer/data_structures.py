@@ -1,5 +1,5 @@
-from typing import Iterator, Tuple, Dict, Any, List, Optional
-from collections import OrderedDict
+import functools
+from typing import Tuple, Any, List, Optional
 
 from pdfminer import settings
 from pdfminer.pdfparser import PDFSyntaxError
@@ -25,8 +25,6 @@ class NumberTree:
         if 'Limits' in self._obj:
             self.limits = list_value(self._obj['Limits'])
 
-        self._values: Optional[List[Tuple[int, Any]]] = None
-
     def _parse(self) -> List[Tuple[int, Any]]:
         l = []
         if self.nums:  # Leaf node
@@ -35,30 +33,20 @@ class NumberTree:
 
         if self.kids:  # Root or intermediate node
             for child_ref in self.kids:
-                for k, v in NumberTree(child_ref).items():
+                for k, v in NumberTree(child_ref).values:
                     l.append(([k], v))
 
         return l
 
-    def _validate_and_repair(self):
-        """Validate if tree is sorted.
+    @property
+    @functools.lru_cache
+    def values(self) -> List[Tuple[int, Any]]:
+        values = self._parse()
 
-        Fix sorting if settings.STRICT is False.
-        """
         if settings.STRICT:
-            if not all(
-                    a[0] <= b[0]
-                    for a, b in zip(self._values, self._values[1:])
-            ):
+            if not all(a[0] <= b[0] for a, b in zip(values, values[1:])):
                 raise PDFSyntaxError('PageLabels are out of order')
-
         else:
-            self._values.sort(key=lambda t: t[0])
+            values.sort(key=lambda t: t[0])
 
-    def items(self) -> Iterator[Tuple[int, Any]]:
-        """Walk number tree node dictionary yielding (key, value) pairs."""
-        if self._values is None:
-            self._values = self._parse()
-            self._validate_and_repair()
-        yield from self._values
-
+        return values

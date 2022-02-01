@@ -13,7 +13,7 @@ from . import settings
 from .arcfour import Arcfour
 from .data_structures import NumberTree
 from .pdfparser import PDFSyntaxError, PDFParser, PDFStreamParser
-from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream,\
+from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream, \
     PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
     uint_value, dict_value, stream_value
 from .psparser import PSEOF, literal_name, LIT, KWD
@@ -914,12 +914,11 @@ class PDFDocument:
         assert self.catalog is not None
 
         try:
-            page_label_tree = NumberTree(self.catalog['PageLabels'])
+            page_labels = PageLabels(self.catalog['PageLabels'])
         except (PDFTypeError, KeyError):
             raise PDFNoPageLabels
 
-        page_labels = PageLabels(page_label_tree)
-        return page_labels.iter()
+        return page_labels.labels
 
     def lookup_name(
         self,
@@ -1022,16 +1021,15 @@ class PDFDocument:
         return
 
 
-class PageLabels:
+class PageLabels(NumberTree):
     """PageLabels from the document catalog.
 
     See Section 8.3.1 in the PDF Reference.
     """
-    def __init__(self, obj: NumberTree):
-        self.obj = obj
 
-    def iter(self) -> Iterator[str]:
-        ranges = list(self.obj.items())
+    @property
+    def labels(self) -> Iterator[str]:
+        ranges = self.values  # type: List[Tuple[Optional[int], Any]]
 
         # The tree must begin with page index 0
         if len(ranges) == 0 or ranges[0][0] != 0:
@@ -1078,4 +1076,3 @@ class PageLabels:
             log.warning('Unknown page label style: %r', style)
             label = ''
         return label
-
