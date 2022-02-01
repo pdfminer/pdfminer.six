@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Support for identity cmap's ([#626](https://github.com/pdfminer/pdfminer.six/pull/626))
 
 ### Fixed
-- Only call fallback to find the ROOT if `PDFNoValidXRef` is raised and `fallback` is True.
+- Only use xref fallback if `PDFNoValidXRef` is raised and `fallback` is True ([#684](https://github.com/pdfminer/pdfminer.six/pull/684))
 
 ## [20211012]
 
