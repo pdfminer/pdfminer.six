@@ -44,13 +44,11 @@ class CMapBase:
     def __init__(self, **kwargs: object) -> None:
         self.attrs: MutableMapping[str, object] = kwargs.copy()
 
-
     def is_vertical(self) -> bool:
         return self.attrs.get('WMode', 0) != 0
 
     def set_attr(self, k: str, v: object) -> None:
         self.attrs[k] = v
-
 
     def add_code2cid(self, code: str, cid: int) -> None:
         pass

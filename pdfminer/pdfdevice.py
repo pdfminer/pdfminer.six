@@ -28,7 +28,6 @@ class PDFDevice:
         self.rsrcmgr = rsrcmgr
         self.ctm: Optional[Matrix] = None
 
-
     def __repr__(self) -> str:
         return '<PDFDevice>'
 
@@ -48,7 +47,6 @@ class PDFDevice:
 
     def set_ctm(self, ctm: Matrix) -> None:
         self.ctm = ctm
-
 
     def begin_tag(
         self,

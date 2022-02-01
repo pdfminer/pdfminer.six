@@ -53,7 +53,6 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         self.laparams = laparams
         self._stack: List[LTLayoutContainer] = []
 
-
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
         (x0, y0, x1, y1) = page.mediabox
         (x0, y0) = apply_matrix_pt(ctm, (x0, y0))

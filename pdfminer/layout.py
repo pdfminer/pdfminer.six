@@ -29,7 +29,6 @@ class IndexAssigner:
     def __init__(self, index: int = 0) -> None:
         self.index = index
 
-
     def run(self, obj: "LTItem") -> None:
         if isinstance(obj, LTTextBox):
             obj.index = self.index
