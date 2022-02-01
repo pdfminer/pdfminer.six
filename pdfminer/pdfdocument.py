@@ -107,7 +107,6 @@ class PDFXRef(PDFBaseXRef):
     def __init__(self) -> None:
         self.offsets: Dict[int, Tuple[Optional[int], int, int]] = {}
         self.trailer: Dict[str, Any] = {}
-        return
 
     def __repr__(self) -> str:
         return '<PDFXRef: offsets=%r>' % (self.offsets.keys())
@@ -152,7 +151,6 @@ class PDFXRef(PDFBaseXRef):
                 self.offsets[objid] = (None, int(pos_b), int(genno_b))
         log.info('xref objects: %r', self.offsets)
         self.load_trailer(parser)
-        return
 
     def load_trailer(self, parser: PDFParser) -> None:
         try:
@@ -166,7 +164,6 @@ class PDFXRef(PDFBaseXRef):
             (_, dic) = x[0]
         self.trailer.update(dict_value(dic))
         log.debug('trailer=%r', self.trailer)
-        return
 
     def get_trailer(self) -> Dict[str, Any]:
         return self.trailer
@@ -232,7 +229,6 @@ class PDFXRefFallback(PDFXRef):
                 for index in range(n):
                     objid1 = objs[index*2]
                     self.offsets[objid1] = (objid, index, 0)
-        return
 
 
 class PDFXRefStream(PDFBaseXRef):
@@ -244,7 +240,6 @@ class PDFXRefStream(PDFBaseXRef):
         self.fl2: Optional[int] = None
         self.fl3: Optional[int] = None
         self.ranges: List[Tuple[int, int]] = []
-        return
 
     def __repr__(self) -> str:
         return '<PDFXRefStream: ranges=%r>' % (self.ranges)
@@ -713,12 +708,12 @@ class PDFDocument:
             pos = self.find_xref(parser)
             self.read_xref_from(parser, pos, self.xrefs)
         except PDFNoValidXRef:
-            pass  # fallback = True
-        if fallback:
-            parser.fallback = True
-            newxref = PDFXRefFallback()
-            newxref.load(parser)
-            self.xrefs.append(newxref)
+            if fallback:
+                parser.fallback = True
+                newxref = PDFXRefFallback()
+                newxref.load(parser)
+                self.xrefs.append(newxref)
+
         for xref in self.xrefs:
             trailer = xref.get_trailer()
             if not trailer:

@@ -1,18 +1,18 @@
 import itertools
 import logging
-from pdfminer.utils import Rect
 from typing import BinaryIO, Container, Dict, Iterator, List, Optional, Tuple
+
+from pdfminer.utils import Rect
 from . import settings
-from .psparser import LIT
-from .pdftypes import PDFObjectNotFound
-from .pdftypes import resolve1
-from .pdftypes import int_value
-from .pdftypes import list_value
-from .pdftypes import dict_value
-from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument, PDFTextExtractionNotAllowed, \
     PDFNoPageLabels
-
+from .pdfparser import PDFParser
+from .pdftypes import PDFObjectNotFound
+from .pdftypes import dict_value
+from .pdftypes import int_value
+from .pdftypes import list_value
+from .pdftypes import resolve1
+from .psparser import LIT
 
 log = logging.getLogger(__name__)
 
@@ -79,7 +79,6 @@ class PDFPage:
         if not isinstance(contents, list):
             contents = [contents]
         self.contents: List[object] = contents
-        return
 
     def __repr__(self) -> str:
         return '<PDFPage: Resources={!r}, MediaBox={!r}>'\
