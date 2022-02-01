@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from . import settings
 from .arcfour import Arcfour
 from .pdfparser import PDFSyntaxError, PDFParser, PDFStreamParser
-from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream,\
+from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream, \
     PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
     uint_value, dict_value, stream_value
 from .psparser import PSEOF, literal_name, LIT, KWD
@@ -690,17 +690,16 @@ class PDFDocument:
         self.is_printable = self.is_modifiable = self.is_extractable = True
         # Retrieve the information of each header that was appended
         # (maybe multiple times) at the end of the document.
-        no_valid_xref_found = False
         try:
             pos = self.find_xref(parser)
             self.read_xref_from(parser, pos, self.xrefs)
         except PDFNoValidXRef:
-            no_valid_xref_found = True
-        if fallback and no_valid_xref_found:
-            parser.fallback = True
-            newxref = PDFXRefFallback()
-            newxref.load(parser)
-            self.xrefs.append(newxref)
+            if fallback:
+                parser.fallback = True
+                newxref = PDFXRefFallback()
+                newxref.load(parser)
+                self.xrefs.append(newxref)
+
         for xref in self.xrefs:
             trailer = xref.get_trailer()
             if not trailer:
