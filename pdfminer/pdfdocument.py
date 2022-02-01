@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from . import settings
 from .arcfour import Arcfour
 from .pdfparser import PDFSyntaxError, PDFParser, PDFStreamParser
-from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream,\
+from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream, \
     PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
     uint_value, dict_value, stream_value
 from .psparser import PSEOF, literal_name, LIT, KWD
@@ -706,12 +706,12 @@ class PDFDocument:
             pos = self.find_xref(parser)
             self.read_xref_from(parser, pos, self.xrefs)
         except PDFNoValidXRef:
-            pass  # fallback = True
-        if fallback:
-            parser.fallback = True
-            newxref = PDFXRefFallback()
-            newxref.load(parser)
-            self.xrefs.append(newxref)
+            if fallback:
+                parser.fallback = True
+                newxref = PDFXRefFallback()
+                newxref.load(parser)
+                self.xrefs.append(newxref)
+
         for xref in self.xrefs:
             trailer = xref.get_trailer()
             if not trailer:
