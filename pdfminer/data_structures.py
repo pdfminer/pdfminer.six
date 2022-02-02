@@ -1,5 +1,5 @@
 import functools
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Iterable, List, Optional, Tuple
 
 from pdfminer import settings
 from pdfminer.pdfparser import PDFSyntaxError
@@ -26,20 +26,20 @@ class NumberTree:
             self.limits = list_value(self._obj['Limits'])
 
     def _parse(self) -> List[Tuple[int, Any]]:
-        l = []
+        items = []
         if self.nums:  # Leaf node
             for k, v in choplist(2, self.nums):
-                l.append((int_value(k), v))
+                items.append((int_value(k), v))
 
         if self.kids:  # Root or intermediate node
             for child_ref in self.kids:
-                l += NumberTree(child_ref)._parse()
+                items += NumberTree(child_ref)._parse()
 
-        return l
+        return items
 
     values: List[Tuple[int, Any]]  # workaround decorators unsupported by mypy
 
-    @property  # type: ignore [no-redef,misc]
+    @property  # type: ignore[no-redef,misc]
     @functools.lru_cache
     def values(self) -> List[Tuple[int, Any]]:
         values = self._parse()
