@@ -9,6 +9,7 @@ env:
 jobs:
 
   check-coding-style:
+    name: Check coding style
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -26,6 +27,7 @@ jobs:
           nox --error-on-missing-interpreters --non-interactive --session lint
 
   check-static-types:
+    name: Check static types
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -43,6 +45,7 @@ jobs:
           nox --error-on-missing-interpreters --non-interactive --session types
 
   tests:
+    name: Run tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -73,6 +76,7 @@ jobs:
           nox --non-interactive --session tests-${{ matrix.python-version }}
 
   build-docs:
+    name: Test building docs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
