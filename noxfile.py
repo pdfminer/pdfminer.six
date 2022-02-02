@@ -18,7 +18,7 @@ def lint(session):
 
 
 @nox.session
-def mypy(session):
+def types(session):
     session.install('mypy')
     session.run(
         'mypy',

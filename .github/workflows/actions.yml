@@ -1,26 +1,18 @@
-# https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions
-# https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
-#
-# Needed GitHub Repository Secret:
-#   PYPI_PASSWORD - PyPI API token allowing write, release access to PyPI.
-#     Limit scope to just project.
-#     (See package.python.org example link above.)
-
-name: On push
+name: Continuous integration
 
 on:
   push:
 
-# If changing default-python be sure to change job "tests" matrix: include: also
 env:
   default-python: "3.10"
 
 jobs:
 
-  lint:
+  check-coding-style:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Set up Python ${{ env.default-python }}
         uses: actions/setup-python@v2
         with:
@@ -29,14 +21,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install nox
-      - name: Lint
+      - name: Check coding style
         run: |
           nox --error-on-missing-interpreters --non-interactive --session lint
 
-  mypy:
+  check-static-types:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Set up Python ${{ env.default-python }}
         uses: actions/setup-python@v2
         with:
@@ -45,7 +38,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install nox
-      - name: Mypy
+      - name: Check static types
         run: |
           nox --error-on-missing-interpreters --non-interactive --session mypy
 
@@ -56,40 +49,42 @@ jobs:
         os: [ ubuntu-latest ]
         python-version: [ "3.6", "3.7", "3.8", "3.9", "3.10" ]
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Get pip cache dir
+      - name: Determine pip cache directory
         id: pip-cache
         run: |
           echo "::set-output name=dir::$(pip cache dir)"
-      - name: Persistent Github pip cache
+      - name: Cache pip cache
         uses: actions/cache@v2
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: ${{ runner.os }}-pip${{ matrix.python-version }}
-      - name: Upgrade pip, Install nox
+      - name: Upgrade pip and install nox
         run: |
           python -m pip install --upgrade pip
           python -m pip install nox
-      - name: Execute Tests
+      - name: Run tests
         run: |
           nox --non-interactive --session tests-${{ matrix.python-version }}
 
-  docs:
+  build-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Set up Python ${{ env.default-python }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ env.default-python }}
-      - name: Upgrade pip, Install nox
+      - name: Upgrade pip and install nox
         run: |
           python -m pip install --upgrade pip
           python -m pip install nox
-      - name: Lint
+      - name: Build docs
         run: |
           nox --error-on-missing-interpreters --non-interactive --session docs
