@@ -40,7 +40,7 @@ jobs:
           python -m pip install nox
       - name: Check static types
         run: |
-          nox --error-on-missing-interpreters --non-interactive --session mypy
+          nox --error-on-missing-interpreters --non-interactive --session types
 
   tests:
     runs-on: ${{ matrix.os }}
