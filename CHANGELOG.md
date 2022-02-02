@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Export type annotations from pypi package per PEP561 ([#679](https://github.com/pdfminer/pdfminer.six/pull/679))
 - Support for identity cmap's ([#626](https://github.com/pdfminer/pdfminer.six/pull/626))
 - Add support for PDF page labels ([#680](https://github.com/pdfminer/pdfminer.six/pull/680))
-- Converter for the hOCR format ([#651](https://github.com/pdfminer/pdfminer.six/pull/651))
+- Output converter for the hOCR format ([#651](https://github.com/pdfminer/pdfminer.six/pull/651))
 
 ### Fixed
 - Hande decompression error due to CRC checksum error ([#637](https://github.com/pdfminer/pdfminer.six/pull/637))
