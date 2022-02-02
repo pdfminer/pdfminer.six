@@ -36,10 +36,11 @@ class TestPdfDocument(object):
             assert list(itertools.islice(doc.get_page_labels(), total_pages)) \
                    == ['iii', 'iv', '1', '2', '1']
 
-    @raises(PDFNoPageLabels)
     def test_no_page_labels(self):
         path = absolute_sample_path('simple1.pdf')
         with open(path, 'rb') as fp:
             parser = PDFParser(fp)
             doc = PDFDocument(parser)
-            doc.get_page_labels()
+
+            with pytest.raises(PDFNoPageLabels):
+                doc.get_page_labels()
