@@ -1,4 +1,3 @@
-import functools
 from typing import Any, Iterable, List, Optional, Tuple
 
 from pdfminer import settings
@@ -40,7 +39,6 @@ class NumberTree:
     values: List[Tuple[int, Any]]  # workaround decorators unsupported by mypy
 
     @property  # type: ignore[no-redef,misc]
-    @functools.lru_cache(maxsize=1)
     def values(self) -> List[Tuple[int, Any]]:
         values = self._parse()
 
