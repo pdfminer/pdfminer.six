@@ -1,27 +1,25 @@
-import zlib
-import warnings
-import logging
 import io
+import logging
 import sys
+import zlib
 from typing import (TYPE_CHECKING, Any, Dict, Iterable, Optional, Union, List,
                     Tuple, cast)
 
-from .lzw import lzwdecode
+from . import settings
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
-from .runlength import rldecode
 from .ccitt import ccittfaxdecode
+from .lzw import lzwdecode
+from .psparser import LIT
 from .psparser import PSException
 from .psparser import PSObject
-from .psparser import LIT
-from . import settings
+from .runlength import rldecode
 from .utils import apply_png_predictor
 
 if TYPE_CHECKING:
     from .pdfdocument import PDFDocument
 
-
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 LITERAL_CRYPT = LIT('Crypt')
 
@@ -89,7 +87,6 @@ class PDFObjRef(PDFObject):
                 raise PDFValueError('PDF object id cannot be 0.')
         self.doc = doc
         self.objid = objid
-        return
 
     def __repr__(self) -> str:
         return '<PDFObjRef:%d>' % (self.objid)
@@ -205,7 +202,7 @@ def dict_value(x: object) -> Dict[Any, Any]:
     x = resolve1(x)
     if not isinstance(x, dict):
         if settings.STRICT:
-            log.error('PDFTypeError : Dict required: %r', x)
+            logger.error('PDFTypeError : Dict required: %r', x)
             raise PDFTypeError('Dict required: %r' % x)
         return {}
     return x
@@ -220,7 +217,7 @@ def stream_value(x: object) -> "PDFStream":
     return x
 
 
-def decompress_corrupted(data):
+def decompress_corrupted(data: bytes) -> bytes:
     """Called on some data that can't be properly decoded because of CRC checksum
     error. Attempt to decode it skipping the CRC.
     """
@@ -237,9 +234,7 @@ def decompress_corrupted(data):
     except zlib.error:
         # Let the error propagates if we're not yet in the CRC checksum
         if i < len(data) - 3:
-            # Import here to prevent circualr import
-            from .pdfdocument import PDFEncryptionWarning
-            warnings.warn("Data-loss while decompressing corrupted data", PDFEncryptionWarning)
+            logger.warning("Data-loss while decompressing corrupted data")
     return result_str
 
 
@@ -258,12 +253,10 @@ class PDFStream(PDFObject):
         self.data: Optional[bytes] = None
         self.objid: Optional[int] = None
         self.genno: Optional[int] = None
-        return
 
     def set_objid(self, objid: int, genno: int) -> None:
         self.objid = objid
         self.genno = genno
-        return
 
     def __repr__(self) -> str:
         if self.data is None:

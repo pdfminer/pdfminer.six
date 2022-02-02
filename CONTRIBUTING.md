@@ -60,11 +60,11 @@ Any contribution is appreciated! You might want to:
     On all Python versions:
 
     ```sh
-    tox
+    nox
    ```
    
    Or on a single Python version:
    
    ```sh
-    tox -e py36
+    nox -e py36
     ```
