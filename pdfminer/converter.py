@@ -743,7 +743,7 @@ class HOCRConverter(PDFConverter):
 
     def bbox_repr(self, bbox):
         (x0, y0, x1, y1) = bbox
-        # pdf y-coordinates are the other way round from hOCR coordinates
+        # PDF y-coordinates are the other way round from hOCR coordinates
         return " ".join((
             "bbox",
             str(round(x0, 3)),
