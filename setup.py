@@ -1,6 +1,10 @@
+import sys
+from pathlib import Path
+
 from setuptools import setup
 from os import path
 
+sys.path.append(str(Path(__file__).parent))
 import pdfminer as package
 
 
@@ -17,7 +21,7 @@ setup(
         'cryptography',
     ],
     extras_require={
-        "dev": ["nose", "tox", "mypy == 0.910"],
+        "dev": ["pytest", "nox", "mypy == 0.931"],
         "docs": ["sphinx", "sphinx-argparse"],
     },
     description='PDF parser and analyzer',

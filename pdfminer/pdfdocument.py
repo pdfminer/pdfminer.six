@@ -13,9 +13,9 @@ from . import settings
 from .arcfour import Arcfour
 from .data_structures import NumberTree
 from .pdfparser import PDFSyntaxError, PDFParser, PDFStreamParser
-from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream, \
-    PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
-    uint_value, dict_value, stream_value
+from .pdftypes import DecipherCallable, PDFException, PDFTypeError, \
+    PDFStream, PDFObjectNotFound, decipher_all, int_value, str_value, \
+    list_value, uint_value, dict_value, stream_value
 from .psparser import PSEOF, literal_name, LIT, KWD
 from .utils import choplist, decode_text, nunpack, format_int_roman, \
     format_int_alpha
@@ -48,6 +48,10 @@ class PDFDestinationNotFound(PDFException):
 
 
 class PDFEncryptionError(PDFException):
+    pass
+
+
+class PDFPasswordIncorrect(PDFEncryptionError):
     pass
 
 

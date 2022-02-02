@@ -202,7 +202,10 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
         parsed_args.page_numbers = {x-1 for x in parsed_args.page_numbers}
 
     if parsed_args.pagenos:
-        parsed_args.page_numbers = {int(x)-1 for x in parsed_args.pagenos.split(",")}
+        parsed_args.page_numbers = {
+            int(x) - 1
+            for x in parsed_args.pagenos.split(",")
+        }
 
     if parsed_args.output_type == "text" and parsed_args.outfile != "-":
         for override, alttype in OUTPUT_TYPES:

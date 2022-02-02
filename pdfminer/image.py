@@ -2,7 +2,7 @@ import os
 import os.path
 import struct
 from io import BytesIO
-from typing import BinaryIO, Tuple
+from typing import BinaryIO, Tuple, List, Any
 
 from .jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from .layout import LTImage
@@ -104,6 +104,7 @@ class ImageWriter:
             # seems to be easily opened by other programs
             from PIL import Image
             raw_data = image.stream.get_rawdata()
+            assert raw_data is not None
             ifp = BytesIO(raw_data)
             i = Image.open(ifp)
             i.save(fp, 'JPEG2000')
@@ -162,7 +163,7 @@ class ImageWriter:
         return is_jbig2
 
     @staticmethod
-    def jbig2_global(image):
+    def jbig2_global(image: LTImage) -> List[Any]:
         global_streams = []
         filters = image.stream.get_filters()
         for filter_name, params in filters:
