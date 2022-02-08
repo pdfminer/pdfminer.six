@@ -789,20 +789,6 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         yield line
         return
 
-    def _exclude_lines(
-        self,
-        lines: Iterable[LTTextLine]
-    ) -> Iterable[LTTextLine]:
-        """Remove any spurious horizontal lines without text"""
-        include_lines: List[LTTextLine] = []
-        for line in lines:
-            if isinstance(line, LTTextLineHorizontal) or isinstance(line, LTTextLineVertical):
-                if line.get_text().strip() != '':
-                    include_lines.append(line)
-            else:
-                include_lines.append(line)
-        return(include_lines)
-
     def group_textlines(
         self,
         laparams: LAParams,
@@ -810,7 +796,6 @@ class LTLayoutContainer(LTContainer[LTComponent]):
     ) -> Iterator[LTTextBox]:
         """Group neighboring lines to textboxes"""
         plane: Plane[LTTextLine] = Plane(self.bbox)
-        # lines = self._exclude_lines(lines)
         plane.extend(lines)
         boxes: Dict[LTTextLine, LTTextBox] = {}
         for line in lines:
