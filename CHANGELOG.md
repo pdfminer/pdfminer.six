@@ -8,9 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [20211109]
 
 ### Added
-- Support for removal of spurious lines that have posed issues in some malformed PDF files ([#499](https://github.com/pdfminer/pdfminer.six/pull/499))
-
-### Added
 - Export type annotations from pypi package per PEP561 ([#679](https://github.com/pdfminer/pdfminer.six/pull/679))
 - Support for identity cmap's ([#626](https://github.com/pdfminer/pdfminer.six/pull/626))
 - Add support for PDF page labels ([#680](https://github.com/pdfminer/pdfminer.six/pull/680))
@@ -22,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fix extraction of jbig2 files, which was producing invalid files ([#652](https://github.com/pdfminer/pdfminer.six/pull/653))
 - Crash in `pdf2txt.py --boxes-flow=disabled` ([#682](https://github.com/pdfminer/pdfminer.six/pull/682))
 - Only use xref fallback if `PDFNoValidXRef` is raised and `fallback` is True ([#684](https://github.com/pdfminer/pdfminer.six/pull/684))
+- Ignore empty characters when analyzing layout ([#499](https://github.com/pdfminer/pdfminer.six/pull/499))
 
 ### Changed
 - Replace warnings.warn with logging.Logger.warning in line with [recommended use](https://docs.python.org/3/howto/logging.html#when-to-use-logging) ([#673](https://github.com/pdfminer/pdfminer.six/pull/673))
