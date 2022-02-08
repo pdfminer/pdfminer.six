@@ -3,6 +3,11 @@ import logging
 from typing import (Dict, Generic, Iterable, Iterator, List, Optional,
                     Sequence, Set, Tuple, TypeVar, Union, cast)
 
+from .pdfcolor import PDFColorSpace
+from .pdffont import PDFFont
+from .pdfinterp import Color
+from .pdfinterp import PDFGraphicState
+from .pdftypes import PDFStream
 from .utils import INF
 from .utils import LTComponentT
 from .utils import Matrix
@@ -15,11 +20,6 @@ from .utils import fsplit
 from .utils import get_bound
 from .utils import matrix2str
 from .utils import uniq
-from .pdfcolor import PDFColorSpace
-from .pdftypes import PDFStream
-from .pdfinterp import Color
-from .pdfinterp import PDFGraphicState
-from .pdffont import PDFFont
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,6 @@ class IndexAssigner:
 
     def __init__(self, index: int = 0) -> None:
         self.index = index
-        return
 
     def run(self, obj: "LTItem") -> None:
         if isinstance(obj, LTTextBox):
@@ -37,7 +36,6 @@ class IndexAssigner:
         elif isinstance(obj, LTTextGroup):
             for x in obj:
                 self.run(x)
-        return
 
 
 class LAParams:
@@ -87,7 +85,6 @@ class LAParams:
         self.all_texts = all_texts
 
         self._validate()
-        return
 
     def _validate(self) -> None:
         if self.boxes_flow is not None:
@@ -111,7 +108,7 @@ class LTItem:
 
     def analyze(self, laparams: LAParams) -> None:
         """Perform the layout analysis."""
-        return
+        pass
 
 
 class LTText:
@@ -132,7 +129,6 @@ class LTComponent(LTItem):
     def __init__(self, bbox: Rect) -> None:
         LTItem.__init__(self)
         self.set_bbox(bbox)
-        return
 
     def __repr__(self) -> str:
         return ('<%s %s>' %
@@ -160,7 +156,6 @@ class LTComponent(LTItem):
         self.width = x1-x0
         self.height = y1-y0
         self.bbox = bbox
-        return
 
     def is_empty(self) -> bool:
         return self.width <= 0 or self.height <= 0
@@ -223,7 +218,6 @@ class LTCurve(LTComponent):
         self.evenodd = evenodd
         self.stroking_color = stroking_color
         self.non_stroking_color = non_stroking_color
-        return
 
     def get_pts(self) -> str:
         return ','.join('%.3f,%.3f' % p for p in self.pts)
@@ -248,7 +242,6 @@ class LTLine(LTCurve):
     ) -> None:
         LTCurve.__init__(self, linewidth, [p0, p1], stroke, fill, evenodd,
                          stroking_color, non_stroking_color)
-        return
 
 
 class LTRect(LTCurve):
@@ -271,7 +264,6 @@ class LTRect(LTCurve):
         LTCurve.__init__(self, linewidth,
                          [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke,
                          fill, evenodd, stroking_color, non_stroking_color)
-        return
 
 
 class LTImage(LTComponent):
@@ -291,7 +283,6 @@ class LTImage(LTComponent):
         self.colorspace = stream.get_any(('CS', 'ColorSpace'))
         if not isinstance(self.colorspace, list):
             self.colorspace = [self.colorspace]
-        return
 
     def __repr__(self) -> str:
         return ('<%s(%s) %s %r>' %
@@ -889,7 +880,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
             (skip_isany, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
             # Skip objects that are already merged
             if (id1 not in done) and (id2 not in done):
-                if skip_isany and isany(obj1, obj2):
+                if not skip_isany and isany(obj1, obj2):
                     heapq.heappush(dists, (True, d, id1, id2, obj1, obj2))
                     continue
                 if isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or \

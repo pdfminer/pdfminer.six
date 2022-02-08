@@ -1,3 +1,4 @@
+import itertools
 import logging
 import re
 import struct
@@ -10,12 +11,14 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from . import settings
 from .arcfour import Arcfour
+from .data_structures import NumberTree
 from .pdfparser import PDFSyntaxError, PDFParser, PDFStreamParser
-from .pdftypes import DecipherCallable, PDFException, PDFTypeError, PDFStream,\
-    PDFObjectNotFound, decipher_all, int_value, str_value, list_value, \
-    uint_value, dict_value, stream_value
+from .pdftypes import DecipherCallable, PDFException, PDFTypeError, \
+    PDFStream, PDFObjectNotFound, decipher_all, int_value, str_value, \
+    list_value, uint_value, dict_value, stream_value
 from .psparser import PSEOF, literal_name, LIT, KWD
-from .utils import choplist, nunpack, decode_text
+from .utils import choplist, decode_text, nunpack, format_int_roman, \
+    format_int_alpha
 
 log = logging.getLogger(__name__)
 
@@ -25,10 +28,18 @@ class PDFNoValidXRef(PDFSyntaxError):
 
 
 class PDFNoValidXRefWarning(SyntaxWarning):
+    """Legacy warning for missing xref.
+
+    Not used anymore because warnings.warn is replaced by logger.Logger.warn.
+    """
     pass
 
 
 class PDFNoOutlines(PDFException):
+    pass
+
+
+class PDFNoPageLabels(PDFException):
     pass
 
 
@@ -44,7 +55,19 @@ class PDFPasswordIncorrect(PDFEncryptionError):
     pass
 
 
+class PDFEncryptionWarning(UserWarning):
+    """Legacy warning for failed decryption.
+
+    Not used anymore because warnings.warn is replaced by logger.Logger.warn.
+    """
+    pass
+
+
 class PDFTextExtractionNotAllowedWarning(UserWarning):
+    """Legacy warning for PDF that does not allow extraction.
+
+    Not used anymore because warnings.warn is replaced by logger.Logger.warn.
+    """
     pass
 
 
@@ -88,7 +111,6 @@ class PDFXRef(PDFBaseXRef):
     def __init__(self) -> None:
         self.offsets: Dict[int, Tuple[Optional[int], int, int]] = {}
         self.trailer: Dict[str, Any] = {}
-        return
 
     def __repr__(self) -> str:
         return '<PDFXRef: offsets=%r>' % (self.offsets.keys())
@@ -133,7 +155,6 @@ class PDFXRef(PDFBaseXRef):
                 self.offsets[objid] = (None, int(pos_b), int(genno_b))
         log.info('xref objects: %r', self.offsets)
         self.load_trailer(parser)
-        return
 
     def load_trailer(self, parser: PDFParser) -> None:
         try:
@@ -147,7 +168,6 @@ class PDFXRef(PDFBaseXRef):
             (_, dic) = x[0]
         self.trailer.update(dict_value(dic))
         log.debug('trailer=%r', self.trailer)
-        return
 
     def get_trailer(self) -> Dict[str, Any]:
         return self.trailer
@@ -213,7 +233,6 @@ class PDFXRefFallback(PDFXRef):
                 for index in range(n):
                     objid1 = objs[index*2]
                     self.offsets[objid1] = (objid, index, 0)
-        return
 
 
 class PDFXRefStream(PDFBaseXRef):
@@ -225,7 +244,6 @@ class PDFXRefStream(PDFBaseXRef):
         self.fl2: Optional[int] = None
         self.fl3: Optional[int] = None
         self.ranges: List[Tuple[int, int]] = []
-        return
 
     def __repr__(self) -> str:
         return '<PDFXRefStream: ranges=%r>' % (self.ranges)
@@ -694,12 +712,12 @@ class PDFDocument:
             pos = self.find_xref(parser)
             self.read_xref_from(parser, pos, self.xrefs)
         except PDFNoValidXRef:
-            pass  # fallback = True
-        if fallback:
-            parser.fallback = True
-            newxref = PDFXRefFallback()
-            newxref.load(parser)
-            self.xrefs.append(newxref)
+            if fallback:
+                parser.fallback = True
+                newxref = PDFXRefFallback()
+                newxref.load(parser)
+                self.xrefs.append(newxref)
+
         for xref in self.xrefs:
             trailer = xref.get_trailer()
             if not trailer:
@@ -883,6 +901,24 @@ class PDFDocument:
             return
         return search(self.catalog['Outlines'], 0)
 
+    def get_page_labels(self) -> Iterator[str]:
+        """
+        Generate page label strings for the PDF document.
+
+        If the document includes page labels, generates strings, one per page.
+        If not, raises PDFNoPageLabels.
+
+        The resulting iteration is unbounded.
+        """
+        assert self.catalog is not None
+
+        try:
+            page_labels = PageLabels(self.catalog['PageLabels'])
+        except (PDFTypeError, KeyError):
+            raise PDFNoPageLabels
+
+        return page_labels.labels
+
     def lookup_name(
         self,
         cat: str,
@@ -982,3 +1018,61 @@ class PDFDocument:
             pos = int_value(trailer['Prev'])
             self.read_xref_from(parser, pos, xrefs)
         return
+
+
+class PageLabels(NumberTree):
+    """PageLabels from the document catalog.
+
+    See Section 8.3.1 in the PDF Reference.
+    """
+
+    @property
+    def labels(self) -> Iterator[str]:
+        ranges = self.values
+
+        # The tree must begin with page index 0
+        if len(ranges) == 0 or ranges[0][0] != 0:
+            if settings.STRICT:
+                raise PDFSyntaxError('PageLabels is missing page index 0')
+            else:
+                # Try to cope, by assuming empty labels for the initial pages
+                ranges.insert(0, (0, {}))
+
+        for (next, (start, label_dict_unchecked)) in enumerate(ranges, 1):
+            label_dict = dict_value(label_dict_unchecked)
+            style = label_dict.get('S')
+            prefix = decode_text(str_value(label_dict.get('P', b'')))
+            first_value = int_value(label_dict.get('St', 1))
+
+            if next == len(ranges):
+                # This is the last specified range. It continues until the end
+                # of the document.
+                values: Iterable[int] = itertools.count(first_value)
+            else:
+                end, _ = ranges[next]
+                range_length = end - start
+                values = range(first_value, first_value + range_length)
+
+            for value in values:
+                label = self._format_page_label(value, style)
+                yield prefix + label
+
+    @staticmethod
+    def _format_page_label(value: int, style: Any) -> str:
+        """Format page label value in a specific style"""
+        if style is None:
+            label = ''
+        elif style is LIT('D'):  # Decimal arabic numerals
+            label = str(value)
+        elif style is LIT('R'):  # Uppercase roman numerals
+            label = format_int_roman(value).upper()
+        elif style is LIT('r'):  # Lowercase roman numerals
+            label = format_int_roman(value)
+        elif style is LIT('A'):  # Uppercase letters A-Z, AA-ZZ...
+            label = format_int_alpha(value).upper()
+        elif style is LIT('a'):  # Lowercase letters a-z, aa-zz...
+            label = format_int_alpha(value)
+        else:
+            log.warning('Unknown page label style: %r', style)
+            label = ''
+        return label

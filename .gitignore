@@ -17,6 +17,7 @@ tests/*.xml
 tests/*.txt
 .idea/
 .tox/
+.nox/
 
 # python venv management tools
 Pipfile
