@@ -466,9 +466,8 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         LTContainer.add(self, LTAnno('\n'))
         return
 
-    def find_neighbors(
-            self, plane: Plane[LTComponentT], ratio: float
-            ) -> List["LTTextLine"]:
+    def find_neighbors(self, plane: Plane[LTComponentT], ratio: float
+                       ) -> List["LTTextLine"]:
         raise NotImplementedError
 
     def is_empty(self) -> bool:
