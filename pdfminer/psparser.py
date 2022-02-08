@@ -200,7 +200,7 @@ class PSBaseParser:
         if not pos:
             pos = self.bufpos+self.charpos
         self.fp.seek(pos)
-        log.info('poll(%d): %r', pos, self.fp.read(n))
+        log.debug('poll(%d): %r', pos, self.fp.read(n))
         self.fp.seek(pos0)
         return
 
