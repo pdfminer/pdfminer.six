@@ -1,12 +1,14 @@
 import unittest
 
+from pdfminer.high_level import extract_pages
 from pdfminer.layout import (
     LTLayoutContainer,
     LAParams,
     LTTextLineHorizontal,
-    LTTextLineVertical,
+    LTTextLineVertical, LTTextBoxHorizontal, LTTextBoxVertical,
 )
 from pdfminer.utils import Plane
+from tests.helpers import absolute_sample_path
 
 
 class TestGroupTextLines(unittest.TestCase):
@@ -109,3 +111,42 @@ class TestFindNeigbors(unittest.TestCase):
                 centrally_aligned_overlapping,
             ],
         )
+
+
+def test_pdf_with_empty_characters_horizontal():
+    """Regression test for issue #449
+
+    See: https://github.com/pdfminer/pdfminer.six/pull/689
+
+    The page aggregator should separate the 3 horizontal lines in the
+    sample PDF. The used PDF sample has multiple explicit space characters
+    in between lines with text.
+    """
+    path = absolute_sample_path('contrib/issue-449-horizontal.pdf')
+    pages = extract_pages(path)
+    textboxes = [
+        textbox
+        for textbox in next(pages)
+        if isinstance(textbox, LTTextBoxHorizontal)
+    ]
+    assert len(textboxes) == 3
+
+
+def test_pdf_with_empty_characters_vertical():
+    """Regression test for issue #449
+
+    See: https://github.com/pdfminer/pdfminer.six/pull/689
+
+    The page aggregator should separate the 3 horizontal lines in the
+    sample PDF. The used PDF sample has multiple explicit space characters
+    in between lines with text.
+    """
+    path = absolute_sample_path('contrib/issue-449-vertical.pdf')
+    laparams = LAParams(detect_vertical=True)
+    pages = extract_pages(path, laparams=laparams)
+    textboxes = [
+        textbox
+        for textbox in next(pages)
+        if isinstance(textbox, LTTextBoxVertical)
+    ]
+    assert len(textboxes) == 3
