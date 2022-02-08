@@ -3,6 +3,11 @@ import logging
 from typing import (Dict, Generic, Iterable, Iterator, List, Optional,
                     Sequence, Set, Tuple, TypeVar, Union, cast)
 
+from .pdfcolor import PDFColorSpace
+from .pdffont import PDFFont
+from .pdfinterp import Color
+from .pdfinterp import PDFGraphicState
+from .pdftypes import PDFStream
 from .utils import INF
 from .utils import LTComponentT
 from .utils import Matrix
@@ -15,11 +20,6 @@ from .utils import fsplit
 from .utils import get_bound
 from .utils import matrix2str
 from .utils import uniq
-from .pdfcolor import PDFColorSpace
-from .pdftypes import PDFStream
-from .pdfinterp import Color
-from .pdfinterp import PDFGraphicState
-from .pdffont import PDFFont
 
 logger = logging.getLogger(__name__)
 
@@ -466,9 +466,13 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         LTContainer.add(self, LTAnno('\n'))
         return
 
-    def find_neighbors(self, plane: Plane[LTComponentT], ratio: float
-                       ) -> List["LTTextLine"]:
+    def find_neighbors(
+            self, plane: Plane[LTComponentT], ratio: float
+            ) -> List["LTTextLine"]:
         raise NotImplementedError
+
+    def is_empty(self) -> bool:
+        return super().is_empty() or self.get_text().isspace()
 
 
 class LTTextLineHorizontal(LTTextLine):
@@ -505,23 +509,10 @@ class LTTextLineHorizontal(LTTextLine):
         objs = plane.find((self.x0, self.y0 - d, self.x1, self.y1 + d))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal) and
-                    self._is_non_empty_as(obj) and
                     self._is_same_height_as(obj, tolerance=d) and
                     (self._is_left_aligned_with(obj, tolerance=d) or
                      self._is_right_aligned_with(obj, tolerance=d) or
                      self._is_centrally_aligned_with(obj, tolerance=d)))]
-
-    def _is_non_empty_as(
-        self,
-        other: LTComponent
-    ) -> bool:
-        """
-        Whether the `other` element is non-empty.
-        """
-        try:
-            return other.get_text().strip() != ''
-        except:
-            return True
 
     def _is_left_aligned_with(
         self,
@@ -596,23 +587,10 @@ class LTTextLineVertical(LTTextLine):
         objs = plane.find((self.x0 - d, self.y0, self.x1 + d, self.y1))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineVertical) and
-                    self._is_non_empty_as(obj) and
                     self._is_same_width_as(obj, tolerance=d) and
                     (self._is_lower_aligned_with(obj, tolerance=d) or
                      self._is_upper_aligned_with(obj, tolerance=d) or
                      self._is_centrally_aligned_with(obj, tolerance=d)))]
-
-    def _is_non_empty_as(
-        self,
-        other: LTComponent
-    ) -> bool:
-        """
-        Whether the `other` element is non-empty.
-        """
-        try:
-            return other.get_text().strip() != ''
-        except:
-            return True
 
     def _is_lower_aligned_with(
         self,
@@ -832,7 +810,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
     ) -> Iterator[LTTextBox]:
         """Group neighboring lines to textboxes"""
         plane: Plane[LTTextLine] = Plane(self.bbox)
-        lines = self._exclude_lines(lines)
+        # lines = self._exclude_lines(lines)
         plane.extend(lines)
         boxes: Dict[LTTextLine, LTTextBox] = {}
         for line in lines:
