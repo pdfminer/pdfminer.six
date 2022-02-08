@@ -51,12 +51,12 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
         """Associates the parser with a PDFDocument object."""
         self.doc = doc
 
-    KEYWORD_R = KWD(b'R')
-    KEYWORD_NULL = KWD(b'null')
-    KEYWORD_ENDOBJ = KWD(b'endobj')
-    KEYWORD_STREAM = KWD(b'stream')
-    KEYWORD_XREF = KWD(b'xref')
-    KEYWORD_STARTXREF = KWD(b'startxref')
+    KEYWORD_R = KWD(b"R")
+    KEYWORD_NULL = KWD(b"null")
+    KEYWORD_ENDOBJ = KWD(b"endobj")
+    KEYWORD_STREAM = KWD(b"stream")
+    KEYWORD_XREF = KWD(b"xref")
+    KEYWORD_STARTXREF = KWD(b"startxref")
 
     def do_keyword(self, pos: int, token: PSKeyword) -> None:
         """Handles PDF-related keywords."""
@@ -76,8 +76,7 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
             if len(self.curstack) >= 2:
                 try:
                     ((_, objid), (_, genno)) = self.pop(2)
-                    (objid, genno) = (
-                        int(objid), int(genno))  # type: ignore[arg-type]
+                    (objid, genno) = (int(objid), int(genno))  # type: ignore[arg-type]
                     assert self.doc is not None
                     obj = PDFObjRef(self.doc, objid, genno)
                     self.push((pos, obj))
@@ -90,30 +89,30 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
             objlen = 0
             if not self.fallback:
                 try:
-                    objlen = int_value(dic['Length'])
+                    objlen = int_value(dic["Length"])
                 except KeyError:
                     if settings.STRICT:
-                        raise PDFSyntaxError('/Length is undefined: %r' % dic)
+                        raise PDFSyntaxError("/Length is undefined: %r" % dic)
             self.seek(pos)
             try:
                 (_, line) = self.nextline()  # 'stream'
             except PSEOF:
                 if settings.STRICT:
-                    raise PDFSyntaxError('Unexpected EOF')
+                    raise PDFSyntaxError("Unexpected EOF")
                 return
             pos += len(line)
             self.fp.seek(pos)
             data = bytearray(self.fp.read(objlen))
-            self.seek(pos+objlen)
+            self.seek(pos + objlen)
             while 1:
                 try:
                     (linepos, line) = self.nextline()
                 except PSEOF:
                     if settings.STRICT:
-                        raise PDFSyntaxError('Unexpected EOF')
+                        raise PDFSyntaxError("Unexpected EOF")
                     break
-                if b'endstream' in line:
-                    i = line.index(b'endstream')
+                if b"endstream" in line:
+                    i = line.index(b"endstream")
                     objlen += i
                     if self.fallback:
                         data += line[:i]
@@ -121,10 +120,15 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
                 objlen += len(line)
                 if self.fallback:
                     data += line
-            self.seek(pos+objlen)
+            self.seek(pos + objlen)
             # XXX limit objlen not to exceed object boundary
-            log.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...', pos,
-                      objlen, dic, data[:10])
+            log.debug(
+                "Stream: pos=%d, objlen=%d, dic=%r, data=%r...",
+                pos,
+                objlen,
+                dic,
+                data[:10],
+            )
             assert self.doc is not None
             stream = PDFStream(dic, bytes(data), self.doc.decipher)
             self.push((pos, stream))
@@ -149,15 +153,14 @@ class PDFStreamParser(PDFParser):
     def flush(self) -> None:
         self.add_results(*self.popall())
 
-    KEYWORD_OBJ = KWD(b'obj')
+    KEYWORD_OBJ = KWD(b"obj")
 
     def do_keyword(self, pos: int, token: PSKeyword) -> None:
         if token is self.KEYWORD_R:
             # reference to indirect object
             try:
                 ((_, objid), (_, genno)) = self.pop(2)
-                (objid, genno) = (
-                    int(objid), int(genno))  # type: ignore[arg-type]
+                (objid, genno) = (int(objid), int(genno))  # type: ignore[arg-type]
                 obj = PDFObjRef(self.doc, objid, genno)
                 self.push((pos, obj))
             except PSSyntaxError:
@@ -167,7 +170,7 @@ class PDFStreamParser(PDFParser):
             if settings.STRICT:
                 # See PDF Spec 3.4.6: Only the object values are stored in the
                 # stream; the obj and endobj keywords are not used.
-                raise PDFSyntaxError('Keyword endobj found in stream')
+                raise PDFSyntaxError("Keyword endobj found in stream")
             return
         # others
         self.push((pos, token))

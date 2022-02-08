@@ -6,7 +6,7 @@ from .glyphlist import glyphname2unicode
 from .latin_enc import ENCODING
 from .psparser import PSLiteral
 
-HEXADECIMAL = re.compile(r'[0-9a-fA-F]+')
+HEXADECIMAL = re.compile(r"[0-9a-fA-F]+")
 
 log = logging.getLogger(__name__)
 
@@ -25,39 +25,41 @@ def name2unicode(name: str) -> str:
     :returns unicode character if name resembles something,
     otherwise a KeyError
     """
-    name = name.split('.')[0]
-    components = name.split('_')
+    name = name.split(".")[0]
+    components = name.split("_")
 
     if len(components) > 1:
-        return ''.join(map(name2unicode, components))
+        return "".join(map(name2unicode, components))
 
     else:
         if name in glyphname2unicode:
             return glyphname2unicode[name]
 
-        elif name.startswith('uni'):
-            name_without_uni = name.strip('uni')
+        elif name.startswith("uni"):
+            name_without_uni = name.strip("uni")
 
-            if HEXADECIMAL.match(name_without_uni) and \
-                    len(name_without_uni) % 4 == 0:
-                unicode_digits = [int(name_without_uni[i:i + 4], base=16)
-                                  for i in range(0, len(name_without_uni), 4)]
+            if HEXADECIMAL.match(name_without_uni) and len(name_without_uni) % 4 == 0:
+                unicode_digits = [
+                    int(name_without_uni[i : i + 4], base=16)
+                    for i in range(0, len(name_without_uni), 4)
+                ]
                 for digit in unicode_digits:
                     raise_key_error_for_invalid_unicode(digit)
                 characters = map(chr, unicode_digits)
-                return ''.join(characters)
+                return "".join(characters)
 
-        elif name.startswith('u'):
-            name_without_u = name.strip('u')
+        elif name.startswith("u"):
+            name_without_u = name.strip("u")
 
-            if HEXADECIMAL.match(name_without_u) and \
-                    4 <= len(name_without_u) <= 6:
+            if HEXADECIMAL.match(name_without_u) and 4 <= len(name_without_u) <= 6:
                 unicode_digit = int(name_without_u, base=16)
                 raise_key_error_for_invalid_unicode(unicode_digit)
                 return chr(unicode_digit)
 
-    raise KeyError('Could not convert unicode name "%s" to character because '
-                   'it does not match specification' % name)
+    raise KeyError(
+        'Could not convert unicode name "%s" to character because '
+        "it does not match specification" % name
+    )
 
 
 def raise_key_error_for_invalid_unicode(unicode_digit: int) -> None:
@@ -67,8 +69,10 @@ def raise_key_error_for_invalid_unicode(unicode_digit: int) -> None:
     :raises KeyError if unicode digit is invalid
     """
     if 55295 < unicode_digit < 57344:
-        raise KeyError('Unicode digit %d is invalid because '
-                       'it is in the range D800 through DFFF' % unicode_digit)
+        raise KeyError(
+            "Unicode digit %d is invalid because "
+            "it is in the range D800 through DFFF" % unicode_digit
+        )
 
 
 class EncodingDB:
@@ -89,17 +93,15 @@ class EncodingDB:
             pdf2unicode[pdf] = c
 
     encodings = {
-        'StandardEncoding': std2unicode,
-        'MacRomanEncoding': mac2unicode,
-        'WinAnsiEncoding': win2unicode,
-        'PDFDocEncoding': pdf2unicode,
+        "StandardEncoding": std2unicode,
+        "MacRomanEncoding": mac2unicode,
+        "WinAnsiEncoding": win2unicode,
+        "PDFDocEncoding": pdf2unicode,
     }
 
     @classmethod
     def get_encoding(
-        cls,
-        name: str,
-        diff: Optional[Iterable[object]] = None
+        cls, name: str, diff: Optional[Iterable[object]] = None
     ) -> Dict[int, str]:
         cid2unicode = cls.encodings.get(name, cls.std2unicode)
         if diff:
