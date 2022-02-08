@@ -15,13 +15,13 @@ env:
 
 jobs:
 
-  check-blackness:
-    name: Check blackness of code
+  check-code-formatting:
+    name: Check code formatting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Check blackness
+      - name: Check code formatting
         uses: psf/black@stable
 
   check-coding-style:
