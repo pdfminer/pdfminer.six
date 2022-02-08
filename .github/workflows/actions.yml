@@ -15,6 +15,15 @@ env:
 
 jobs:
 
+  check-blackness:
+    name: Check blackness of code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Check blackness
+        uses: psf/black@stable
+
   check-coding-style:
     name: Check coding style
     runs-on: ubuntu-latest
