@@ -2,14 +2,15 @@ import os
 import os.path
 import struct
 from io import BytesIO
-from typing import BinaryIO, Tuple
+from typing import BinaryIO, Tuple, List, Any
 
 from .jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from .layout import LTImage
 from .pdfcolor import LITERAL_DEVICE_CMYK
 from .pdfcolor import LITERAL_DEVICE_GRAY
 from .pdfcolor import LITERAL_DEVICE_RGB
-from .pdftypes import LITERALS_DCT_DECODE, LITERALS_JBIG2_DECODE
+from .pdftypes import LITERALS_DCT_DECODE, LITERALS_JBIG2_DECODE, \
+    LITERALS_JPX_DECODE
 
 
 def align32(x: int) -> int:
@@ -57,12 +58,10 @@ class BMPWriter:
                 self.fp.write(struct.pack('BBBx', i, i, i))
         self.pos0 = self.fp.tell()
         self.pos1 = self.pos0 + self.datasize
-        return
 
     def write_line(self, y: int, data: bytes) -> None:
         self.fp.seek(self.pos1 - (y+1)*self.linesize)
         self.fp.write(data)
-        return
 
 
 class ImageWriter:
@@ -75,7 +74,6 @@ class ImageWriter:
         self.outdir = outdir
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
-        return
 
     def export_image(self, image: LTImage) -> str:
         (width, height) = image.srcsize
@@ -99,8 +97,26 @@ class ImageWriter:
                 i.save(fp, 'JPEG')
             else:
                 fp.write(raw_data)
+        elif ext == '.jp2':
+            # if we just write the raw data, most image programs
+            # that I have tried cannot open the file. However,
+            # open and saving with PIL produces a file that
+            # seems to be easily opened by other programs
+            from PIL import Image
+            raw_data = image.stream.get_rawdata()
+            assert raw_data is not None
+            ifp = BytesIO(raw_data)
+            i = Image.open(ifp)
+            i.save(fp, 'JPEG2000')
         elif is_jbig2:
             input_stream = BytesIO()
+            global_streams = self.jbig2_global(image)
+            if len(global_streams) > 1:
+                msg = 'There should never be more than one JBIG2Globals ' \
+                      'associated with a JBIG2 embedded image'
+                raise ValueError(msg)
+            if len(global_streams) == 1:
+                input_stream.write(global_streams[0].get_data().rstrip(b'\n'))
             input_stream.write(image.stream.get_data())
             input_stream.seek(0)
             reader = JBIG2StreamReader(input_stream)
@@ -147,6 +163,15 @@ class ImageWriter:
         return is_jbig2
 
     @staticmethod
+    def jbig2_global(image: LTImage) -> List[Any]:
+        global_streams = []
+        filters = image.stream.get_filters()
+        for filter_name, params in filters:
+            if filter_name in LITERALS_JBIG2_DECODE:
+                global_streams.append(params['JBIG2Globals'].resolve())
+        return global_streams
+
+    @staticmethod
     def _get_image_extension(
         image: LTImage,
         width: int,
@@ -156,6 +181,8 @@ class ImageWriter:
         filters = image.stream.get_filters()
         if len(filters) == 1 and filters[0][0] in LITERALS_DCT_DECODE:
             ext = '.jpg'
+        elif len(filters) == 1 and filters[0][0] in LITERALS_JPX_DECODE:
+            ext = '.jp2'
         elif is_jbig2:
             ext = '.jb2'
         elif (image.bits == 1 or

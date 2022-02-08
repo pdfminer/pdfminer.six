@@ -1,7 +1,5 @@
 import logging
 
-from nose.tools import assert_equal
-
 from pdfminer.psparser import KWD, LIT, PSBaseParser, PSStackParser, PSEOF
 
 logger = logging.getLogger(__name__)
@@ -92,11 +90,11 @@ func/a/b{(c)do*}def
     def test_1(self):
         tokens = self.get_tokens(self.TESTDATA)
         logger.info(tokens)
-        assert_equal(tokens, self.TOKENS)
+        assert tokens == self.TOKENS
         return
 
     def test_2(self):
         objs = self.get_objects(self.TESTDATA)
         logger.info(objs)
-        assert_equal(objs, self.OBJS)
+        assert objs == self.OBJS
         return
