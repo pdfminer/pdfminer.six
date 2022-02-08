@@ -1,5 +1,3 @@
-from nose.tools import assert_equal, assert_greater
-
 from pdfminer.pdffont import PDFCIDFont
 from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.psparser import PSLiteral
@@ -17,5 +15,5 @@ def test_get_cmap_from_pickle():
 
     cmap = font.get_cmap_from_spec(spec, False)
 
-    assert_equal(cmap.attrs.get('CMapName'), cmap_name)
-    assert_greater(len(cmap.code2cid), 0)
+    assert cmap.attrs.get('CMapName') == cmap_name
+    assert len(cmap.code2cid) > 0

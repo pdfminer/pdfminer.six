@@ -6,7 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Export type annotations from pypi package per PEP561 ([#679](https://github.com/pdfminer/pdfminer.six/pull/679))
 - Support for identity cmap's ([#626](https://github.com/pdfminer/pdfminer.six/pull/626))
+- Add support for PDF page labels ([#680](https://github.com/pdfminer/pdfminer.six/pull/680))
+
+### Fixed
+- Hande decompression error due to CRC checksum error ([#637](https://github.com/pdfminer/pdfminer.six/pull/637))
+- Regression (since 20191107) in `LTLayoutContainer.group_textboxes` that returned some text lines out of order ([#659](https://github.com/pdfminer/pdfminer.six/pull/659))
+- Add handling of JPXDecode filter to enable extraction of images for some pdfs ([#645](https://github.com/pdfminer/pdfminer.six/pull/645))
+- Fix extraction of jbig2 files, which was producing invalid files ([#652](https://github.com/pdfminer/pdfminer.six/pull/653))
+- Crash in `pdf2txt.py --boxes-flow=disabled` ([#682](https://github.com/pdfminer/pdfminer.six/pull/682))
+- Only use xref fallback if `PDFNoValidXRef` is raised and `fallback` is True ([#684](https://github.com/pdfminer/pdfminer.six/pull/684))
+
+### Changed
+- Replace warnings.warn with logging.Logger.warning in line with [recommended use](https://docs.python.org/3/howto/logging.html#when-to-use-logging) ([#673](https://github.com/pdfminer/pdfminer.six/pull/673))
+
+### Removed
+- Unnecessary return statements without argument at the end of functions ([#707](https://github.com/pdfminer/pdfminer.six/pull/707))
+
+### Changed
+- Switched from nose to pytest, from tox to nox and from Travis CI to GitHub Actions ([#704](https://github.com/pdfminer/pdfminer.six/pull/704))
 
 ### Fixed
 - `log.info` changed to `log.debug` in six files ([#604](https://github.com/pdfminer/pdfminer.six/issues/608))
