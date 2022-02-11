@@ -31,7 +31,7 @@ Any contribution is appreciated! You might want to:
 * Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case 
   of features, this will show that your code works correctly.
 * Code should work for Python 3.6+.
-* Code should conform to PEP8 coding style.
+* Code should be formatted with [black](https://github.com/psf/black). 
 * New features should be well documented using docstrings.
 * Check spelling and grammar.
 * Don't forget to update the [CHANGELOG.md](CHANGELOG.md#[Unreleased])
@@ -67,4 +67,10 @@ Any contribution is appreciated! You might want to:
    
    ```sh
     nox -e py36
+    ```
+
+4. After changing the code, run the black formatter.
+
+    ```sh
+    black .
     ```

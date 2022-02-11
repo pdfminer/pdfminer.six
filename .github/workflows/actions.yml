@@ -15,6 +15,15 @@ env:
 
 jobs:
 
+  check-code-formatting:
+    name: Check code formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Check code formatting
+        uses: psf/black@stable
+
   check-coding-style:
     name: Check coding style
     runs-on: ubuntu-latest

@@ -21,30 +21,30 @@ def ascii85decode(data: bytes) -> bytes:
 
     """
     n = b = 0
-    out = b''
+    out = b""
     for i in iter(data):
         c = bytes((i,))
-        if b'!' <= c and c <= b'u':
+        if b"!" <= c and c <= b"u":
             n += 1
-            b = b*85+(ord(c)-33)
+            b = b * 85 + (ord(c) - 33)
             if n == 5:
-                out += struct.pack('>L', b)
+                out += struct.pack(">L", b)
                 n = b = 0
-        elif c == b'z':
+        elif c == b"z":
             assert n == 0, str(n)
-            out += b'\0\0\0\0'
-        elif c == b'~':
+            out += b"\0\0\0\0"
+        elif c == b"~":
             if n:
-                for _ in range(5-n):
-                    b = b*85+84
-                out += struct.pack('>L', b)[:n-1]
+                for _ in range(5 - n):
+                    b = b * 85 + 84
+                out += struct.pack(">L", b)[: n - 1]
             break
     return out
 
 
 # asciihexdecode(data)
-hex_re = re.compile(br'([a-f\d]{2})', re.IGNORECASE)
-trail_re = re.compile(br'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
+hex_re = re.compile(rb"([a-f\d]{2})", re.IGNORECASE)
+trail_re = re.compile(rb"^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$", re.IGNORECASE)
 
 
 def asciihexdecode(data: bytes) -> bytes:
@@ -57,15 +57,16 @@ def asciihexdecode(data: bytes) -> bytes:
     the EOD marker after reading an odd number of hexadecimal digits, it
     will behave as if a 0 followed the last digit.
     """
+
     def decode(x: bytes) -> bytes:
         i = int(x, 16)
         return bytes((i,))
 
-    out = b''
+    out = b""
     for x in hex_re.findall(data):
         out += decode(x)
 
     m = trail_re.search(data)
     if m:
-        out += decode(m.group(1)+b'0')
+        out += decode(m.group(1) + b"0")
     return out

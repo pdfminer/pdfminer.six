@@ -4,7 +4,7 @@ import tempfile
 import os
 
 
-class TemporaryFilePath():
+class TemporaryFilePath:
     """Context manager class, which generates temporary file name
 
     Coonroraly to standard tempfile.NamedTemporaryFile(), it does not
@@ -40,9 +40,9 @@ class TemporaryFilePath():
         `tempfile.NamedTemporaryFile` will create and delete a file, and
         this method only returns the filepath of the non-existing file.
         """
-        with tempfile.NamedTemporaryFile(suffix=self.suffix,
-                                         prefix=self.prefix,
-                                         dir=self.dir) as file:
+        with tempfile.NamedTemporaryFile(
+            suffix=self.suffix, prefix=self.prefix, dir=self.dir
+        ) as file:
             self.temp_file_name = file.name
 
         return self.temp_file_name
