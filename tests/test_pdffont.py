@@ -8,12 +8,12 @@ def test_get_cmap_from_pickle():
 
     Regression test for https://github.com/pdfminer/pdfminer.six/issues/391
     """
-    cmap_name = 'UniGB-UCS2-H'
-    spec = {'Encoding': PSLiteral(cmap_name)}
+    cmap_name = "UniGB-UCS2-H"
+    spec = {"Encoding": PSLiteral(cmap_name)}
     resource_manager = PDFResourceManager()
     font = PDFCIDFont(resource_manager, spec)
 
     cmap = font.get_cmap_from_spec(spec, False)
 
-    assert cmap.attrs.get('CMapName') == cmap_name
+    assert cmap.attrs.get("CMapName") == cmap_name
     assert len(cmap.code2cid) > 0

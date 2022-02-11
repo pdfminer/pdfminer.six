@@ -11,18 +11,19 @@ class NumberTree:
 
     See Section 3.8.6 of the PDF Reference.
     """
+
     def __init__(self, obj: Any):
         self._obj = dict_value(obj)
         self.nums: Optional[Iterable[Any]] = None
         self.kids: Optional[Iterable[Any]] = None
         self.limits: Optional[Iterable[Any]] = None
 
-        if 'Nums' in self._obj:
-            self.nums = list_value(self._obj['Nums'])
-        if 'Kids' in self._obj:
-            self.kids = list_value(self._obj['Kids'])
-        if 'Limits' in self._obj:
-            self.limits = list_value(self._obj['Limits'])
+        if "Nums" in self._obj:
+            self.nums = list_value(self._obj["Nums"])
+        if "Kids" in self._obj:
+            self.kids = list_value(self._obj["Kids"])
+        if "Limits" in self._obj:
+            self.limits = list_value(self._obj["Limits"])
 
     def _parse(self) -> List[Tuple[int, Any]]:
         items = []
@@ -44,7 +45,7 @@ class NumberTree:
 
         if settings.STRICT:
             if not all(a[0] <= b[0] for a, b in zip(values, values[1:])):
-                raise PDFSyntaxError('Number tree elements are out of order')
+                raise PDFSyntaxError("Number tree elements are out of order")
         else:
             values.sort(key=lambda t: t[0])
 

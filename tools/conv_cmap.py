@@ -6,7 +6,6 @@ import codecs
 
 
 class CMapConverter:
-
     def __init__(self, enc2codec={}):
         self.enc2codec = enc2codec
         self.code2cid = {}  # {'cmapname': ...}
@@ -19,12 +18,12 @@ class CMapConverter:
         return self.code2cid.keys()
 
     def get_maps(self, enc):
-        if enc.endswith('-H'):
+        if enc.endswith("-H"):
             (hmapenc, vmapenc) = (enc, None)
-        elif enc == 'H':
-            (hmapenc, vmapenc) = ('H', 'V')
+        elif enc == "H":
+            (hmapenc, vmapenc) = ("H", "V")
         else:
-            (hmapenc, vmapenc) = (enc+'-H', enc+'-V')
+            (hmapenc, vmapenc) = (enc + "-H", enc + "-V")
         if hmapenc in self.code2cid:
             hmap = self.code2cid[hmapenc]
         else:
@@ -43,12 +42,12 @@ class CMapConverter:
     def load(self, fp):
         encs = None
         for line in fp:
-            (line, _, _) = line.strip().partition('#')
+            (line, _, _) = line.strip().partition("#")
             if not line:
                 continue
-            values = line.split('\t')
+            values = line.split("\t")
             if encs is None:
-                assert values[0] == 'CID', str(values)
+                assert values[0] == "CID", str(values)
                 encs = values
                 continue
 
@@ -68,7 +67,7 @@ class CMapConverter:
             def add(unimap, enc, code):
                 try:
                     codec = self.enc2codec[enc]
-                    c = code.decode(codec, 'strict')
+                    c = code.decode(codec, "strict")
                     if len(c) == 1:
                         if c not in unimap:
                             unimap[c] = 0
@@ -89,20 +88,20 @@ class CMapConverter:
             unimap_h = {}
             unimap_v = {}
             for (enc, value) in zip(encs, values):
-                if enc == 'CID':
+                if enc == "CID":
                     continue
-                if value == '*':
+                if value == "*":
                     continue
 
                 # hcodes, vcodes: encoded bytes for each writing mode.
                 hcodes = []
                 vcodes = []
-                for code in value.split(','):
-                    vertical = code.endswith('v')
+                for code in value.split(","):
+                    vertical = code.endswith("v")
                     if vertical:
                         code = code[:-1]
                     try:
-                        code = codecs.decode(code, 'hex_codec')
+                        code = codecs.decode(code, "hex_codec")
                     except Exception:
                         code = chr(int(code, 16))
                     if vertical:
@@ -155,17 +154,19 @@ def main(argv):
     import os.path
 
     def usage():
-        print('usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]'
-              % argv[0])
+        print(
+            "usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]" % argv[0]
+        )
         return 100
+
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'c:')
+        (opts, args) = getopt.getopt(argv[1:], "c:")
     except getopt.GetoptError:
         return usage()
     enc2codec = {}
     for (k, v) in opts:
-        if k == '-c':
-            (enc, _, codec) = v.partition('=')
+        if k == "-c":
+            (enc, _, codec) = v.partition("=")
             enc2codec[enc] = codec
     if not args:
         return usage()
@@ -176,27 +177,27 @@ def main(argv):
 
     converter = CMapConverter(enc2codec)
     for path in args:
-        print('reading: %r...' % path)
+        print("reading: %r..." % path)
         fp = open(path)
         converter.load(fp)
         fp.close()
 
     for enc in converter.get_encs():
-        fname = '%s.pickle.gz' % enc
+        fname = "%s.pickle.gz" % enc
         path = os.path.join(outdir, fname)
-        print('writing: %r...' % path)
-        fp = gzip.open(path, 'wb')
+        print("writing: %r..." % path)
+        fp = gzip.open(path, "wb")
         converter.dump_cmap(fp, enc)
         fp.close()
 
-    fname = 'to-unicode-%s.pickle.gz' % regname
+    fname = "to-unicode-%s.pickle.gz" % regname
     path = os.path.join(outdir, fname)
-    print('writing: %r...' % path)
-    fp = gzip.open(path, 'wb')
+    print("writing: %r..." % path)
+    fp = gzip.open(path, "wb")
     converter.dump_unicodemap(fp)
     fp.close()
     return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main(sys.argv))  # type: ignore[no-untyped-call]

@@ -1,4 +1,4 @@
-__version__ = '20211012'
+__version__ = "20211012"
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(__version__)

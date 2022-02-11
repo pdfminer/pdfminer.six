@@ -1,22 +1,17 @@
 **Pull request**
 
-Thanks for improving pdfminer.six! Please include the following information to
-help us discuss and merge this PR:
-
-- A description of why this PR is needed. What does it fix? What does it 
-  improve?
-- A summary of the things that this PR changes.
-- Reference the issues that this PR fixes (use the fixes #(issue nr) syntax). 
-  If this PR does not fix any issue, create the issue first and mention that 
-  you are willing to work on it.
+Please remove this paragraph and replace it with a description of your PR.
+Also include links to the issues that it fixes. 
 
 **How Has This Been Tested?**
 
-Please describe the tests that you ran to verify your changes. Provide 
-instructions so we can reproduce. Include an example pdf if you have one. 
+Please repalce this paragraph with a description of how this PR has been 
+tested. Include the necessary instructions and files such that other can
+reproduce it.
 
 **Checklist**
 
+- [ ] I have formatted my code with [black](https://github.com/psf/black).
 - [ ] I have added tests that prove my fix is effective or that my feature 
   works
 - [ ] I have added docstrings to newly created methods and classes

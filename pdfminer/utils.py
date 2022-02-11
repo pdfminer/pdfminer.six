@@ -6,9 +6,24 @@ import pathlib
 import string
 import struct
 from html import escape
-from typing import (Any, BinaryIO, Callable, Dict, Generic, Iterable, Iterator,
-                    List, Optional, Set, TextIO, Tuple, TypeVar, Union,
-                    TYPE_CHECKING, cast)
+from typing import (
+    Any,
+    BinaryIO,
+    Callable,
+    Dict,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Set,
+    TextIO,
+    Tuple,
+    TypeVar,
+    Union,
+    TYPE_CHECKING,
+    cast,
+)
 
 if TYPE_CHECKING:
     from .layout import LTComponent
@@ -30,12 +45,8 @@ class open_filename(object):
     (str or pathlib.PurePath type is supported) and closes it on exit,
     (just like `open`), but does nothing for file-like objects.
     """
-    def __init__(
-        self,
-        filename: FileOrName,
-        *args: Any,
-        **kwargs: Any
-    ) -> None:
+
+    def __init__(self, filename: FileOrName, *args: Any, **kwargs: Any) -> None:
         if isinstance(filename, pathlib.PurePath):
             filename = str(filename)
         if isinstance(filename, str):
@@ -45,17 +56,12 @@ class open_filename(object):
             self.file_handler = cast(AnyIO, filename)
             self.closing = False
         else:
-            raise TypeError('Unsupported input type: %s' % type(filename))
+            raise TypeError("Unsupported input type: %s" % type(filename))
 
     def __enter__(self) -> AnyIO:
         return self.file_handler
 
-    def __exit__(
-        self,
-        exc_type: object,
-        exc_val: object,
-        exc_tb: object
-    ) -> None:
+    def __exit__(self, exc_type: object, exc_val: object, exc_tb: object) -> None:
         if self.closing:
             self.file_handler.close()
 
@@ -70,7 +76,7 @@ def make_compat_str(o: object) -> str:
     """Converts everything to string, if bytes guessing the encoding."""
     if isinstance(o, bytes):
         enc = chardet.detect(o)
-        return o.decode(enc['encoding'])
+        return o.decode(enc["encoding"])
     else:
         return str(o)
 
@@ -80,20 +86,18 @@ def shorten_str(s: str, size: int) -> str:
         return s[:size]
     if len(s) > size:
         length = (size - 5) // 2
-        return '{} ... {}'.format(s[:length], s[-length:])
+        return "{} ... {}".format(s[:length], s[-length:])
     else:
         return s
 
 
 def compatible_encode_method(
-    bytesorstring: Union[bytes, str],
-    encoding: str = 'utf-8',
-    erraction: str = 'ignore'
+    bytesorstring: Union[bytes, str], encoding: str = "utf-8", erraction: str = "ignore"
 ) -> str:
     """When Py2 str.encode is called, it often means bytes.encode in Py3.
 
-     This does either.
-     """
+    This does either.
+    """
     if isinstance(bytesorstring, str):
         return bytesorstring
     assert isinstance(bytesorstring, bytes), str(type(bytesorstring))
@@ -119,11 +123,7 @@ def paeth_predictor(left: int, above: int, upper_left: int) -> int:
 
 
 def apply_png_predictor(
-    pred: int,
-    colors: int,
-    columns: int,
-    bitspercomponent: int,
-    data: bytes
+    pred: int, colors: int, columns: int, bitspercomponent: int, data: bytes
 ) -> bytes:
     """Reverse the effect of the PNG predictor
 
@@ -135,12 +135,12 @@ def apply_png_predictor(
 
     nbytes = colors * columns * bitspercomponent // 8
     bpp = colors * bitspercomponent // 8  # number of bytes per complete pixel
-    buf = b''
-    line_above = b'\x00' * columns
+    buf = b""
+    line_above = b"\x00" * columns
     for scanline_i in range(0, len(data), nbytes + 1):
         filter_type = data[scanline_i]
-        line_encoded = data[scanline_i + 1:scanline_i + 1 + nbytes]
-        raw = b''
+        line_encoded = data[scanline_i + 1 : scanline_i + 1 + nbytes]
+        raw = b""
 
         if filter_type == 0:
             # Filter type 0: None
@@ -223,10 +223,11 @@ Point = Tuple[float, float]
 Rect = Tuple[float, float, float, float]
 Matrix = Tuple[float, float, float, float, float, float]
 PathSegment = Union[
-    Tuple[str],                                             # Literal['h']
-    Tuple[str, float, float],                               # Literal['m', 'l']
-    Tuple[str, float, float, float, float],                 # Literal['v', 'y']
-    Tuple[str, float, float, float, float, float, float]]   # Literal['c']
+    Tuple[str],  # Literal['h']
+    Tuple[str, float, float],  # Literal['m', 'l']
+    Tuple[str, float, float, float, float],  # Literal['v', 'y']
+    Tuple[str, float, float, float, float, float, float],
+]  # Literal['c']
 
 #  Matrix operations
 MATRIX_IDENTITY: Matrix = (1, 0, 0, 1, 0, 0)
@@ -236,9 +237,14 @@ def mult_matrix(m1: Matrix, m0: Matrix) -> Matrix:
     (a1, b1, c1, d1, e1, f1) = m1
     (a0, b0, c0, d0, e0, f0) = m0
     """Returns the multiplication of two matrices."""
-    return (a0 * a1 + c0 * b1, b0 * a1 + d0 * b1,
-            a0 * c1 + c0 * d1, b0 * c1 + d0 * d1,
-            a0 * e1 + c0 * f1 + e0, b0 * e1 + d0 * f1 + f0)
+    return (
+        a0 * a1 + c0 * b1,
+        b0 * a1 + d0 * b1,
+        a0 * c1 + c0 * d1,
+        b0 * c1 + d0 * d1,
+        a0 * e1 + c0 * f1 + e0,
+        b0 * e1 + d0 * f1 + f0,
+    )
 
 
 def translate_matrix(m: Matrix, v: Point) -> Matrix:
@@ -264,11 +270,12 @@ def apply_matrix_norm(m: Matrix, v: Point) -> Point:
 
 #  Utility functions
 
+
 def isnumber(x: object) -> bool:
     return isinstance(x, (int, float))
 
 
-_T = TypeVar('_T')
+_T = TypeVar("_T")
 
 
 def uniq(objs: Iterable[_T]) -> Iterator[_T]:
@@ -282,10 +289,7 @@ def uniq(objs: Iterable[_T]) -> Iterator[_T]:
     return
 
 
-def fsplit(
-    pred: Callable[[_T], bool],
-    objs: Iterable[_T]
-) -> Tuple[List[_T], List[_T]]:
+def fsplit(pred: Callable[[_T], bool], objs: Iterable[_T]) -> Tuple[List[_T], List[_T]]:
     """Split a list into two classes according to the predicate."""
     t = []
     f = []
@@ -315,9 +319,7 @@ def get_bound(pts: Iterable[Point]) -> Rect:
 
 
 def pick(
-    seq: Iterable[_T],
-    func: Callable[[_T], float],
-    maxobj: Optional[_T] = None
+    seq: Iterable[_T], func: Callable[[_T], float], maxobj: Optional[_T] = None
 ) -> Optional[_T]:
     """Picks the object obj where func(obj) has the highest value."""
     maxscore = None
@@ -347,77 +349,303 @@ def nunpack(s: bytes, default: int = 0) -> int:
     elif length == 1:
         return ord(s)
     elif length == 2:
-        return cast(int, struct.unpack('>H', s)[0])
+        return cast(int, struct.unpack(">H", s)[0])
     elif length == 3:
-        return cast(int, struct.unpack('>L', b'\x00' + s)[0])
+        return cast(int, struct.unpack(">L", b"\x00" + s)[0])
     elif length == 4:
-        return cast(int, struct.unpack('>L', s)[0])
+        return cast(int, struct.unpack(">L", s)[0])
     elif length == 8:
-        return cast(int, struct.unpack('>Q', s)[0])
+        return cast(int, struct.unpack(">Q", s)[0])
     else:
-        raise TypeError('invalid length: %d' % length)
+        raise TypeError("invalid length: %d" % length)
 
 
-PDFDocEncoding = ''.join(chr(x) for x in (
-    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
-    0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
-    0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0017, 0x0017,
-    0x02d8, 0x02c7, 0x02c6, 0x02d9, 0x02dd, 0x02db, 0x02da, 0x02dc,
-    0x0020, 0x0021, 0x0022, 0x0023, 0x0024, 0x0025, 0x0026, 0x0027,
-    0x0028, 0x0029, 0x002a, 0x002b, 0x002c, 0x002d, 0x002e, 0x002f,
-    0x0030, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037,
-    0x0038, 0x0039, 0x003a, 0x003b, 0x003c, 0x003d, 0x003e, 0x003f,
-    0x0040, 0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047,
-    0x0048, 0x0049, 0x004a, 0x004b, 0x004c, 0x004d, 0x004e, 0x004f,
-    0x0050, 0x0051, 0x0052, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057,
-    0x0058, 0x0059, 0x005a, 0x005b, 0x005c, 0x005d, 0x005e, 0x005f,
-    0x0060, 0x0061, 0x0062, 0x0063, 0x0064, 0x0065, 0x0066, 0x0067,
-    0x0068, 0x0069, 0x006a, 0x006b, 0x006c, 0x006d, 0x006e, 0x006f,
-    0x0070, 0x0071, 0x0072, 0x0073, 0x0074, 0x0075, 0x0076, 0x0077,
-    0x0078, 0x0079, 0x007a, 0x007b, 0x007c, 0x007d, 0x007e, 0x0000,
-    0x2022, 0x2020, 0x2021, 0x2026, 0x2014, 0x2013, 0x0192, 0x2044,
-    0x2039, 0x203a, 0x2212, 0x2030, 0x201e, 0x201c, 0x201d, 0x2018,
-    0x2019, 0x201a, 0x2122, 0xfb01, 0xfb02, 0x0141, 0x0152, 0x0160,
-    0x0178, 0x017d, 0x0131, 0x0142, 0x0153, 0x0161, 0x017e, 0x0000,
-    0x20ac, 0x00a1, 0x00a2, 0x00a3, 0x00a4, 0x00a5, 0x00a6, 0x00a7,
-    0x00a8, 0x00a9, 0x00aa, 0x00ab, 0x00ac, 0x0000, 0x00ae, 0x00af,
-    0x00b0, 0x00b1, 0x00b2, 0x00b3, 0x00b4, 0x00b5, 0x00b6, 0x00b7,
-    0x00b8, 0x00b9, 0x00ba, 0x00bb, 0x00bc, 0x00bd, 0x00be, 0x00bf,
-    0x00c0, 0x00c1, 0x00c2, 0x00c3, 0x00c4, 0x00c5, 0x00c6, 0x00c7,
-    0x00c8, 0x00c9, 0x00ca, 0x00cb, 0x00cc, 0x00cd, 0x00ce, 0x00cf,
-    0x00d0, 0x00d1, 0x00d2, 0x00d3, 0x00d4, 0x00d5, 0x00d6, 0x00d7,
-    0x00d8, 0x00d9, 0x00da, 0x00db, 0x00dc, 0x00dd, 0x00de, 0x00df,
-    0x00e0, 0x00e1, 0x00e2, 0x00e3, 0x00e4, 0x00e5, 0x00e6, 0x00e7,
-    0x00e8, 0x00e9, 0x00ea, 0x00eb, 0x00ec, 0x00ed, 0x00ee, 0x00ef,
-    0x00f0, 0x00f1, 0x00f2, 0x00f3, 0x00f4, 0x00f5, 0x00f6, 0x00f7,
-    0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff,
-))
+PDFDocEncoding = "".join(
+    chr(x)
+    for x in (
+        0x0000,
+        0x0001,
+        0x0002,
+        0x0003,
+        0x0004,
+        0x0005,
+        0x0006,
+        0x0007,
+        0x0008,
+        0x0009,
+        0x000A,
+        0x000B,
+        0x000C,
+        0x000D,
+        0x000E,
+        0x000F,
+        0x0010,
+        0x0011,
+        0x0012,
+        0x0013,
+        0x0014,
+        0x0015,
+        0x0017,
+        0x0017,
+        0x02D8,
+        0x02C7,
+        0x02C6,
+        0x02D9,
+        0x02DD,
+        0x02DB,
+        0x02DA,
+        0x02DC,
+        0x0020,
+        0x0021,
+        0x0022,
+        0x0023,
+        0x0024,
+        0x0025,
+        0x0026,
+        0x0027,
+        0x0028,
+        0x0029,
+        0x002A,
+        0x002B,
+        0x002C,
+        0x002D,
+        0x002E,
+        0x002F,
+        0x0030,
+        0x0031,
+        0x0032,
+        0x0033,
+        0x0034,
+        0x0035,
+        0x0036,
+        0x0037,
+        0x0038,
+        0x0039,
+        0x003A,
+        0x003B,
+        0x003C,
+        0x003D,
+        0x003E,
+        0x003F,
+        0x0040,
+        0x0041,
+        0x0042,
+        0x0043,
+        0x0044,
+        0x0045,
+        0x0046,
+        0x0047,
+        0x0048,
+        0x0049,
+        0x004A,
+        0x004B,
+        0x004C,
+        0x004D,
+        0x004E,
+        0x004F,
+        0x0050,
+        0x0051,
+        0x0052,
+        0x0053,
+        0x0054,
+        0x0055,
+        0x0056,
+        0x0057,
+        0x0058,
+        0x0059,
+        0x005A,
+        0x005B,
+        0x005C,
+        0x005D,
+        0x005E,
+        0x005F,
+        0x0060,
+        0x0061,
+        0x0062,
+        0x0063,
+        0x0064,
+        0x0065,
+        0x0066,
+        0x0067,
+        0x0068,
+        0x0069,
+        0x006A,
+        0x006B,
+        0x006C,
+        0x006D,
+        0x006E,
+        0x006F,
+        0x0070,
+        0x0071,
+        0x0072,
+        0x0073,
+        0x0074,
+        0x0075,
+        0x0076,
+        0x0077,
+        0x0078,
+        0x0079,
+        0x007A,
+        0x007B,
+        0x007C,
+        0x007D,
+        0x007E,
+        0x0000,
+        0x2022,
+        0x2020,
+        0x2021,
+        0x2026,
+        0x2014,
+        0x2013,
+        0x0192,
+        0x2044,
+        0x2039,
+        0x203A,
+        0x2212,
+        0x2030,
+        0x201E,
+        0x201C,
+        0x201D,
+        0x2018,
+        0x2019,
+        0x201A,
+        0x2122,
+        0xFB01,
+        0xFB02,
+        0x0141,
+        0x0152,
+        0x0160,
+        0x0178,
+        0x017D,
+        0x0131,
+        0x0142,
+        0x0153,
+        0x0161,
+        0x017E,
+        0x0000,
+        0x20AC,
+        0x00A1,
+        0x00A2,
+        0x00A3,
+        0x00A4,
+        0x00A5,
+        0x00A6,
+        0x00A7,
+        0x00A8,
+        0x00A9,
+        0x00AA,
+        0x00AB,
+        0x00AC,
+        0x0000,
+        0x00AE,
+        0x00AF,
+        0x00B0,
+        0x00B1,
+        0x00B2,
+        0x00B3,
+        0x00B4,
+        0x00B5,
+        0x00B6,
+        0x00B7,
+        0x00B8,
+        0x00B9,
+        0x00BA,
+        0x00BB,
+        0x00BC,
+        0x00BD,
+        0x00BE,
+        0x00BF,
+        0x00C0,
+        0x00C1,
+        0x00C2,
+        0x00C3,
+        0x00C4,
+        0x00C5,
+        0x00C6,
+        0x00C7,
+        0x00C8,
+        0x00C9,
+        0x00CA,
+        0x00CB,
+        0x00CC,
+        0x00CD,
+        0x00CE,
+        0x00CF,
+        0x00D0,
+        0x00D1,
+        0x00D2,
+        0x00D3,
+        0x00D4,
+        0x00D5,
+        0x00D6,
+        0x00D7,
+        0x00D8,
+        0x00D9,
+        0x00DA,
+        0x00DB,
+        0x00DC,
+        0x00DD,
+        0x00DE,
+        0x00DF,
+        0x00E0,
+        0x00E1,
+        0x00E2,
+        0x00E3,
+        0x00E4,
+        0x00E5,
+        0x00E6,
+        0x00E7,
+        0x00E8,
+        0x00E9,
+        0x00EA,
+        0x00EB,
+        0x00EC,
+        0x00ED,
+        0x00EE,
+        0x00EF,
+        0x00F0,
+        0x00F1,
+        0x00F2,
+        0x00F3,
+        0x00F4,
+        0x00F5,
+        0x00F6,
+        0x00F7,
+        0x00F8,
+        0x00F9,
+        0x00FA,
+        0x00FB,
+        0x00FC,
+        0x00FD,
+        0x00FE,
+        0x00FF,
+    )
+)
 
 
 def decode_text(s: bytes) -> str:
     """Decodes a PDFDocEncoding string to Unicode."""
-    if s.startswith(b'\xfe\xff'):
-        return str(s[2:], 'utf-16be', 'ignore')
+    if s.startswith(b"\xfe\xff"):
+        return str(s[2:], "utf-16be", "ignore")
     else:
-        return ''.join(PDFDocEncoding[c] for c in s)
+        return "".join(PDFDocEncoding[c] for c in s)
 
 
 def enc(x: str) -> str:
     """Encodes a string for SGML/XML/HTML"""
     if isinstance(x, bytes):
-        return ''
+        return ""
     return escape(x)
 
 
 def bbox2str(bbox: Rect) -> str:
     (x0, y0, x1, y1) = bbox
-    return '{:.3f},{:.3f},{:.3f},{:.3f}'.format(x0, y0, x1, y1)
+    return "{:.3f},{:.3f},{:.3f},{:.3f}".format(x0, y0, x1, y1)
 
 
 def matrix2str(m: Matrix) -> str:
     (a, b, c, d, e, f) = m
-    return '[{:.2f},{:.2f},{:.2f},{:.2f}, ({:.2f},{:.2f})]'\
-        .format(a, b, c, d, e, f)
+    return "[{:.2f},{:.2f},{:.2f},{:.2f}, ({:.2f},{:.2f})]".format(a, b, c, d, e, f)
 
 
 def vecBetweenBoxes(obj1: "LTComponent", obj2: "LTComponent") -> Point:
@@ -446,7 +674,7 @@ def vecBetweenBoxes(obj1: "LTComponent", obj2: "LTComponent") -> Point:
         return max(0, iw), max(0, ih)
 
 
-LTComponentT = TypeVar('LTComponentT', bound='LTComponent')
+LTComponentT = TypeVar("LTComponentT", bound="LTComponent")
 
 
 class Plane(Generic[LTComponentT]):
@@ -465,7 +693,7 @@ class Plane(Generic[LTComponentT]):
         (self.x0, self.y0, self.x1, self.y1) = bbox
 
     def __repr__(self) -> str:
-        return '<Plane objs=%r>' % list(self)
+        return "<Plane objs=%r>" % list(self)
 
     def __iter__(self) -> Iterator[LTComponentT]:
         return (obj for obj in self._seq if obj in self._objs)
@@ -524,14 +752,13 @@ class Plane(Generic[LTComponentT]):
                 if obj in done:
                     continue
                 done.add(obj)
-                if obj.x1 <= x0 or x1 <= obj.x0 or obj.y1 <= y0 \
-                        or y1 <= obj.y0:
+                if obj.x1 <= x0 or x1 <= obj.x0 or obj.y1 <= y0 or y1 <= obj.y0:
                     continue
                 yield obj
 
 
-ROMAN_ONES = ['i', 'x', 'c', 'm']
-ROMAN_FIVES = ['v', 'l', 'd']
+ROMAN_ONES = ["i", "x", "c", "m"]
+ROMAN_FIVES = ["v", "l", "d"]
 
 
 def format_int_roman(value: int) -> str:
@@ -557,7 +784,7 @@ def format_int_roman(value: int) -> str:
             result.insert(1 if over_five else 0, ROMAN_ONES[index] * remainder)
         index += 1
 
-    return ''.join(result)
+    return "".join(result)
 
 
 def format_int_alpha(value: int) -> str:
@@ -571,4 +798,4 @@ def format_int_alpha(value: int) -> str:
         result.append(string.ascii_lowercase[remainder])
 
     result.reverse()
-    return ''.join(result)
+    return "".join(result)
