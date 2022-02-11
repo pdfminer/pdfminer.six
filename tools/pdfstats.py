@@ -21,7 +21,7 @@ _, SCRIPT = os.path.split(__file__)
 
 
 def msg(*args: object, **kwargs: Any) -> None:
-    print(' '.join(map(str, args)), **kwargs)  # noqa E999
+    print(" ".join(map(str, args)), **kwargs)  # noqa E999
 
 
 def flat_iter(obj: object) -> Iterator[object]:
@@ -35,22 +35,22 @@ def main(args: List[str]) -> int:
     msg(SCRIPT, args)
 
     if len(args) != 1:
-        msg('Parse a PDF file and print some pdfminer-specific stats')
-        msg('Usage:', SCRIPT, '<PDF-filename>')
+        msg("Parse a PDF file and print some pdfminer-specific stats")
+        msg("Usage:", SCRIPT, "<PDF-filename>")
         return 1
 
-    infilename, = args
+    (infilename,) = args
 
     lt_types: Counter[str] = collections.Counter()
 
-    with open(infilename, 'rb') as pdf_file:
+    with open(infilename, "rb") as pdf_file:
 
         # Create a PDF parser object associated with the file object.
         parser = PDFParser(pdf_file)
 
         # Create a PDF document object that stores the document structure.
         # Supply the password for initialization.
-        password = ''
+        password = ""
         document = PDFDocument(parser, password)
         # Check if the document allows text extraction.
         if not document.is_extractable:
@@ -63,7 +63,7 @@ def main(args: List[str]) -> int:
         laparams = LAParams(
             detect_vertical=True,
             all_texts=True,
-            )
+        )
         device = PDFPageAggregator(rsrcmgr, laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
@@ -75,11 +75,11 @@ def main(args: List[str]) -> int:
 
             lt_types.update(type(item).__name__ for item in flat_iter(layout))
 
-    msg('page_count', page_count)
-    msg('lt_types:', ' '.join('{}:{}'.format(*tc) for tc in lt_types.items()))
+    msg("page_count", page_count)
+    msg("lt_types:", " ".join("{}:{}".format(*tc) for tc in lt_types.items()))
 
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))

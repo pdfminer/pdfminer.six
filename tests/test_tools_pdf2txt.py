@@ -12,115 +12,119 @@ def run(sample_path, options=None):
     absolute_path = absolute_sample_path(sample_path)
     with TemporaryFilePath() as output_file_name:
         if options:
-            s = 'pdf2txt -o{} {} {}' \
-                .format(output_file_name, options, absolute_path)
+            s = "pdf2txt -o{} {} {}".format(output_file_name, options, absolute_path)
         else:
-            s = 'pdf2txt -o{} {}'.format(output_file_name, absolute_path)
+            s = "pdf2txt -o{} {}".format(output_file_name, absolute_path)
 
-        pdf2txt.main(s.split(' ')[1:])
+        pdf2txt.main(s.split(" ")[1:])
 
 
-class TestPdf2Txt():
+class TestPdf2Txt:
     def test_jo(self):
-        run('jo.pdf')
+        run("jo.pdf")
 
     def test_simple1(self):
-        run('simple1.pdf')
+        run("simple1.pdf")
 
     def test_simple2(self):
-        run('simple2.pdf')
+        run("simple2.pdf")
 
     def test_simple3(self):
-        run('simple3.pdf')
+        run("simple3.pdf")
 
     def test_sample_one_byte_identity_encode(self):
-        run('sampleOneByteIdentityEncode.pdf')
+        run("sampleOneByteIdentityEncode.pdf")
 
     def test_nonfree_175(self):
         """Regression test for:
         https://github.com/pdfminer/pdfminer.six/issues/65
         """
-        run('nonfree/175.pdf')
+        run("nonfree/175.pdf")
 
     def test_nonfree_dmca(self):
-        run('nonfree/dmca.pdf')
+        run("nonfree/dmca.pdf")
 
     def test_nonfree_f1040nr(self):
-        run('nonfree/f1040nr.pdf', '-p 1')
+        run("nonfree/f1040nr.pdf", "-p 1")
 
     def test_nonfree_i1040nr(self):
-        run('nonfree/i1040nr.pdf', '-p 1')
+        run("nonfree/i1040nr.pdf", "-p 1")
 
     def test_nonfree_kampo(self):
-        run('nonfree/kampo.pdf')
+        run("nonfree/kampo.pdf")
 
     def test_nonfree_naacl06_shinyama(self):
-        run('nonfree/naacl06-shinyama.pdf')
+        run("nonfree/naacl06-shinyama.pdf")
 
     def test_nlp2004slides(self):
-        run('nonfree/nlp2004slides.pdf', '-p 1')
+        run("nonfree/nlp2004slides.pdf", "-p 1")
 
     def test_contrib_2b(self):
-        run('contrib/2b.pdf', '-A -t xml')
+        run("contrib/2b.pdf", "-A -t xml")
 
     def test_contrib_issue_350(self):
         """Regression test for
         https://github.com/pdfminer/pdfminer.six/issues/350"""
-        run('contrib/issue-00352-asw-oct96-p41.pdf')
+        run("contrib/issue-00352-asw-oct96-p41.pdf")
 
     def test_scancode_patchelf(self):
         """Regression test for https://github.com/euske/pdfminer/issues/96"""
-        run('scancode/patchelf.pdf')
+        run("scancode/patchelf.pdf")
 
     def test_contrib_hash_two_complement(self):
         """Check that unsigned integer is added correctly to encryption hash.et
 
         See https://github.com/pdfminer/pdfminer.six/issues/186
         """
-        run('contrib/issue-00352-hash-twos-complement.pdf')
+        run("contrib/issue-00352-hash-twos-complement.pdf")
 
     def test_contrib_excel(self):
         """Regression test for
-         https://github.com/pdfminer/pdfminer.six/issues/369
-         """
-        run('contrib/issue-00369-excel.pdf', '-t html')
+        https://github.com/pdfminer/pdfminer.six/issues/369
+        """
+        run("contrib/issue-00369-excel.pdf", "-t html")
 
     def test_encryption_aes128(self):
-        run('encryption/aes-128.pdf', '-P foo')
+        run("encryption/aes-128.pdf", "-P foo")
 
     def test_encryption_aes128m(self):
-        run('encryption/aes-128-m.pdf', '-P foo')
+        run("encryption/aes-128-m.pdf", "-P foo")
 
     def test_encryption_aes256(self):
-        run('encryption/aes-256.pdf', '-P foo')
+        run("encryption/aes-256.pdf", "-P foo")
 
     def test_encryption_aes256m(self):
-        run('encryption/aes-256-m.pdf', '-P foo')
+        run("encryption/aes-256-m.pdf", "-P foo")
 
     def test_encryption_aes256_r6_user(self):
-        run('encryption/aes-256-r6.pdf', '-P usersecret')
+        run("encryption/aes-256-r6.pdf", "-P usersecret")
 
     def test_encryption_aes256_r6_owner(self):
-        run('encryption/aes-256-r6.pdf', '-P ownersecret')
+        run("encryption/aes-256-r6.pdf", "-P ownersecret")
 
     def test_encryption_base(self):
-        run('encryption/base.pdf', '-P foo')
+        run("encryption/base.pdf", "-P foo")
 
     def test_encryption_rc4_40(self):
-        run('encryption/rc4-40.pdf', '-P foo')
+        run("encryption/rc4-40.pdf", "-P foo")
 
     def test_encryption_rc4_128(self):
-        run('encryption/rc4-128.pdf', '-P foo')
+        run("encryption/rc4-128.pdf", "-P foo")
 
 
 class TestDumpImages:
-
     @staticmethod
     def extract_images(input_file, *args):
         output_dir = mkdtemp()
         with TemporaryFilePath() as output_file_name:
-            commands = ['-o', output_file_name, '--output-dir',
-                        output_dir, input_file, *args]
+            commands = [
+                "-o",
+                output_file_name,
+                "--output-dir",
+                output_dir,
+                input_file,
+                *args,
+            ]
             pdf2txt.main(commands)
         image_files = os.listdir(output_dir)
         rmtree(output_dir)
@@ -132,39 +136,38 @@ class TestDumpImages:
         Regression test for:
         https://github.com/pdfminer/pdfminer.six/issues/131
         """
-        filepath = absolute_sample_path('../samples/nonfree/dmca.pdf')
-        image_files = self.extract_images(filepath, '-p', '1')
-        assert image_files[0].endswith('bmp')
+        filepath = absolute_sample_path("../samples/nonfree/dmca.pdf")
+        image_files = self.extract_images(filepath, "-p", "1")
+        assert image_files[0].endswith("bmp")
 
     def test_nonfree_175(self):
         """Extract images of pdf containing jpg images"""
-        self.extract_images(absolute_sample_path('../samples/nonfree/175.pdf'))
+        self.extract_images(absolute_sample_path("../samples/nonfree/175.pdf"))
 
     def test_jbig2_image_export(self):
         """Extract images of pdf containing jbig2 images
 
         Feature test for: https://github.com/pdfminer/pdfminer.six/pull/46
         """
-        input_file = absolute_sample_path(
-            '../samples/contrib/pdf-with-jbig2.pdf')
+        input_file = absolute_sample_path("../samples/contrib/pdf-with-jbig2.pdf")
         output_dir = mkdtemp()
         with TemporaryFilePath() as output_file_name:
-            commands = ['-o', output_file_name, '--output-dir',
-                        output_dir, input_file]
+            commands = ["-o", output_file_name, "--output-dir", output_dir, input_file]
             pdf2txt.main(commands)
         image_files = os.listdir(output_dir)
         try:
-            assert image_files[0].endswith('.jb2')
-            assert filecmp.cmp(output_dir + '/' + image_files[0],
-                               absolute_sample_path(
-                                   '../samples/contrib/XIPLAYER0.jb2'))
+            assert image_files[0].endswith(".jb2")
+            assert filecmp.cmp(
+                output_dir + "/" + image_files[0],
+                absolute_sample_path("../samples/contrib/XIPLAYER0.jb2"),
+            )
         finally:
             rmtree(output_dir)
 
     def test_contrib_matplotlib(self):
         """Test a pdf with Type3 font"""
-        run('contrib/matplotlib.pdf')
+        run("contrib/matplotlib.pdf")
 
     def test_nonfree_cmp_itext_logo(self):
         """Test a pdf with Type3 font"""
-        run('nonfree/cmp_itext_logo.pdf')
+        run("nonfree/cmp_itext_logo.pdf")

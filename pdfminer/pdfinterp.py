@@ -50,11 +50,11 @@ class PDFInterpreterError(PDFException):
     pass
 
 
-LITERAL_PDF = LIT('PDF')
-LITERAL_TEXT = LIT('Text')
-LITERAL_FONT = LIT('Font')
-LITERAL_FORM = LIT('Form')
-LITERAL_IMAGE = LIT('Image')
+LITERAL_PDF = LIT("PDF")
+LITERAL_TEXT = LIT("Text")
+LITERAL_FONT = LIT("Font")
+LITERAL_FORM = LIT("Form")
+LITERAL_IMAGE = LIT("Image")
 
 
 class PDFTextState:
@@ -75,12 +75,23 @@ class PDFTextState:
         # self.linematrix is set
 
     def __repr__(self) -> str:
-        return '<PDFTextState: font=%r, fontsize=%r, charspace=%r, ' \
-               'wordspace=%r, scaling=%r, leading=%r, render=%r, rise=%r, ' \
-               'matrix=%r, linematrix=%r>' \
-               % (self.font, self.fontsize, self.charspace, self.wordspace,
-                  self.scaling, self.leading, self.render, self.rise,
-                  self.matrix, self.linematrix)
+        return (
+            "<PDFTextState: font=%r, fontsize=%r, charspace=%r, "
+            "wordspace=%r, scaling=%r, leading=%r, render=%r, rise=%r, "
+            "matrix=%r, linematrix=%r>"
+            % (
+                self.font,
+                self.fontsize,
+                self.charspace,
+                self.wordspace,
+                self.scaling,
+                self.leading,
+                self.render,
+                self.rise,
+                self.matrix,
+                self.linematrix,
+            )
+        )
 
     def copy(self) -> "PDFTextState":
         obj = PDFTextState()
@@ -102,13 +113,13 @@ class PDFTextState:
 
 
 Color = Union[
-    float,                              # Greyscale
-    Tuple[float, float, float],         # R, G, B
-    Tuple[float, float, float, float]]  # C, M, Y, K
+    float,  # Greyscale
+    Tuple[float, float, float],  # R, G, B
+    Tuple[float, float, float, float],
+]  # C, M, Y, K
 
 
 class PDFGraphicState:
-
     def __init__(self) -> None:
         self.linewidth: float = 0
         self.linecap: Optional[object] = None
@@ -138,12 +149,22 @@ class PDFGraphicState:
         return obj
 
     def __repr__(self) -> str:
-        return ('<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, '
-                ' miterlimit=%r, dash=%r, intent=%r, flatness=%r, '
-                ' stroking color=%r, non stroking color=%r>' %
-                (self.linewidth, self.linecap, self.linejoin,
-                 self.miterlimit, self.dash, self.intent, self.flatness,
-                 self.scolor, self.ncolor))
+        return (
+            "<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, "
+            " miterlimit=%r, dash=%r, intent=%r, flatness=%r, "
+            " stroking color=%r, non stroking color=%r>"
+            % (
+                self.linewidth,
+                self.linecap,
+                self.linejoin,
+                self.miterlimit,
+                self.dash,
+                self.intent,
+                self.flatness,
+                self.scolor,
+                self.ncolor,
+            )
+        )
 
 
 class PDFResourceManager:
@@ -179,41 +200,41 @@ class PDFResourceManager:
         if objid and objid in self._cached_fonts:
             font = self._cached_fonts[objid]
         else:
-            log.debug('get_font: create: objid=%r, spec=%r', objid, spec)
+            log.debug("get_font: create: objid=%r, spec=%r", objid, spec)
             if settings.STRICT:
-                if spec['Type'] is not LITERAL_FONT:
-                    raise PDFFontError('Type is not /Font')
+                if spec["Type"] is not LITERAL_FONT:
+                    raise PDFFontError("Type is not /Font")
             # Create a Font object.
-            if 'Subtype' in spec:
-                subtype = literal_name(spec['Subtype'])
+            if "Subtype" in spec:
+                subtype = literal_name(spec["Subtype"])
             else:
                 if settings.STRICT:
-                    raise PDFFontError('Font Subtype is not specified.')
-                subtype = 'Type1'
-            if subtype in ('Type1', 'MMType1'):
+                    raise PDFFontError("Font Subtype is not specified.")
+                subtype = "Type1"
+            if subtype in ("Type1", "MMType1"):
                 # Type1 Font
                 font = PDFType1Font(self, spec)
-            elif subtype == 'TrueType':
+            elif subtype == "TrueType":
                 # TrueType Font
                 font = PDFTrueTypeFont(self, spec)
-            elif subtype == 'Type3':
+            elif subtype == "Type3":
                 # Type3 Font
                 font = PDFType3Font(self, spec)
-            elif subtype in ('CIDFontType0', 'CIDFontType2'):
+            elif subtype in ("CIDFontType0", "CIDFontType2"):
                 # CID Font
                 font = PDFCIDFont(self, spec)
-            elif subtype == 'Type0':
+            elif subtype == "Type0":
                 # Type0 Font
-                dfonts = list_value(spec['DescendantFonts'])
+                dfonts = list_value(spec["DescendantFonts"])
                 assert dfonts
                 subspec = dict_value(dfonts[0]).copy()
-                for k in ('Encoding', 'ToUnicode'):
+                for k in ("Encoding", "ToUnicode"):
                     if k in spec:
                         subspec[k] = resolve1(spec[k])
                 font = self.get_font(None, subspec)
             else:
                 if settings.STRICT:
-                    raise PDFFontError('Invalid Font spec: %r' % spec)
+                    raise PDFFontError("Invalid Font spec: %r" % spec)
                 font = PDFType1Font(self, spec)  # this is so wrong!
             if objid and self.caching:
                 self._cached_fonts[objid] = font
@@ -221,7 +242,6 @@ class PDFResourceManager:
 
 
 class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
-
     def __init__(self, streams: Sequence[object]) -> None:
         self.streams = streams
         self.istream = 0
@@ -236,7 +256,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 strm = stream_value(self.streams[self.istream])
                 self.istream += 1
             else:
-                raise PSEOF('Unexpected EOF, file truncated?')
+                raise PSEOF("Unexpected EOF, file truncated?")
             self.fp = BytesIO(strm.get_data())
 
     def seek(self, pos: int) -> None:
@@ -255,14 +275,10 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             self.fp = None  # type: ignore[assignment]
         self.charpos = 0
 
-    def get_inline_data(
-        self,
-        pos: int,
-        target: bytes = b'EI'
-    ) -> Tuple[int, bytes]:
+    def get_inline_data(self, pos: int, target: bytes = b"EI") -> Tuple[int, bytes]:
         self.seek(pos)
         i = 0
-        data = b''
+        data = b""
         while i <= len(target):
             self.fillbuf()
             if i:
@@ -279,36 +295,35 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             else:
                 try:
                     j = self.buf.index(target[0], self.charpos)
-                    data += self.buf[self.charpos:j+1]
-                    self.charpos = j+1
+                    data += self.buf[self.charpos : j + 1]
+                    self.charpos = j + 1
                     i = 1
                 except ValueError:
-                    data += self.buf[self.charpos:]
+                    data += self.buf[self.charpos :]
                     self.charpos = len(self.buf)
-        data = data[:-(len(target)+1)]  # strip the last part
-        data = re.sub(br'(\x0d\x0a|[\x0d\x0a])$', b'', data)
+        data = data[: -(len(target) + 1)]  # strip the last part
+        data = re.sub(rb"(\x0d\x0a|[\x0d\x0a])$", b"", data)
         return (pos, data)
 
     def flush(self) -> None:
         self.add_results(*self.popall())
 
-    KEYWORD_BI = KWD(b'BI')
-    KEYWORD_ID = KWD(b'ID')
-    KEYWORD_EI = KWD(b'EI')
+    KEYWORD_BI = KWD(b"BI")
+    KEYWORD_ID = KWD(b"ID")
+    KEYWORD_EI = KWD(b"EI")
 
     def do_keyword(self, pos: int, token: PSKeyword) -> None:
         if token is self.KEYWORD_BI:
             # inline image within a content stream
-            self.start_type(pos, 'inline')
+            self.start_type(pos, "inline")
         elif token is self.KEYWORD_ID:
             try:
-                (_, objs) = self.end_type('inline')
+                (_, objs) = self.end_type("inline")
                 if len(objs) % 2 != 0:
-                    error_msg = 'Invalid dictionary construct: {!r}' \
-                        .format(objs)
+                    error_msg = "Invalid dictionary construct: {!r}".format(objs)
                     raise PSTypeError(error_msg)
                 d = {literal_name(k): v for (k, v) in choplist(2, objs)}
-                (pos, data) = self.get_inline_data(pos+len(b'ID '))
+                (pos, data) = self.get_inline_data(pos + len(b"ID "))
                 obj = PDFStream(d, data)
                 self.push((pos, obj))
                 self.push((pos, self.KEYWORD_EI))
@@ -351,32 +366,30 @@ class PDFPageInterpreter:
                 name = literal_name(spec[0])
             else:
                 name = literal_name(spec)
-            if name == 'ICCBased' and isinstance(spec, list) \
-                    and 2 <= len(spec):
-                return PDFColorSpace(name, stream_value(spec[1])['N'])
-            elif name == 'DeviceN' and isinstance(spec, list) \
-                    and 2 <= len(spec):
+            if name == "ICCBased" and isinstance(spec, list) and 2 <= len(spec):
+                return PDFColorSpace(name, stream_value(spec[1])["N"])
+            elif name == "DeviceN" and isinstance(spec, list) and 2 <= len(spec):
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
                 return PREDEFINED_COLORSPACE.get(name)
 
         for (k, v) in dict_value(resources).items():
-            log.debug('Resource: %r: %r', k, v)
-            if k == 'Font':
+            log.debug("Resource: %r: %r", k, v)
+            if k == "Font":
                 for (fontid, spec) in dict_value(v).items():
                     objid = None
                     if isinstance(spec, PDFObjRef):
                         objid = spec.objid
                     spec = dict_value(spec)
                     self.fontmap[fontid] = self.rsrcmgr.get_font(objid, spec)
-            elif k == 'ColorSpace':
+            elif k == "ColorSpace":
                 for (csid, spec) in dict_value(v).items():
                     colorspace = get_colorspace(resolve1(spec))
                     if colorspace is not None:
                         self.csmap[csid] = colorspace
-            elif k == 'ProcSet':
+            elif k == "ProcSet":
                 self.rsrcmgr.get_procset(list_value(v))
-            elif k == 'XObject':
+            elif k == "XObject":
                 for (xobjid, xobjstrm) in dict_value(v).items():
                     self.xobjmap[xobjid] = xobjstrm
         return
@@ -410,14 +423,11 @@ class PDFPageInterpreter:
         self.argstack = self.argstack[:-n]
         return x
 
-    def get_current_state(
-        self
-    ) -> Tuple[Matrix, PDFTextState, PDFGraphicState]:
+    def get_current_state(self) -> Tuple[Matrix, PDFTextState, PDFGraphicState]:
         return (self.ctm, self.textstate.copy(), self.graphicstate.copy())
 
     def set_current_state(
-        self,
-        state: Tuple[Matrix, PDFTextState, PDFGraphicState]
+        self, state: Tuple[Matrix, PDFTextState, PDFGraphicState]
     ) -> None:
         (self.ctm, self.textstate, self.graphicstate) = state
         self.device.set_ctm(self.ctm)
@@ -441,11 +451,10 @@ class PDFPageInterpreter:
         c1: PDFStackT,
         d1: PDFStackT,
         e1: PDFStackT,
-        f1: PDFStackT
+        f1: PDFStackT,
     ) -> None:
         """Concatenate matrix to current transformation matrix"""
-        self.ctm = \
-            mult_matrix(cast(Matrix, (a1, b1, c1, d1, e1, f1)), self.ctm)
+        self.ctm = mult_matrix(cast(Matrix, (a1, b1, c1, d1, e1, f1)), self.ctm)
         self.device.set_ctm(self.ctm)
         return
 
@@ -491,12 +500,12 @@ class PDFPageInterpreter:
 
     def do_m(self, x: PDFStackT, y: PDFStackT) -> None:
         """Begin new subpath"""
-        self.curpath.append(('m', cast(float, x), cast(float, y)))
+        self.curpath.append(("m", cast(float, x), cast(float, y)))
         return
 
     def do_l(self, x: PDFStackT, y: PDFStackT) -> None:
         """Append straight line segment to path"""
-        self.curpath.append(('l', cast(float, x), cast(float, y)))
+        self.curpath.append(("l", cast(float, x), cast(float, y)))
         return
 
     def do_c(
@@ -506,66 +515,57 @@ class PDFPageInterpreter:
         x2: PDFStackT,
         y2: PDFStackT,
         x3: PDFStackT,
-        y3: PDFStackT
+        y3: PDFStackT,
     ) -> None:
         """Append curved segment to path (three control points)"""
-        self.curpath.append(('c', cast(float, x1), cast(float, y1),
-                             cast(float, x2), cast(float, y2),
-                             cast(float, x3), cast(float, y3)))
+        self.curpath.append(
+            (
+                "c",
+                cast(float, x1),
+                cast(float, y1),
+                cast(float, x2),
+                cast(float, y2),
+                cast(float, x3),
+                cast(float, y3),
+            )
+        )
         return
 
-    def do_v(
-        self,
-        x2: PDFStackT,
-        y2: PDFStackT,
-        x3: PDFStackT,
-        y3: PDFStackT
-    ) -> None:
+    def do_v(self, x2: PDFStackT, y2: PDFStackT, x3: PDFStackT, y3: PDFStackT) -> None:
         """Append curved segment to path (initial point replicated)"""
-        self.curpath.append(('v', cast(float, x2), cast(float, y2),
-                             cast(float, x3), cast(float, y3)))
+        self.curpath.append(
+            ("v", cast(float, x2), cast(float, y2), cast(float, x3), cast(float, y3))
+        )
         return
 
-    def do_y(
-        self,
-        x1: PDFStackT,
-        y1: PDFStackT,
-        x3: PDFStackT,
-        y3: PDFStackT
-    ) -> None:
+    def do_y(self, x1: PDFStackT, y1: PDFStackT, x3: PDFStackT, y3: PDFStackT) -> None:
         """Append curved segment to path (final point replicated)"""
-        self.curpath.append(('y', cast(float, x1), cast(float, y1),
-                             cast(float, x3), cast(float, y3)))
+        self.curpath.append(
+            ("y", cast(float, x1), cast(float, y1), cast(float, x3), cast(float, y3))
+        )
         return
 
     def do_h(self) -> None:
         """Close subpath"""
-        self.curpath.append(('h',))
+        self.curpath.append(("h",))
         return
 
-    def do_re(
-        self,
-        x: PDFStackT,
-        y: PDFStackT,
-        w: PDFStackT,
-        h: PDFStackT
-    ) -> None:
+    def do_re(self, x: PDFStackT, y: PDFStackT, w: PDFStackT, h: PDFStackT) -> None:
         """Append rectangle to path"""
         x = cast(float, x)
         y = cast(float, y)
         w = cast(float, w)
         h = cast(float, h)
-        self.curpath.append(('m', x, y))
-        self.curpath.append(('l', x+w, y))
-        self.curpath.append(('l', x+w, y+h))
-        self.curpath.append(('l', x, y+h))
-        self.curpath.append(('h',))
+        self.curpath.append(("m", x, y))
+        self.curpath.append(("l", x + w, y))
+        self.curpath.append(("l", x + w, y + h))
+        self.curpath.append(("l", x, y + h))
+        self.curpath.append(("h",))
         return
 
     def do_S(self) -> None:
         """Stroke path"""
-        self.device.paint_path(self.graphicstate, True, False, False,
-                               self.curpath)
+        self.device.paint_path(self.graphicstate, True, False, False, self.curpath)
         self.curpath = []
         return
 
@@ -577,8 +577,7 @@ class PDFPageInterpreter:
 
     def do_f(self) -> None:
         """Fill path using nonzero winding number rule"""
-        self.device.paint_path(self.graphicstate, False, True, False,
-                               self.curpath)
+        self.device.paint_path(self.graphicstate, False, True, False, self.curpath)
         self.curpath = []
         return
 
@@ -588,22 +587,19 @@ class PDFPageInterpreter:
 
     def do_f_a(self) -> None:
         """Fill path using even-odd rule"""
-        self.device.paint_path(self.graphicstate, False, True, True,
-                               self.curpath)
+        self.device.paint_path(self.graphicstate, False, True, True, self.curpath)
         self.curpath = []
         return
 
     def do_B(self) -> None:
         """Fill and stroke path using nonzero winding number rule"""
-        self.device.paint_path(self.graphicstate, True, True, False,
-                               self.curpath)
+        self.device.paint_path(self.graphicstate, True, True, False, self.curpath)
         self.curpath = []
         return
 
     def do_B_a(self) -> None:
         """Fill and stroke path using even-odd rule"""
-        self.device.paint_path(self.graphicstate, True, True, True,
-                               self.curpath)
+        self.device.paint_path(self.graphicstate, True, True, True, self.curpath)
         self.curpath = []
         return
 
@@ -641,7 +637,7 @@ class PDFPageInterpreter:
             self.scs = self.csmap[literal_name(name)]
         except KeyError:
             if settings.STRICT:
-                raise PDFInterpreterError('Undefined ColorSpace: %r' % name)
+                raise PDFInterpreterError("Undefined ColorSpace: %r" % name)
         return
 
     def do_cs(self, name: PDFStackT) -> None:
@@ -650,7 +646,7 @@ class PDFPageInterpreter:
             self.ncs = self.csmap[literal_name(name)]
         except KeyError:
             if settings.STRICT:
-                raise PDFInterpreterError('Undefined ColorSpace: %r' % name)
+                raise PDFInterpreterError("Undefined ColorSpace: %r" % name)
         return
 
     def do_G(self, gray: PDFStackT) -> None:
@@ -665,38 +661,32 @@ class PDFPageInterpreter:
 
     def do_RG(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for stroking operations"""
-        self.graphicstate.scolor = \
-            (cast(float, r), cast(float, g), cast(float, b))
+        self.graphicstate.scolor = (cast(float, r), cast(float, g), cast(float, b))
         return
 
     def do_rg(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for nonstroking operations"""
-        self.graphicstate.ncolor = \
-            (cast(float, r), cast(float, g), cast(float, b))
+        self.graphicstate.ncolor = (cast(float, r), cast(float, g), cast(float, b))
         return
 
-    def do_K(
-        self,
-        c: PDFStackT,
-        m: PDFStackT,
-        y: PDFStackT,
-        k: PDFStackT
-    ) -> None:
+    def do_K(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
         """Set CMYK color for stroking operations"""
-        self.graphicstate.scolor = \
-            (cast(float, c), cast(float, m), cast(float, y), cast(float, k))
+        self.graphicstate.scolor = (
+            cast(float, c),
+            cast(float, m),
+            cast(float, y),
+            cast(float, k),
+        )
         return
 
-    def do_k(
-        self,
-        c: PDFStackT,
-        m: PDFStackT,
-        y: PDFStackT,
-        k: PDFStackT
-    ) -> None:
+    def do_k(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
         """Set CMYK color for nonstroking operations"""
-        self.graphicstate.ncolor = \
-            (cast(float, c), cast(float, m), cast(float, y), cast(float, k))
+        self.graphicstate.ncolor = (
+            cast(float, c),
+            cast(float, m),
+            cast(float, y),
+            cast(float, k),
+        )
         return
 
     def do_SCN(self) -> None:
@@ -705,7 +695,7 @@ class PDFPageInterpreter:
             n = self.scs.ncomponents
         else:
             if settings.STRICT:
-                raise PDFInterpreterError('No colorspace specified!')
+                raise PDFInterpreterError("No colorspace specified!")
             n = 1
         self.graphicstate.scolor = cast(Color, self.pop(n))
         return
@@ -716,7 +706,7 @@ class PDFPageInterpreter:
             n = self.ncs.ncomponents
         else:
             if settings.STRICT:
-                raise PDFInterpreterError('No colorspace specified!')
+                raise PDFInterpreterError("No colorspace specified!")
             n = 1
         self.graphicstate.ncolor = cast(Color, self.pop(n))
         return
@@ -831,7 +821,7 @@ class PDFPageInterpreter:
             self.textstate.font = self.fontmap[literal_name(fontid)]
         except KeyError:
             if settings.STRICT:
-                raise PDFInterpreterError('Undefined Font id: %r' % fontid)
+                raise PDFInterpreterError("Undefined Font id: %r" % fontid)
             self.textstate.font = self.rsrcmgr.get_font(None, {})
         self.textstate.fontsize = cast(float, fontsize)
         return
@@ -854,7 +844,7 @@ class PDFPageInterpreter:
         tx = cast(float, tx)
         ty = cast(float, ty)
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
+        self.textstate.matrix = (a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
         self.textstate.linematrix = (0, 0)
         return
 
@@ -863,7 +853,7 @@ class PDFPageInterpreter:
         tx = cast(float, tx)
         ty = cast(float, ty)
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
+        self.textstate.matrix = (a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
         self.textstate.leading = ty
         self.textstate.linematrix = (0, 0)
         return
@@ -875,7 +865,7 @@ class PDFPageInterpreter:
         c: PDFStackT,
         d: PDFStackT,
         e: PDFStackT,
-        f: PDFStackT
+        f: PDFStackT,
     ) -> None:
         """Set text matrix and text line matrix"""
         self.textstate.matrix = cast(Matrix, (a, b, c, d, e, f))
@@ -885,8 +875,14 @@ class PDFPageInterpreter:
     def do_T_a(self) -> None:
         """Move to start of next text line"""
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, self.textstate.leading*c+e,
-                                 self.textstate.leading*d+f)
+        self.textstate.matrix = (
+            a,
+            b,
+            c,
+            d,
+            self.textstate.leading * c + e,
+            self.textstate.leading * d + f,
+        )
         self.textstate.linematrix = (0, 0)
         return
 
@@ -894,11 +890,12 @@ class PDFPageInterpreter:
         """Show text, allowing individual glyph positioning"""
         if self.textstate.font is None:
             if settings.STRICT:
-                raise PDFInterpreterError('No font specified!')
+                raise PDFInterpreterError("No font specified!")
             return
         assert self.ncs is not None
-        self.device.render_string(self.textstate, cast(PDFTextSeq, seq),
-                                  self.ncs, self.graphicstate.copy())
+        self.device.render_string(
+            self.textstate, cast(PDFTextSeq, seq), self.ncs, self.graphicstate.copy()
+        )
         return
 
     def do_Tj(self, s: PDFStackT) -> None:
@@ -935,7 +932,7 @@ class PDFPageInterpreter:
 
     def do_EI(self, obj: PDFStackT) -> None:
         """End inline image object"""
-        if isinstance(obj, PDFStream) and 'W' in obj and 'H' in obj:
+        if isinstance(obj, PDFStream) and "W" in obj and "H" in obj:
             iobjid = str(id(obj))
             self.device.begin_figure(iobjid, (0, 0, 1, 1), MATRIX_IDENTITY)
             self.device.render_image(iobjid, obj)
@@ -949,28 +946,28 @@ class PDFPageInterpreter:
             xobj = stream_value(self.xobjmap[xobjid])
         except KeyError:
             if settings.STRICT:
-                raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
+                raise PDFInterpreterError("Undefined xobject id: %r" % xobjid)
             return
-        log.info('Processing xobj: %r', xobj)
-        subtype = xobj.get('Subtype')
-        if subtype is LITERAL_FORM and 'BBox' in xobj:
+        log.debug("Processing xobj: %r", xobj)
+        subtype = xobj.get("Subtype")
+        if subtype is LITERAL_FORM and "BBox" in xobj:
             interpreter = self.dup()
-            bbox = cast(Rect, list_value(xobj['BBox']))
-            matrix = cast(Matrix, list_value(
-                xobj.get('Matrix', MATRIX_IDENTITY)))
+            bbox = cast(Rect, list_value(xobj["BBox"]))
+            matrix = cast(Matrix, list_value(xobj.get("Matrix", MATRIX_IDENTITY)))
             # According to PDF reference 1.7 section 4.9.1, XObjects in
             # earlier PDFs (prior to v1.2) use the page's Resources entry
             # instead of having their own Resources entry.
-            xobjres = xobj.get('Resources')
+            xobjres = xobj.get("Resources")
             if xobjres:
                 resources = dict_value(xobjres)
             else:
                 resources = self.resources.copy()
             self.device.begin_figure(xobjid, bbox, matrix)
-            interpreter.render_contents(resources, [xobj],
-                                        ctm=mult_matrix(matrix, self.ctm))
+            interpreter.render_contents(
+                resources, [xobj], ctm=mult_matrix(matrix, self.ctm)
+            )
             self.device.end_figure(xobjid)
-        elif subtype is LITERAL_IMAGE and 'Width' in xobj and 'Height' in xobj:
+        elif subtype is LITERAL_IMAGE and "Width" in xobj and "Height" in xobj:
             self.device.begin_figure(xobjid, (0, 0, 1, 1), MATRIX_IDENTITY)
             self.device.render_image(xobjid, xobj)
             self.device.end_figure(xobjid)
@@ -980,7 +977,7 @@ class PDFPageInterpreter:
         return
 
     def process_page(self, page: PDFPage) -> None:
-        log.info('Processing page: %r', page)
+        log.debug("Processing page: %r", page)
         (x0, y0, x1, y1) = page.mediabox
         if page.rotate == 90:
             ctm = (0, -1, 1, 0, -y0, x1)
@@ -999,14 +996,15 @@ class PDFPageInterpreter:
         self,
         resources: Dict[object, object],
         streams: Sequence[object],
-        ctm: Matrix = MATRIX_IDENTITY
+        ctm: Matrix = MATRIX_IDENTITY,
     ) -> None:
         """Render the content streams.
 
         This method may be called recursively.
         """
-        log.info('render_contents: resources=%r, streams=%r, ctm=%r',
-                 resources, streams, ctm)
+        log.debug(
+            "render_contents: resources=%r, streams=%r, ctm=%r", resources, streams, ctm
+        )
         self.init_resources(resources)
         self.init_state(ctm)
         self.execute(list_value(streams))
@@ -1025,22 +1023,23 @@ class PDFPageInterpreter:
                 break
             if isinstance(obj, PSKeyword):
                 name = keyword_name(obj)
-                method = 'do_%s' % name.replace('*', '_a').replace('"', '_w')\
-                    .replace("'", '_q')
+                method = "do_%s" % name.replace("*", "_a").replace('"', "_w").replace(
+                    "'", "_q"
+                )
                 if hasattr(self, method):
                     func = getattr(self, method)
-                    nargs = func.__code__.co_argcount-1
+                    nargs = func.__code__.co_argcount - 1
                     if nargs:
                         args = self.pop(nargs)
-                        log.debug('exec: %s %r', name, args)
+                        log.debug("exec: %s %r", name, args)
                         if len(args) == nargs:
                             func(*args)
                     else:
-                        log.debug('exec: %s', name)
+                        log.debug("exec: %s", name)
                         func()
                 else:
                     if settings.STRICT:
-                        error_msg = 'Unknown operator: %r' % name
+                        error_msg = "Unknown operator: %r" % name
                         raise PDFInterpreterError(error_msg)
             else:
                 self.push(obj)

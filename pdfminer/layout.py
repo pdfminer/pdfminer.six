@@ -1,7 +1,19 @@
 import heapq
 import logging
-from typing import (Dict, Generic, Iterable, Iterator, List, Optional,
-                    Sequence, Set, Tuple, TypeVar, Union, cast)
+from typing import (
+    Dict,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from .pdfcolor import PDFColorSpace
 from .pdffont import PDFFont
@@ -25,7 +37,6 @@ logger = logging.getLogger(__name__)
 
 
 class IndexAssigner:
-
     def __init__(self, index: int = 0) -> None:
         self.index = index
 
@@ -74,7 +85,7 @@ class LAParams:
         word_margin: float = 0.1,
         boxes_flow: Optional[float] = 0.5,
         detect_vertical: bool = False,
-        all_texts: bool = False
+        all_texts: bool = False,
     ) -> None:
         self.line_overlap = line_overlap
         self.char_margin = char_margin
@@ -88,19 +99,22 @@ class LAParams:
 
     def _validate(self) -> None:
         if self.boxes_flow is not None:
-            boxes_flow_err_msg = ("LAParam boxes_flow should be None, or a "
-                                  "number between -1 and +1")
-            if not (isinstance(self.boxes_flow, int) or
-                    isinstance(self.boxes_flow, float)):
+            boxes_flow_err_msg = (
+                "LAParam boxes_flow should be None, or a " "number between -1 and +1"
+            )
+            if not (
+                isinstance(self.boxes_flow, int) or isinstance(self.boxes_flow, float)
+            ):
                 raise TypeError(boxes_flow_err_msg)
             if not -1 <= self.boxes_flow <= 1:
                 raise ValueError(boxes_flow_err_msg)
 
     def __repr__(self) -> str:
-        return '<LAParams: char_margin=%.1f, line_margin=%.1f, ' \
-               'word_margin=%.1f all_texts=%r>' % \
-               (self.char_margin, self.line_margin, self.word_margin,
-                self.all_texts)
+        return (
+            "<LAParams: char_margin=%.1f, line_margin=%.1f, "
+            "word_margin=%.1f all_texts=%r>"
+            % (self.char_margin, self.line_margin, self.word_margin, self.all_texts)
+        )
 
 
 class LTItem:
@@ -115,8 +129,7 @@ class LTText:
     """Interface for things that have text"""
 
     def __repr__(self) -> str:
-        return ('<%s %r>' %
-                (self.__class__.__name__, self.get_text()))
+        return "<%s %r>" % (self.__class__.__name__, self.get_text())
 
     def get_text(self) -> str:
         """Text contained in this object"""
@@ -131,8 +144,7 @@ class LTComponent(LTItem):
         self.set_bbox(bbox)
 
     def __repr__(self) -> str:
-        return ('<%s %s>' %
-                (self.__class__.__name__, bbox2str(self.bbox)))
+        return "<%s %s>" % (self.__class__.__name__, bbox2str(self.bbox))
 
     # Disable comparison.
     def __lt__(self, _: object) -> bool:
@@ -153,8 +165,8 @@ class LTComponent(LTItem):
         self.y0 = y0
         self.x1 = x1
         self.y1 = y1
-        self.width = x1-x0
-        self.height = y1-y0
+        self.width = x1 - x0
+        self.height = y1 - y0
         self.bbox = bbox
 
     def is_empty(self) -> bool:
@@ -169,12 +181,12 @@ class LTComponent(LTItem):
         if self.is_hoverlap(obj):
             return 0
         else:
-            return min(abs(self.x0-obj.x1), abs(self.x1-obj.x0))
+            return min(abs(self.x0 - obj.x1), abs(self.x1 - obj.x0))
 
     def hoverlap(self, obj: "LTComponent") -> float:
         assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_hoverlap(obj):
-            return min(abs(self.x0-obj.x1), abs(self.x1-obj.x0))
+            return min(abs(self.x0 - obj.x1), abs(self.x1 - obj.x0))
         else:
             return 0
 
@@ -187,12 +199,12 @@ class LTComponent(LTItem):
         if self.is_voverlap(obj):
             return 0
         else:
-            return min(abs(self.y0-obj.y1), abs(self.y1-obj.y0))
+            return min(abs(self.y0 - obj.y1), abs(self.y1 - obj.y0))
 
     def voverlap(self, obj: "LTComponent") -> float:
         assert isinstance(obj, LTComponent), str(type(obj))
         if self.is_voverlap(obj):
-            return min(abs(self.y0-obj.y1), abs(self.y1-obj.y0))
+            return min(abs(self.y0 - obj.y1), abs(self.y1 - obj.y0))
         else:
             return 0
 
@@ -208,7 +220,7 @@ class LTCurve(LTComponent):
         fill: bool = False,
         evenodd: bool = False,
         stroking_color: Optional[Color] = None,
-        non_stroking_color: Optional[Color] = None
+        non_stroking_color: Optional[Color] = None,
     ) -> None:
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
@@ -220,7 +232,7 @@ class LTCurve(LTComponent):
         self.non_stroking_color = non_stroking_color
 
     def get_pts(self) -> str:
-        return ','.join('%.3f,%.3f' % p for p in self.pts)
+        return ",".join("%.3f,%.3f" % p for p in self.pts)
 
 
 class LTLine(LTCurve):
@@ -238,10 +250,18 @@ class LTLine(LTCurve):
         fill: bool = False,
         evenodd: bool = False,
         stroking_color: Optional[Color] = None,
-        non_stroking_color: Optional[Color] = None
+        non_stroking_color: Optional[Color] = None,
     ) -> None:
-        LTCurve.__init__(self, linewidth, [p0, p1], stroke, fill, evenodd,
-                         stroking_color, non_stroking_color)
+        LTCurve.__init__(
+            self,
+            linewidth,
+            [p0, p1],
+            stroke,
+            fill,
+            evenodd,
+            stroking_color,
+            non_stroking_color,
+        )
 
 
 class LTRect(LTCurve):
@@ -258,12 +278,19 @@ class LTRect(LTCurve):
         fill: bool = False,
         evenodd: bool = False,
         stroking_color: Optional[Color] = None,
-        non_stroking_color: Optional[Color] = None
+        non_stroking_color: Optional[Color] = None,
     ) -> None:
         (x0, y0, x1, y1) = bbox
-        LTCurve.__init__(self, linewidth,
-                         [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke,
-                         fill, evenodd, stroking_color, non_stroking_color)
+        LTCurve.__init__(
+            self,
+            linewidth,
+            [(x0, y0), (x1, y0), (x1, y1), (x0, y1)],
+            stroke,
+            fill,
+            evenodd,
+            stroking_color,
+            non_stroking_color,
+        )
 
 
 class LTImage(LTComponent):
@@ -276,18 +303,20 @@ class LTImage(LTComponent):
         LTComponent.__init__(self, bbox)
         self.name = name
         self.stream = stream
-        self.srcsize = (stream.get_any(('W', 'Width')),
-                        stream.get_any(('H', 'Height')))
-        self.imagemask = stream.get_any(('IM', 'ImageMask'))
-        self.bits = stream.get_any(('BPC', 'BitsPerComponent'), 1)
-        self.colorspace = stream.get_any(('CS', 'ColorSpace'))
+        self.srcsize = (stream.get_any(("W", "Width")), stream.get_any(("H", "Height")))
+        self.imagemask = stream.get_any(("IM", "ImageMask"))
+        self.bits = stream.get_any(("BPC", "BitsPerComponent"), 1)
+        self.colorspace = stream.get_any(("CS", "ColorSpace"))
         if not isinstance(self.colorspace, list):
             self.colorspace = [self.colorspace]
 
     def __repr__(self) -> str:
-        return ('<%s(%s) %s %r>' %
-                (self.__class__.__name__, self.name,
-                 bbox2str(self.bbox), self.srcsize))
+        return "<%s(%s) %s %r>" % (
+            self.__class__.__name__,
+            self.name,
+            bbox2str(self.bbox),
+            self.srcsize,
+        )
 
 
 class LTAnno(LTItem, LTText):
@@ -320,7 +349,7 @@ class LTChar(LTComponent, LTText):
         textwidth: float,
         textdisp: Union[float, Tuple[Optional[float], float]],
         ncs: PDFColorSpace,
-        graphicstate: PDFGraphicState
+        graphicstate: PDFGraphicState,
     ) -> None:
         LTText.__init__(self)
         self._text = text
@@ -337,8 +366,8 @@ class LTChar(LTComponent, LTText):
             if vx is None:
                 vx = fontsize * 0.5
             else:
-                vx = vx * fontsize * .001
-            vy = (1000 - vy) * fontsize * .001
+                vx = vx * fontsize * 0.001
+            vy = (1000 - vy) * fontsize * 0.001
             bbox_lower_left = (-vx, vy + rise + self.adv)
             bbox_upper_right = (-vx + fontsize, vy + rise)
         else:
@@ -347,7 +376,7 @@ class LTChar(LTComponent, LTText):
             bbox_lower_left = (0, descent + rise)
             bbox_upper_right = (self.adv, descent + rise + fontsize)
         (a, b, c, d, e, f) = self.matrix
-        self.upright = (0 < a*d*scaling and b*c <= 0)
+        self.upright = 0 < a * d * scaling and b * c <= 0
         (x0, y0) = apply_matrix_pt(self.matrix, bbox_lower_left)
         (x1, y1) = apply_matrix_pt(self.matrix, bbox_upper_right)
         if x1 < x0:
@@ -362,10 +391,14 @@ class LTChar(LTComponent, LTText):
         return
 
     def __repr__(self) -> str:
-        return ('<%s %s matrix=%s font=%r adv=%s text=%r>' %
-                (self.__class__.__name__, bbox2str(self.bbox),
-                 matrix2str(self.matrix), self.fontname, self.adv,
-                 self.get_text()))
+        return "<%s %s matrix=%s font=%r adv=%s text=%r>" % (
+            self.__class__.__name__,
+            bbox2str(self.bbox),
+            matrix2str(self.matrix),
+            self.fontname,
+            self.adv,
+            self.get_text(),
+        )
 
     def get_text(self) -> str:
         return self._text
@@ -375,7 +408,7 @@ class LTChar(LTComponent, LTText):
         return True
 
 
-LTItemT = TypeVar('LTItemT', bound=LTItem)
+LTItemT = TypeVar("LTItemT", bound=LTItem)
 
 
 class LTContainer(LTComponent, Generic[LTItemT]):
@@ -416,8 +449,14 @@ class LTExpandableContainer(LTContainer[LTItemT]):
     # super() LTContainer only considers LTItem (no bounding box).
     def add(self, obj: LTComponent) -> None:  # type: ignore[override]
         LTContainer.add(self, cast(LTItemT, obj))
-        self.set_bbox((min(self.x0, obj.x0), min(self.y0, obj.y0),
-                       max(self.x1, obj.x1), max(self.y1, obj.y1)))
+        self.set_bbox(
+            (
+                min(self.x0, obj.x0),
+                min(self.y0, obj.y0),
+                max(self.x1, obj.x1),
+                max(self.y1, obj.y1),
+            )
+        )
         return
 
 
@@ -428,8 +467,9 @@ class LTTextContainer(LTExpandableContainer[LTItemT], LTText):
         return
 
     def get_text(self) -> str:
-        return ''.join(cast(LTText, obj).get_text() for obj in self
-                       if isinstance(obj, LTText))
+        return "".join(
+            cast(LTText, obj).get_text() for obj in self if isinstance(obj, LTText)
+        )
 
 
 TextLineElement = Union[LTChar, LTAnno]
@@ -448,17 +488,20 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         return
 
     def __repr__(self) -> str:
-        return ('<%s %s %r>' %
-                (self.__class__.__name__, bbox2str(self.bbox),
-                 self.get_text()))
+        return "<%s %s %r>" % (
+            self.__class__.__name__,
+            bbox2str(self.bbox),
+            self.get_text(),
+        )
 
     def analyze(self, laparams: LAParams) -> None:
         LTTextContainer.analyze(self, laparams)
-        LTContainer.add(self, LTAnno('\n'))
+        LTContainer.add(self, LTAnno("\n"))
         return
 
-    def find_neighbors(self, plane: Plane[LTComponentT], ratio: float
-                       ) -> List["LTTextLine"]:
+    def find_neighbors(
+        self, plane: Plane[LTComponentT], ratio: float
+    ) -> List["LTTextLine"]:
         raise NotImplementedError
 
 
@@ -474,15 +517,13 @@ class LTTextLineHorizontal(LTTextLine):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
             if self._x1 < obj.x0 - margin:
-                LTContainer.add(self, LTAnno(' '))
+                LTContainer.add(self, LTAnno(" "))
         self._x1 = obj.x1
         super().add(obj)
         return
 
     def find_neighbors(
-        self,
-        plane: Plane[LTComponentT],
-        ratio: float
+        self, plane: Plane[LTComponentT], ratio: float
     ) -> List[LTTextLine]:
         """
         Finds neighboring LTTextLineHorizontals in the plane.
@@ -494,49 +535,41 @@ class LTTextLineHorizontal(LTTextLine):
         """
         d = ratio * self.height
         objs = plane.find((self.x0, self.y0 - d, self.x1, self.y1 + d))
-        return [obj for obj in objs
-                if (isinstance(obj, LTTextLineHorizontal) and
-                    self._is_same_height_as(obj, tolerance=d) and
-                    (self._is_left_aligned_with(obj, tolerance=d) or
-                     self._is_right_aligned_with(obj, tolerance=d) or
-                     self._is_centrally_aligned_with(obj, tolerance=d)))]
+        return [
+            obj
+            for obj in objs
+            if (
+                isinstance(obj, LTTextLineHorizontal)
+                and self._is_same_height_as(obj, tolerance=d)
+                and (
+                    self._is_left_aligned_with(obj, tolerance=d)
+                    or self._is_right_aligned_with(obj, tolerance=d)
+                    or self._is_centrally_aligned_with(obj, tolerance=d)
+                )
+            )
+        ]
 
-    def _is_left_aligned_with(
-        self,
-        other: LTComponent,
-        tolerance: float = 0
-    ) -> bool:
+    def _is_left_aligned_with(self, other: LTComponent, tolerance: float = 0) -> bool:
         """
         Whether the left-hand edge of `other` is within `tolerance`.
         """
         return abs(other.x0 - self.x0) <= tolerance
 
-    def _is_right_aligned_with(
-        self,
-        other: LTComponent,
-        tolerance: float = 0
-    ) -> bool:
+    def _is_right_aligned_with(self, other: LTComponent, tolerance: float = 0) -> bool:
         """
         Whether the right-hand edge of `other` is within `tolerance`.
         """
         return abs(other.x1 - self.x1) <= tolerance
 
     def _is_centrally_aligned_with(
-        self,
-        other: LTComponent,
-        tolerance: float = 0
+        self, other: LTComponent, tolerance: float = 0
     ) -> bool:
         """
         Whether the horizontal center of `other` is within `tolerance`.
         """
-        return abs(
-            (other.x0 + other.x1) / 2 - (self.x0 + self.x1) / 2) <= tolerance
+        return abs((other.x0 + other.x1) / 2 - (self.x0 + self.x1) / 2) <= tolerance
 
-    def _is_same_height_as(
-        self,
-        other: LTComponent,
-        tolerance: float = 0
-    ) -> bool:
+    def _is_same_height_as(self, other: LTComponent, tolerance: float = 0) -> bool:
         return abs(other.height - self.height) <= tolerance
 
 
@@ -552,15 +585,13 @@ class LTTextLineVertical(LTTextLine):
         if isinstance(obj, LTChar) and self.word_margin:
             margin = self.word_margin * max(obj.width, obj.height)
             if obj.y1 + margin < self._y0:
-                LTContainer.add(self, LTAnno(' '))
+                LTContainer.add(self, LTAnno(" "))
         self._y0 = obj.y0
         super().add(obj)
         return
 
     def find_neighbors(
-        self,
-        plane: Plane[LTComponentT],
-        ratio: float
+        self, plane: Plane[LTComponentT], ratio: float
     ) -> List[LTTextLine]:
         """
         Finds neighboring LTTextLineVerticals in the plane.
@@ -572,43 +603,39 @@ class LTTextLineVertical(LTTextLine):
         """
         d = ratio * self.width
         objs = plane.find((self.x0 - d, self.y0, self.x1 + d, self.y1))
-        return [obj for obj in objs
-                if (isinstance(obj, LTTextLineVertical) and
-                    self._is_same_width_as(obj, tolerance=d) and
-                    (self._is_lower_aligned_with(obj, tolerance=d) or
-                     self._is_upper_aligned_with(obj, tolerance=d) or
-                     self._is_centrally_aligned_with(obj, tolerance=d)))]
+        return [
+            obj
+            for obj in objs
+            if (
+                isinstance(obj, LTTextLineVertical)
+                and self._is_same_width_as(obj, tolerance=d)
+                and (
+                    self._is_lower_aligned_with(obj, tolerance=d)
+                    or self._is_upper_aligned_with(obj, tolerance=d)
+                    or self._is_centrally_aligned_with(obj, tolerance=d)
+                )
+            )
+        ]
 
-    def _is_lower_aligned_with(
-        self,
-        other: LTComponent,
-        tolerance: float = 0
-    ) -> bool:
+    def _is_lower_aligned_with(self, other: LTComponent, tolerance: float = 0) -> bool:
         """
         Whether the lower edge of `other` is within `tolerance`.
         """
         return abs(other.y0 - self.y0) <= tolerance
 
-    def _is_upper_aligned_with(
-        self,
-        other: LTComponent,
-        tolerance: float = 0
-    ) -> bool:
+    def _is_upper_aligned_with(self, other: LTComponent, tolerance: float = 0) -> bool:
         """
         Whether the upper edge of `other` is within `tolerance`.
         """
         return abs(other.y1 - self.y1) <= tolerance
 
     def _is_centrally_aligned_with(
-        self,
-        other: LTComponent,
-        tolerance: float = 0
+        self, other: LTComponent, tolerance: float = 0
     ) -> bool:
         """
         Whether the vertical center of `other` is within `tolerance`.
         """
-        return abs(
-            (other.y0 + other.y1) / 2 - (self.y0 + self.y1) / 2) <= tolerance
+        return abs((other.y0 + other.y1) / 2 - (self.y0 + self.y1) / 2) <= tolerance
 
     def _is_same_width_as(self, other: LTComponent, tolerance: float) -> bool:
         return abs(other.width - self.width) <= tolerance
@@ -628,9 +655,12 @@ class LTTextBox(LTTextContainer[LTTextLine]):
         return
 
     def __repr__(self) -> str:
-        return ('<%s(%s) %s %r>' %
-                (self.__class__.__name__,
-                 self.index, bbox2str(self.bbox), self.get_text()))
+        return "<%s(%s) %s %r>" % (
+            self.__class__.__name__,
+            self.index,
+            bbox2str(self.bbox),
+            self.get_text(),
+        )
 
     def get_writing_mode(self) -> str:
         raise NotImplementedError
@@ -643,7 +673,7 @@ class LTTextBoxHorizontal(LTTextBox):
         return
 
     def get_writing_mode(self) -> str:
-        return 'lr-tb'
+        return "lr-tb"
 
 
 class LTTextBoxVertical(LTTextBox):
@@ -653,7 +683,7 @@ class LTTextBoxVertical(LTTextBox):
         return
 
     def get_writing_mode(self) -> str:
-        return 'tb-rl'
+        return "tb-rl"
 
 
 TextGroupElement = Union[LTTextBox, "LTTextGroup"]
@@ -674,7 +704,8 @@ class LTTextGroupLRTB(LTTextGroup):
         # reorder the objects from top-left to bottom-right.
         self._objs.sort(
             key=lambda obj: (1 - boxes_flow) * obj.x0
-            - (1 + boxes_flow) * (obj.y0 + obj.y1))
+            - (1 + boxes_flow) * (obj.y0 + obj.y1)
+        )
         return
 
 
@@ -685,8 +716,9 @@ class LTTextGroupTBRL(LTTextGroup):
         boxes_flow = laparams.boxes_flow
         # reorder the objects from top-right to bottom-left.
         self._objs.sort(
-            key=lambda obj: - (1 + boxes_flow) * (obj.x0 + obj.x1)
-                            - (1 - boxes_flow) * obj.y1)
+            key=lambda obj: -(1 + boxes_flow) * (obj.x0 + obj.x1)
+            - (1 - boxes_flow) * obj.y1
+        )
         return
 
 
@@ -698,9 +730,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
 
     # group_objects: group text object to textlines.
     def group_objects(
-        self,
-        laparams: LAParams,
-        objs: Iterable[LTComponent]
+        self, laparams: LAParams, objs: Iterable[LTComponent]
     ) -> Iterator[LTTextLine]:
         obj0 = None
         line = None
@@ -716,13 +746,14 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 #
                 #          |<--->|
                 #        (char_margin)
-                halign = \
-                    obj0.is_compatible(obj1) \
-                    and obj0.is_voverlap(obj1) \
-                    and min(obj0.height, obj1.height) * laparams.line_overlap \
-                    < obj0.voverlap(obj1) \
-                    and obj0.hdistance(obj1) \
+                halign = (
+                    obj0.is_compatible(obj1)
+                    and obj0.is_voverlap(obj1)
+                    and min(obj0.height, obj1.height) * laparams.line_overlap
+                    < obj0.voverlap(obj1)
+                    and obj0.hdistance(obj1)
                     < max(obj0.width, obj1.width) * laparams.char_margin
+                )
 
                 # valign: obj0 and obj1 is vertically aligned.
                 #
@@ -738,17 +769,19 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 #
                 #     |<-->|
                 #   (line_overlap)
-                valign = \
-                    laparams.detect_vertical \
-                    and obj0.is_compatible(obj1) \
-                    and obj0.is_hoverlap(obj1) \
-                    and min(obj0.width, obj1.width) * laparams.line_overlap \
-                    < obj0.hoverlap(obj1) \
-                    and obj0.vdistance(obj1) \
+                valign = (
+                    laparams.detect_vertical
+                    and obj0.is_compatible(obj1)
+                    and obj0.is_hoverlap(obj1)
+                    and min(obj0.width, obj1.width) * laparams.line_overlap
+                    < obj0.hoverlap(obj1)
+                    and obj0.vdistance(obj1)
                     < max(obj0.height, obj1.height) * laparams.char_margin
+                )
 
-                if ((halign and isinstance(line, LTTextLineHorizontal)) or
-                        (valign and isinstance(line, LTTextLineVertical))):
+                if (halign and isinstance(line, LTTextLineHorizontal)) or (
+                    valign and isinstance(line, LTTextLineVertical)
+                ):
 
                     line.add(obj1)
                 elif line is not None:
@@ -777,9 +810,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         return
 
     def group_textlines(
-        self,
-        laparams: LAParams,
-        lines: Iterable[LTTextLine]
+        self, laparams: LAParams, lines: Iterable[LTTextLine]
     ) -> Iterator[LTTextBox]:
         """Group neighboring lines to textboxes"""
         plane: Plane[LTTextLine] = Plane(self.bbox)
@@ -812,9 +843,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         return
 
     def group_textboxes(
-        self,
-        laparams: LAParams,
-        boxes: Sequence[LTTextBox]
+        self, laparams: LAParams, boxes: Sequence[LTTextBox]
     ) -> List[LTTextGroup]:
         """Group textboxes hierarchically.
 
@@ -853,8 +882,11 @@ class LTLayoutContainer(LTContainer[LTComponent]):
             y0 = min(obj1.y0, obj2.y0)
             x1 = max(obj1.x1, obj2.x1)
             y1 = max(obj1.y1, obj2.y1)
-            return (x1 - x0) * (y1 - y0) \
-                - obj1.width*obj1.height - obj2.width*obj2.height
+            return (
+                (x1 - x0) * (y1 - y0)
+                - obj1.width * obj1.height
+                - obj2.width * obj2.height
+            )
 
         def isany(obj1: ElementT, obj2: ElementT) -> Set[ElementT]:
             """Check if there's any other object between obj1 and obj2."""
@@ -868,10 +900,9 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         dists: List[Tuple[bool, float, int, int, ElementT, ElementT]] = []
         for i in range(len(boxes)):
             box1 = boxes[i]
-            for j in range(i+1, len(boxes)):
+            for j in range(i + 1, len(boxes)):
                 box2 = boxes[j]
-                dists.append((False, dist(box1, box2), id(box1), id(box2),
-                              box1, box2))
+                dists.append((False, dist(box1, box2), id(box1), id(box2), box1, box2))
         heapq.heapify(dists)
 
         plane.extend(boxes)
@@ -883,8 +914,9 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 if not skip_isany and isany(obj1, obj2):
                     heapq.heappush(dists, (True, d, id1, id2, obj1, obj2))
                     continue
-                if isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or \
-                        isinstance(obj2, (LTTextBoxVertical, LTTextGroupTBRL)):
+                if isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or isinstance(
+                    obj2, (LTTextBoxVertical, LTTextGroupTBRL)
+                ):
                     group: LTTextGroup = LTTextGroupTBRL([obj1, obj2])
                 else:
                     group = LTTextGroupLRTB([obj1, obj2])
@@ -893,8 +925,10 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 done.update([id1, id2])
 
                 for other in plane:
-                    heapq.heappush(dists, (False, dist(group, other),
-                                           id(group), id(other), group, other))
+                    heapq.heappush(
+                        dists,
+                        (False, dist(group, other), id(group), id(other), group, other),
+                    )
                 plane.add(group)
         # By now only groups are in the plane
         return list(cast(LTTextGroup, g) for g in plane)
@@ -902,8 +936,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
     def analyze(self, laparams: LAParams) -> None:
         # textobjs is a list of LTChar objects, i.e.
         # it has all the individual characters in the page.
-        (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar),
-                                       self)
+        (textobjs, otherobjs) = fsplit(lambda obj: isinstance(obj, LTChar), self)
         for obj in otherobjs:
             obj.analyze(laparams)
         if not textobjs:
@@ -922,6 +955,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                     return (0, -box.x1, -box.y0)
                 else:
                     return (1, -box.y0, box.x0)
+
             textboxes.sort(key=getkey)
         else:
             self.groups = self.group_textboxes(laparams, textboxes)
@@ -930,8 +964,11 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 group.analyze(laparams)
                 assigner.run(group)
             textboxes.sort(key=lambda box: box.index)
-        self._objs = (cast(List[LTComponent], textboxes) + otherobjs
-                      + cast(List[LTComponent], empties))
+        self._objs = (
+            cast(List[LTComponent], textboxes)
+            + otherobjs
+            + cast(List[LTComponent], empties)
+        )
         return
 
 
@@ -953,9 +990,12 @@ class LTFigure(LTLayoutContainer):
         return
 
     def __repr__(self) -> str:
-        return ('<%s(%s) %s matrix=%s>' %
-                (self.__class__.__name__, self.name,
-                 bbox2str(self.bbox), matrix2str(self.matrix)))
+        return "<%s(%s) %s matrix=%s>" % (
+            self.__class__.__name__,
+            self.name,
+            bbox2str(self.bbox),
+            matrix2str(self.matrix),
+        )
 
     def analyze(self, laparams: LAParams) -> None:
         if not laparams.all_texts:
@@ -978,6 +1018,9 @@ class LTPage(LTLayoutContainer):
         return
 
     def __repr__(self) -> str:
-        return ('<%s(%r) %s rotate=%r>' %
-                (self.__class__.__name__, self.pageid,
-                 bbox2str(self.bbox), self.rotate))
+        return "<%s(%r) %s rotate=%r>" % (
+            self.__class__.__name__,
+            self.pageid,
+            bbox2str(self.bbox),
+            self.rotate,
+        )
