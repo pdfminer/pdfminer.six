@@ -22,19 +22,19 @@ def run_with_file(sample_path):
 
 test_strings = {
     "simple1.pdf": "Hello \n\nWorld\n\nHello \n\nWorld\n\n"
-                   "H e l l o  \n\nW o r l d\n\n"
-                   "H e l l o  \n\nW o r l d\n\n\f",
+    "H e l l o  \n\nW o r l d\n\n"
+    "H e l l o  \n\nW o r l d\n\n\f",
     "simple1.pdf_no_boxes_flow": "Hello \n\nWorld\n\nHello \n\nWorld\n\n"
-                                 "H e l l o  \n\nW o r l d\n\n"
-                                 "H e l l o  \n\nW o r l d\n\n\f",
+    "H e l l o  \n\nW o r l d\n\n"
+    "H e l l o  \n\nW o r l d\n\n\f",
     "simple2.pdf": "\f",
     "simple3.pdf": "Hello\n\nHello\nあ\nい\nう\nえ\nお\nあ\nい\nう\nえ\nお\n"
-                   "World\n\nWorld\n\n\f",
+    "World\n\nWorld\n\n\f",
     "simple4.pdf": "Text1\nText2\nText3\n\n\f",
     "simple5.pdf": "Heading\n\n"
-                   "Link to heading that is working with vim-pandoc.\n\n"
-                   "Link to heading “that is” not working with vim-pandoc.\n\n"
-                   "Subheading\n\nSome “more text”\n\n1\n\n\f",
+    "Link to heading that is working with vim-pandoc.\n\n"
+    "Link to heading “that is” not working with vim-pandoc.\n\n"
+    "Subheading\n\nSome “more text”\n\n1\n\n\f",
     "zen_of_python_corrupted.pdf": "Mai 30, 18 13:27\n\nzen_of_python.txt",
     "contrib/issue_566_test_1.pdf": "ISSUE Date：2019-4-25 Buyer：黎荣",
     "contrib/issue_566_test_2.pdf": "甲方：中国饮料有限公司（盖章）",
@@ -102,7 +102,7 @@ class TestExtractText(unittest.TestCase):
         test_file = "zen_of_python_corrupted.pdf"
         s = run_with_file(test_file)
         expected = test_strings[test_file]
-        self.assertEqual(s[:len(expected)], expected)
+        self.assertEqual(s[: len(expected)], expected)
 
     def test_issue_566_cmap_bytes(self):
         test_file = "contrib/issue_566_test_1.pdf"
@@ -129,37 +129,43 @@ class TestExtractPages(unittest.TestCase):
     def test_line_margin(self):
         # The lines have margin 0.2 relative to the height.
         # Extract with line_margin 0.19 should break into 3 separate textboxes.
-        pages = list(extract_pages(
-            self._get_test_file_path(), laparams=LAParams(line_margin=0.19)))
+        pages = list(
+            extract_pages(
+                self._get_test_file_path(), laparams=LAParams(line_margin=0.19)
+            )
+        )
         self.assertEqual(len(pages), 1)
         page = pages[0]
 
-        elements = [element for element in page
-                    if isinstance(element, LTTextContainer)]
+        elements = [element for element in page if isinstance(element, LTTextContainer)]
         self.assertEqual(len(elements), 3)
         self.assertEqual(elements[0].get_text(), "Text1\n")
         self.assertEqual(elements[1].get_text(), "Text2\n")
         self.assertEqual(elements[2].get_text(), "Text3\n")
 
         # Extract with line_margin 0.21 should merge into one textbox.
-        pages = list(extract_pages(
-            self._get_test_file_path(), laparams=LAParams(line_margin=0.21)))
+        pages = list(
+            extract_pages(
+                self._get_test_file_path(), laparams=LAParams(line_margin=0.21)
+            )
+        )
         self.assertEqual(len(pages), 1)
         page = pages[0]
 
-        elements = [element for element in page
-                    if isinstance(element, LTTextContainer)]
+        elements = [element for element in page if isinstance(element, LTTextContainer)]
         self.assertEqual(len(elements), 1)
         self.assertEqual(elements[0].get_text(), "Text1\nText2\nText3\n")
 
     def test_no_boxes_flow(self):
-        pages = list(extract_pages(
-            self._get_test_file_path(), laparams=LAParams(boxes_flow=None)))
+        pages = list(
+            extract_pages(
+                self._get_test_file_path(), laparams=LAParams(boxes_flow=None)
+            )
+        )
         self.assertEqual(len(pages), 1)
         page = pages[0]
 
-        elements = [element for element in page
-                    if isinstance(element, LTTextContainer)]
+        elements = [element for element in page if isinstance(element, LTTextContainer)]
         self.assertEqual(len(elements), 1)
         self.assertEqual(elements[0].get_text(), "Text1\nText2\nText3\n")
 

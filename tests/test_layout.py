@@ -45,8 +45,7 @@ class TestFindNeigbors(unittest.TestCase):
         right_aligned_below.set_bbox((15, 2, 20, 4))
         plane.add(right_aligned_below)
 
-        centrally_aligned_overlapping = LTTextLineHorizontal(
-            laparams.word_margin)
+        centrally_aligned_overlapping = LTTextLineHorizontal(laparams.word_margin)
         centrally_aligned_overlapping.set_bbox((13, 5, 17, 7))
         plane.add(centrally_aligned_overlapping)
 
@@ -85,8 +84,7 @@ class TestFindNeigbors(unittest.TestCase):
         top_aligned_left.set_bbox((2, 15, 4, 20))
         plane.add(top_aligned_left)
 
-        centrally_aligned_overlapping = LTTextLineVertical(
-            laparams.word_margin)
+        centrally_aligned_overlapping = LTTextLineVertical(laparams.word_margin)
         centrally_aligned_overlapping.set_bbox((5, 13, 7, 17))
         plane.add(centrally_aligned_overlapping)
 
