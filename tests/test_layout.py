@@ -1,9 +1,14 @@
 import unittest
 
 from pdfminer.high_level import extract_pages
-from pdfminer.layout import LTLayoutContainer, LAParams,\
-    LTTextLineHorizontal, LTTextLineVertical, LTTextBoxHorizontal,\
-    LTTextBoxVertical
+from pdfminer.layout import (
+    LTLayoutContainer,
+    LAParams,
+    LTTextLineHorizontal,
+    LTTextLineVertical,
+    LTTextBoxHorizontal,
+    LTTextBoxVertical,
+)
 from pdfminer.utils import Plane
 from helpers import absolute_sample_path
 
@@ -117,12 +122,10 @@ def test_pdf_with_empty_characters_horizontal():
     sample PDF. The used PDF sample has multiple explicit space characters
     in between lines with text.
     """
-    path = absolute_sample_path('contrib/issue-449-horizontal.pdf')
+    path = absolute_sample_path("contrib/issue-449-horizontal.pdf")
     pages = extract_pages(path)
     textboxes = [
-        textbox
-        for textbox in next(pages)
-        if isinstance(textbox, LTTextBoxHorizontal)
+        textbox for textbox in next(pages) if isinstance(textbox, LTTextBoxHorizontal)
     ]
     assert len(textboxes) == 3
 
@@ -136,12 +139,10 @@ def test_pdf_with_empty_characters_vertical():
     sample PDF. The used PDF sample has multiple explicit space characters
     in between lines with text.
     """
-    path = absolute_sample_path('contrib/issue-449-vertical.pdf')
+    path = absolute_sample_path("contrib/issue-449-vertical.pdf")
     laparams = LAParams(detect_vertical=True)
     pages = extract_pages(path, laparams=laparams)
     textboxes = [
-        textbox
-        for textbox in next(pages)
-        if isinstance(textbox, LTTextBoxVertical)
+        textbox for textbox in next(pages) if isinstance(textbox, LTTextBoxVertical)
     ]
     assert len(textboxes) == 3
