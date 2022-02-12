@@ -13,8 +13,8 @@ from .pdftypes import LITERALS_DCT_DECODE, LITERALS_JBIG2_DECODE, LITERALS_JPX_D
 
 PIL_ERROR_MESSAGE = (
     "Could not import Pillow. This dependency of pdfminer.six is not "
-    "installed by default. But to save images to a file, you do need "
-    "it. Install it with `pip install 'pdfminer.six[image]' "
+    "installed by default. You need it to to save jpg images to a file. Install it "
+    "with `pip install 'pdfminer.six[image]' "
 )
 
 
