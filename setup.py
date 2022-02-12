@@ -23,6 +23,7 @@ setup(
     extras_require={
         "dev": ["pytest", "nox", "black", "mypy == 0.931"],
         "docs": ["sphinx", "sphinx-argparse"],
+        "image": ["Pillow"],
     },
     description="PDF parser and analyzer",
     long_description=readme,

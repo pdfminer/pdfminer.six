@@ -11,6 +11,12 @@ from .pdfcolor import LITERAL_DEVICE_GRAY
 from .pdfcolor import LITERAL_DEVICE_RGB
 from .pdftypes import LITERALS_DCT_DECODE, LITERALS_JBIG2_DECODE, LITERALS_JPX_DECODE
 
+PIL_ERROR_MESSAGE = (
+    "Could not import Pillow. This dependency of pdfminer.six is not "
+    "installed by default. But to save images to a file, you do need "
+    "it. Install it with `pip install 'pdfminer.six[image]' "
+)
+
 
 def align32(x: int) -> int:
     return ((x + 3) // 4) * 4
@@ -93,8 +99,10 @@ class ImageWriter:
             raw_data = image.stream.get_rawdata()
             assert raw_data is not None
             if LITERAL_DEVICE_CMYK in image.colorspace:
-                from PIL import Image  # type: ignore[import]
-                from PIL import ImageChops
+                try:
+                    from PIL import Image, ImageChops  # type: ignore[import]
+                except ImportError:
+                    raise ImportError(PIL_ERROR_MESSAGE)
 
                 ifp = BytesIO(raw_data)
                 i = Image.open(ifp)
@@ -104,12 +112,15 @@ class ImageWriter:
             else:
                 fp.write(raw_data)
         elif ext == ".jp2":
+            try:
+                from PIL import Image
+            except ImportError:
+                raise ImportError(PIL_ERROR_MESSAGE)
+
             # if we just write the raw data, most image programs
             # that I have tried cannot open the file. However,
             # open and saving with PIL produces a file that
             # seems to be easily opened by other programs
-            from PIL import Image
-
             raw_data = image.stream.get_rawdata()
             assert raw_data is not None
             ifp = BytesIO(raw_data)
