@@ -66,6 +66,13 @@ Before using it, you must install it using Python 3.6 or newer.
     $ pip install pdfminer.six
 
 
+Optionally install extra dependencies that are needed to extract jpg images.
+
+::
+
+    $ pip install 'pdfminer.six[image]'
+
+
 Contributing
 ============
 
