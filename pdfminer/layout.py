@@ -504,6 +504,9 @@ class LTTextLine(LTTextContainer[TextLineElement]):
     ) -> List["LTTextLine"]:
         raise NotImplementedError
 
+    def is_empty(self) -> bool:
+        return super().is_empty() or self.get_text().isspace()
+
 
 class LTTextLineHorizontal(LTTextLine):
     def __init__(self, word_margin: float) -> None:
