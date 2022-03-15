@@ -121,14 +121,21 @@ jobs:
       - tests
       - build-docs
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Install dependencies
         run: python -m pip install wheel
       - name: Set version
         run: |
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
-          [[ "${{ github.ref }}" != "refs/tags/"* ]] && VERSION=$(date +%Y%m%d).${VERSION}
+          if [[ "${{ github.ref }}" == "refs/tags/"* ]]
+          then
+            VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
+          else
+            VERSION=$(date +%Y%m%d).${GITHUB_SHA::7}
+          end
+          echo ${VERSION}
           sed -i "s/__VERSION__/${VERSION}/g" pdfminer/__init__.py
-          cat pdfminer/__init.py
+          cat pdfminer/__init__.py
       - name: Build package
         run: python setup.py sdist bdist_wheel
       - name: Publish distribution to Test PyPI
