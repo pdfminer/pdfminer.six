@@ -131,14 +131,13 @@ jobs:
           then
             VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
           else
-            VERSION=$(date +%Y%m%d).${GITHUB_SHA::7}
+            VERSION=$(date +%Y%m%d).$(date +%H%M%S)
           fi
           echo ${VERSION}
           sed -i "s/__VERSION__/${VERSION}/g" pdfminer/__init__.py
-          cat pdfminer/__init__.py
       - name: Build package
         run: python setup.py sdist bdist_wheel
-      - name: Publish distribution to Test PyPI
+      - name: Publish package to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
