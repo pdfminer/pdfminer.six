@@ -132,7 +132,7 @@ jobs:
             VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
           else
             VERSION=$(date +%Y%m%d).${GITHUB_SHA::7}
-          end
+          fi
           echo ${VERSION}
           sed -i "s/__VERSION__/${VERSION}/g" pdfminer/__init__.py
           cat pdfminer/__init__.py
