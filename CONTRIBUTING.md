@@ -27,8 +27,8 @@ Any contribution is appreciated! You might want to:
 ## Guideline for creating pull request
 
 * A pull request should close an existing issue.
-* Pull requests should be merged to develop, not master. This ensures that master always equals the released version.  
-* Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case 
+* Pull requests should be merged to master. Version tags are used indicate the releases.
+* Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case
   of features, this will show that your code works correctly.
 * Code should work for Python 3.6+.
 * Code should be formatted with [black](https://github.com/psf/black). 

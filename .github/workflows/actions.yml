@@ -1,16 +1,14 @@
 name: Continuous integration
 
 on:
-  push: # run when commits are added to master or develop
+  push: # run when commits are added to master
     branches:
       - master
-      - develop
     tags:
       - v*
-  pull_request: # run on pr's against master or develop
+  pull_request: # run on pr's against master
     branches:
       - master
-      - develop
 
 env:
   default-python: "3.10"
