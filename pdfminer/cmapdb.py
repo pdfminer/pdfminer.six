@@ -420,7 +420,7 @@ class CMapParser(PSStackParser[PSKeyword]):
                 start = nunpack(start_byte)
                 end = nunpack(end_byte)
                 if isinstance(code, list):
-                    if len(code) > end - start + 1:
+                    if len(code) != end - start + 1:
                         self._warn_once('The difference between the start and end '
                                         'offsets does not match the code length.')
                     for cid, unicode_value in zip(range(start, end + 1), code):
