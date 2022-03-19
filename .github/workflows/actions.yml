@@ -5,7 +5,7 @@ on:
     branches:
       - master
     tags:
-      - v*
+      - [ 0-9 ]{ 8 }  # match version tags with format like 20220319
   pull_request: # run on pr's against master
     branches:
       - master
