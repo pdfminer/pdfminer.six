@@ -28,7 +28,7 @@ from typing import (
     TextIO,
     Tuple,
     Union,
-    cast,
+    cast, Set,
 )
 
 from .encodingdb import name2unicode
@@ -285,7 +285,7 @@ class CMapParser(PSStackParser[PSKeyword]):
         self.cmap = cmap
         # some ToUnicode maps don't have "begincmap" keyword.
         self._in_cmap = True
-        self._warnings = set()
+        self._warnings: Set[str] = set()
         return
 
     def run(self) -> None:
@@ -457,25 +457,10 @@ class CMapParser(PSStackParser[PSKeyword]):
 
         self.push((pos, token))
 
-    def _warn_once(self, msg):
+    def _warn_once(self, msg: str) -> None:
         if msg not in self._warnings:
             self._warnings.add(msg)
             base_msg = 'Ignoring (part of) ToUnicode map because the PDF data ' \
                        'does not conform to the format. This could result in ' \
                        '(cid) values in the output. '
             log.warning(base_msg + msg)
-
-
-def main(argv: List[str]) -> None:
-    args = argv[1:]
-    for fname in args:
-        fp = open(fname, "rb")
-        cmap = FileUnicodeMap()
-        CMapParser(cmap, fp).run()
-        fp.close()
-        cmap.dump()
-    return
-
-
-if __name__ == "__main__":
-    main(sys.argv)
