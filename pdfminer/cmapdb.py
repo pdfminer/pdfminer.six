@@ -465,6 +465,7 @@ class CMapParser(PSStackParser[PSKeyword]):
         self.push((pos, token))
 
     def _warn_once(self, msg: str) -> None:
+        """Warn once for each unique message"""
         if msg not in self._warnings:
             self._warnings.add(msg)
             base_msg = (
