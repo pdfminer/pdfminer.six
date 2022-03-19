@@ -6,7 +6,7 @@ on:
       - master
       - develop
     tags:
-      - v*
+      - "v*.*.*"
   pull_request: # run on pr's against master or develop
     branches:
       - master
@@ -137,22 +137,21 @@ jobs:
           sed -i "s/__VERSION__/${VERSION}/g" pdfminer/__init__.py
       - name: Build package
         run: python setup.py sdist bdist_wheel
-      - name: Publish package to PyPi
-        if: startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Generate changelog
+        run: sed '1,/## \[/d;/## \[/Q' CHANGELOG.md > ${{ github.workspace }}-CHANGELOG.md
+      #      - name: Publish package to PyPi
+      #        if: startsWith(github.ref, 'refs/tags')
+      #        uses: pypa/gh-action-pypi-publish@release/v1
+      #        with:
+      #          user: __token__
+      #          password: ${{ secrets.PYPI_API_TOKEN }}
       - name: Create GitHub release
         if: startsWith(github.ref, 'refs/tags')
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         id: create_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Copy this from CHANGELOG.md
-          draft: false
-          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          body_path: ${{ github.workspace }}-CHANGELOG.md
+          files: |
+            dist/*.tar.gz
+            dist/*.whl
