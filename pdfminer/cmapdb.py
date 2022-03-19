@@ -28,7 +28,8 @@ from typing import (
     TextIO,
     Tuple,
     Union,
-    cast, Set,
+    cast,
+    Set,
 )
 
 from .encodingdb import name2unicode
@@ -362,23 +363,27 @@ class CMapParser(PSStackParser[PSKeyword]):
             objs = [obj for (__, obj) in self.popall()]
             for (start_byte, end_byte, cid) in choplist(3, objs):
                 if not isinstance(start_byte, bytes):
-                    self._warn_once('The start object of begincidrange is not a byte.')
+                    self._warn_once("The start object of begincidrange is not a byte.")
                     continue
                 if not isinstance(end_byte, bytes):
-                    self._warn_once('The end object of begincidrange is not a byte.')
+                    self._warn_once("The end object of begincidrange is not a byte.")
                     continue
                 if not isinstance(cid, int):
-                    self._warn_once('The cid object of begincidrange is not a byte.')
+                    self._warn_once("The cid object of begincidrange is not a byte.")
                     continue
                 if len(start_byte) != len(end_byte):
-                    self._warn_once('The start and end byte of begincidrange have '
-                                    'different lengths.')
+                    self._warn_once(
+                        "The start and end byte of begincidrange have "
+                        "different lengths."
+                    )
                     continue
                 start_prefix = start_byte[:-4]
                 end_prefix = end_byte[:-4]
                 if start_prefix != end_prefix:
-                    self._warn_once('The prefix of the start and end byte of '
-                                    'begincidrange are not the same.')
+                    self._warn_once(
+                        "The prefix of the start and end byte of "
+                        "begincidrange are not the same."
+                    )
                     continue
                 svar = start_byte[-4:]
                 evar = end_byte[-4:]
@@ -409,20 +414,22 @@ class CMapParser(PSStackParser[PSKeyword]):
             objs = [obj for (__, obj) in self.popall()]
             for (start_byte, end_byte, code) in choplist(3, objs):
                 if not isinstance(start_byte, bytes):
-                    self._warn_once('The start object is not a byte.')
+                    self._warn_once("The start object is not a byte.")
                     continue
                 if not isinstance(end_byte, bytes):
-                    self._warn_once('The end object is not a byte.')
+                    self._warn_once("The end object is not a byte.")
                     continue
                 if len(start_byte) != len(end_byte):
-                    self._warn_once('The start and end byte have different lengths.')
+                    self._warn_once("The start and end byte have different lengths.")
                     continue
                 start = nunpack(start_byte)
                 end = nunpack(end_byte)
                 if isinstance(code, list):
                     if len(code) != end - start + 1:
-                        self._warn_once('The difference between the start and end '
-                                        'offsets does not match the code length.')
+                        self._warn_once(
+                            "The difference between the start and end "
+                            "offsets does not match the code length."
+                        )
                     for cid, unicode_value in zip(range(start, end + 1), code):
                         self.cmap.add_cid2unichr(cid, unicode_value)
                 else:
@@ -460,7 +467,9 @@ class CMapParser(PSStackParser[PSKeyword]):
     def _warn_once(self, msg: str) -> None:
         if msg not in self._warnings:
             self._warnings.add(msg)
-            base_msg = 'Ignoring (part of) ToUnicode map because the PDF data ' \
-                       'does not conform to the format. This could result in ' \
-                       '(cid) values in the output. '
+            base_msg = (
+                "Ignoring (part of) ToUnicode map because the PDF data "
+                "does not conform to the format. This could result in "
+                "(cid) values in the output. "
+            )
             log.warning(base_msg + msg)
