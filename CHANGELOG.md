@@ -1,17 +1,26 @@
 # Changelog
-All notable changes in pdfminer.six will be documented in this file. 
+
+All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [Unreleased]
+
+### Fixes
+
+- `TypeError` in HTMLConverter when using a bytes fontname ([#734](https://github.com/pdfminer/pdfminer.six/pull/734))
 
 ## [20220319]
 
 ### Added
+
 - Export type annotations from pypi package per PEP561 ([#679](https://github.com/pdfminer/pdfminer.six/pull/679))
 - Support for identity cmap's ([#626](https://github.com/pdfminer/pdfminer.six/pull/626))
 - Add support for PDF page labels ([#680](https://github.com/pdfminer/pdfminer.six/pull/680))
 - Installation of Pillow as an optional extra dependency ([#714](https://github.com/pdfminer/pdfminer.six/pull/714))
 
 ### Fixed
+
 - Hande decompression error due to CRC checksum error ([#637](https://github.com/pdfminer/pdfminer.six/pull/637))
 - Regression (since 20191107) in `LTLayoutContainer.group_textboxes` that returned some text lines out of order ([#659](https://github.com/pdfminer/pdfminer.six/pull/659))
 - Add handling of JPXDecode filter to enable extraction of images for some pdfs ([#645](https://github.com/pdfminer/pdfminer.six/pull/645))
