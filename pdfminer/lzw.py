@@ -16,7 +16,7 @@ class LZWDecoder:
         self.bpos = 8
         self.nbits = 9
         # NB: self.table stores None only in indices 256 and 257
-        self.table: Optional[List[Optional[bytes]]] = None
+        self.table: List[Optional[bytes]] = []
         self.prevbuf: Optional[bytes] = None
 
     def readbits(self, bits: int) -> int:
@@ -55,10 +55,8 @@ class LZWDecoder:
         elif code == 257:
             pass
         elif not self.prevbuf:
-            assert self.table is not None
             x = self.prevbuf = cast(bytes, self.table[code])  # assume not None
         else:
-            assert self.table is not None
             if code < len(self.table):
                 x = cast(bytes, self.table[code])  # assume not None
                 self.table.append(self.prevbuf + x[:1])
@@ -89,10 +87,13 @@ class LZWDecoder:
                 # just ignore corrupt data and stop yielding there
                 break
             yield x
-            assert self.table is not None
+
             logger.debug(
-                "nbits=%d, code=%d, output=%r, table=%r"
-                % (self.nbits, code, x, self.table[258:])
+                "nbits=%d, code=%d, output=%r, table=%r",
+                self.nbits,
+                code,
+                x,
+                self.table[258:],
             )
 
 
