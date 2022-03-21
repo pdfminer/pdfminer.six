@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   str ([#733](https://github.com/pdfminer/pdfminer.six/pull/733))
 - `TypeError` in HTMLConverter when using a bytes fontname ([#734](https://github.com/pdfminer/pdfminer.six/pull/734))
 
+### Added
+
+- Exporting images without any specific encoding ([#737](https://github.com/pdfminer/pdfminer.six/pull/737))
+
 ## [20220319]
 
 ### Added
