@@ -40,7 +40,7 @@ from .pdffont import PDFUnicodeNotDefined
 from .pdfinterp import PDFGraphicState, PDFResourceManager
 from .pdfpage import PDFPage
 from .pdftypes import PDFStream
-from .utils import AnyIO, Point, Matrix, Rect, PathSegment
+from .utils import AnyIO, Point, Matrix, Rect, PathSegment, make_compat_str
 from .utils import apply_matrix_pt
 from .utils import bbox2str
 from .utils import enc
@@ -633,7 +633,8 @@ class HTMLConverter(PDFConverter[AnyIO]):
                             render(child)
                         self.end_div("textbox")
                     elif isinstance(item, LTChar):
-                        self.put_text(item.get_text(), item.fontname, item.size)
+                        fontname = make_compat_str(item.fontname)
+                        self.put_text(item.get_text(), fontname, item.size)
                     elif isinstance(item, LTText):
                         self.write_text(item.get_text())
             return
