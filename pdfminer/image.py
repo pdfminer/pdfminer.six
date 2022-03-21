@@ -93,6 +93,7 @@ class ImageWriter:
             os.makedirs(self.outdir)
 
     def export_image(self, image: LTImage) -> str:
+        """Save an LTImage to disk"""
         (width, height) = image.srcsize
 
         filters = image.stream.get_filters()
@@ -124,6 +125,7 @@ class ImageWriter:
         return name
 
     def _save_jpeg(self, image: LTImage) -> str:
+        """Save a JPEG encoded image"""
         raw_data = image.stream.get_rawdata()
         assert raw_data is not None
 
@@ -146,6 +148,7 @@ class ImageWriter:
         return name
 
     def _save_jpeg2000(self, image: LTImage) -> str:
+        """Save a JPEG 2000 encoded image"""
         raw_data = image.stream.get_rawdata()
         assert raw_data is not None
 
@@ -166,6 +169,7 @@ class ImageWriter:
         return name
 
     def _save_jbig2(self, image: LTImage) -> str:
+        """Save a JBIG2 encoded image"""
         name, path = self._create_unique_image_name(image, ".jb2")
         with open(path, "wb") as fp:
             input_stream = BytesIO()
@@ -197,6 +201,7 @@ class ImageWriter:
             self, image: LTImage, width: int, height: int, bytes_per_line: int,
             bits: int
     ) -> str:
+        """Save a BMP encoded image"""
         name, path = self._create_unique_image_name(image, ".bmp")
         with open(path, "wb") as fp:
             bmp = BMPWriter(fp, bits, width, height)
@@ -208,6 +213,7 @@ class ImageWriter:
         return name
 
     def _save_bytes(self, image: LTImage) -> str:
+        """Save an image without encoding, just bytes"""
         name, path = self._create_unique_image_name(image, ".jpg")
         width, height = image.srcsize
         channels = len(image.stream.get_data()) / width / height / (image.bits / 8)
@@ -233,6 +239,7 @@ class ImageWriter:
         return name
 
     def _save_raw(self, image: LTImage) -> str:
+        """Save an image with unknown encoding"""
         ext = ".%d.%dx%d.img" % (image.bits, image.srcsize[0], image.srcsize[1])
         name, path = self._create_unique_image_name(image, ext)
 
