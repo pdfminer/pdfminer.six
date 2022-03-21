@@ -474,3 +474,18 @@ class CMapParser(PSStackParser[PSKeyword]):
                 "(cid) values in the output. "
             )
             log.warning(base_msg + msg)
+
+
+def main(argv: List[str]) -> None:
+    args = argv[1:]
+    for fname in args:
+        fp = open(fname, "rb")
+        cmap = FileUnicodeMap()
+        CMapParser(cmap, fp).run()
+        fp.close()
+        cmap.dump()
+    return
+
+
+if __name__ == "__main__":
+    main(sys.argv)
