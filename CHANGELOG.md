@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `IndexError` when handling invalid bfrange code map in
+  CMap ([#731](https://github.com/pdfminer/pdfminer.six/pull/731))
 - `TypeError` in lzw.py when `self.table` is not set ([#732](https://github.com/pdfminer/pdfminer.six/pull/732))
 - `TypeError` in encodingdb.py when name of unicode is not
   str ([#733](https://github.com/pdfminer/pdfminer.six/pull/733))
