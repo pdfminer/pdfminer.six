@@ -203,8 +203,7 @@ class ImageWriter:
         return name
 
     def _save_bmp(
-            self, image: LTImage, width: int, height: int, bytes_per_line: int,
-            bits: int
+        self, image: LTImage, width: int, height: int, bytes_per_line: int, bits: int
     ) -> str:
         """Save a BMP encoded image"""
         name, path = self._create_unique_image_name(image, ".bmp")
@@ -213,7 +212,7 @@ class ImageWriter:
             data = image.stream.get_data()
             i = 0
             for y in range(height):
-                bmp.write_line(y, data[i: i + bytes_per_line])
+                bmp.write_line(y, data[i : i + bytes_per_line])
                 i += bytes_per_line
         return name
 
