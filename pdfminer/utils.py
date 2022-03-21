@@ -76,7 +76,10 @@ def make_compat_str(o: object) -> str:
     """Converts everything to string, if bytes guessing the encoding."""
     if isinstance(o, bytes):
         enc = chardet.detect(o)
-        return o.decode(enc["encoding"])
+        try:
+            return o.decode(enc["encoding"])
+        except UnicodeDecodeError:
+            return str(o)
     else:
         return str(o)
 

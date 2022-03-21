@@ -25,6 +25,12 @@ def name2unicode(name: str) -> str:
     :returns unicode character if name resembles something,
     otherwise a KeyError
     """
+    if not isinstance(name, str):
+        raise KeyError(
+            'Could not convert unicode name "%s" to character because '
+            "it should be of type str but is of type %s" % (name, type(name))
+        )
+
     name = name.split(".")[0]
     components = name.split("_")
 
