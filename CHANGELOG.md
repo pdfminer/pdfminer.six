@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Exporting images without any specific encoding ([#737](https://github.com/pdfminer/pdfminer.six/pull/737))
+- Adding textwidth, fontsize and scaling as public instance variables in layout.LTChar ([#742](https://github.com/pdfminer/pdfminer.six/pull/742))
 
 ## [20220319]
 
