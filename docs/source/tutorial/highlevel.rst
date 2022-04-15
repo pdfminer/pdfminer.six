@@ -57,3 +57,4 @@ Or to convert it to html and use layout analysis:
     >>> with open('samples/simple1.pdf', 'rb') as fin:
     ...     extract_text_to_fp(fin, output_string, laparams=LAParams(),
     ...                        output_type='html', codec=None)
+    >>> print(output_string.getvalue().strip())
