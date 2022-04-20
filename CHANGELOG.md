@@ -19,6 +19,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Exporting images without any specific encoding ([#737](https://github.com/pdfminer/pdfminer.six/pull/737))
 
+### Changed
+
+- Using charset-normalizer instead of chardet for less restrictive license ([#744](https://github.com/pdfminer/pdfminer.six/pull/744))
+
 ## [20220319]
 
 ### Added
