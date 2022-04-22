@@ -109,7 +109,16 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         """Paint paths described in section 4.4 of the PDF reference manual"""
         shape = "".join(x[0] for x in path)
 
-        if shape.count("m") > 1:
+        if shape[:1] != "m":
+            # Per PDF Reference Section 4.4.1, "path construction operators may
+            # be invoked in any sequence, but the first one invoked must be m
+            # or re to begin a new subpath." Since pdfminer.six already
+            # converts all `re` (rectangle) operators to their equivelent
+            # `mlllh` representation, paths ingested by `.paint_path(...)` that
+            # do not begin with the `m` operator are invalid.
+            pass
+
+        elif shape.count("m") > 1:
             # recurse if there are multiple m's in this shape
             for m in re.finditer(r"m[^m]+", shape):
                 subpath = path[m.start(0) : m.end(0)]
