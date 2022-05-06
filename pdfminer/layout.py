@@ -495,7 +495,8 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         )
 
     def analyze(self, laparams: LAParams) -> None:
-        LTTextContainer.analyze(self, laparams)
+        for obj in self._objs:
+            obj.analyze(laparams)
         LTContainer.add(self, LTAnno("\n"))
         return
 
