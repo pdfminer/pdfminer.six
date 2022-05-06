@@ -8,13 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Ignoring (invalid) path constructors that do not begin with `m` ([#749](https://github.com/pdfminer/pdfminer.six/pull/749))
+
+## [20220506]
+
+### Fixed
+
 - `IndexError` when handling invalid bfrange code map in
   CMap ([#731](https://github.com/pdfminer/pdfminer.six/pull/731))
 - `TypeError` in lzw.py when `self.table` is not set ([#732](https://github.com/pdfminer/pdfminer.six/pull/732))
 - `TypeError` in encodingdb.py when name of unicode is not
   str ([#733](https://github.com/pdfminer/pdfminer.six/pull/733))
 - `TypeError` in HTMLConverter when using a bytes fontname ([#734](https://github.com/pdfminer/pdfminer.six/pull/734))
-- Ignoring (invalid) path constructors that do not begin with `m` ([#749](https://github.com/pdfminer/pdfminer.six/pull/749))
 
 ### Added
 
