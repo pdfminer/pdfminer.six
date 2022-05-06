@@ -215,6 +215,15 @@ class TestPaintPath:
             (71.41, 434.89),
         ]
 
+    def test_paint_path_without_starting_m(self):
+        gs = PDFGraphicState()
+        analyzer = self._get_analyzer()
+        analyzer.cur_item = LTContainer([0, 100, 0, 100])
+        paths = [[("h",)], [("l", 72.41, 433.89), ("l", 82.41, 433.89), ("h",)]]
+        for path in paths:
+            analyzer.paint_path(gs, False, False, False, path)
+        assert len(analyzer.cur_item._objs) == 0
+
 
 class TestBinaryDetector:
     def test_stringio(self):
