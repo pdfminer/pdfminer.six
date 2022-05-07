@@ -4,18 +4,25 @@
 # print some stats to stdout
 # Usage: pdfstats.py <PDF-filename>
 
-import sys
-import os
 import collections
+import os
+import sys
 from typing import Any, Counter, Iterator, List
+from warnings import warn
 
-from pdfminer.pdfparser import PDFParser
-from pdfminer.pdfdocument import PDFDocument, PDFTextExtractionNotAllowed
-from pdfminer.pdfpage import PDFPage
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LAParams, LTContainer
+from pdfminer.pdfdocument import PDFDocument, PDFTextExtractionNotAllowed
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfparser import PDFParser
 
+warn(
+    "The file pdfstats.py will be removed in 2023. It was probably introduced for "
+    "testing purposes a long time ago, and no longer relevant. Feel free to create a "
+    "GitHub issue if you disagree.",
+    DeprecationWarning,
+)
 
 _, SCRIPT = os.path.split(__file__)
 

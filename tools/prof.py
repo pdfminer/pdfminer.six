@@ -2,6 +2,15 @@
 import sys
 from typing import List
 
+from warnings import warn
+
+warn(
+    "The file prof.py will be removed in 2023. It was probably introduced for "
+    "testing purposes a long time ago, and no longer relevant. Feel free to create a "
+    "GitHub issue if you disagree.",
+    DeprecationWarning,
+)
+
 
 def prof_main(argv: List[str]) -> int:
     import hotshot.stats  # type: ignore[import]
