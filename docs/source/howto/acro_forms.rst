@@ -1,7 +1,7 @@
 .. _acro_forms:
 
 How to extract AcroForm interactive form fields from a PDF using PDFMiner
-********************************
+*************************************************************************
 
 Before you start, make sure you have :ref:`installed pdfminer.six<install>`.
 
@@ -78,14 +78,16 @@ How it works:
     doc = PDFDocument(parser)
 
 - Get the catalog
-(the catalog contains references to other objects defining the document structure, see section 7.7.2 of PDF 32000-1:2008 specs: https://www.adobe.com/devnet/pdf/pdf_reference.html)
+
+  (the catalog contains references to other objects defining the document structure, see section 7.7.2 of PDF 32000-1:2008 specs: https://www.adobe.com/devnet/pdf/pdf_reference.html)
 
 .. code-block:: python
 
     res = resolve1(doc.catalog)
 
 - Check if the catalog contains the AcroForm key and raise ValueError if not 
-(the PDF does not contain Acroform type of interactive forms if this key is missing in the catalog, see section 12.7.2 of PDF 32000-1:2008 specs)
+
+  (the PDF does not contain Acroform type of interactive forms if this key is missing in the catalog, see section 12.7.2 of PDF 32000-1:2008 specs)
 
 .. code-block:: python
 
@@ -119,7 +121,8 @@ How it works:
     values = resolve1(value)
 
 - Call the value(s) decoding method as needed
-(a single field can hold multiple values, for example a combo box can hold more than one value at time)
+
+  (a single field can hold multiple values, for example a combo box can hold more than one value at time)
 
 .. code-block:: python
 
