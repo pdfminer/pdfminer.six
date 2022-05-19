@@ -11,7 +11,7 @@ pdf2txt.py
 
 .. argparse::
     :module: tools.pdf2txt
-    :func: maketheparser
+    :func: create_parser
     :prog: python tools/pdf2txt.py
 
 .. _api_dumppdf:
