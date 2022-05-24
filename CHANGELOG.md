@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Ignoring (invalid) path constructors that do not begin with `m` ([#749](https://github.com/pdfminer/pdfminer.six/pull/749))
 
+### Changed
+
+- Removed upper version bounds ([#755](https://github.com/pdfminer/pdfminer.six/pull/755))
+
 ## [20220506]
 
 ### Fixed
