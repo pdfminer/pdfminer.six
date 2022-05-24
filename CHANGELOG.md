@@ -4,7 +4,13 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [20220506]
+## [Unreleased]
+
+### Fixed
+
+- Sphinx errors during building of documentation ([#760](https://github.com/pdfminer/pdfminer.six/pull/760))
+
+## [20220524]
 
 ### Fixed
 
