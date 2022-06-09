@@ -334,6 +334,8 @@ class PSBaseParser:
             self._curtoken = b""
             self._parse1 = self._parse_wclose
             return j + 1
+        elif c == b"\x00":
+            return j + 1
         else:
             self._add_token(KWD(c))
             return j + 1
