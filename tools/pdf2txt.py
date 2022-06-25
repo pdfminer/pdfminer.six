@@ -63,7 +63,7 @@ def extract_text(
     return outfp
 
 
-def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
+def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__, add_help=True)
     parser.add_argument(
         "files",
@@ -272,7 +272,11 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
         "Only used when output_type is xml.",
     )
 
-    parsed_args = parser.parse_args(args=args)
+    return parser
+
+
+def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
+    parsed_args = create_parser().parse_args(args=args)
 
     # Propagate parsed layout parameters to LAParams object
     if parsed_args.no_laparams:
