@@ -168,7 +168,3 @@ class TestExtractPages(unittest.TestCase):
         elements = [element for element in page if isinstance(element, LTTextContainer)]
         self.assertEqual(len(elements), 1)
         self.assertEqual(elements[0].get_text(), "Text1\nText2\nText3\n")
-
-
-if __name__ == "__main__":
-    unittest.main()
