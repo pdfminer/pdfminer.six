@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Sphinx errors during building of documentation ([#760](https://github.com/pdfminer/pdfminer.six/pull/760))
 
+### Deprecated
+
+- Usage of `if __name__ == "__main__"` where it was only intended for testing purposes ([#756](https://github.com/pdfminer/pdfminer.six/pull/756))
+
 ## [20220524]
 
 ### Fixed
@@ -86,7 +90,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Using `io.TextIOBase` as the file to write to ([#616](https://github.com/pdfminer/pdfminer.six/pull/616))
 - Parsing \r\n after the escape character in a literal string ([#616](https://github.com/pdfminer/pdfminer.six/pull/616))
 
-## Removed
+### Removed
 - Support for Python 3.4 and 3.5 ([#522](https://github.com/pdfminer/pdfminer.six/pull/522))
 - Unused dependency on `sortedcontainers` package ([#525](https://github.com/pdfminer/pdfminer.six/pull/525))
 - Support for non-standard output streams that are not binary ([#523](https://github.com/pdfminer/pdfminer.six/pull/523))
@@ -152,12 +156,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Group text lines if they are centered ([#384](https://github.com/pdfminer/pdfminer.six/pull/384))
 
-## [20200124] - 2020-01-24
+## [20200124]
 
 ### Security
 - Removed samples/issue-00152-embedded-pdf.pdf because it contains a possible security thread; a javascript enabled object ([#364](https://github.com/pdfminer/pdfminer.six/pull/364))
 
-## [20200121] - 2020-01-21
+## [20200121]
 
 ### Fixed
 - Interpret two's complement integer as unsigned integer ([#352](https://github.com/pdfminer/pdfminer.six/pull/352))
@@ -168,20 +172,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - The command-line utility latin2ascii.py ([#360](https://github.com/pdfminer/pdfminer.six/pull/360))
 
-## [20200104] - 2019-01-04
+## [20200104]
 
-## Removed
+### Removed
 - Support for Python 2 ([#346](https://github.com/pdfminer/pdfminer.six/pull/346))
 
 ### Changed
 - Enforce pep8 coding style by adding flake8 to CI ([#345](https://github.com/pdfminer/pdfminer.six/pull/345))
 
-## [20191110] - 2019-11-10
+## [20191110]
 
 ### Fixed
 - Wrong order of text box grouping introduced by PR #315 ([#335](https://github.com/pdfminer/pdfminer.six/pull/335))
 
-## [20191107] - 2019-11-07
+## [20191107]
 
 ### Deprecated
 - The argument `_py2_no_more_posargs` because Python2 is removed on January
@@ -208,7 +212,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - Files for external applications such as django, cgi and pyinstaller ([#320](https://github.com/pdfminer/pdfminer.six/pull/320))
 
-## [20191020] - 2019-10-20
+## [20191020]
 
 ### Deprecated
 - Support for Python 2 is dropped at January 1st, 2020 ([#307](https://github.com/pdfminer/pdfminer.six/pull/307))
@@ -230,7 +234,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - All dependencies are managed in `setup.py` ([#306](https://github.com/pdfminer/pdfminer.six/pull/306) and [#219](https://github.com/pdfminer/pdfminer.six/pull/219))
 
-## [20181108] - 2018-11-08
+## [20181108]
 
 ### Changed
 - Speedup layout analysis ([#141](https://github.com/pdfminer/pdfminer.six/pull/141))

@@ -19,12 +19,12 @@ from typing import (
 
 from . import settings
 from .cmapdb import CMap
-from .cmapdb import IdentityUnicodeMap
 from .cmapdb import CMapBase
 from .cmapdb import CMapDB
 from .cmapdb import CMapParser
-from .cmapdb import UnicodeMap
 from .cmapdb import FileUnicodeMap
+from .cmapdb import IdentityUnicodeMap
+from .cmapdb import UnicodeMap
 from .encodingdb import EncodingDB
 from .encodingdb import name2unicode
 from .fontmetrics import FONT_METRICS
@@ -1187,6 +1187,15 @@ class PDFCIDFont(PDFFont):
 
 
 def main(argv: List[str]) -> None:
+    from warnings import warn
+
+    warn(
+        "The function main() from pdffont.py will be removed in 2023. It was probably "
+        "introduced for testing purposes a long time ago, and no longer relevant. "
+        "Feel free to create a GitHub issue if you disagree.",
+        DeprecationWarning,
+    )
+
     for fname in argv[1:]:
         fp = open(fname, "rb")
         font = CFFFont(fname, fp)
