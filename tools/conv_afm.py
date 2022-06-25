@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+import sys
+import fileinput
+from warnings import warn
+
+
+def main(argv):
+    fonts = {}
+    for line in fileinput.input():
+        f = line.strip().split(" ")
+        if not f:
+            continue
+        k = f[0]
+        if k == "FontName":
+            fontname = f[1]
+            props = {"FontName": fontname, "Flags": 0}
+            chars = {}
+            fonts[fontname] = (props, chars)
+        elif k == "C":
+            cid = int(f[1])
+            if 0 <= cid and cid <= 255:
+                width = int(f[4])
+                chars[cid] = width
+        elif k in ("CapHeight", "XHeight", "ItalicAngle", "Ascender", "Descender"):
+            k = {"Ascender": "Ascent", "Descender": "Descent"}.get(k, k)
+            props[k] = float(f[1])
+        elif k in ("FontName", "FamilyName", "Weight"):
+            k = {"FamilyName": "FontFamily", "Weight": "FontWeight"}.get(k, k)
+            props[k] = f[1]
+        elif k == "IsFixedPitch":
+            if f[1].lower() == "true":
+                props["Flags"] = 64
+        elif k == "FontBBox":
+            props[k] = tuple(map(float, f[1:5]))
+    print("# -*- python -*-")
+    print("FONT_METRICS = {")
+    for (fontname, (props, chars)) in fonts.items():
+        print(" {!r}: {!r},".format(fontname, (props, chars)))
+    print("}")
+    return 0
+
+
+if __name__ == "__main__":
+    warn(
+        "The file conf_afm.py will be removed in 2023. Its functionality is"
+        "moved to pdfminer/font_metrics.py. Feel free to create a GitHub "
+        "issue if you disagree.",
+        DeprecationWarning,
+    )
+
+    sys.exit(main(sys.argv))  # type: ignore[no-untyped-call]
