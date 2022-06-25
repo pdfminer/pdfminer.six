@@ -867,6 +867,7 @@ class PDFFont:
             self.default_width = num_value(descriptor.get("MissingWidth", 0))
         else:
             self.default_width = default_width
+        self.default_width = resolve1(self.default_width)
         self.leading = num_value(descriptor.get("Leading", 0))
         self.bbox = cast(
             Rect, list_value(resolve_all(descriptor.get("FontBBox", (0, 0, 0, 0))))
