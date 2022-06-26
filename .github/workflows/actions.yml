@@ -15,7 +15,7 @@ env:
 
 jobs:
 
-  check-code-format:
+  check-code-formatting:
     name: Check coding style
     runs-on: ubuntu-latest
     steps:
