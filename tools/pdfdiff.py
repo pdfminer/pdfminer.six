@@ -7,9 +7,17 @@ import io
 import logging
 import sys
 from typing import Any, Iterable, List, Optional
+from warnings import warn
 
 import pdfminer.settings
 from pdfminer import high_level, layout
+
+warn(
+    "The file pdfdiff.py will be removed in 2023. It was probably introduced for "
+    "testing purposes a long time ago, and no longer relevant. Feel free to create a "
+    "GitHub issue if you disagree.",
+    DeprecationWarning,
+)
 
 pdfminer.settings.STRICT = False
 
