@@ -138,6 +138,8 @@ def resolve_all(x: object, default: object = None) -> Any:
 def decipher_all(decipher: DecipherCallable, objid: int, genno: int, x: object) -> Any:
     """Recursively deciphers the given object."""
     if isinstance(x, bytes):
+        if not len(x):
+            return x
         return decipher(objid, genno, x)
     if isinstance(x, list):
         x = [decipher_all(decipher, objid, genno, v) for v in x]
