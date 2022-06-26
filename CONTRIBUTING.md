@@ -68,9 +68,3 @@ Any contribution is appreciated! You might want to:
    ```sh
     nox -e py36
     ```
-
-4. After changing the code, run the black formatter.
-
-    ```sh
-    black .
-    ```

@@ -5,8 +5,7 @@ from setuptools import setup
 from os import path
 
 sys.path.append(str(Path(__file__).parent))
-import pdfminer as package
-
+import pdfminer as package  # noqa: E402
 
 with open(path.join(path.abspath(path.dirname(__file__)), "README.md")) as f:
     readme = f.read()
