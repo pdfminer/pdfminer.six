@@ -7,6 +7,7 @@ from typing import BinaryIO, Tuple
 try:
     from typing import Literal
 except ImportError:
+    # Literal was introduced in Python 3.8
     from typing_extensions import Literal  # type: ignore[misc]
 
 from .jbig2 import JBIG2StreamReader, JBIG2StreamWriter
