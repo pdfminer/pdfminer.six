@@ -60,7 +60,7 @@ class PDFPage:
         self.resources: Dict[object, object] = resolve1(
             self.attrs.get("Resources", dict())
         )
-        self.mediabox= [resolve1(mediabox_param) for mediabox_param in self.attrs['MediaBox']]
+        self.mediabox: tuple = [resolve1(mediabox_param) for mediabox_param in self.attrs['MediaBox']]
         self.mediabox: Rect = resolve1(self.mediabox)
         if "CropBox" in self.attrs:
             self.cropbox: Rect = resolve1(self.attrs["CropBox"])
