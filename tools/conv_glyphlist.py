@@ -2,6 +2,7 @@
 
 import sys
 import fileinput
+from warnings import warn
 
 
 def main(argv):
@@ -23,4 +24,10 @@ def main(argv):
 
 
 if __name__ == "__main__":
+    warn(
+        "The file conf_glpyhlist.py will be removed in 2023. Its functionality"
+        "is moved to pdfminer/glyphlist.py. Feel free to create a GitHub issue "
+        "if you disagree.",
+        DeprecationWarning,
+    )
     sys.exit(main(sys.argv))  # type: ignore[no-untyped-call]

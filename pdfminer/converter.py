@@ -40,7 +40,7 @@ from .pdffont import PDFUnicodeNotDefined
 from .pdfinterp import PDFGraphicState, PDFResourceManager
 from .pdfpage import PDFPage
 from .pdftypes import PDFStream
-from .utils import AnyIO, Point, Matrix, Rect, PathSegment
+from .utils import AnyIO, Point, Matrix, Rect, PathSegment, make_compat_str
 from .utils import apply_matrix_pt
 from .utils import bbox2str
 from .utils import enc
@@ -109,7 +109,16 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         """Paint paths described in section 4.4 of the PDF reference manual"""
         shape = "".join(x[0] for x in path)
 
-        if shape.count("m") > 1:
+        if shape[:1] != "m":
+            # Per PDF Reference Section 4.4.1, "path construction operators may
+            # be invoked in any sequence, but the first one invoked must be m
+            # or re to begin a new subpath." Since pdfminer.six already
+            # converts all `re` (rectangle) operators to their equivelent
+            # `mlllh` representation, paths ingested by `.paint_path(...)` that
+            # do not begin with the `m` operator are invalid.
+            pass
+
+        elif shape.count("m") > 1:
             # recurse if there are multiple m's in this shape
             for m in re.finditer(r"m[^m]+", shape):
                 subpath = path[m.start(0) : m.end(0)]
@@ -633,7 +642,8 @@ class HTMLConverter(PDFConverter[AnyIO]):
                             render(child)
                         self.end_div("textbox")
                     elif isinstance(item, LTChar):
-                        self.put_text(item.get_text(), item.fontname, item.size)
+                        fontname = make_compat_str(item.fontname)
+                        self.put_text(item.get_text(), fontname, item.size)
                     elif isinstance(item, LTText):
                         self.write_text(item.get_text())
             return

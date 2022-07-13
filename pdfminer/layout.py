@@ -495,7 +495,8 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         )
 
     def analyze(self, laparams: LAParams) -> None:
-        LTTextContainer.analyze(self, laparams)
+        for obj in self._objs:
+            obj.analyze(laparams)
         LTContainer.add(self, LTAnno("\n"))
         return
 
@@ -503,6 +504,9 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         self, plane: Plane[LTComponentT], ratio: float
     ) -> List["LTTextLine"]:
         raise NotImplementedError
+
+    def is_empty(self) -> bool:
+        return super().is_empty() or self.get_text().isspace()
 
 
 class LTTextLineHorizontal(LTTextLine):

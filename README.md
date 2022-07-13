@@ -44,6 +44,10 @@ How to use
 
   `pip install pdfminer.six`
 
+* (Optionally) install extra dependencies for extracting images.
+
+  `pip install 'pdfminer.six[image]`
+
 * Use command-line interface to extract text from pdf:
 
   `python pdf2txt.py samples/simple1.pdf`

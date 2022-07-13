@@ -1,14 +1,14 @@
 name: Continuous integration
 
 on:
-  push: # run when commits are added to master or develop
+  push: # run when commits are added to master
     branches:
       - master
-      - develop
-  pull_request: # run on pr's against master or develop
+    tags:
+      - '[0-9]+'  # match version tags with only numbers
+  pull_request: # run on pr's against master
     branches:
       - master
-      - develop
 
 env:
   default-python: "3.10"
@@ -16,13 +16,22 @@ env:
 jobs:
 
   check-code-formatting:
-    name: Check code formatting
+    name: Check coding style
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Check code formatting
-        uses: psf/black@stable
+      - name: Set up Python ${{ env.default-python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.default-python }}
+      - name: Upgrade pip, Install nox
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install nox
+      - name: Check coding style
+        run: |
+          nox --error-on-missing-interpreters --non-interactive --session format
 
   check-coding-style:
     name: Check coding style
@@ -108,3 +117,48 @@ jobs:
       - name: Build docs
         run: |
           nox --error-on-missing-interpreters --non-interactive --session docs
+
+  publish:
+    name: Publish to PyPi
+    runs-on: ubuntu-latest
+    needs:
+      - check-code-formatting
+      - check-coding-style
+      - check-static-types
+      - tests
+      - build-docs
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: python -m pip install wheel
+      - name: Set version
+        run: |
+          if [[ "${{ github.ref }}" == "refs/tags/"* ]]
+          then
+            VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
+          else
+            VERSION=$(date +%Y%m%d).$(date +%H%M%S)
+          fi
+          echo ${VERSION}
+          sed -i "s/__VERSION__/${VERSION}/g" pdfminer/__init__.py
+      - name: Build package
+        run: python setup.py sdist bdist_wheel
+      - name: Generate changelog
+        run: sed '1,/## \[/d;/## \[/Q' CHANGELOG.md > ${{ github.workspace }}-CHANGELOG.md
+      - name: Publish package to PyPi
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags')
+        uses: softprops/action-gh-release@v1
+        id: create_release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          body_path: ${{ github.workspace }}-CHANGELOG.md
+          files: |
+            dist/*.tar.gz
+            dist/*.whl

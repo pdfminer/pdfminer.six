@@ -26,19 +26,24 @@ Any contribution is appreciated! You might want to:
 
 ## Guideline for creating pull request
 
-* A pull request should close an existing issue.
-* Pull requests should be merged to develop, not master. This ensures that master always equals the released version.  
-* Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case 
+* A pull request should close an existing issue. For example, use "Fix #123" to indicate that your PR fixes issue 123. 
+* Pull requests should be merged to master.
+* Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case
   of features, this will show that your code works correctly.
 * Code should work for Python 3.6+.
-* Code should be formatted with [black](https://github.com/psf/black). 
+* Test your code by using nox (see below). 
 * New features should be well documented using docstrings.
+* Check if the [README.md](../README.md) or [readthedocs](../docs/source) documentation needs to be updated. 
 * Check spelling and grammar.
-* Don't forget to update the [CHANGELOG.md](CHANGELOG.md#[Unreleased])
+* Don't forget to update the [CHANGELOG.md](CHANGELOG.md#[Unreleased]). 
 
 ## Guidelines for posting comments
 
 * [Be cordial and positive](https://www.kennethreitz.org/essays/be-cordial-or-be-on-your-way)
+
+## Guidelines for publishing
+
+* Publishing is automated. Add a YYYYMMDD version tag and GitHub workflows will do the rest. 
 
 ## Getting started
 
@@ -67,10 +72,4 @@ Any contribution is appreciated! You might want to:
    
    ```sh
     nox -e py36
-    ```
-
-4. After changing the code, run the black formatter.
-
-    ```sh
-    black .
     ```

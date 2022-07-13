@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import sys
-import pickle as pickle
 import codecs
+import pickle as pickle
+import sys
 
 
 class CMapConverter:
@@ -19,6 +19,7 @@ class CMapConverter:
 
     def get_maps(self, enc):
         if enc.endswith("-H"):
+
             (hmapenc, vmapenc) = (enc, None)
         elif enc == "H":
             (hmapenc, vmapenc) = ("H", "V")

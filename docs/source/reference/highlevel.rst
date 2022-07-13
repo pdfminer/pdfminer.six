@@ -21,10 +21,10 @@ extract_text_to_fp
 .. autofunction:: extract_text_to_fp
 
 
+.. _api_extract_pages:
+
 extract_pages
 =============
 
 .. currentmodule:: pdfminer.high_level
 .. autofunction:: extract_pages
-
-.. _api_extract_pages:
