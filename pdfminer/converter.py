@@ -19,6 +19,7 @@ from pdfminer.pdfcolor import PDFColorSpace
 from . import utils
 from .image import ImageWriter
 from .layout import LAParams, LTComponent, TextGroupElement
+from .layout import LTAnno
 from .layout import LTChar
 from .layout import LTContainer
 from .layout import LTCurve
@@ -824,21 +825,21 @@ class XMLConverter(PDFConverter[AnyIO]):
 
 
 class HOCRConverter(PDFConverter[AnyIO]):
-    """
-    Where text is being extracted from a variety of types of PDF within a
-    business process, those PDFs where the text is only present in image
-    form will need to be analysed using an OCR tool which will typically
-    output hOCR. This converter extracts the explicit text information from
-    those PDFs that do have it and uses it to genxerate a basic hOCR
-    representation that is designed to be used in conjunction with the image
-    of the PDF in the same way as genuine OCR output would be, but without the
-    inevitable OCR errors.
+    """Extract an hOCR representation from explicit text information within a PDF."""
 
-    The converter does not handle images, diagrams or text colors.
+    #   Where text is being extracted from a variety of types of PDF within a
+    #   business process, those PDFs where the text is only present in image
+    #   form will need to be analysed using an OCR tool which will typically
+    #   output hOCR. This converter extracts the explicit text information from
+    #   those PDFs that do have it and uses it to genxerate a basic hOCR
+    #   representation that is designed to be used in conjunction with the image
+    #   of the PDF in the same way as genuine OCR output would be, but without the
+    #   inevitable OCR errors.
 
-    In the examples processed by the contributor it was necessary to set
-    LAParams.all_texts to True.
-    """
+    #   The converter does not handle images, diagrams or text colors.
+
+    #   In the examples processed by the contributor it was necessary to set
+    #   LAParams.all_texts to True.
 
     CONTROL = re.compile(r"[\x00-\x08\x0b-\x0c\x0e-\x1f]")
 
@@ -859,17 +860,13 @@ class HOCRConverter(PDFConverter[AnyIO]):
         self.write_header()
 
     def bbox_repr(self, bbox: Rect) -> str:
-        (x0, y0, x1, y1) = bbox
+        (in_x0, in_y0, in_x1, in_y1) = bbox
         # PDF y-coordinates are the other way round from hOCR coordinates
-        return " ".join(
-            (
-                "bbox",
-                str(round(x0, 3)),
-                str(round(self.page_bbox[3] - y1, 0)),
-                str(round(x1, 0)),
-                str(round(self.page_bbox[3] - y0, 0)),
-            )
-        )
+        out_x0 = int(in_x0)
+        out_y0 = int(self.page_bbox[3] - in_y1)
+        out_x1 = int(in_x1)
+        out_y1 = int(self.page_bbox[3] - in_y0)
+        return f"bbox {out_x0} {out_y0} {out_x1} {out_y1}"
 
     def write(self, text: str) -> None:
         if self.codec:
@@ -894,7 +891,9 @@ class HOCRConverter(PDFConverter[AnyIO]):
         self.write(
             "<meta http-equiv='Content-Type' " "content='text/html;charset=utf-8' />\n"
         )
-        self.write("<meta name='ocr-system' " "content='PDFMiner HOCR Converter' />\n")
+        self.write(
+            "<meta name='ocr-system' " "content='pdfminer.six HOCR Converter' />\n"
+        )
         self.write(
             "  <meta name='ocr-capabilities'"
             " content='ocr_page ocr_block ocr_line ocrx_word'/>\n"
@@ -904,7 +903,9 @@ class HOCRConverter(PDFConverter[AnyIO]):
 
     def write_footer(self) -> None:
         self.write("<!-- comment in the following line to debug -->\n")
-        self.write("<!--script src='https://unpkg.com/hocrjs'>" "</script--></body>\n")
+        self.write(
+            "<!--script src='https://unpkg.com/hocrjs'>" "</script--></body></html>\n"
+        )
 
     def write_text(self, text: str) -> None:
         if self.stripcontrol:
@@ -919,7 +920,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
             if "Bold" in self.working_font:
                 bold_and_italic_styles += "font-weight: bold; "
             self.write(
-                "<span style='font:\"%s\"; font-size:%d; %s'"
+                "<span style='font:\"%s\"; font-size:%d; %s' "
                 "class='ocrx_word' title='%s; x_font %s; "
                 "x_fsize %d'>%s</span>"
                 % (
@@ -938,7 +939,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
 
     def receive_layout(self, ltpage: LTPage) -> None:
         def render(item: LTItem) -> None:
-            if self.within_chars and not isinstance(item, LTChar):
+            if self.within_chars and isinstance(item, LTAnno):
                 self.write_word()
             if isinstance(item, LTPage):
                 self.page_bbox = item.bbox
