@@ -132,7 +132,7 @@ def apply_png_predictor(
 
     Documentation: http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
     """
-    if bitspercomponent != 8:
+    if bitspercomponent not in [8, 1]:
         msg = "Unsupported `bitspercomponent': %d" % bitspercomponent
         raise ValueError(msg)
 
