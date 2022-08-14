@@ -4448,6 +4448,8 @@ FONT_METRICS = {
     ),
 }
 
+# Aliases defined in implementation note 62 in Appecix H. related to section 5.5.1
+# (Type 1 Fonts) in the PDF Reference.
 FONT_METRICS["Arial"] = FONT_METRICS["Helvetica"]
 FONT_METRICS["Arial,Italic"] = FONT_METRICS["Helvetica-Oblique"]
 FONT_METRICS["Arial,Bold"] = FONT_METRICS["Helvetica-Bold"]
