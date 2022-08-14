@@ -106,17 +106,6 @@ def extract_text_to_fp(
             imagewriter=imagewriter,
         )
 
-    elif output_type == "html":
-        device = HTMLConverter(
-            rsrcmgr,
-            outfp,
-            codec=codec,
-            scale=scale,
-            layoutmode=layoutmode,
-            laparams=laparams,
-            imagewriter=imagewriter,
-        )
-
     elif output_type == "hocr":
         device = HOCRConverter(
             rsrcmgr, outfp, codec=codec, laparams=laparams, stripcontrol=strip_control
