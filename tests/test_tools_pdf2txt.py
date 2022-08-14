@@ -111,6 +111,12 @@ class TestPdf2Txt:
     def test_encryption_rc4_128(self):
         run("encryption/rc4-128.pdf", "-P foo")
 
+    def test_html_simple1(self):
+        run("simple1.pdf", "-t html")
+
+    def test_hocr_simple1(self):
+        run("simple1.pdf", "-t hocr")
+
 
 class TestDumpImages:
     @staticmethod
