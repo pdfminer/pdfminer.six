@@ -1,10 +1,11 @@
 # Changelog
-
 All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+- Output converter for the hOCR format ([#651](https://github.com/pdfminer/pdfminer.six/pull/651))
 
 ### Fixed
 

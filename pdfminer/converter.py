@@ -19,6 +19,7 @@ from pdfminer.pdfcolor import PDFColorSpace
 from . import utils
 from .image import ImageWriter
 from .layout import LAParams, LTComponent, TextGroupElement
+from .layout import LTAnno
 from .layout import LTChar
 from .layout import LTContainer
 from .layout import LTCurve
@@ -821,3 +822,179 @@ class XMLConverter(PDFConverter[AnyIO]):
     def close(self) -> None:
         self.write_footer()
         return
+
+
+class HOCRConverter(PDFConverter[AnyIO]):
+    """Extract an hOCR representation from explicit text information within a PDF."""
+
+    #   Where text is being extracted from a variety of types of PDF within a
+    #   business process, those PDFs where the text is only present in image
+    #   form will need to be analysed using an OCR tool which will typically
+    #   output hOCR. This converter extracts the explicit text information from
+    #   those PDFs that do have it and uses it to genxerate a basic hOCR
+    #   representation that is designed to be used in conjunction with the image
+    #   of the PDF in the same way as genuine OCR output would be, but without the
+    #   inevitable OCR errors.
+
+    #   The converter does not handle images, diagrams or text colors.
+
+    #   In the examples processed by the contributor it was necessary to set
+    #   LAParams.all_texts to True.
+
+    CONTROL = re.compile(r"[\x00-\x08\x0b-\x0c\x0e-\x1f]")
+
+    def __init__(
+        self,
+        rsrcmgr: PDFResourceManager,
+        outfp: AnyIO,
+        codec: str = "utf8",
+        pageno: int = 1,
+        laparams: Optional[LAParams] = None,
+        stripcontrol: bool = False,
+    ):
+        PDFConverter.__init__(
+            self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams
+        )
+        self.stripcontrol = stripcontrol
+        self.within_chars = False
+        self.write_header()
+
+    def bbox_repr(self, bbox: Rect) -> str:
+        (in_x0, in_y0, in_x1, in_y1) = bbox
+        # PDF y-coordinates are the other way round from hOCR coordinates
+        out_x0 = int(in_x0)
+        out_y0 = int(self.page_bbox[3] - in_y1)
+        out_x1 = int(in_x1)
+        out_y1 = int(self.page_bbox[3] - in_y0)
+        return f"bbox {out_x0} {out_y0} {out_x1} {out_y1}"
+
+    def write(self, text: str) -> None:
+        if self.codec:
+            encoded_text = text.encode(self.codec)
+            cast(BinaryIO, self.outfp).write(encoded_text)
+        else:
+            cast(TextIO, self.outfp).write(text)
+
+    def write_header(self) -> None:
+        if self.codec:
+            self.write(
+                "<html xmlns='http://www.w3.org/1999/xhtml' "
+                "xml:lang='en' lang='en' charset='%s'>\n" % self.codec
+            )
+        else:
+            self.write(
+                "<html xmlns='http://www.w3.org/1999/xhtml' "
+                "xml:lang='en' lang='en'>\n"
+            )
+        self.write("<head>\n")
+        self.write("<title></title>\n")
+        self.write(
+            "<meta http-equiv='Content-Type' " "content='text/html;charset=utf-8' />\n"
+        )
+        self.write(
+            "<meta name='ocr-system' " "content='pdfminer.six HOCR Converter' />\n"
+        )
+        self.write(
+            "  <meta name='ocr-capabilities'"
+            " content='ocr_page ocr_block ocr_line ocrx_word'/>\n"
+        )
+        self.write("</head>\n")
+        self.write("<body>\n")
+
+    def write_footer(self) -> None:
+        self.write("<!-- comment in the following line to debug -->\n")
+        self.write(
+            "<!--script src='https://unpkg.com/hocrjs'>" "</script--></body></html>\n"
+        )
+
+    def write_text(self, text: str) -> None:
+        if self.stripcontrol:
+            text = self.CONTROL.sub("", text)
+        self.write(text)
+
+    def write_word(self) -> None:
+        if len(self.working_text) > 0:
+            bold_and_italic_styles = ""
+            if "Italic" in self.working_font:
+                bold_and_italic_styles = "font-style: italic; "
+            if "Bold" in self.working_font:
+                bold_and_italic_styles += "font-weight: bold; "
+            self.write(
+                "<span style='font:\"%s\"; font-size:%d; %s' "
+                "class='ocrx_word' title='%s; x_font %s; "
+                "x_fsize %d'>%s</span>"
+                % (
+                    (
+                        self.working_font,
+                        self.working_size,
+                        bold_and_italic_styles,
+                        self.bbox_repr(self.working_bbox),
+                        self.working_font,
+                        self.working_size,
+                        self.working_text.strip(),
+                    )
+                )
+            )
+        self.within_chars = False
+
+    def receive_layout(self, ltpage: LTPage) -> None:
+        def render(item: LTItem) -> None:
+            if self.within_chars and isinstance(item, LTAnno):
+                self.write_word()
+            if isinstance(item, LTPage):
+                self.page_bbox = item.bbox
+                self.write(
+                    "<div class='ocr_page' id='%s' title='%s'>\n"
+                    % (item.pageid, self.bbox_repr(item.bbox))
+                )
+                for child in item:
+                    render(child)
+                self.write("</div>\n")
+            elif isinstance(item, LTTextLine):
+                self.write(
+                    "<span class='ocr_line' title='%s'>" % ((self.bbox_repr(item.bbox)))
+                )
+                for child_line in item:
+                    render(child_line)
+                self.write("</span>\n")
+            elif isinstance(item, LTTextBox):
+                self.write(
+                    "<div class='ocr_block' id='%d' title='%s'>\n"
+                    % (item.index, self.bbox_repr(item.bbox))
+                )
+                for child in item:
+                    render(child)
+                self.write("</div>\n")
+            elif isinstance(item, LTChar):
+                if not self.within_chars:
+                    self.within_chars = True
+                    self.working_text = item.get_text()
+                    self.working_bbox = item.bbox
+                    self.working_font = item.fontname
+                    self.working_size = item.size
+                else:
+                    if len(item.get_text().strip()) == 0:
+                        self.write_word()
+                        self.write(item.get_text())
+                    else:
+                        if (
+                            self.working_bbox[1] != item.bbox[1]
+                            or self.working_font != item.fontname
+                            or self.working_size != item.size
+                        ):
+                            self.write_word()
+                            self.working_bbox = item.bbox
+                            self.working_font = item.fontname
+                            self.working_size = item.size
+                        self.working_text += item.get_text()
+                        self.working_bbox = (
+                            self.working_bbox[0],
+                            self.working_bbox[1],
+                            item.bbox[2],
+                            self.working_bbox[3],
+                        )
+
+        render(ltpage)
+
+    def close(self) -> None:
+        self.write_footer()
