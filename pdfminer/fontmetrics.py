@@ -4447,3 +4447,18 @@ FONT_METRICS = {
         },
     ),
 }
+
+# Aliases defined in implementation note 62 in Appecix H. related to section 5.5.1
+# (Type 1 Fonts) in the PDF Reference.
+FONT_METRICS["Arial"] = FONT_METRICS["Helvetica"]
+FONT_METRICS["Arial,Italic"] = FONT_METRICS["Helvetica-Oblique"]
+FONT_METRICS["Arial,Bold"] = FONT_METRICS["Helvetica-Bold"]
+FONT_METRICS["Arial,BoldItalic"] = FONT_METRICS["Helvetica-BoldOblique"]
+FONT_METRICS["CourierNew"] = FONT_METRICS["Courier"]
+FONT_METRICS["CourierNew,Italic"] = FONT_METRICS["Courier-Oblique"]
+FONT_METRICS["CourierNew,Bold"] = FONT_METRICS["Courier-Bold"]
+FONT_METRICS["CourierNew,BoldItalic"] = FONT_METRICS["Courier-BoldOblique"]
+FONT_METRICS["TimesNewRoman"] = FONT_METRICS["Times-Roman"]
+FONT_METRICS["TimesNewRoman,Italic"] = FONT_METRICS["Times-Italic"]
+FONT_METRICS["TimesNewRoman,Bold"] = FONT_METRICS["Times-Bold"]
+FONT_METRICS["TimesNewRoman,BoldItalic"] = FONT_METRICS["Times-BoldItalic"]

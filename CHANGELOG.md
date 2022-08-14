@@ -5,15 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
 - Output converter for the hOCR format ([#651](https://github.com/pdfminer/pdfminer.six/pull/651))
+- Font name aliases for Arial, Courier New and Times New Roman ([#790](https://github.com/pdfminer/pdfminer.six/pull/790))
 
 ### Fixed
 
-- 'ValueError': when bmp images with 1 bit channel are decoded ([#773](https://github.com/pdfminer/pdfminer.six/issues/773))
+- `ValueError` when bmp images with 1 bit channel are decoded ([#773](https://github.com/pdfminer/pdfminer.six/issues/773))
 - `ValueError` when trying to decrypt empty metadata values ([#766](https://github.com/pdfminer/pdfminer.six/issues/766))
 - Sphinx errors during building of documentation ([#760](https://github.com/pdfminer/pdfminer.six/pull/760))
 - `TypeError` when getting default width of font ([#720](https://github.com/pdfminer/pdfminer.six/issues/720))
-- Install typing-extensions on Python 3.6 and 3.7 ([#775](https://github.com/pdfminer/pdfminer.six/pull/775))
+- Installing typing-extensions on Python 3.6 and 3.7 ([#775](https://github.com/pdfminer/pdfminer.six/pull/775))
 - `TypeError` in cmapdb.py when parsing null characters ([#768](https://github.com/pdfminer/pdfminer.six/pull/768))
 
 ### Deprecated
