@@ -1,9 +1,10 @@
 import io
 from tempfile import TemporaryFile
 
+from helpers import absolute_sample_path
 from pdfminer.converter import PDFLayoutAnalyzer, PDFConverter
 from pdfminer.high_level import extract_pages
-from pdfminer.layout import LTContainer, LTRect, LTLine, LTCurve
+from pdfminer.layout import LTChar, LTContainer, LTRect, LTLine, LTCurve
 from pdfminer.pdfinterp import PDFGraphicState
 
 
@@ -223,6 +224,31 @@ class TestPaintPath:
         for path in paths:
             analyzer.paint_path(gs, False, False, False, path)
         assert len(analyzer.cur_item._objs) == 0
+
+
+def get_chars(el):
+    if isinstance(el, LTContainer):
+        for item in el:
+            yield from get_chars(item)
+    elif isinstance(el, LTChar):
+        yield el
+    else:
+        pass
+
+
+class TestColorSpace:
+    def test_do_rg(self):
+        path = absolute_sample_path("contrib/issue-00352-hash-twos-complement.pdf")
+        for page in extract_pages(path):
+            for char in get_chars(page):
+                cs = char.ncs.name
+                color = char.graphicstate.ncolor
+                if cs == "DeviceGray":
+                    assert isinstance(color, (float, int))
+                elif cs == "DeviceRGB":
+                    assert len(color) == 3
+                elif cs == "DeviceCMYK":
+                    assert len(color) == 4
 
 
 class TestBinaryDetector:
