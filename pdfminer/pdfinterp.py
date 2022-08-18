@@ -652,21 +652,25 @@ class PDFPageInterpreter:
     def do_G(self, gray: PDFStackT) -> None:
         """Set gray level for stroking operations"""
         self.graphicstate.scolor = cast(float, gray)
+        self.scs = self.csmap["DeviceGray"]
         return
 
     def do_g(self, gray: PDFStackT) -> None:
         """Set gray level for nonstroking operations"""
         self.graphicstate.ncolor = cast(float, gray)
+        self.ncs = self.csmap["DeviceGray"]
         return
 
     def do_RG(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for stroking operations"""
         self.graphicstate.scolor = (cast(float, r), cast(float, g), cast(float, b))
+        self.scs = self.csmap["DeviceRGB"]
         return
 
     def do_rg(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for nonstroking operations"""
         self.graphicstate.ncolor = (cast(float, r), cast(float, g), cast(float, b))
+        self.ncs = self.csmap["DeviceRGB"]
         return
 
     def do_K(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
@@ -677,6 +681,7 @@ class PDFPageInterpreter:
             cast(float, y),
             cast(float, k),
         )
+        self.scs = self.csmap["DeviceCMYK"]
         return
 
     def do_k(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
@@ -687,6 +692,7 @@ class PDFPageInterpreter:
             cast(float, y),
             cast(float, k),
         )
+        self.ncs = self.csmap["DeviceCMYK"]
         return
 
     def do_SCN(self) -> None:
