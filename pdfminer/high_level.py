@@ -185,7 +185,9 @@ def extract_pages(
     caching: bool = True,
     laparams: Optional[LAParams] = None,
 ) -> Iterator[LTPage]:
-    """Extract and yield LTPage objects
+    """Extract and yield LTPage objects which can be further iterated to get
+    sub-elements. This is the most powerful method of extracting data from a
+    PDF.
 
     :param pdf_file: Either a file path or a file-like object for the PDF file
         to be worked on.
@@ -195,7 +197,7 @@ def extract_pages(
     :param caching: If resources should be cached
     :param laparams: An LAParams object from pdfminer.layout. If None, uses
         some default settings that often work well.
-    :return:
+    :return: LTPage objects
     """
     if laparams is None:
         laparams = LAParams()
