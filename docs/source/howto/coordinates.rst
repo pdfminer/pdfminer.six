@@ -22,10 +22,10 @@ For more information on the Layout analysis algorithm, please refer to the
     def show_ltitem_hierarchy(o: Any, depth=0):
         """Show location and text of LTItem and all its descendants"""
         if depth == 0:
-        print('element                         x1  y1  x2'
-              '  y2  fontinfo             text')
-        print('------------------------------ --- --- --- '
-              '--- -------------------- -----')
+            print('element                         x1  y1  x2'
+                '  y2  fontinfo             text')
+            print('------------------------------ --- --- --- '
+                '--- -------------------- -----')
 
         print(
             f'{get_indented_name(o, depth):<30.30s} '
