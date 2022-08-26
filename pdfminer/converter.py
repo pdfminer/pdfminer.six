@@ -138,6 +138,24 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             ]
             pts = [apply_matrix_pt(self.ctm, pt) for pt in raw_pts]
 
+            transformed_path = [
+                cast(
+                    PathSegment,
+                    tuple(
+                        [
+                            item[0],
+                            *[
+                                apply_matrix_pt(
+                                    self.ctm, cast(Point, (item[idx], item[idx + 1]))
+                                )
+                                for idx in range(1, len(item), 2)
+                            ],
+                        ]
+                    ),
+                )
+                for item in path
+            ]
+
             if shape in {"mlh", "ml"}:
                 # single line segment
                 #
@@ -152,6 +170,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                     evenodd,
                     gstate.scolor,
                     gstate.ncolor,
+                    original_path=transformed_path,
+                    dashing_style=gstate.dash,
                 )
                 self.cur_item.add(line)
 
@@ -171,6 +191,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                         evenodd,
                         gstate.scolor,
                         gstate.ncolor,
+                        transformed_path,
+                        gstate.dash,
                     )
                     self.cur_item.add(rect)
                 else:
@@ -182,9 +204,10 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                         evenodd,
                         gstate.scolor,
                         gstate.ncolor,
+                        transformed_path,
+                        gstate.dash,
                     )
                     self.cur_item.add(curve)
-
             else:
                 curve = LTCurve(
                     gstate.linewidth,
@@ -194,6 +217,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                     evenodd,
                     gstate.scolor,
                     gstate.ncolor,
+                    transformed_path,
+                    gstate.dash,
                 )
                 self.cur_item.add(curve)
 
