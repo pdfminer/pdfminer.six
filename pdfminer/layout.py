@@ -209,6 +209,12 @@ class LTComponent(LTItem):
             return 0
 
     def contains (self, obj: "LTComponent") -> bool:
+        """Check whether this object contains another :obj:`LTComponent`.
+        
+        :param obj: The object to check whether it is contained or not.
+        :return: :obj:`True` if the object is contained or :obj:`False`
+            otherwise.
+        """
         assert isinstance(obj, LTComponent), str(type(obj))
         return (self.x0 <= obj.x0 and self.y0 <= obj.y0
                 and self.x1 >= obj.x1 and self.y1 >= obj.y1)
