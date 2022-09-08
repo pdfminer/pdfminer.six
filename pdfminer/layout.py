@@ -208,6 +208,11 @@ class LTComponent(LTItem):
         else:
             return 0
 
+    def contains (self, obj: "LTComponent") -> bool:
+        assert isinstance(obj, LTComponent), str(type(obj))
+        return (self.x0 <= obj.x0 and self.y0 <= obj.y0
+                and self.x1 >= obj.x1 and self.y1 >= obj.y1)
+
 
 class LTCurve(LTComponent):
     """A generic Bezier curve"""
