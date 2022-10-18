@@ -45,6 +45,13 @@ Any contribution is appreciated! You might want to:
 
 * Publishing is automated. Add a YYYYMMDD version tag and GitHub workflows will do the rest. 
 
+## Guidelines for Packages 
+
+* New "install_requires" packages should preserve the MIT Nature of pdfminer.six
+* Both New and Existing Packages should have their dependencies checked, as well as the dependencies dependencies etc , to insure packages with "copy left" licences are not required.
+* The Following is an example list of copy left licences but is not a complete list : "MPL","EPL","AGPL","MS-RL","GPLv3"
+
+
 ## Getting started
 
 1. Clone the repository
