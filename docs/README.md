@@ -1,3 +1,12 @@
+# 📝 pdfminer.six documentation
+
+pdfminer.six docs are generated with
+[Sphinx](https://www.sphinx-doc.org/en/master/), using
+[reStructuredText](https://docutils.sourceforge.io/rst.html).
+
+<br>
+<br>
+
 ## How to build the documentation
 
 pdfminer.six documentation can be found at
