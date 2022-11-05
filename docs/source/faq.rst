@@ -39,3 +39,30 @@ improves pdfminer.
 Since 2020, the original pdfminer is `dormant
 <https://github.com/euske/pdfminer#pdfminer>`_, and pdfminer.six is the fork
 which Euske recommends if you need an actively maintained version of pdfminer.
+
+Why are there `(cid:x)` values in the textual output?
+=====================================================
+
+One of the most common issues with pdfminer.six is that the textual output
+contains raw character id's `(cid:x)`. This is often experienced as confusing
+because the text is shown fine in a PDF viewer and other text from the same
+PDF is extracted properly.
+
+The underlying problem is that a PDF has two different representations
+of each character. Each character is mapped to a glyph that determines
+how the character is shown in a PDF viewer. And each character is also
+mapped to its unicode value that is used when copy-pasting the character.
+Some PDF's have incomplete unicode mappings and therefore it is impossible
+to convert the character to unicode. In these cases pdfminer.six defaults
+to showing the raw character id `(cid:x)`
+
+A quick test to see if pdfminer.six should be able to do better is to
+copy-paste the text from a PDF viewer to a text editor. If the result
+is proper text, pdfminer.six should also be able to extract proper text.
+If the result is gibberish, pdfminer.six will also not be able to convert
+the characters to unicode.
+
+References: 
+
+#. `Chapter 5: Text, PDF Reference 1.7 <https://opensource.adobe.com/dc-acrobat-sdk-docs/pdflsdk/index.html#pdf-reference>`_
+#. `Text: PDF, Wikipedia <https://en.wikipedia.org/wiki/PDF#Text>`_
