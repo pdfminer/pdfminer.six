@@ -225,20 +225,24 @@ class ImageWriter:
         with open(path, "wb") as fp:
             try:
                 from PIL import Image  # type: ignore[import]
+                from PIL import ImageOps
             except ImportError:
                 raise ImportError(PIL_ERROR_MESSAGE)
 
-            mode: Literal["1", "8", "RGB", "CMYK"]
+            mode: Literal["1", "L", "RGB", "CMYK"]
             if image.bits == 1:
                 mode = "1"
             elif image.bits == 8 and channels == 1:
-                mode = "8"
+                mode = "L"
             elif image.bits == 8 and channels == 3:
                 mode = "RGB"
             elif image.bits == 8 and channels == 4:
                 mode = "CMYK"
 
             img = Image.frombytes(mode, image.srcsize, image.stream.get_data(), "raw")
+            if mode == "L":
+                img = ImageOps.invert(img)
+
             img.save(fp)
 
         return name

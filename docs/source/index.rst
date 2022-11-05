@@ -59,18 +59,31 @@ Features
 Installation instructions
 =========================
 
-Before using it, you must install it using Python 3.6 or newer.
+* Install Python 3.6 or newer.
+* Install pdfminer.six.
 
 ::
+    $ pip install pdfminer.six`
 
-    $ pip install pdfminer.six
-
-
-Optionally install extra dependencies that are needed to extract jpg images.
+* (Optionally) install extra dependencies for extracting images.
 
 ::
+    $ pip install 'pdfminer.six[image]'`
 
-    $ pip install 'pdfminer.six[image]'
+* Use the command-line interface to extract text from pdf.
+
+::
+    $ pdf2txt.py example.pdf`
+
+* Or use it with Python.
+
+.. code-block:: python
+
+    from pdfminer.high_level import extract_text
+
+    text = extract_text("example.pdf")
+    print(text)
+
 
 
 Contributing
