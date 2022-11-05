@@ -9,8 +9,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Output converter for the hOCR format ([#651](https://github.com/pdfminer/pdfminer.six/pull/651))
 - Font name aliases for Arial, Courier New and Times New Roman ([#790](https://github.com/pdfminer/pdfminer.six/pull/790))
-- Documentation updates: FAQ (Unable to extract special characters), and other small changes
-- Documentation: How-to extract coordinates and font information
 
 ### Fixed
 
