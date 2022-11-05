@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Output converter for the hOCR format ([#651](https://github.com/pdfminer/pdfminer.six/pull/651))
 - Font name aliases for Arial, Courier New and Times New Roman ([#790](https://github.com/pdfminer/pdfminer.six/pull/790))
+- Documentation on why special characters can sometimes not be extracted ([#829](https://github.com/pdfminer/pdfminer.six/pull/829))
 - LTCurve now contains original Bezier Path Information([#672](https://github.com/pdfminer/pdfminer.six/issues/672))
 - LTCurve now contains the Dashing Style of the Line ([#630](https://github.com/pdfminer/pdfminer.six/issues/630))
 
@@ -20,7 +21,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `TypeError` when getting default width of font ([#720](https://github.com/pdfminer/pdfminer.six/issues/720))
 - Installing typing-extensions on Python 3.6 and 3.7 ([#775](https://github.com/pdfminer/pdfminer.six/pull/775))
 - `TypeError` in cmapdb.py when parsing null characters ([#768](https://github.com/pdfminer/pdfminer.six/pull/768))
-- Color "convenience operators" now (per spec) also set color space ([#779](https://github.com/pdfminer/pdfminer.six/issues/779))
+- Color "convenience operators" now (per spec) also set color space ([#794](https://github.com/pdfminer/pdfminer.six/pull/794))
+- `ValueError` when extracting images, due to breaking changes in Pillow ([#827](https://github.com/pdfminer/pdfminer.six/pull/827))
+- Small typo's and issues in the documentation ([#828](https://github.com/pdfminer/pdfminer.six/pull/828))
 
 ### Deprecated
 
