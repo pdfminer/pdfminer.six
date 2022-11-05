@@ -7,11 +7,11 @@ Why is it called pdfminer.six?
 ==============================
 
 Pdfminer.six is a fork of the `original pdfminer created by Euske
-<https://github.com/euske>`_. Almost all of the code and architecture is in
-fact created by Euske. But, for a long time this original pdfminer did not
+<https://github.com/euske>`_. Almost all of the code and architecture are in
+-fact created by Euske. But, for a long time, this original pdfminer did not
 support Python 3. Until 2020 the original pdfminer only supported Python 2.
 The original goal of pdfminer.six was to add support for Python 3. This was
-done with the six package. The six package helps to write code that is
+done with the `six` package. The `six` package helps to write code that is
 compatible with both Python 2 and Python 3. Hence, pdfminer.six.
 
 As of 2020, pdfminer.six dropped the support for Python 2 because it was
@@ -27,13 +27,13 @@ also equal to six feet.
 How does pdfminer.six compare to other forks of pdfminer?
 ==========================================================
 
-Pdfminer.six is now an independent and community maintained package for
-extracting text from PDF's with Python. We actively fix bugs (also for PDF's
+Pdfminer.six is now an independent and community-maintained package for
+extracting text from PDFs with Python. We actively fix bugs (also for PDFs
 that don't strictly follow the PDF Reference), add new features and improve
 the usability of pdfminer.six. This community separates pdfminer.six from the
 other forks of the original pdfminer. PDF as a format is very diverse and
 there are countless deviations from the official format. The only way to
-support all the PDF's out there is to have a community that actively uses and
+support all the PDFs out there is to have a community that actively uses and
 improves pdfminer.
 
 Since 2020, the original pdfminer is `dormant

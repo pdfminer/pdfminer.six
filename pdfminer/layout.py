@@ -1011,8 +1011,8 @@ class LTFigure(LTLayoutContainer):
 class LTPage(LTLayoutContainer):
     """Represents an entire page.
 
-    May contain child objects like LTTextBox, LTFigure, LTImage, LTRect,
-    LTCurve and LTLine.
+    Like any other LTLayoutContainer, an LTPage can be iterated to obtain child
+    objects like LTTextBox, LTFigure, LTImage, LTRect, LTCurve and LTLine.
     """
 
     def __init__(self, pageid: int, bbox: Rect, rotate: float = 0) -> None:

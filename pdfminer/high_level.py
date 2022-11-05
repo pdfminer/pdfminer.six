@@ -195,7 +195,7 @@ def extract_pages(
     :param caching: If resources should be cached
     :param laparams: An LAParams object from pdfminer.layout. If None, uses
         some default settings that often work well.
-    :return:
+    :return: LTPage objects
     """
     if laparams is None:
         laparams = LAParams()
