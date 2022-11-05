@@ -185,9 +185,7 @@ def extract_pages(
     caching: bool = True,
     laparams: Optional[LAParams] = None,
 ) -> Iterator[LTPage]:
-    """Extract and yield LTPage objects which can be further iterated to get
-    sub-elements. This is the most powerful method of extracting data from a
-    PDF.
+    """Extract and yield LTPage objects
 
     :param pdf_file: Either a file path or a file-like object for the PDF file
         to be worked on.
