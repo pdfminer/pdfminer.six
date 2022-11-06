@@ -216,6 +216,45 @@ class TestPaintPath:
             (71.41, 434.89),
         ]
 
+    def test_paint_path_beziers_check_raw(self):
+        """See section 4.4, table 4.9 of the PDF reference manual"""
+
+        def parse(path):
+            analyzer = self._get_analyzer()
+            analyzer.cur_item = LTContainer([0, 1000, 0, 1000])
+            analyzer.paint_path(PDFGraphicState(), False, False, False, path)
+            return analyzer.cur_item._objs
+
+        # "c" operator
+        assert parse(
+            [
+                ("m", 72.41, 433.89),
+                ("c", 72.41, 434.45, 71.96, 434.89, 71.41, 434.89),
+            ]
+        )[0].original_path == [
+            ("m", (72.41, 433.89)),
+            ("c", (72.41, 434.45), (71.96, 434.89), (71.41, 434.89)),
+        ]
+
+    def test_paint_path_dashed(self):
+        """See section 4.4, table 4.9 of the PDF reference manual"""
+
+        def parse(path):
+            analyzer = self._get_analyzer()
+            analyzer.cur_item = LTContainer([0, 1000, 0, 1000])
+            graphicstate = PDFGraphicState()
+            graphicstate.dash = ([1, 1], 0)
+            analyzer.paint_path(graphicstate, False, False, False, path)
+            return analyzer.cur_item._objs
+
+        # "c" operator
+        assert parse(
+            [
+                ("m", 72.41, 433.89),
+                ("c", 72.41, 434.45, 71.96, 434.89, 71.41, 434.89),
+            ]
+        )[0].dashing_style == ([1, 1], 0)
+
     def test_paint_path_without_starting_m(self):
         gs = PDFGraphicState()
         analyzer = self._get_analyzer()

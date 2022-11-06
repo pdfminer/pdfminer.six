@@ -20,7 +20,7 @@ from .pdffont import PDFFont
 from .pdfinterp import Color
 from .pdfinterp import PDFGraphicState
 from .pdftypes import PDFStream
-from .utils import INF
+from .utils import INF, PathSegment
 from .utils import LTComponentT
 from .utils import Matrix
 from .utils import Plane
@@ -210,7 +210,14 @@ class LTComponent(LTItem):
 
 
 class LTCurve(LTComponent):
-    """A generic Bezier curve"""
+    """
+    A generic Bezier curve
+
+    The parameter `original_path` contains the original
+    pathing information from the pdf (e.g. for reconstructing Bezier Curves).
+
+    `dashing_style` contains the Dashing information if any.
+    """
 
     def __init__(
         self,
@@ -221,6 +228,8 @@ class LTCurve(LTComponent):
         evenodd: bool = False,
         stroking_color: Optional[Color] = None,
         non_stroking_color: Optional[Color] = None,
+        original_path: Optional[List[PathSegment]] = None,
+        dashing_style: Optional[Tuple[object, object]] = None,
     ) -> None:
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
@@ -230,6 +239,8 @@ class LTCurve(LTComponent):
         self.evenodd = evenodd
         self.stroking_color = stroking_color
         self.non_stroking_color = non_stroking_color
+        self.original_path = original_path
+        self.dashing_style = dashing_style
 
     def get_pts(self) -> str:
         return ",".join("%.3f,%.3f" % p for p in self.pts)
@@ -251,6 +262,8 @@ class LTLine(LTCurve):
         evenodd: bool = False,
         stroking_color: Optional[Color] = None,
         non_stroking_color: Optional[Color] = None,
+        original_path: Optional[List[PathSegment]] = None,
+        dashing_style: Optional[Tuple[object, object]] = None,
     ) -> None:
         LTCurve.__init__(
             self,
@@ -261,6 +274,8 @@ class LTLine(LTCurve):
             evenodd,
             stroking_color,
             non_stroking_color,
+            original_path,
+            dashing_style,
         )
 
 
@@ -279,6 +294,8 @@ class LTRect(LTCurve):
         evenodd: bool = False,
         stroking_color: Optional[Color] = None,
         non_stroking_color: Optional[Color] = None,
+        original_path: Optional[List[PathSegment]] = None,
+        dashing_style: Optional[Tuple[object, object]] = None,
     ) -> None:
         (x0, y0, x1, y1) = bbox
         LTCurve.__init__(
@@ -290,6 +307,8 @@ class LTRect(LTCurve):
             evenodd,
             stroking_color,
             non_stroking_color,
+            original_path,
+            dashing_style,
         )
 
 
