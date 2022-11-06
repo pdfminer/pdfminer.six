@@ -10,8 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Output converter for the hOCR format ([#651](https://github.com/pdfminer/pdfminer.six/pull/651))
 - Font name aliases for Arial, Courier New and Times New Roman ([#790](https://github.com/pdfminer/pdfminer.six/pull/790))
 - Documentation on why special characters can sometimes not be extracted ([#829](https://github.com/pdfminer/pdfminer.six/pull/829))
-- LTCurve now contains original Bezier Path Information([#672](https://github.com/pdfminer/pdfminer.six/issues/672))
-- LTCurve now contains the Dashing Style of the Line ([#630](https://github.com/pdfminer/pdfminer.six/issues/630))
+- Storing Bezier path and dashing style of line in LTCurve ([#801](https://github.com/pdfminer/pdfminer.six/pull/801))
 
 ### Fixed
 
