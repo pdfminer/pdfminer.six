@@ -138,22 +138,17 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             ]
             pts = [apply_matrix_pt(self.ctm, pt) for pt in raw_pts]
 
+            operators = [str(operation[0]) for operation in path]
+            transformed_points = [
+                [
+                    apply_matrix_pt(self.ctm, (float(operand1), float(operand2)))
+                    for operand1, operand2 in zip(operation[1::2], operation[2::2])
+                ]
+                for operation in path
+            ]
             transformed_path = [
-                cast(
-                    PathSegment,
-                    tuple(
-                        [
-                            item[0],
-                            *[
-                                apply_matrix_pt(
-                                    self.ctm, cast(Point, (item[idx], item[idx + 1]))
-                                )
-                                for idx in range(1, len(item), 2)
-                            ],
-                        ]
-                    ),
-                )
-                for item in path
+                cast(PathSegment, (o, *p))
+                for o, p in zip(operators, transformed_points)
             ]
 
             if shape in {"mlh", "ml"}:
