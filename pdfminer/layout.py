@@ -1,3 +1,4 @@
+import copy
 import heapq
 import logging
 from typing import (
@@ -14,6 +15,7 @@ from typing import (
     Union,
     cast,
 )
+import math
 
 from .pdfcolor import PDFColorSpace
 from .pdffont import PDFFont
@@ -373,9 +375,10 @@ class LTChar(LTComponent, LTText):
         else:
             # horizontal
             descent = font.get_descent() * fontsize
-            bbox_lower_left = (0, descent + rise)
-            bbox_upper_right = (self.adv, descent + rise + fontsize)
+            bbox_lower_left = (0, rise)
+            bbox_upper_right = (self.adv, fontsize/2 + rise)
         (a, b, c, d, e, f) = self.matrix
+
         self.upright = 0 < a * d * scaling and b * c <= 0
         (x0, y0) = apply_matrix_pt(self.matrix, bbox_lower_left)
         (x1, y1) = apply_matrix_pt(self.matrix, bbox_upper_right)
