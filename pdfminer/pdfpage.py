@@ -1,6 +1,6 @@
 import itertools
 import logging
-from typing import BinaryIO, Container, Dict, Iterator, List, Optional, Tuple
+from typing import BinaryIO, Container, Dict, Iterator, List, Optional, Tuple, Any
 
 from pdfminer.utils import Rect
 from . import settings
@@ -60,7 +60,9 @@ class PDFPage:
         self.resources: Dict[object, object] = resolve1(
             self.attrs.get("Resources", dict())
         )
-        mediabox_params: list = [resolve1(mediabox_param) for mediabox_param in self.attrs['MediaBox']]
+        mediabox_params: List[Any] = [
+            resolve1(mediabox_param) for mediabox_param in self.attrs["MediaBox"]
+        ]
         self.mediabox: Rect = resolve1(mediabox_params)
         if "CropBox" in self.attrs:
             self.cropbox: Rect = resolve1(self.attrs["CropBox"])
