@@ -6,6 +6,7 @@ from .psparser import LIT
 LITERAL_DEVICE_GRAY = LIT("DeviceGray")
 LITERAL_DEVICE_RGB = LIT("DeviceRGB")
 LITERAL_DEVICE_CMYK = LIT("DeviceCMYK")
+LITERAL_INDEXED = LIT("Indexed")
 
 
 class PDFColorSpace:

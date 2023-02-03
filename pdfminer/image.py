@@ -4,6 +4,9 @@ import struct
 from io import BytesIO
 from typing import BinaryIO, Tuple
 
+import cv2
+import numpy as np
+
 try:
     from typing import Literal
 except ImportError:
@@ -12,14 +15,17 @@ except ImportError:
 
 from .jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from .layout import LTImage
-from .pdfcolor import LITERAL_DEVICE_CMYK
-from .pdfcolor import LITERAL_DEVICE_GRAY
-from .pdfcolor import LITERAL_DEVICE_RGB
+from .pdfcolor import (
+    LITERAL_DEVICE_CMYK,
+    LITERAL_DEVICE_GRAY,
+    LITERAL_DEVICE_RGB,
+    LITERAL_INDEXED,
+)
 from .pdftypes import (
     LITERALS_DCT_DECODE,
+    LITERALS_FLATE_DECODE,
     LITERALS_JBIG2_DECODE,
     LITERALS_JPX_DECODE,
-    LITERALS_FLATE_DECODE,
 )
 
 PIL_ERROR_MESSAGE = (
@@ -65,9 +71,7 @@ class BMPWriter:
             0,
         )
         assert len(info) == 40, str(len(info))
-        header = struct.pack(
-            "<ccIHHI", b"B", b"M", headersize + self.datasize, 0, 0, headersize
-        )
+        header = struct.pack("<ccIHHI", b"B", b"M", headersize + self.datasize, 0, 0, headersize)
         assert len(header) == 14, str(len(header))
         self.fp.write(header)
         self.fp.write(info)
@@ -187,10 +191,7 @@ class ImageWriter:
                     global_streams.append(params["JBIG2Globals"].resolve())
 
             if len(global_streams) > 1:
-                msg = (
-                    "There should never be more than one JBIG2Globals "
-                    "associated with a JBIG2 embedded image"
-                )
+                msg = "There should never be more than one JBIG2Globals " "associated with a JBIG2 embedded image"
                 raise ValueError(msg)
             if len(global_streams) == 1:
                 input_stream.write(global_streams[0].get_data().rstrip(b"\n"))
@@ -203,9 +204,7 @@ class ImageWriter:
             writer.write_file(segments)
         return name
 
-    def _save_bmp(
-        self, image: LTImage, width: int, height: int, bytes_per_line: int, bits: int
-    ) -> str:
+    def _save_bmp(self, image: LTImage, width: int, height: int, bytes_per_line: int, bits: int) -> str:
         """Save a BMP encoded image"""
         name, path = self._create_unique_image_name(image, ".bmp")
         with open(path, "wb") as fp:
@@ -219,9 +218,11 @@ class ImageWriter:
 
     def _save_bytes(self, image: LTImage) -> str:
         """Save an image without encoding, just bytes"""
+
         name, path = self._create_unique_image_name(image, ".jpg")
         width, height = image.srcsize
-        channels = len(image.stream.get_data()) / width / height / (image.bits / 8)
+        data = image.stream.get_data()
+        channels = len(data) / width / height / (image.bits / 8)
         with open(path, "wb") as fp:
             try:
                 from PIL import Image  # type: ignore[import]
@@ -230,18 +231,32 @@ class ImageWriter:
                 raise ImportError(PIL_ERROR_MESSAGE)
 
             mode: Literal["1", "L", "RGB", "CMYK"]
-            if image.bits == 1:
-                mode = "1"
-            elif image.bits == 8 and channels == 1:
-                mode = "L"
-            elif image.bits == 8 and channels == 3:
-                mode = "RGB"
-            elif image.bits == 8 and channels == 4:
-                mode = "CMYK"
+            if image.bits == 4:
+                data, h, w = self._decode_4bits_image(image)
+                if image.colorspace[0] == LITERAL_INDEXED:
+                    if image.colorspace[1] == LITERAL_DEVICE_RGB:
+                        data = self._decode_color_by_index(data, image.colorspace[3], 3, (h, w))
+                    elif image.colorspace[1] == LITERAL_DEVICE_GRAY:
+                        data = self._decode_color_by_index(data, image.colorspace[3], 1, (h, w))
+                    elif image.colorspace[1] == LITERAL_DEVICE_CMYK:
+                        data = self._decode_color_by_index(data, image.colorspace[3], 4, (h, w))
+                else:
+                    data = self._create_grayscale(data, (h, w))
+                img = Image.fromarray(data[:height, :width])
 
-            img = Image.frombytes(mode, image.srcsize, image.stream.get_data(), "raw")
-            if mode == "L":
-                img = ImageOps.invert(img)
+            else:
+                if image.bits == 1:
+                    mode = "1"
+                elif image.bits == 8 and channels == 1:
+                    mode = "L"
+                elif image.bits == 8 and channels == 3:
+                    mode = "RGB"
+                elif image.bits == 8 and channels == 4:
+                    mode = "CMYK"
+
+                img = Image.frombytes(mode, (width, height), data, "raw")
+                if mode == "L":
+                    img = ImageOps.invert(img)
 
             img.save(fp)
 
@@ -273,3 +288,44 @@ class ImageWriter:
             path = os.path.join(self.outdir, name)
             img_index += 1
         return name, path
+
+    def _decode_4bits_image(self, image: LTImage) -> Tuple[np.ndarray, int, int]:
+        width, height = image.srcsize
+        bytes = image.stream.get_data()
+        data = np.frombuffer(bytes, dtype=np.uint8)
+
+        data = self._split_octet(data)
+        if len(data) % width == 0:
+            height = int(len(data) / width)
+        else:
+            width = int(len(data) / height)
+        return data[: height * width], height, width
+
+    @staticmethod
+    def _decode_color_by_index(
+        data: np.ndarray, decoder: bytes, channels: int, data_shape: Tuple[int, int]
+    ) -> np.ndarray:
+        h, w = data_shape
+        decoder = np.frombuffer(decoder, dtype=np.uint8)
+        data = decoder.reshape(-1, channels)[data]
+        return data.reshape(h, w, channels)
+
+    @staticmethod
+    def _split_octet(data):
+        """For each 8-bit number in array, split them into two 4-bit numbers"""
+        split_data = []
+        for octet in data:
+            upper = octet >> 4
+            lower = octet & 0x0F
+            split_data.extend([upper, lower])
+        return np.array(split_data)
+
+    @staticmethod
+    def _create_grayscale(data, data_shape):
+        # Normalize data from 0 to 1
+        normalized = np.array(data, np.float64) / 0xF
+        # fold data to image shape
+        pixel_array = normalized.reshape(data_shape)
+        # change 16 possible values over 0 to 255 range
+        data = np.array(pixel_array * 0xFF, np.uint8)
+        return data
