@@ -241,7 +241,7 @@ class ImageWriter:
                     elif image.colorspace[1] == LITERAL_DEVICE_CMYK:
                         data = self._decode_color_by_index(data, image.colorspace[3], 4, (h, w))
                 else:
-                    data = self._create_grayscale(data, (h, w))
+                    data = self._create_grayscale_for_4bits_image(data, (h, w))
                 img = Image.fromarray(data[:height, :width])
 
             else:
@@ -294,7 +294,10 @@ class ImageWriter:
         bytes = image.stream.get_data()
         data = np.frombuffer(bytes, dtype=np.uint8)
 
+        # split 8-bits array to 4-bits array
         data = self._split_octet(data)
+
+        # the width and height attr in image may not evenly divisible
         if len(data) % width == 0:
             height = int(len(data) / width)
         else:
@@ -305,6 +308,7 @@ class ImageWriter:
     def _decode_color_by_index(
         data: np.ndarray, decoder: bytes, channels: int, data_shape: Tuple[int, int]
     ) -> np.ndarray:
+        """image.colorspase will provide the decoder, data represents the index"""
         h, w = data_shape
         decoder = np.frombuffer(decoder, dtype=np.uint8)
         data = decoder.reshape(-1, channels)[data]
@@ -321,7 +325,8 @@ class ImageWriter:
         return np.array(split_data)
 
     @staticmethod
-    def _create_grayscale(data, data_shape):
+    def _create_grayscale_for_4bits_image(data, data_shape):
+        """Normaliz 16 to 255"""
         # Normalize data from 0 to 1
         normalized = np.array(data, np.float64) / 0xF
         # fold data to image shape
