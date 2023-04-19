@@ -39,7 +39,7 @@ Any contribution is appreciated! You might want to:
 
 ## Guidelines for posting comments
 
-* [Be cordial and positive](https://www.kennethreitz.org/essays/be-cordial-or-be-on-your-way)
+* [Be cordial and positive](https://kennethreitz.org/essays/2013/01/27/be-cordial-or-be-on-your-way)
 
 ## Guidelines for publishing
 
