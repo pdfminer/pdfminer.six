@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Color "convenience operators" now (per spec) also set color space ([#794](https://github.com/pdfminer/pdfminer.six/pull/794))
 - `ValueError` when extracting images, due to breaking changes in Pillow ([#827](https://github.com/pdfminer/pdfminer.six/pull/827))
 - Small typo's and issues in the documentation ([#828](https://github.com/pdfminer/pdfminer.six/pull/828))
+- Broken hyperlink to Kenneth Reitz's "Be Cordial or Be on Your Way" blog post ([#877](https://github.com/pdfminer/pdfminer.six/pull/877))
 
 ### Deprecated
 
