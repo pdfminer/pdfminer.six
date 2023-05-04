@@ -1,4 +1,5 @@
 import logging
+from unittest.mock import patch
 
 from pdfminer.psparser import KWD, LIT, PSBaseParser, PSStackParser, PSEOF
 
@@ -148,3 +149,12 @@ func/a/b{(c)do*}def
         logger.info(objs)
         assert objs == self.OBJS
         return
+
+    def test_3(self):
+        with patch("pdfminer.psparser.PSBaseParser._add_token"), patch(
+            "pdfminer.psparser.PSBaseParser.__init__", lambda self: None
+        ):
+            parser = PSBaseParser()
+            parser._curtoken = b""
+            parser._parse_keyword(b"Do", 0)
+            parser._add_token.assert_called_once_with(KWD(b"Do"))
