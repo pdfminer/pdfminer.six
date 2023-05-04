@@ -422,10 +422,11 @@ class PSBaseParser:
     def _parse_keyword(self, s: bytes, i: int) -> int:
         m = END_KEYWORD.search(s, i)
         if not m:
+            j = len(s)
             self._curtoken += s[i:]
-            return len(s)
-        j = m.start(0)
-        self._curtoken += s[i:j]
+        else:
+            j = m.start(0)
+            self._curtoken += s[i:j]
         if self._curtoken == b"true":
             token: Union[bool, PSKeyword] = True
         elif self._curtoken == b"false":
