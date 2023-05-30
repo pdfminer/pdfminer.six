@@ -422,10 +422,6 @@ class LTChar(LTComponent, LTText):
     def get_text(self) -> str:
         return self._text
 
-    def is_compatible(self, obj: object) -> bool:
-        """Returns True if two characters can coexist in the same line."""
-        return True
-
 
 LTItemT = TypeVar("LTItemT", bound=LTItem)
 
@@ -770,8 +766,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 #          |<--->|
                 #        (char_margin)
                 halign = (
-                    obj0.is_compatible(obj1)
-                    and obj0.is_voverlap(obj1)
+                    obj0.is_voverlap(obj1)
                     and min(obj0.height, obj1.height) * laparams.line_overlap
                     < obj0.voverlap(obj1)
                     and obj0.hdistance(obj1)
@@ -794,7 +789,6 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 #   (line_overlap)
                 valign = (
                     laparams.detect_vertical
-                    and obj0.is_compatible(obj1)
                     and obj0.is_hoverlap(obj1)
                     and min(obj0.width, obj1.width) * laparams.line_overlap
                     < obj0.hoverlap(obj1)
