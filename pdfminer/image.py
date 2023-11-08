@@ -110,6 +110,9 @@ class ImageWriter:
         elif len(filters) == 1 and filters[0][0] in LITERALS_JPX_DECODE:
             name = self._save_jpeg2000(image)
 
+        elif len(filters) == 1 and filters[0][0] in LITERALS_FLATE_DECODE:
+            name = self._save_bytes(image)
+
         elif self._is_jbig2_iamge(image):
             name = self._save_jbig2(image)
 
@@ -121,9 +124,6 @@ class ImageWriter:
 
         elif image.bits == 8 and LITERAL_DEVICE_GRAY in image.colorspace:
             name = self._save_bmp(image, width, height, width, image.bits)
-
-        elif len(filters) == 1 and filters[0][0] in LITERALS_FLATE_DECODE:
-            name = self._save_bytes(image)
 
         else:
             name = self._save_raw(image)
