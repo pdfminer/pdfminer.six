@@ -3,7 +3,7 @@ import os
 import nox
 
 
-PYTHON_ALL_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+PYTHON_ALL_VERSIONS = ["3.8", "3.9", "3.10", "3.11"]  # should have 3.12
 PYTHON_MODULES = ["pdfminer", "tools", "tests", "noxfile.py", "setup.py"]
 
 
@@ -45,6 +45,8 @@ def tests(session):
 
 @nox.session
 def docs(session):
+    session.install("pip<23")
+    session.install("setuptools<58")
     session.install("-e", ".[docs]")
     session.run(
         "python", "-m", "sphinx", "-b", "html", "docs/source", "docs/build/html"

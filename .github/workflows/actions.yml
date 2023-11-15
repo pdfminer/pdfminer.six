@@ -75,7 +75,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11" ] # should have 3.12 too!
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
