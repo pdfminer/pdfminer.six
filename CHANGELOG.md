@@ -33,7 +33,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - Update list of Python versions for CI
-- Version dependency on `black` to avoid CI failures
+- Version dependency on `black` to avoid CI failures (for now, should reformat)
+- Fix a `flake8` error in `tests/test_converter.py`
+- Version dependency on `mypy` to avoid CI failures (for now, should fix)
+- Correct `type: ignore` comment in `pdfplumber/image.py`
 
 ## [20220524]
 
