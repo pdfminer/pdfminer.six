@@ -14,6 +14,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Update list of Python versions for CI
+- Version dependency on `black` to avoid CI failures (for now, should reformat)
+- Fix a `flake8` error in `tests/test_converter.py`
+- Version dependency on `mypy` to avoid CI failures (for now, should fix)
+- Correct `type: ignore` comment in `pdfplumber/image.py`
 - `ValueError` when bmp images with 1 bit channel are decoded ([#773](https://github.com/pdfminer/pdfminer.six/issues/773))
 - `ValueError` when trying to decrypt empty metadata values ([#766](https://github.com/pdfminer/pdfminer.six/issues/766))
 - Sphinx errors during building of documentation ([#760](https://github.com/pdfminer/pdfminer.six/pull/760))
@@ -27,16 +32,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Deprecated
 
 - Usage of `if __name__ == "__main__"` where it was only intended for testing purposes ([#756](https://github.com/pdfminer/pdfminer.six/pull/756))
-
-## [20231115]
-
-### Fixed
-
-- Update list of Python versions for CI
-- Version dependency on `black` to avoid CI failures (for now, should reformat)
-- Fix a `flake8` error in `tests/test_converter.py`
-- Version dependency on `mypy` to avoid CI failures (for now, should fix)
-- Correct `type: ignore` comment in `pdfplumber/image.py`
 
 ## [20220524]
 
