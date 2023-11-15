@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - Update list of Python versions for CI
+- Version dependency on `black` to avoid CI failures
 
 ## [20220524]
 
