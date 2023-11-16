@@ -56,9 +56,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up Python ${{ env.default-python }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.default-python }}
       - name: Upgrade pip, Install nox
@@ -132,16 +132,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: python -m pip install wheel
-      - name: Set version
-        run: |
-          if [[ "${{ github.ref }}" == "refs/tags/"* ]]
-          then
-            VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
-          else
-            VERSION=$(date +%Y%m%d).$(date +%H%M%S)
-          fi
-          echo ${VERSION}
-          sed -i "s/__VERSION__/${VERSION}/g" pdfminer/__init__.py
       - name: Build package
         run: python setup.py sdist bdist_wheel
       - name: Generate changelog
