@@ -1,12 +1,8 @@
-import sys
 from pathlib import Path
-
 from setuptools import setup
-from os import path
 
-sys.path.append(str(Path(__file__).parent))
-
-with open(path.join(path.abspath(path.dirname(__file__)), "README.md")) as f:
+root_dir = Path(__file__).parent
+with open(root_dir / "README.md", "rt") as f:
     readme = f.read()
 
 setup(

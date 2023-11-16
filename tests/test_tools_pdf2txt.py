@@ -1,11 +1,16 @@
+import filecmp
 import os
+import sys
+from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
-import filecmp
 
-import tools.pdf2txt as pdf2txt
 from helpers import absolute_sample_path
 from tempfilepath import TemporaryFilePath
+
+root_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(root_dir))
+import tools.pdf2txt as pdf2txt  # noqa: E402
 
 
 def run(sample_path, options=None):
