@@ -26,3 +26,4 @@ Pipfile.lock
 .vscode/
 pyproject.toml
 poetry.lock
+.eggs
