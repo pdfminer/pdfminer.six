@@ -14,12 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Update list of Python versions for CI
-- Version dependency on `black` in tests to avoid CI failures (for now, should reformat)
-- Fix a `flake8` error in `tests/test_converter.py`
-- Version dependency on `mypy` in tests to avoid CI failures (for now, should fix)
-- Correct `type: ignore` comment in `pdfplumber/image.py`
-- Version dependency on `pip` and `setuptools` in tests to avoid CI failures (for now, should *really* fix that bogus version string!)
+- Switch to non-hardcoded version string and setuptools-git-versioning to enable installation from source and building on Python 3.12 ([#922](https://github.com/pdfminer/pdfminer.six/issues/922))
+- Minimally fix CI by freezing tool versions ([#921](https://github.com/pdfminer/pdfminer.six/pull/921))
 - `ValueError` when bmp images with 1 bit channel are decoded ([#773](https://github.com/pdfminer/pdfminer.six/issues/773))
 - `ValueError` when trying to decrypt empty metadata values ([#766](https://github.com/pdfminer/pdfminer.six/issues/766))
 - Sphinx errors during building of documentation ([#760](https://github.com/pdfminer/pdfminer.six/pull/760))
