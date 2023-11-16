@@ -5,20 +5,23 @@ from setuptools import setup
 from os import path
 
 sys.path.append(str(Path(__file__).parent))
-import pdfminer as package  # noqa: E402
 
 with open(path.join(path.abspath(path.dirname(__file__)), "README.md")) as f:
     readme = f.read()
 
 setup(
     name="pdfminer.six",
-    version=package.__version__,
+    setuptools_git_versioning={
+        "enabled": True,
+    },
+    setup_requires=["setuptools-git-versioning<2"],
     packages=["pdfminer"],
     package_data={"pdfminer": ["cmap/*.pickle.gz", "py.typed"]},
     install_requires=[
         "charset-normalizer >= 2.0.0",
         "cryptography >= 36.0.0",
         'typing_extensions; python_version < "3.8"',
+        'importlib_metadata; python_version < "3.8"',
     ],
     extras_require={
         "dev": ["pytest", "nox", "black", "mypy == 0.931"],
