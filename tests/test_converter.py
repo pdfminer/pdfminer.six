@@ -173,7 +173,7 @@ class TestPaintPath:
         # they all have shape 'ml' not 'mlh'
         ml_pdf = extract_pages("samples/contrib/pr-00530-ml-lines.pdf")
         ml_pdf_page = list(ml_pdf)[0]
-        assert sum(type(item) == LTLine for item in ml_pdf_page) == 6
+        assert sum(type(item) is LTLine for item in ml_pdf_page) == 6
 
     def _get_analyzer(self):
         analyzer = PDFLayoutAnalyzer(None)

@@ -3,13 +3,13 @@ import os
 import nox
 
 
-PYTHON_ALL_VERSIONS = ["3.6", "3.7", "3.8", "3.9", "3.10"]
+PYTHON_ALL_VERSIONS = ["3.8", "3.9", "3.10", "3.11"]  # should have 3.12
 PYTHON_MODULES = ["pdfminer", "tools", "tests", "noxfile.py", "setup.py"]
 
 
 @nox.session
 def format(session):
-    session.install("black")
+    session.install("black<23")
     # Format files locally with black, but only check in cicd
     if "CI" in os.environ:
         session.run("black", "--check", *PYTHON_MODULES)
@@ -25,7 +25,7 @@ def lint(session):
 
 @nox.session
 def types(session):
-    session.install("mypy")
+    session.install("mypy<1")
     session.run(
         "mypy",
         "--install-types",
@@ -37,12 +37,16 @@ def types(session):
 
 @nox.session(python=PYTHON_ALL_VERSIONS)
 def tests(session):
+    session.install("pip<23")
+    session.install("setuptools<58")
     session.install("-e", ".[dev]")
     session.run("pytest")
 
 
 @nox.session
 def docs(session):
+    session.install("pip<23")
+    session.install("setuptools<58")
     session.install("-e", ".[docs]")
     session.run(
         "python", "-m", "sphinx", "-b", "html", "docs/source", "docs/build/html"
