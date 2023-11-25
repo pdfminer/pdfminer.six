@@ -758,7 +758,7 @@ class TrueTypeFont:
         for (platform_id, encoding_id, st_offset) in subtables:
             # Skip non-Unicode cmaps.
             # https://docs.microsoft.com/en-us/typography/opentype/spec/cmap
-            if not (platform_id == 0 or platform_id == 3 and encoding_id in [1, 10]):
+            if not (platform_id == 0 or (platform_id == 3 and encoding_id in [1, 10])):
                 continue
             fp.seek(base_offset + st_offset)
             (fmttype, fmtlen, fmtlang) = cast(
