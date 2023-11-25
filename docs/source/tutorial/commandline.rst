@@ -18,7 +18,7 @@ pdf2txt.py
 
 ::
 
-    $ python tools/pdf2txt.py example.pdf
+    $ pdf2txt.py example.pdf
     all the text from the pdf appears on the command line
 
 The :ref:`api_pdf2txt` tool extracts all the text from a PDF. It uses layout
@@ -29,7 +29,7 @@ dumppdf.py
 
 ::
 
-    $ python tools/dumppdf.py -a example.pdf
+    $ dumppdf.py -a example.pdf
     <pdf><object id="1">
     ...
     </object>
