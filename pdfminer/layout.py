@@ -217,6 +217,7 @@ class LTCurve(LTComponent):
     pathing information from the pdf (e.g. for reconstructing Bezier Curves).
 
     `dashing_style` contains the Dashing information if any.
+    `ocg` contains the layer (Optional Content Group) information if any.
     """
 
     def __init__(
@@ -230,6 +231,7 @@ class LTCurve(LTComponent):
         non_stroking_color: Optional[Color] = None,
         original_path: Optional[List[PathSegment]] = None,
         dashing_style: Optional[Tuple[object, object]] = None,
+        ocg: str = None
     ) -> None:
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
@@ -241,6 +243,7 @@ class LTCurve(LTComponent):
         self.non_stroking_color = non_stroking_color
         self.original_path = original_path
         self.dashing_style = dashing_style
+        self.ocg = ocg
 
     def get_pts(self) -> str:
         return ",".join("%.3f,%.3f" % p for p in self.pts)
@@ -264,6 +267,7 @@ class LTLine(LTCurve):
         non_stroking_color: Optional[Color] = None,
         original_path: Optional[List[PathSegment]] = None,
         dashing_style: Optional[Tuple[object, object]] = None,
+        ocg: str = None,
     ) -> None:
         LTCurve.__init__(
             self,
@@ -276,6 +280,7 @@ class LTLine(LTCurve):
             non_stroking_color,
             original_path,
             dashing_style,
+            ocg,
         )
 
 
@@ -296,6 +301,7 @@ class LTRect(LTCurve):
         non_stroking_color: Optional[Color] = None,
         original_path: Optional[List[PathSegment]] = None,
         dashing_style: Optional[Tuple[object, object]] = None,
+        ocg: str = None,
     ) -> None:
         (x0, y0, x1, y1) = bbox
         LTCurve.__init__(
@@ -309,6 +315,7 @@ class LTRect(LTCurve):
             non_stroking_color,
             original_path,
             dashing_style,
+            ocg,
         )
 
 

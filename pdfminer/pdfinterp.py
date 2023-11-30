@@ -135,7 +135,8 @@ class PDFGraphicState:
         # non stroking color
         self.ncolor: Optional[Color] = None
 
-        self.ocg: str = None # optional content group name
+        # OCG (Optional Content Group)
+        self.ocg: str = None
 
     def copy(self) -> "PDFGraphicState":
         obj = PDFGraphicState()
