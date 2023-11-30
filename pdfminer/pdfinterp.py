@@ -775,14 +775,13 @@ class PDFPageInterpreter:
     def do_BMC(self, tag: PDFStackT) -> None:
         """Begin marked-content sequence"""
         self.device.begin_tag(cast(PSLiteral, tag))
-        self.ocg = tag # set ocg property
-        # TODO: there was somethig else we have to change.. the graphic state gets reset after some command. 
         return
 
     def do_BDC(self, tag: PDFStackT, props: PDFStackT) -> None:
         """Begin marked-content sequence with property list"""
         self.device.begin_tag(cast(PSLiteral, tag), props)
-        self.ocg = tag # set ocg property
+        # Set graphic state OCG attribute 
+        self.graphicstate.ocg = str(props).strip('/')
         return
 
     def do_EMC(self) -> None:
