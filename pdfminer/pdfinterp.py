@@ -443,9 +443,14 @@ class PDFPageInterpreter:
         return
 
     def do_Q(self) -> None:
-        """Restore graphics state"""
+        """
+        Restore graphics state
+        But maintain the freshly declared OCG (layer group)
+        """
+        curr_ocg = self.graphicstate.ocg
         if self.gstack:
             self.set_current_state(self.gstack.pop())
+        self.graphicstate.ocg = curr_ocg
         return
 
     def do_cm(
