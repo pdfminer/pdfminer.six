@@ -135,6 +135,8 @@ class PDFGraphicState:
         # non stroking color
         self.ncolor: Optional[Color] = None
 
+        self.ocg: str = None # optional content group name
+
     def copy(self) -> "PDFGraphicState":
         obj = PDFGraphicState()
         obj.linewidth = self.linewidth
@@ -146,13 +148,14 @@ class PDFGraphicState:
         obj.flatness = self.flatness
         obj.scolor = self.scolor
         obj.ncolor = self.ncolor
+        obj.ocg = self.ocg
         return obj
 
     def __repr__(self) -> str:
         return (
             "<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, "
             " miterlimit=%r, dash=%r, intent=%r, flatness=%r, "
-            " stroking color=%r, non stroking color=%r>"
+            " stroking color=%r, non stroking color=%r, ocg=%r>"
             % (
                 self.linewidth,
                 self.linecap,
@@ -163,6 +166,7 @@ class PDFGraphicState:
                 self.flatness,
                 self.scolor,
                 self.ncolor,
+                self.ocg
             )
         )
 
@@ -766,11 +770,14 @@ class PDFPageInterpreter:
     def do_BMC(self, tag: PDFStackT) -> None:
         """Begin marked-content sequence"""
         self.device.begin_tag(cast(PSLiteral, tag))
+        self.ocg = tag # set ocg property
+        # TODO: there was somethig else we have to change.. the graphic state gets reset after some command. 
         return
 
     def do_BDC(self, tag: PDFStackT, props: PDFStackT) -> None:
         """Begin marked-content sequence with property list"""
         self.device.begin_tag(cast(PSLiteral, tag), props)
+        self.ocg = tag # set ocg property
         return
 
     def do_EMC(self) -> None:
