@@ -14,7 +14,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Switch to non-hardcoded version string and setuptools-git-versioning to enable installation from source and building on Python 3.12 ([#922](https://github.com/pdfminer/pdfminer.six/issues/922))
 - Minimally fix CI by freezing tool versions ([#921](https://github.com/pdfminer/pdfminer.six/pull/921))
 - `ValueError` when bmp images with 1 bit channel are decoded ([#773](https://github.com/pdfminer/pdfminer.six/issues/773))
 - `ValueError` when trying to decrypt empty metadata values ([#766](https://github.com/pdfminer/pdfminer.six/issues/766))
@@ -25,6 +24,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Color "convenience operators" now (per spec) also set color space ([#794](https://github.com/pdfminer/pdfminer.six/pull/794))
 - `ValueError` when extracting images, due to breaking changes in Pillow ([#827](https://github.com/pdfminer/pdfminer.six/pull/827))
 - Small typo's and issues in the documentation ([#828](https://github.com/pdfminer/pdfminer.six/pull/828))
+
+### Changed
+
+- Using non-hardcoded version string and setuptools-git-versioning to enable installation from source and building on Python 3.12 ([#922](https://github.com/pdfminer/pdfminer.six/issues/922))
+
 
 ### Deprecated
 
