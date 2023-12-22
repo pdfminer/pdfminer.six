@@ -30,6 +30,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Usage of `if __name__ == "__main__"` where it was only intended for testing purposes ([#756](https://github.com/pdfminer/pdfminer.six/pull/756))
 
+### Removed
+
+- Support for Python 3.6 and 3.7 because they are end-of-life ([#923](https://github.com/pdfminer/pdfminer.six/pull/923))
+
 ## [20220524]
 
 ### Fixed
