@@ -37,12 +37,16 @@ def types(session):
 
 @nox.session(python=PYTHON_ALL_VERSIONS)
 def tests(session):
+    session.install("pip<23")
+    session.install("setuptools<58")
     session.install("-e", ".[dev]")
     session.run("pytest")
 
 
 @nox.session
 def docs(session):
+    session.install("pip<23")
+    session.install("setuptools<58")
     session.install("-e", ".[docs]")
     session.run(
         "python", "-m", "sphinx", "-b", "html", "docs/source", "docs/build/html"
