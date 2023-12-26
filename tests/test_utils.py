@@ -3,8 +3,13 @@ import pathlib
 import pytest
 
 from pdfminer.layout import LTComponent
-from pdfminer.utils import (Plane, format_int_alpha, format_int_roman,
-                            open_filename, shorten_str)
+from pdfminer.utils import (
+    Plane,
+    format_int_alpha,
+    format_int_roman,
+    open_filename,
+    shorten_str,
+)
 from tests.helpers import absolute_sample_path
 
 
