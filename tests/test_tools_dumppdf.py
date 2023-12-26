@@ -1,15 +1,10 @@
-import sys
 import unittest
-from pathlib import Path
 
 import pytest
 
-from helpers import absolute_sample_path
-from tempfilepath import TemporaryFilePath
-
-root_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(root_dir))
-from tools import dumppdf  # noqa: E402
+from tests.helpers import absolute_sample_path
+from tests.tempfilepath import TemporaryFilePath
+from tools import dumppdf
 
 
 def run(filename, options=None):

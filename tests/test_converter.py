@@ -6,6 +6,7 @@ from pdfminer.converter import PDFLayoutAnalyzer, PDFConverter
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTChar, LTContainer, LTRect, LTLine, LTCurve
 from pdfminer.pdfinterp import PDFGraphicState
+from tests.helpers import absolute_sample_path
 
 
 class TestPaintPath:
