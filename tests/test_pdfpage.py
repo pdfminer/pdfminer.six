@@ -1,7 +1,7 @@
-from helpers import absolute_sample_path
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
+from tests.helpers import absolute_sample_path
 
 
 class TestPdfPage(object):
