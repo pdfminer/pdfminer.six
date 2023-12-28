@@ -1,8 +1,8 @@
 import unittest
 
-from helpers import absolute_sample_path
-from pdfminer.high_level import extract_text, extract_pages
+from pdfminer.high_level import extract_pages, extract_text
 from pdfminer.layout import LAParams, LTTextContainer
+from tests.helpers import absolute_sample_path
 
 
 def run_with_string(sample_path, laparams=None):
@@ -39,6 +39,7 @@ test_strings = {
     "contrib/issue_566_test_1.pdf": "ISSUE Date：2019-4-25 Buyer：黎荣",
     "contrib/issue_566_test_2.pdf": "甲方：中国饮料有限公司（盖章）",
     "contrib/issue-625-identity-cmap.pdf": "Termin płatności: 2021-05-03",
+    "contrib/issue-791-non-unicode-cmap.pdf": "Peněžní prostředky na účtech",
 }
 
 
@@ -119,6 +120,11 @@ class TestExtractText(unittest.TestCase):
         lines = run_with_file(test_file).splitlines()
 
         self.assertEqual(lines[6], test_strings[test_file])
+
+    def test_issue_791_non_unicode_cmap(self):
+        test_file = "contrib/issue-791-non-unicode-cmap.pdf"
+        s = run_with_file(test_file)
+        self.assertEqual(s.strip(), test_strings[test_file])
 
 
 class TestExtractPages(unittest.TestCase):

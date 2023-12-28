@@ -2,8 +2,8 @@ import unittest
 
 import pytest
 
-from helpers import absolute_sample_path
-from tempfilepath import TemporaryFilePath
+from tests.helpers import absolute_sample_path
+from tests.tempfilepath import TemporaryFilePath
 from tools import dumppdf
 
 
