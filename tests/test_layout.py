@@ -10,7 +10,7 @@ from pdfminer.layout import (
     LTTextBoxVertical,
 )
 from pdfminer.utils import Plane
-from helpers import absolute_sample_path
+from tests.helpers import absolute_sample_path
 
 
 class TestGroupTextLines(unittest.TestCase):
