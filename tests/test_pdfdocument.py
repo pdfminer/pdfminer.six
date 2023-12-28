@@ -2,10 +2,10 @@ import itertools
 
 import pytest
 
-from helpers import absolute_sample_path
 from pdfminer.pdfdocument import PDFDocument, PDFNoPageLabels
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import PDFObjectNotFound, dict_value, int_value
+from tests.helpers import absolute_sample_path
 
 
 class TestPdfDocument(object):
