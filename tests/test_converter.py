@@ -1,11 +1,11 @@
 import io
 from tempfile import TemporaryFile
 
-from helpers import absolute_sample_path
 from pdfminer.converter import PDFLayoutAnalyzer, PDFConverter
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTChar, LTContainer, LTRect, LTLine, LTCurve
 from pdfminer.pdfinterp import PDFGraphicState
+from tests.helpers import absolute_sample_path
 
 
 class TestPaintPath:
@@ -173,7 +173,7 @@ class TestPaintPath:
         # they all have shape 'ml' not 'mlh'
         ml_pdf = extract_pages("samples/contrib/pr-00530-ml-lines.pdf")
         ml_pdf_page = list(ml_pdf)[0]
-        assert sum(type(item) == LTLine for item in ml_pdf_page) == 6
+        assert sum(type(item) is LTLine for item in ml_pdf_page) == 6
 
     def _get_analyzer(self):
         analyzer = PDFLayoutAnalyzer(None)
@@ -215,6 +215,45 @@ class TestPaintPath:
             (72.41, 433.89),
             (71.41, 434.89),
         ]
+
+    def test_paint_path_beziers_check_raw(self):
+        """See section 4.4, table 4.9 of the PDF reference manual"""
+
+        def parse(path):
+            analyzer = self._get_analyzer()
+            analyzer.cur_item = LTContainer([0, 1000, 0, 1000])
+            analyzer.paint_path(PDFGraphicState(), False, False, False, path)
+            return analyzer.cur_item._objs
+
+        # "c" operator
+        assert parse(
+            [
+                ("m", 72.41, 433.89),
+                ("c", 72.41, 434.45, 71.96, 434.89, 71.41, 434.89),
+            ]
+        )[0].original_path == [
+            ("m", (72.41, 433.89)),
+            ("c", (72.41, 434.45), (71.96, 434.89), (71.41, 434.89)),
+        ]
+
+    def test_paint_path_dashed(self):
+        """See section 4.4, table 4.9 of the PDF reference manual"""
+
+        def parse(path):
+            analyzer = self._get_analyzer()
+            analyzer.cur_item = LTContainer([0, 1000, 0, 1000])
+            graphicstate = PDFGraphicState()
+            graphicstate.dash = ([1, 1], 0)
+            analyzer.paint_path(graphicstate, False, False, False, path)
+            return analyzer.cur_item._objs
+
+        # "c" operator
+        assert parse(
+            [
+                ("m", 72.41, 433.89),
+                ("c", 72.41, 434.45, 71.96, 434.89, 71.41, 434.89),
+            ]
+        )[0].dashing_style == ([1, 1], 0)
 
     def test_paint_path_without_starting_m(self):
         gs = PDFGraphicState()

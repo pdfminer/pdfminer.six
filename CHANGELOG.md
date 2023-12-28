@@ -5,24 +5,47 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+Nothing yet. 
+
+## [20231228]
+
+### Removed
+- Support for Python 3.6 and 3.7 ([#921](https://github.com/pdfminer/pdfminer.six/pull/921))
+
 ### Added
 
 - Output converter for the hOCR format ([#651](https://github.com/pdfminer/pdfminer.six/pull/651))
 - Font name aliases for Arial, Courier New and Times New Roman ([#790](https://github.com/pdfminer/pdfminer.six/pull/790))
+- Documentation on why special characters can sometimes not be extracted ([#829](https://github.com/pdfminer/pdfminer.six/pull/829))
+- Storing Bezier path and dashing style of line in LTCurve ([#801](https://github.com/pdfminer/pdfminer.six/pull/801))
 
 ### Fixed
 
+- Broken CI/CD pipeline by setting upper version limit for black, mypy, pip and setuptools ([#921](https://github.com/pdfminer/pdfminer.six/pull/921))
+- `flake8` failures ([#921](https://github.com/pdfminer/pdfminer.six/pull/921))
 - `ValueError` when bmp images with 1 bit channel are decoded ([#773](https://github.com/pdfminer/pdfminer.six/issues/773))
 - `ValueError` when trying to decrypt empty metadata values ([#766](https://github.com/pdfminer/pdfminer.six/issues/766))
 - Sphinx errors during building of documentation ([#760](https://github.com/pdfminer/pdfminer.six/pull/760))
 - `TypeError` when getting default width of font ([#720](https://github.com/pdfminer/pdfminer.six/issues/720))
 - Installing typing-extensions on Python 3.6 and 3.7 ([#775](https://github.com/pdfminer/pdfminer.six/pull/775))
 - `TypeError` in cmapdb.py when parsing null characters ([#768](https://github.com/pdfminer/pdfminer.six/pull/768))
-- Color "convenience operators" now (per spec) also set color space ([#779](https://github.com/pdfminer/pdfminer.six/issues/779))
+- Color "convenience operators" now (per spec) also set color space ([#794](https://github.com/pdfminer/pdfminer.six/pull/794))
+- `ValueError` when extracting images, due to breaking changes in Pillow ([#827](https://github.com/pdfminer/pdfminer.six/pull/827))
+- Small typo's and issues in the documentation ([#828](https://github.com/pdfminer/pdfminer.six/pull/828))
+- Ignore non-Unicode cmaps in TrueType fonts ([#806](https://github.com/pdfminer/pdfminer.six/pull/806))
+
+### Changed
+
+- Using non-hardcoded version string and setuptools-git-versioning to enable installation from source and building on Python 3.12 ([#922](https://github.com/pdfminer/pdfminer.six/issues/922))
+
 
 ### Deprecated
 
 - Usage of `if __name__ == "__main__"` where it was only intended for testing purposes ([#756](https://github.com/pdfminer/pdfminer.six/pull/756))
+
+### Removed
+
+- Support for Python 3.6 and 3.7 because they are end-of-life ([#923](https://github.com/pdfminer/pdfminer.six/pull/923))
 
 ## [20220524]
 
