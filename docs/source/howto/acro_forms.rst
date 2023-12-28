@@ -65,7 +65,7 @@ Only AcroForm interactive forms are supported, XFA forms are not supported.
               
             print(name, values)
 
-This code snippet will print all the fields name and value and save them in the "data" dictionary.
+This code snippet will print all the fields' names and values and save them in the "data" dictionary.
 
 
 How it works:
@@ -77,9 +77,9 @@ How it works:
     parser = PDFParser(fp)
     doc = PDFDocument(parser)
 
-- Get the catalog
+- Get the Catalog
 
-  (the catalog contains references to other objects defining the document structure, see section 7.7.2 of PDF 32000-1:2008 specs: https://www.adobe.com/devnet/pdf/pdf_reference.html)
+  (the catalog contains references to other objects defining the document structure, see section 7.7.2 of PDF 32000-1:2008 specs: https://opensource.adobe.com/dc-acrobat-sdk-docs/pdflsdk/index.html#pdf-reference)
 
 .. code-block:: python
 
@@ -122,7 +122,7 @@ How it works:
 
 - Call the value(s) decoding method as needed
 
-  (a single field can hold multiple values, for example a combo box can hold more than one value at time)
+  (a single field can hold multiple values, for example, a combo box can hold more than one value at a time)
 
 .. code-block:: python
 
@@ -131,7 +131,7 @@ How it works:
     else:
         values = decode_value(values)
         
-(the decode_value method takes care of decoding the fields value returning a string)
+(the decode_value method takes care of decoding the field's value, returning a string)
 
 - Decode PSLiteral and PSKeyword field values
 

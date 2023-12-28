@@ -3,7 +3,7 @@
 Converting a PDF file to text
 *****************************
 
-Most PDF files look like they contain well structured text. But the reality  is
+Most PDF files look like they contain well-structured text. But the reality is
 that a PDF file does not contain anything that resembles paragraphs,
 sentences or even words. When it comes to text, a PDF file is only aware of
 the characters and their placement.
@@ -14,7 +14,7 @@ compose the table, the page footer or the description of a figure. Unlike
 other document formats, like a `.txt` file or a word document, the PDF format
 does not contain a stream of text.
 
-A PDF document does consists of a collection of objects that together describe
+A PDF document consists of a collection of objects that together describe
 the appearance of one or more pages, possibly accompanied by additional
 interactive elements and higher-level application data. A PDF file contains
 the objects making up a PDF document along with associated structural
@@ -53,7 +53,7 @@ uses these bounding boxes to decide which characters belong together.
 
 Characters that are both horizontally and vertically close are grouped onto
 one line. How close they should be is determined by the `char_margin`
-(M in figure) and the `line_overlap` (not in figure) parameter. The horizontal
+(M in the figure) and the `line_overlap` (not in figure) parameter. The horizontal
 *distance* between the bounding boxes of two characters should be smaller than
 the `char_margin` and the vertical *overlap* between the bounding boxes should
 be smaller than the `line_overlap`.
@@ -76,7 +76,7 @@ be separated by a space.
 
 The result of this stage is a list of lines. Each line consists of a list of
 characters. These characters are either original `LTChar` characters that
-originate from the PDF file, or inserted `LTAnno` characters that
+originate from the PDF file or inserted `LTAnno` characters that
 represent spaces between words or newlines at the end of each line.
 
 Grouping lines into boxes
@@ -91,7 +91,7 @@ Lines that are both horizontally overlapping and vertically close are grouped.
 How vertically close the lines should be is determined by the `line_margin`.
 This margin is specified relative to the height of the bounding box. Lines
 are close if the gap between the tops (see L :sub:`1` in the figure) and bottoms
-(see L :sub:`2`) in the figure) of the bounding boxes is closer together
+(see L :sub:`2`) in the figure) of the bounding boxes are closer together
 than the absolute line margin, i.e. the `line_margin` multiplied by the
 height of the bounding box.
 
@@ -120,7 +120,7 @@ Working with rotated characters
 
 The algorithm described above assumes that all characters have the same
 orientation. However, any writing direction is possible in a PDF. To
-accommodate for this, pdfminer.six allows to detect vertical writing with the
+accommodate for this, pdfminer.six allows detecting vertical writing with the
 `detect_vertical` parameter. This will apply all the grouping steps as if the
 pdf was rotated 90 (or 270) degrees
 
