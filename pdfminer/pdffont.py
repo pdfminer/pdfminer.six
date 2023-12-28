@@ -755,7 +755,11 @@ class TrueTypeFont:
             )
         char2gid: Dict[int, int] = {}
         # Only supports subtable type 0, 2 and 4.
-        for (_1, _2, st_offset) in subtables:
+        for (platform_id, encoding_id, st_offset) in subtables:
+            # Skip non-Unicode cmaps.
+            # https://docs.microsoft.com/en-us/typography/opentype/spec/cmap
+            if not (platform_id == 0 or (platform_id == 3 and encoding_id in [1, 10])):
+                continue
             fp.seek(base_offset + st_offset)
             (fmttype, fmtlen, fmtlang) = cast(
                 Tuple[int, int, int], struct.unpack(">HHH", fp.read(6))
@@ -824,6 +828,8 @@ class TrueTypeFont:
                             char2gid[c] = (c + idd) & 0xFFFF
             else:
                 assert False, str(("Unhandled", fmttype))
+        if not char2gid:
+            raise TrueTypeFont.CMapNotFound
         # create unicode map
         unicode_map = FileUnicodeMap()
         for (char, gid) in char2gid.items():
