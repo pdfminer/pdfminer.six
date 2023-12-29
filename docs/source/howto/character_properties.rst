@@ -63,7 +63,10 @@ pages = extract_pages(path)
 show_ltitem_hierarchy(pages)
 .. note::
 
-The output looks like this.
+The output looks like below. Note that it shows the hierarchical structure of the layout elements. The layout algorithm
+groups characters into lines and lines into boxes. And boxes appear on a page. The pages, boxes and lines do not have
+font information because this can change for each character. The stroking color is always `None` in this example, but
+it will contain the color if the PDF does specify colors.
 
 ```
 element                        font                  stroking color  text
