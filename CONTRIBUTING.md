@@ -17,7 +17,7 @@ Any contribution is appreciated! You might want to:
 * Help others by sharing your thoughs in comments on issues and pull requests.
 * Join the chat on [gitter](https://gitter.im/pdfminer-six/Lobby)
 
-## Guidelines for creating issues
+## Guideline for creating issues
 
 * Search previous issues, as yours might be a duplicate.
 * When creating a new issue for a bug, include a minimal reproducible example.
@@ -37,13 +37,19 @@ Any contribution is appreciated! You might want to:
 * Check spelling and grammar.
 * Don't forget to update the [CHANGELOG.md](CHANGELOG.md#[Unreleased]). 
 
-## Guidelines for posting comments
+## Guideline for posting comments
 
 * [Be cordial and positive](https://www.kennethreitz.org/essays/be-cordial-or-be-on-your-way)
 
 ## Guidelines for publishing
 
 * Publishing is automated. Add a YYYYMMDD version tag and GitHub workflows will do the rest. 
+
+## Guideline for dependencies
+
+* This package is distributed under the [MIT license](LICENSE).
+* All dependencies should be compatible with this license.
+* Use [licensecheck](https://pypi.org/project/licensecheck/) to validate if new packages are compatible.
 
 ## Getting started
 
