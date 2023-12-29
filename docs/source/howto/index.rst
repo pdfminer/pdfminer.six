@@ -10,4 +10,4 @@ How-to guides help you to solve specific problems with pdfminer.six.
 
     images
     acro_forms
-    char_properties
+    character_properties

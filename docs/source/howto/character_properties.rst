@@ -1,4 +1,4 @@
-.. _char_properties:
+.. _character_properties:
 
 How to extract font names and sizes from PDF's
 ******************************************************
