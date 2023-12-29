@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-Nothing yet. 
+### Fixed
+
+- Resolving mediabox and pdffont ([#834](https://github.com/pdfminer/pdfminer.six/pull/834))
 
 ## [20231228]
 
