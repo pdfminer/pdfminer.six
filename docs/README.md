@@ -1,60 +1,34 @@
-# 📝 pdfminer.six documentation
+# Working on documentation
 
-pdfminer.six docs are generated with
-[Sphinx](https://www.sphinx-doc.org/en/master/), using
+The pdfminer.six docs are generated with [Sphinx](https://www.sphinx-doc.org/en/master/), using
 [reStructuredText](https://docutils.sourceforge.io/rst.html).
 
-<br>
-<br>
+The documentation is hosted on https://pdfminersix.readthedocs.io/. 
 
-## How to build the documentation
+## Deploying new documentation
 
-pdfminer.six documentation can be found at
-https://pdfminersix.readthedocs.io/en/latest/. If you want to build the
-documentation locally, you can follow the steps below.
+New documentation is deployed automatically when PR's are merged.
 
-<br>
+## Building documentation locally
 
-### Install the requirements
+You can build the documentation locally on your machine using the following steps. 
 
-Before installing the requirements, you'd probably would want to create and
-activate a Python virtual environment first:
+1. (Recommended) create a and activate a Python virtual environment. 
 
-```console
-python -m venv venv
-source venv/bin/activate
-```
+    ```console
+    python -m venv .venv
+    source .venv/bin/activate
+    ```
+   
+2. With the virtual environment activated, install the dependencies for building the documentation. 
 
-That way, you can easily clean up the installed packages later on by removing
-the `venv` directory.
+    ```console
+    pip install '.[docs]'
+    ```
+   
+3. Build the documentation. 
 
-<br>
+    ```console
+    make clean && make html
+    ```
 
-Once this is done, you can install the requirements:
-
-```console
-pip install -r requirements.txt
-```
-
-<br>
-
-### Building the documentation
-
-To build the documentation, simply run:
-
-```console
-make html
-```
-
-The generated docs will be placed in the `build/` directory. You can easily view
-them on your browser by opening `build/html/index.html`.
-
-<br>
-
-**NOTE**: If you want to modify the documentation and are going to add/remove
-elements from the toc-tree, it is recommended to clean up the `build` directory
-before compiling again. To do this, you can run the following command:
-
-```console
-make clean && make html
-```
