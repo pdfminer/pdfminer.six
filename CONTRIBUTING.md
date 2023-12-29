@@ -45,12 +45,11 @@ Any contribution is appreciated! You might want to:
 
 * Publishing is automated. Add a YYYYMMDD version tag and GitHub workflows will do the rest. 
 
-## Guideline for Packages 
+## Guideline for dependencies
 
-* New "install_requires" packages should preserve the MIT Nature of pdfminer.six
-* Both New and Existing Packages should have their dependencies checked, as well as the dependencies dependencies etc , to insure packages with "copy left" licences are not required.
-* The Following is an example list of copy left licences but is not a complete list : "MPL","EPL","AGPL","MS-RL","GPLv3"
-
+* This package is distributed under the [MIT license](LICENSE).
+* All dependencies should be compatible with this license.
+* Use [licensecheck](https://pypi.org/project/licensecheck/) to validate if new packages are compatible.
 
 ## Getting started
 
