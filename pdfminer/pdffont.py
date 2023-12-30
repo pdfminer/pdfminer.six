@@ -755,7 +755,11 @@ class TrueTypeFont:
             )
         char2gid: Dict[int, int] = {}
         # Only supports subtable type 0, 2 and 4.
-        for (_1, _2, st_offset) in subtables:
+        for (platform_id, encoding_id, st_offset) in subtables:
+            # Skip non-Unicode cmaps.
+            # https://docs.microsoft.com/en-us/typography/opentype/spec/cmap
+            if not (platform_id == 0 or (platform_id == 3 and encoding_id in [1, 10])):
+                continue
             fp.seek(base_offset + st_offset)
             (fmttype, fmtlen, fmtlang) = cast(
                 Tuple[int, int, int], struct.unpack(">HHH", fp.read(6))
@@ -824,6 +828,8 @@ class TrueTypeFont:
                             char2gid[c] = (c + idd) & 0xFFFF
             else:
                 assert False, str(("Unhandled", fmttype))
+        if not char2gid:
+            raise TrueTypeFont.CMapNotFound
         # create unicode map
         unicode_map = FileUnicodeMap()
         for (char, gid) in char2gid.items():
@@ -995,7 +1001,7 @@ class PDFType1Font(PDFSimpleFont):
             firstchar = int_value(spec.get("FirstChar", 0))
             # lastchar = int_value(spec.get('LastChar', 255))
             width_list = list_value(spec.get("Widths", [0] * 256))
-            widths = {i + firstchar: w for (i, w) in enumerate(width_list)}
+            widths = {i + firstchar: resolve1(w) for (i, w) in enumerate(width_list)}
         PDFSimpleFont.__init__(self, descriptor, widths, spec)
         if "Encoding" not in spec and "FontFile" in descriptor:
             # try to recover the missing encoding info from the font file.

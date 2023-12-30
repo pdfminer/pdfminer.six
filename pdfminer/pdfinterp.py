@@ -115,8 +115,8 @@ class PDFTextState:
 Color = Union[
     float,  # Greyscale
     Tuple[float, float, float],  # R, G, B
-    Tuple[float, float, float, float],
-]  # C, M, Y, K
+    Tuple[float, float, float, float],  # C, M, Y, K
+]
 
 
 class PDFGraphicState:
