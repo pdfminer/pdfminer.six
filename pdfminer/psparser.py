@@ -421,12 +421,14 @@ class PSBaseParser:
 
     def _parse_keyword(self, s: bytes, i: int) -> int:
         m = END_KEYWORD.search(s, i)
-        if not m:
-            j = len(s)
-            self._curtoken += s[i:]
-        else:
+        if m:
             j = m.start(0)
             self._curtoken += s[i:j]
+        else:
+            # Use the rest of the stream if no non-keyword character is found. This can happen if the keyword is the
+            # final bytes of the stream (https://github.com/pdfminer/pdfminer.six/issues/884).
+            j = len(s)
+            self._curtoken += s[i:]
         if self._curtoken == b"true":
             token: Union[bool, PSKeyword] = True
         elif self._curtoken == b"false":
