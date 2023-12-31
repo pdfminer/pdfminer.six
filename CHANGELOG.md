@@ -7,7 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Keywords that aren't terminated by the pattern `END_KEYWORD` before end-of-stream are parsed ([#884](https://github.com/pdfminer/pdfminer.six/issues/884))
+- Resolving mediabox and pdffont ([#834](https://github.com/pdfminer/pdfminer.six/pull/834))
+- Keywords that aren't terminated by the pattern `END_KEYWORD` before end-of-stream are parsed ([#885](https://github.com/pdfminer/pdfminer.six/pull/885))
 
 ## [20231228]
 
