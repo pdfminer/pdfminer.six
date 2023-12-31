@@ -1,6 +1,5 @@
 import logging
 from io import BytesIO
-from unittest.mock import patch
 
 from pdfminer.psparser import KWD, LIT, PSBaseParser, PSStackParser, PSEOF
 
@@ -159,4 +158,3 @@ func/a/b{(c)do*}def
         parser = PSBaseParser(BytesIO(b"Do"))
         parser._parse_keyword(b"Do", 0)
         assert parser._tokens == [(0, KWD(b"Do"))]
-
