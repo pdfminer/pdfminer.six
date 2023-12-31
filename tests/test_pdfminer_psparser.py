@@ -1,4 +1,5 @@
 import logging
+from io import BytesIO
 from unittest.mock import patch
 
 from pdfminer.psparser import KWD, LIT, PSBaseParser, PSStackParser, PSEOF
@@ -151,10 +152,11 @@ func/a/b{(c)do*}def
         return
 
     def test_3(self):
-        with patch("pdfminer.psparser.PSBaseParser._add_token"), patch(
-            "pdfminer.psparser.PSBaseParser.__init__", lambda self: None
-        ):
-            parser = PSBaseParser()
-            parser._curtoken = b""
-            parser._parse_keyword(b"Do", 0)
-            parser._add_token.assert_called_once_with(KWD(b"Do"))
+        """Regression test for streams that end with a keyword.
+
+        See: https://github.com/pdfminer/pdfminer.six/issues/884
+        """
+        parser = PSBaseParser(BytesIO(b"Do"))
+        parser._parse_keyword(b"Do", 0)
+        assert parser._tokens == [(0, KWD(b"Do"))]
+
