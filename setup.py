@@ -27,7 +27,7 @@ setup(
     description="PDF parser and analyzer",
     long_description=readme,
     long_description_content_type="text/markdown",
-    license="MIT/X",
+    license="MIT",
     author="Yusuke Shinyama + Philippe Guglielmetti",
     author_email="pdfminer@goulu.net",
     url="https://github.com/pdfminer/pdfminer.six",
