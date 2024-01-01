@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Resolving mediabox and pdffont ([#834](https://github.com/pdfminer/pdfminer.six/pull/834))
+- Keywords that aren't terminated by the pattern `END_KEYWORD` before end-of-stream are parsed ([#885](https://github.com/pdfminer/pdfminer.six/pull/885))
+
+## [20231228]
+
+### Removed
+- Support for Python 3.6 and 3.7 ([#921](https://github.com/pdfminer/pdfminer.six/pull/921))
+
 ### Added
 
 - Output converter for the hOCR format ([#651](https://github.com/pdfminer/pdfminer.six/pull/651))
@@ -14,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Broken CI/CD pipeline by setting upper version limit for black, mypy, pip and setuptools ([#921](https://github.com/pdfminer/pdfminer.six/pull/921))
+- `flake8` failures ([#921](https://github.com/pdfminer/pdfminer.six/pull/921))
 - `ValueError` when bmp images with 1 bit channel are decoded ([#773](https://github.com/pdfminer/pdfminer.six/issues/773))
 - `ValueError` when trying to decrypt empty metadata values ([#766](https://github.com/pdfminer/pdfminer.six/issues/766))
 - Sphinx errors during building of documentation ([#760](https://github.com/pdfminer/pdfminer.six/pull/760))
@@ -23,10 +35,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Color "convenience operators" now (per spec) also set color space ([#794](https://github.com/pdfminer/pdfminer.six/pull/794))
 - `ValueError` when extracting images, due to breaking changes in Pillow ([#827](https://github.com/pdfminer/pdfminer.six/pull/827))
 - Small typo's and issues in the documentation ([#828](https://github.com/pdfminer/pdfminer.six/pull/828))
+- Ignore non-Unicode cmaps in TrueType fonts ([#806](https://github.com/pdfminer/pdfminer.six/pull/806))
+
+### Changed
+
+- Using non-hardcoded version string and setuptools-git-versioning to enable installation from source and building on Python 3.12 ([#922](https://github.com/pdfminer/pdfminer.six/issues/922))
 
 ### Deprecated
 
 - Usage of `if __name__ == "__main__"` where it was only intended for testing purposes ([#756](https://github.com/pdfminer/pdfminer.six/pull/756))
+
+### Removed
+
+- Support for Python 3.6 and 3.7 because they are end-of-life ([#923](https://github.com/pdfminer/pdfminer.six/pull/923))
 
 ## [20220524]
 
