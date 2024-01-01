@@ -412,7 +412,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
         if self.outfp_binary and not self.codec:
             raise ValueError("Codec is required for a binary I/O output")
         if not self.outfp_binary and self.codec:
-            raise ValueError("Codec is not required for a text I/O output")
+            raise ValueError("Codec must not be specified for a text I/O output")
 
         if text_colors is None:
             text_colors = {"char": "black"}
