@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Resolving mediabox and pdffont ([#834](https://github.com/pdfminer/pdfminer.six/pull/834))
 - Keywords that aren't terminated by the pattern `END_KEYWORD` before end-of-stream are parsed ([#885](https://github.com/pdfminer/pdfminer.six/pull/885))
 - `ValueError` wrong error message when specifying codec for text output  ([#902](https://github.com/pdfminer/pdfminer.six/pull/902))
-- Fixed to read cmap data correctly. ([#934](https://github.com/pdfminer/pdfminer.six/issues/934))
+- Reading cmap's with whitespace in the name ([#935](https://github.com/pdfminer/pdfminer.six/pull/935))
 
 ## [20231228]
 
