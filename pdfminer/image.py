@@ -104,10 +104,10 @@ class ImageWriter:
 
         filters = image.stream.get_filters()
 
-        if len(filters) == 1 and filters[0][0] in LITERALS_DCT_DECODE:
+        if filters[-1][0] in LITERALS_DCT_DECODE:
             name = self._save_jpeg(image)
 
-        elif len(filters) == 1 and filters[0][0] in LITERALS_JPX_DECODE:
+        elif filters[-1][0] in LITERALS_JPX_DECODE:
             name = self._save_jpeg2000(image)
 
         elif self._is_jbig2_iamge(image):
@@ -132,8 +132,7 @@ class ImageWriter:
 
     def _save_jpeg(self, image: LTImage) -> str:
         """Save a JPEG encoded image"""
-        raw_data = image.stream.get_rawdata()
-        assert raw_data is not None
+        data = image.stream.get_data()
 
         name, path = self._create_unique_image_name(image, ".jpg")
         with open(path, "wb") as fp:
@@ -143,20 +142,19 @@ class ImageWriter:
                 except ImportError:
                     raise ImportError(PIL_ERROR_MESSAGE)
 
-                ifp = BytesIO(raw_data)
+                ifp = BytesIO(data)
                 i = Image.open(ifp)
                 i = ImageChops.invert(i)
                 i = i.convert("RGB")
                 i.save(fp, "JPEG")
             else:
-                fp.write(raw_data)
+                fp.write(data)
 
         return name
 
     def _save_jpeg2000(self, image: LTImage) -> str:
         """Save a JPEG 2000 encoded image"""
-        raw_data = image.stream.get_rawdata()
-        assert raw_data is not None
+        data = image.stream.get_data()
 
         name, path = self._create_unique_image_name(image, ".jp2")
         with open(path, "wb") as fp:
@@ -169,7 +167,7 @@ class ImageWriter:
             # that I have tried cannot open the file. However,
             # open and saving with PIL produces a file that
             # seems to be easily opened by other programs
-            ifp = BytesIO(raw_data)
+            ifp = BytesIO(data)
             i = Image.open(ifp)
             i.save(fp, "JPEG2000")
         return name
