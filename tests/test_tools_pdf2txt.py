@@ -177,3 +177,9 @@ class TestDumpImages:
     def test_nonfree_cmp_itext_logo(self):
         """Test a pdf with Type3 font"""
         run("nonfree/cmp_itext_logo.pdf")
+
+    def test_contrib_issue_495_pdfobjref(self):
+        """Test for extracting a zipped pdf"""
+        filepath = absolute_sample_path("contrib/issue_495_pdfobjref.pdf")
+        image_files = self.extract_images(filepath)
+        assert image_files[0].endswith("jpg")
