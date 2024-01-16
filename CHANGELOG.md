@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Keywords that aren't terminated by the pattern `END_KEYWORD` before end-of-stream are parsed ([#885](https://github.com/pdfminer/pdfminer.six/pull/885))
 - `ValueError` wrong error message when specifying codec for text output  ([#902](https://github.com/pdfminer/pdfminer.six/pull/902))
 - Resolve stream filter parameters ([#906](https://github.com/pdfminer/pdfminer.six/pull/906))
+- Reading cmap's with whitespace in the name ([#935](https://github.com/pdfminer/pdfminer.six/pull/935))
 
 ## [20231228]
 
