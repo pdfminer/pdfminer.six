@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-
+import argparse
 import codecs
+import gzip
 import pickle as pickle
 import sys
+from pathlib import Path
+from typing import List, Any
 
 
 class CMapConverter:
@@ -149,56 +152,59 @@ class CMapConverter:
         return
 
 
-def main(argv):
-    import getopt
-    import gzip
-    import os.path
+def create_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--encoding-codec",
+        "-c",
+        type=str,
+        action="append",
+        default=[],
+        help="Specify the codec of an encoding. Use `enc=codec` as a value.",
+    )
+    parser.add_argument(
+        "output_dir",
+        type=Path,
+        help="Directory where the compressed cmap's are stored.",
+    )
+    parser.add_argument(
+        "regname",
+        type=str,
+    )
+    parser.add_argument("cid2code", type=Path, nargs="*", help="Input cmaps.")
+    return parser
 
-    def usage():
-        print(
-            "usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]" % argv[0]
-        )
-        return 100
 
-    try:
-        (opts, args) = getopt.getopt(argv[1:], "c:")
-    except getopt.GetoptError:
-        return usage()
-    enc2codec = {}
-    for (k, v) in opts:
-        if k == "-c":
-            (enc, _, codec) = v.partition("=")
-            enc2codec[enc] = codec
-    if not args:
-        return usage()
-    outdir = args.pop(0)
-    if not args:
-        return usage()
-    regname = args.pop(0)
+def main(argv: List[Any]):
+    parsed_args = create_parser().parse_args(argv[1:])
 
-    converter = CMapConverter(enc2codec)
-    for path in args:
-        print("reading: %r..." % path)
-        fp = open(path)
-        converter.load(fp)
-        fp.close()
+    encoding_codec: List[str] = parsed_args.encoding_codec
+    outdir: Path = parsed_args.output_dir
+    regname: str = parsed_args.regname
+    cid2codes: List[Path] = parsed_args.cid2code
 
+    converter = CMapConverter(
+        dict([enc_codec.split("=") for enc_codec in encoding_codec])
+    )
+
+    for path in cid2codes:
+        print(f"reading: {path}...")
+        path.parent.mkdir(exist_ok=True)
+        with path.open() as fp:
+            converter.load(fp)
+
+    outdir.mkdir(exist_ok=True)
     for enc in converter.get_encs():
-        fname = "%s.pickle.gz" % enc
-        path = os.path.join(outdir, fname)
-        print("writing: %r..." % path)
-        fp = gzip.open(path, "wb")
-        converter.dump_cmap(fp, enc)
-        fp.close()
+        path = outdir / f"{enc}.pickle.gz"
+        print(f"writing: {path}...")
+        with gzip.open(path, "wb") as fp:
+            converter.dump_cmap(fp, enc)
 
-    fname = "to-unicode-%s.pickle.gz" % regname
-    path = os.path.join(outdir, fname)
-    print("writing: %r..." % path)
-    fp = gzip.open(path, "wb")
-    converter.dump_unicodemap(fp)
-    fp.close()
-    return
+    path = outdir / f"to-unicode-{regname}.pickle.gz"
+    print(f"writing: {path}...")
+    with gzip.open(path, "wb") as fp:
+        converter.dump_unicodemap(fp)
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))  # type: ignore[no-untyped-call]
+    sys.exit(main(sys.argv))
