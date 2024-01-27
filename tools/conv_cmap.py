@@ -2,7 +2,7 @@
 import argparse
 import codecs
 import gzip
-import pickle as pickle
+import json
 import sys
 from pathlib import Path
 from typing import List, Any
@@ -140,16 +140,14 @@ class CMapConverter:
             IS_VERTICAL=self.is_vertical.get(enc, False),
             CODE2CID=self.code2cid.get(enc),
         )
-        fp.write(pickle.dumps(data, 2))
-        return
+        json.dump(data, fp)
 
     def dump_unicodemap(self, fp):
         data = dict(
             CID2UNICHR_H=self.cid2unichr_h,
             CID2UNICHR_V=self.cid2unichr_v,
         )
-        fp.write(pickle.dumps(data, 2))
-        return
+        json.dump(data, fp)
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -195,14 +193,14 @@ def main(argv: List[Any]):
 
     outdir.mkdir(exist_ok=True)
     for enc in converter.get_encs():
-        path = outdir / f"{enc}.pickle.gz"
+        path = outdir / f"{enc}.json.gz"
         print(f"writing: {path}...")
-        with gzip.open(path, "wb") as fp:
+        with gzip.open(path, "wt") as fp:
             converter.dump_cmap(fp, enc)
 
-    path = outdir / f"to-unicode-{regname}.pickle.gz"
+    path = outdir / f"to-unicode-{regname}.json.gz"
     print(f"writing: {path}...")
-    with gzip.open(path, "wb") as fp:
+    with gzip.open(path, "wt") as fp:
         converter.dump_unicodemap(fp)
 
 
