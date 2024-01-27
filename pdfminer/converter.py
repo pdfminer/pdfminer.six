@@ -167,6 +167,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                     gstate.ncolor,
                     original_path=transformed_path,
                     dashing_style=gstate.dash,
+                    ocg=gstate.ocg
                 )
                 self.cur_item.add(line)
 
@@ -188,6 +189,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                         gstate.ncolor,
                         transformed_path,
                         gstate.dash,
+                        gstate.ocg
                     )
                     self.cur_item.add(rect)
                 else:
@@ -201,6 +203,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                         gstate.ncolor,
                         transformed_path,
                         gstate.dash,
+                        gstate.ocg
                     )
                     self.cur_item.add(curve)
             else:
@@ -214,6 +217,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                     gstate.ncolor,
                     transformed_path,
                     gstate.dash,
+                    gstate.ocg
                 )
                 self.cur_item.add(curve)
 

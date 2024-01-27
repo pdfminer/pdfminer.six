@@ -135,6 +135,9 @@ class PDFGraphicState:
         # non stroking color
         self.ncolor: Optional[Color] = None
 
+        # OCG (Optional Content Group)
+        self.ocg: str = None
+
     def copy(self) -> "PDFGraphicState":
         obj = PDFGraphicState()
         obj.linewidth = self.linewidth
@@ -146,13 +149,14 @@ class PDFGraphicState:
         obj.flatness = self.flatness
         obj.scolor = self.scolor
         obj.ncolor = self.ncolor
+        obj.ocg = self.ocg
         return obj
 
     def __repr__(self) -> str:
         return (
             "<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, "
             " miterlimit=%r, dash=%r, intent=%r, flatness=%r, "
-            " stroking color=%r, non stroking color=%r>"
+            " stroking color=%r, non stroking color=%r, ocg=%r>"
             % (
                 self.linewidth,
                 self.linecap,
@@ -163,6 +167,7 @@ class PDFGraphicState:
                 self.flatness,
                 self.scolor,
                 self.ncolor,
+                self.ocg
             )
         )
 
@@ -439,9 +444,14 @@ class PDFPageInterpreter:
         return
 
     def do_Q(self) -> None:
-        """Restore graphics state"""
+        """
+        Restore graphics state
+        But maintain the freshly declared OCG (layer group)
+        """
+        curr_ocg = self.graphicstate.ocg
         if self.gstack:
             self.set_current_state(self.gstack.pop())
+        self.graphicstate.ocg = curr_ocg
         return
 
     def do_cm(
@@ -771,6 +781,8 @@ class PDFPageInterpreter:
     def do_BDC(self, tag: PDFStackT, props: PDFStackT) -> None:
         """Begin marked-content sequence with property list"""
         self.device.begin_tag(cast(PSLiteral, tag), props)
+        # Set graphic state OCG attribute 
+        self.graphicstate.ocg = str(props).strip('/')
         return
 
     def do_EMC(self) -> None:
