@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `ValueError` wrong error message when specifying codec for text output  ([#902](https://github.com/pdfminer/pdfminer.six/pull/902))
 - Resolve stream filter parameters ([#906](https://github.com/pdfminer/pdfminer.six/pull/906))
 - Reading cmap's with whitespace in the name ([#935](https://github.com/pdfminer/pdfminer.six/pull/935))
+- Optimize `apply_png_predictor` by using lists ([#912](https://github.com/pdfminer/pdfminer.six/pull/912))
 
 ## [20231228]
 
