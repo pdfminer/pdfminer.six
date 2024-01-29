@@ -139,7 +139,7 @@ def apply_png_predictor(
     nbytes = colors * columns * bitspercomponent // 8
     bpp = colors * bitspercomponent // 8  # number of bytes per complete pixel
     buf = []
-    line_above = b"\x00" * columns
+    line_above = list(b"\x00" * columns)
     for scanline_i in range(0, len(data), nbytes + 1):
         filter_type = data[scanline_i]
         line_encoded = data[scanline_i + 1 : scanline_i + 1 + nbytes]
