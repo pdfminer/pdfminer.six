@@ -317,7 +317,7 @@ class PSBaseParser:
             self._curtoken = c
             self._parse1 = self._parse_float
             return j + 1
-        elif c.isalpha():
+        elif c.isalpha() or c == b"@":
             self._curtoken = c
             self._parse1 = self._parse_keyword
             return j + 1
