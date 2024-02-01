@@ -77,5 +77,5 @@ Any contribution is appreciated! You might want to:
    Or on a single Python version:
    
    ```sh
-    nox -e py36
+    nox -e tests-3.9
     ```
