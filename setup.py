@@ -20,7 +20,7 @@ setup(
         'importlib_metadata; python_version < "3.8"',
     ],
     extras_require={
-        "dev": ["pytest", "nox", "black", "mypy == 0.931"],
+        "dev": ["pytest", "nox", "black", "mypy == 0.931", "atheris"],
         "docs": ["sphinx", "sphinx-argparse"],
         "image": ["Pillow"],
     },
