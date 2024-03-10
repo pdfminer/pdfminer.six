@@ -18,7 +18,7 @@ def TestOneInput(data: bytes):
     fdp = EnhancedFuzzedDataProvider(data)
 
     try:
-        with (fdp.ConsumeMemoryFile() as f):
+        with fdp.ConsumeMemoryFile() as f:
             max_pages = fdp.ConsumeIntInRange(0, 1000)
             list(extract_pages(
                 f,
