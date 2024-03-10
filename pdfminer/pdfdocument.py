@@ -977,7 +977,7 @@ class PDFDocument:
         else:
             raise PDFNoValidXRef("Unexpected EOF")
         log.debug("xref found: pos=%r", prev)
-        assert prev is not None
+        assert prev is not None and prev.isdigit()
         return int(prev)
 
     # read xref table

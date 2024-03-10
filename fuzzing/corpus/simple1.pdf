@@ -1,0 +1,68 @@
+%PDF-1.4
+1 0 obj
+<<
+ /Type /Catalog
+ /Outlines 2 0 R
+ /Pages 3 0 R
+>>
+endobj
+2 0 obj
+<<
+ /Type /Outlines
+ /Count 0
+>>
+endobj
+3 0 obj
+<<
+ /Type /Pages
+ /Kids [ 4 0 R ]
+ /Count 1
+>>
+endobj
+4 0 obj
+<<
+ /Type /Page
+ /Parent 3 0 R
+ /MediaBox [ 0 0 612 792 ]
+ /Contents 5 0 R
+ /Resources <<
+  /ProcSet 6 0 R
+  /Font << /F1 7 0 R >>
+ >>
+>>
+endobj
+5 0 obj
+<< /Length 86 >>
+stream
+BT
+/F1 24 Tf
+100 700 Td
+0 Tw 0 Tc [ (Hello ) -4166 (World) ] TJ
+0 -100 Td
+100 Tw 0 Tc (Hello World) Tj
+0 -100 Td
+100 Tw 10 Tc (Hello World) Tj
+0 -100 Td
+0 Tw 0 Tc [ (H) -416 (e) -416 (l) -416 (l) -416 (o) -416 ( ) -416 -4166 (W) -416 (o) -416 (r) -416 (l) -416 (d) ] TJ
+ET
+endstream
+endobj
+6 0 obj
+[ /PDF /Text ]
+endobj
+7 0 obj
+<<
+ /Type /Font
+ /Subtype /Type1
+ /Name /F1
+ /BaseFont /Helvetica
+ /Encoding /MacRomanEncoding
+>>
+endobj
+
+trailer 
+<<
+ /Size 8
+ /Root 1 0 R
+>>
+%%EOF

@@ -1,0 +1,87 @@
+%PDF-1.4
+1 0 obj
+<<
+ /Type /Catalog
+ /Outlines 2 0 R
+ /Pages 3 0 R
+>>
+endobj
+2 0 obj
+<<
+ /Type /Outlines
+ /Count 0
+>>
+endobj
+3 0 obj
+<<
+ /Type /Pages
+ /Kids [ 4 0 R ]
+ /Count 1
+>>
+endobj
+4 0 obj
+<<
+ /Type /Page
+ /Parent 3 0 R
+ /MediaBox [ 0 0 612 792 ]
+ /Contents 5 0 R
+ /Resources <<
+  /ProcSet 6 0 R
+  /Font << /F1 7 0 R /F2 8 0 R >>
+ >>
+>>
+endobj
+5 0 obj
+<< /Length 86 >>
+stream
+BT
+/F1 48 Tf
+0 700 Td 0 Tw 0 Tc
+%1 0 1 1 -500 0 cm
+(Hello) Tj 24 Ts (Hello) Tj 0 Ts
+/F2 48 Tf
+($"$$$&$\($*) Tj 24 Ts
+($"$$$&$\($*) Tj 0 Ts
+/F1 24 Tf
+(World) Tj 24 Ts (World) Tj 0 Ts
+ET
+endstream
+endobj
+6 0 obj
+[ /PDF /Text ]
+endobj
+7 0 obj
+<<
+ /Type /Font
+ /Subtype /Type1
+ /Name /F1
+ /BaseFont /Helvetica
+ /Encoding /MacRomanEncoding
+>>
+endobj
+8 0 obj
+<<
+ /Type /Font
+ /Subtype /Type0
+ /Name /F2
+ /BaseFont /Ryumin-Light-V
+ /Encoding /V
+ /DescendantFonts [ 
+  << /Type /Font
+     /Subtype /CIDFontType0
+     /CIDSystemInfo <<
+       /Registry (Adobe)
+       /Ordering (Japan1)
+       /Supplement 1
+     >>
+  >>
+ ]
+>>
+endobj
+
+trailer 
+<<
+ /Size 8
+ /Root 1 0 R
+>>
+%%EOF
