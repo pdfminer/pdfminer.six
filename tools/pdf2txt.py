@@ -21,7 +21,7 @@ def float_or_disabled(x: str) -> Optional[float]:
     try:
         return float(x)
     except ValueError:
-        raise argparse.ArgumentTypeError("invalid float value: {}".format(x))
+        raise argparse.ArgumentTypeError(f"invalid float value: {x}")
 
 
 def extract_text(
@@ -77,7 +77,7 @@ def create_parser() -> argparse.ArgumentParser:
         "--version",
         "-v",
         action="version",
-        version="pdfminer.six v{}".format(pdfminer.__version__),
+        version=f"pdfminer.six v{pdfminer.__version__}",
     )
     parser.add_argument(
         "--debug",

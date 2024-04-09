@@ -58,7 +58,7 @@ def convert_glyphlist(path: str) -> None:
     See output below.
     """
     state = 0
-    with open(path, "r") as fileinput:
+    with open(path) as fileinput:
         for line in fileinput.readlines():
             line = line.strip()
             if not line or line.startswith("#"):

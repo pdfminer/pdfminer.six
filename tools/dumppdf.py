@@ -186,7 +186,7 @@ def dumpoutline(
                         dest = resolve_dest(action["D"])
                         pageno = pages[dest[0].objid]
             s = escape(title)
-            outfp.write('<outline level="{!r}" title="{}">\n'.format(level, s))
+            outfp.write(f'<outline level="{level!r}" title="{s}">\n')
             if dest is not None:
                 outfp.write("<dest>")
                 dumpxml(outfp, dest)
@@ -224,7 +224,7 @@ def extractembedded(fname: str, password: str, extractdir: str) -> None:
             )
         path = os.path.join(extractdir, "%.6d-%s" % (objid, filename))
         if os.path.exists(path):
-            raise IOError("file exists: %r" % path)
+            raise OSError("file exists: %r" % path)
         print("extracting: %r" % path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         out = open(path, "wb")
@@ -300,7 +300,7 @@ def create_parser() -> ArgumentParser:
         "--version",
         "-v",
         action="version",
-        version="pdfminer.six v{}".format(pdfminer.__version__),
+        version=f"pdfminer.six v{pdfminer.__version__}",
     )
     parser.add_argument(
         "--debug",
