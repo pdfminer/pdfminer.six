@@ -13,7 +13,6 @@ setup(
         "version_format": "{tag}",  # Use only the tag itself as the version
         "dirty": False  # Ensure the dirty flag is not added
     },
-    },
     setup_requires=["setuptools-git-versioning<2"],
     packages=["pdfminer"],
     package_data={"pdfminer": ["cmap/*.pickle.gz", "py.typed"]},
