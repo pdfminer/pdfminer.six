@@ -56,8 +56,8 @@ Any contribution is appreciated! You might want to:
 1. Clone the repository
 
     ```sh
-    git clone https://github.com/pdfminer/pdfminer.six
-    cd pdfminer.six
+    git clone https://github.com/pdfminer/pdfminer.rtl
+    cd pdfminer.rtl
     ```
 
 2. Install dev dependencies

@@ -1,6 +1,6 @@
 # Working on documentation
 
-The pdfminer.six docs are generated with [Sphinx](https://www.sphinx-doc.org/en/master/), using
+The pdfminer.rtl docs are generated with [Sphinx](https://www.sphinx-doc.org/en/master/), using
 [reStructuredText](https://docutils.sourceforge.io/rst.html).
 
 The documentation is hosted on https://pdfminersix.readthedocs.io/. 

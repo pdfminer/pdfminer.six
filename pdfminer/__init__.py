@@ -1,7 +1,7 @@
 from importlib.metadata import version, PackageNotFoundError
 
 try:
-    __version__ = version("pdfminer.six")
+    __version__ = version("pdfminer.rtl")
 except PackageNotFoundError:
     # package is not installed, return default
     __version__ = "0.0"

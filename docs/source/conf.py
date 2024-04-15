@@ -20,9 +20,9 @@ sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), "../
 
 # -- Project information -----------------------------------------------------
 
-project = "pdfminer.six"
-copyright = "2019, Yusuke Shinyama, Philippe Guglielmetti & Pieter Marsman"
-author = "Yusuke Shinyama, Philippe Guglielmetti & Pieter Marsman"
+project = "pdfminer.rtl"
+copyright = " 2019, Yusuke Shinyama, Philippe Guglielmetti & Pieter Marsman"
+author = "Taner, Yusuke Shinyama, Philippe Guglielmetti & Pieter Marsman"
 
 # The full version, including alpha/beta/rc tags
 release = pdfminer.__version__

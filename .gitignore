@@ -13,6 +13,7 @@ docs/_build
 /build/
 /dist/
 /pdfminer.six.egg-info/
+/pdfminer.rtl.egg-info/
 tests/*.xml
 tests/*.txt
 .idea/
@@ -27,3 +28,4 @@ Pipfile.lock
 pyproject.toml
 poetry.lock
 .eggs
+pdfminer.rtl.egg-info/PKG-INFO

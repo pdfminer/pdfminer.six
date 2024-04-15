@@ -7,6 +7,7 @@ with open(root_dir / "README.md", "rt") as f:
 
 setup(
     name="pdfminer.rtl",
+    version="0.0.2",
     setuptools_git_versioning={
         "enabled": True,
     },
@@ -29,8 +30,8 @@ setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     license="MIT",
-    author="Yusuke Shinyama + Philippe Guglielmetti",
-    author_email="pdfminer@goulu.net",
+    author="Yusuke Shinyama + Philippe Guglielmetti + Taner",
+    author_email="pdfminerrtl@rust.8shield.net",
     url="https://github.com/taneron/pdfminerrtl",
     scripts=[
         "tools/pdf2txt.py",
