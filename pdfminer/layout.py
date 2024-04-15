@@ -38,6 +38,23 @@ from .utils import uniq
 
 logger = logging.getLogger(__name__)
 
+def debug_string_formats(s):
+    # Convert string to bytes
+    bytes_data = s.encode()
+
+    # Print bytes
+    logger.debug("Bytes:", bytes_data)
+
+    # Print as hexadecimal
+    logger.debug("Hexadecimal:", bytes_data.hex())
+
+    # Print bytes as binary
+    binary_representation = ' '.join(format(byte, '08b') for byte in bytes_data)
+    logger.debug("Binary:", binary_representation)
+
+    # Print ASCII values
+    ascii_values = ' '.join(str(ord(char)) for char in s)
+    logger.debug("ASCII Values:", ascii_values)
 
 class IndexAssigner:
     def __init__(self, index: int = 0) -> None:
@@ -576,13 +593,9 @@ class LTTextLine(LTTextContainer[TextLineElement]):
 
 
         text = self.removeWeirdChars(weirdtext)
-
-        difference = text == weirdtext
-
-        if difference:
-            logger.debug(f"weirdChars were removed: {weirdtext} to {text}")
         
         logger.debug(f"Current bidi line {text}")
+        logger.debug(f"In other formats {debug_string_formats(text)}")
 
         base_level = self.get_base_level(text)
         storage['base_level'] = base_level
