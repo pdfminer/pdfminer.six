@@ -590,7 +590,7 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         return
     
     # for fixing the bidi assertion in resolve_implicit_levels() bug https://github.com/alihoseiny/word_cloud_fa/issues/3
-    def removeWeirdChars(text):
+    def removeWeirdChars(self, text):
         weridPatterns = re.compile("["
                                u"\U0001F600-\U0001F64F"  # emoticons
                                u"\U0001F300-\U0001F5FF"  # symbols & pictographs

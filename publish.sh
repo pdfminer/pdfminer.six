@@ -3,6 +3,6 @@ echo "Or better change the setup.py version"
 
 rm ./dist/*
 
-python setup.py sdist bdist_wheel 
+python setup.py build sdist bdist_wheel 
 
 twine upload dist/*
