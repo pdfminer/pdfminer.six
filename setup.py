@@ -10,6 +10,9 @@ setup(
     version="0.0.2",
     setuptools_git_versioning={
         "enabled": True,
+        "version_format": "{tag}",  # Use only the tag itself as the version
+        "dirty": False  # Ensure the dirty flag is not added
+    },
     },
     setup_requires=["setuptools-git-versioning<2"],
     packages=["pdfminer"],
