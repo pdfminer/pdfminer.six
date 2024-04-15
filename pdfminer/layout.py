@@ -595,7 +595,7 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         text = self.removeWeirdChars(weirdtext)
         
         logger.debug(f"Current bidi line {text}")
-        logger.debug(f"In other formats {debug_string_formats(text)}")
+        debug_string_formats(text)
 
         base_level = self.get_base_level(text)
         storage['base_level'] = base_level
