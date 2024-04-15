@@ -574,7 +574,15 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         storage = BA.get_empty_storage()
         weirdtext = self.get_text()
 
+
         text = self.removeWeirdChars(weirdtext)
+
+        difference = text == weirdtext
+
+        if difference:
+            logger.debug(f"weirdChars were removed: {weirdtext} to {text}")
+        
+        logger.debug(f"Current bidi line {text}")
 
         base_level = self.get_base_level(text)
         storage['base_level'] = base_level
