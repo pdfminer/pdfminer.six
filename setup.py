@@ -18,6 +18,7 @@ setup(
         "cryptography >= 36.0.0",
         'typing_extensions; python_version < "3.8"',
         'importlib_metadata; python_version < "3.8"',
+        'python-bidi',
     ],
     extras_require={
         "dev": ["pytest", "nox", "black", "mypy == 0.931"],
