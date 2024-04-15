@@ -2,6 +2,7 @@ import heapq
 import logging
 import unicodedata as UD
 import bidi.algorithm as BA
+import re
 from typing import (
     Dict,
     Generic,
@@ -571,7 +572,10 @@ class LTTextLine(LTTextContainer[TextLineElement]):
     def bidi_textline(self):
         """Reorder Char in Textlines"""
         storage = BA.get_empty_storage()
-        text = self.get_text()
+        weirdtext = self.get_text()
+
+        text = self.removeWeirdChars(weirdtext)
+
         base_level = self.get_base_level(text)
         storage['base_level'] = base_level
         storage['base_dir'] = ('L', 'R')[base_level]
@@ -585,6 +589,32 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         self._objs = [_ch['ch'] for _ch in storage['chars']]
         return
     
+    # for fixing the bidi assertion in resolve_implicit_levels() bug https://github.com/alihoseiny/word_cloud_fa/issues/3
+    def removeWeirdChars(text):
+        weridPatterns = re.compile("["
+                               u"\U0001F600-\U0001F64F"  # emoticons
+                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               u"\U00002702-\U000027B0"
+                               u"\U000024C2-\U0001F251"
+                               u"\U0001f926-\U0001f937"
+                               u'\U00010000-\U0010ffff'
+                               u"\u200d"
+                               u"\u2640-\u2642"
+                               u"\u2600-\u2B55"
+                               u"\u23cf"
+                               u"\u23e9"
+                               u"\u231a"
+                               u"\u3030"
+                               u"\ufe0f"
+                               u"\u2069"
+                               u"\u2066"
+                               u"\u200c"
+                               u"\u2068"
+                               u"\u2067"
+                               "]+", flags=re.UNICODE)
+        return weridPatterns.sub(r'', text)
     
 
     # until here
@@ -592,6 +622,7 @@ class LTTextLine(LTTextContainer[TextLineElement]):
     def analyze(self, laparams: LAParams) -> None:
         for obj in self._objs:
             obj.analyze(laparams)
+        # this was added too
         self.bidi_textline()
         LTContainer.add(self, LTAnno("\n"))
         return

@@ -6,7 +6,7 @@ with open(root_dir / "README.md", "rt") as f:
     readme = f.read()
 
 setup(
-    name="pdfminer.six",
+    name="pdfminer.rtl",
     setuptools_git_versioning={
         "enabled": True,
     },
@@ -31,7 +31,7 @@ setup(
     license="MIT",
     author="Yusuke Shinyama + Philippe Guglielmetti",
     author_email="pdfminer@goulu.net",
-    url="https://github.com/pdfminer/pdfminer.six",
+    url="https://github.com/taneron/pdfminerrtl",
     scripts=[
         "tools/pdf2txt.py",
         "tools/dumppdf.py",

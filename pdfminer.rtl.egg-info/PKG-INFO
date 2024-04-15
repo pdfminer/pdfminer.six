@@ -1,0 +1,98 @@
+Metadata-Version: 2.1
+Name: pdfminer.rtl
+Version: 0.0.2
+Summary: PDF parser and analyzer with rtl support
+Home-page: https://github.com/taneron/pdfminerrtl
+Author: Taner A + Yusuke Shinyama + Philippe Guglielmetti
+Author-email: pdfminerrtl@rust.8shield.net
+License: MIT
+Keywords: pdf parser,pdf converter,layout analysis,text mining
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Text Processing
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: charset-normalizer>=2.0.0
+Requires-Dist: cryptography>=36.0.0
+Requires-Dist: typing_extensions; python_version < "3.8"
+Requires-Dist: importlib_metadata; python_version < "3.8"
+Requires-Dist: python-bidi
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: nox; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: mypy==0.931; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: sphinx; extra == "docs"
+Requires-Dist: sphinx-argparse; extra == "docs"
+Provides-Extra: image
+Requires-Dist: Pillow; extra == "image"
+
+pdfminer.rtl
+============
+
+This is a fork of pdfminer.six that tries to add RTL support. This is just a quick and dirty way of handling RTL and by no means something that should be relied upon for critical infrastructure. 
+
+Check out the full documentation on of the original project here
+[Read the Docs](https://pdfminersix.readthedocs.io).
+
+
+Features
+--------
+
+* Added experimental RTL support with python-bidi
+* Written entirely in Python.
+* Parse, analyze, and convert PDF documents.
+* Extract content as text, images, html or [hOCR](https://en.wikipedia.org/wiki/HOCR).
+* PDF-1.7 specification support. (well, almost).
+* CJK languages and vertical writing scripts support.
+* Various font types (Type1, TrueType, Type3, and CID) support.
+* Support for extracting images (JPG, JBIG2, Bitmaps).
+* Support for various compressions (ASCIIHexDecode, ASCII85Decode, LZWDecode, FlateDecode, RunLengthDecode,
+  CCITTFaxDecode)
+* Support for RC4 and AES encryption.
+* Support for AcroForm interactive form extraction.
+* Table of contents extraction.
+* Tagged contents extraction.
+* Automatic layout analysis.
+
+How to use
+----------
+
+* Install Python 3.8 or newer.
+* Install pdfminer.rtl.
+
+  `pip install pdfminer.rtl`
+
+* (Optionally) install extra dependencies for extracting images.
+
+  `pip install 'pdfminer.rtl[image]'`
+
+* Use the command-line interface to extract text from pdf.
+
+  `pdf2txt.py example.pdf`
+
+* Or use it with Python. 
+
+```python
+from pdfminer.high_level import extract_text
+
+text = extract_text("example.pdf")
+print(text)
+```
+
+Acknowledgement
+---------------
+
+This repository includes code from `pyHanko` ; the original license has been included [here](/docs/licenses/LICENSE.pyHanko). And also from all the hard working contributors as seen [here](https://github.com/pdfminer/pdfminer.six/graphs/contributors)
