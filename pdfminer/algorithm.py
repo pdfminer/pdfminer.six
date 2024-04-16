@@ -474,7 +474,7 @@ def resolve_implicit_levels(storage, debug):
             # only those types are allowed at this stage
             logger.debug(f"ch: {_ch} type: {_ch['type']} level: {_ch['level']}")
 
-            assert _ch['type'] in ('L', 'R', 'EN', 'AN'),\
+            assert _ch['type'] in ('L', 'R', 'EN', 'AN', '', ' '),\
                     '%s not allowed here' % _ch['type']
 
             if _embedding_direction(_ch['level']) == 'L':
