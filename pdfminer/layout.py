@@ -603,7 +603,7 @@ class LTTextLine(LTTextContainer[TextLineElement]):
 
 
         # see if script has debug flag or argument
-        debug = True
+        debug = False
 
 
         base_level = self.get_base_level(text)
