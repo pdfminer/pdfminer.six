@@ -22,6 +22,7 @@ import inspect
 from collections import deque
 from unicodedata import bidirectional, mirrored
 import six
+import logging
 
 from .mirror import MIRRORED
 
@@ -469,8 +470,8 @@ def resolve_implicit_levels(storage, debug):
 
         for _ch in chars:
             # only those types are allowed at this stage
-            # print(f"CH TYPE: {_ch['type']} should be in ('L', 'R', 'EN', 'AN')")
-            assert _ch['type'] in ('L', 'R', 'EN', 'AN', ''),\
+
+            assert _ch['type'] in ('L', 'R', 'EN', 'AN'),\
                     '%s not allowed here' % _ch['type']
 
             if _embedding_direction(_ch['level']) == 'L':
