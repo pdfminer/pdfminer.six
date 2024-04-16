@@ -26,6 +26,8 @@ import logging
 
 from .mirror import MIRRORED
 
+logger = logging.getLogger(__name__)
+
 
 # Some definitions
 PARAGRAPH_LEVELS = {'L': 0, 'AL': 1, 'R': 1}
@@ -470,6 +472,7 @@ def resolve_implicit_levels(storage, debug):
 
         for _ch in chars:
             # only those types are allowed at this stage
+            logger.debug(f"ch: {_ch} type: {_ch['type']} level: {_ch['level']}")
 
             assert _ch['type'] in ('L', 'R', 'EN', 'AN'),\
                     '%s not allowed here' % _ch['type']
