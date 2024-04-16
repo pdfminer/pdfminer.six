@@ -43,18 +43,18 @@ def debug_string_formats(s):
     bytes_data = s.encode()
 
     # Print bytes
-    logger.debug("Bytes:", bytes_data)
+    print("Bytes:", bytes_data)
 
     # Print as hexadecimal
-    logger.debug("Hexadecimal:", bytes_data.hex())
+    print("Hexadecimal:", bytes_data.hex())
 
     # Print bytes as binary
     binary_representation = ' '.join(format(byte, '08b') for byte in bytes_data)
-    logger.debug("Binary:", binary_representation)
+    print("Binary:", binary_representation)
 
     # Print ASCII values
     ascii_values = ' '.join(str(ord(char)) for char in s)
-    logger.debug("ASCII Values:", ascii_values)
+    print("ASCII Values:", ascii_values)
 
 class IndexAssigner:
     def __init__(self, index: int = 0) -> None:
@@ -589,13 +589,17 @@ class LTTextLine(LTTextContainer[TextLineElement]):
     def bidi_textline(self):
         """Reorder Char in Textlines"""
         storage = BA.get_empty_storage()
-        weirdtext = self.get_text()
-
-
-        text = self.removeWeirdChars(weirdtext)
+        # weirdtext = self.get_text()
+        # text = self.removeWeirdChars(weirdtext)
+        text = self.get_text()
         
         logger.debug(f"Current bidi line {text}")
-        debug_string_formats(text)
+        # debug_string_formats(text)
+
+
+        # see if script has debug flag or argument
+        debug = True
+
 
         base_level = self.get_base_level(text)
         storage['base_level'] = base_level
@@ -603,9 +607,9 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         self.get_embedding_levels(self._objs, storage)
         BA.explicit_embed_and_overrides(storage)
         BA.resolve_weak_types(storage)
-        BA.resolve_neutral_types(storage, False)
-        BA.resolve_implicit_levels(storage, False)
-        BA.reorder_resolved_levels(storage, False)
+        BA.resolve_neutral_types(storage, debug)
+        BA.resolve_implicit_levels(storage, debug)
+        BA.reorder_resolved_levels(storage, debug)
         self.apply_mirroring(storage)
         self._objs = [_ch['ch'] for _ch in storage['chars']]
         return
