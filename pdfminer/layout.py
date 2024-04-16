@@ -1,7 +1,7 @@
 import heapq
 import logging
 import unicodedata as UD
-import bidi.algorithm as BA
+
 import re
 from typing import (
     Dict,
@@ -35,6 +35,11 @@ from .utils import fsplit
 from .utils import get_bound
 from .utils import matrix2str
 from .utils import uniq
+
+# import bidi.algorithm as BA
+# import algorithm as BA
+from .algorithm import MIRRORED, get_empty_storage, explicit_embed_and_overrides, resolve_weak_types, resolve_neutral_types, resolve_implicit_levels,reorder_resolved_levels
+
 
 logger = logging.getLogger(__name__)
 
@@ -584,11 +589,11 @@ class LTTextLine(LTTextContainer[TextLineElement]):
             if len(unichar) == 1 and \
                     UD.mirrored(unichar) and \
                     self._embedding_direction(_ch['level']) == 'R':
-                _ch['ch']._text = BA.MIRRORED.get(unichar, unichar)
+                _ch['ch']._text = MIRRORED.get(unichar, unichar)
 
     def bidi_textline(self):
         """Reorder Char in Textlines"""
-        storage = BA.get_empty_storage()
+        storage = get_empty_storage()
         # weirdtext = self.get_text()
         # text = self.removeWeirdChars(weirdtext)
         text = self.get_text()
@@ -605,11 +610,12 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         storage['base_level'] = base_level
         storage['base_dir'] = ('L', 'R')[base_level]
         self.get_embedding_levels(self._objs, storage)
-        BA.explicit_embed_and_overrides(storage)
-        BA.resolve_weak_types(storage)
-        BA.resolve_neutral_types(storage, debug)
-        BA.resolve_implicit_levels(storage, debug)
-        BA.reorder_resolved_levels(storage, debug)
+       
+        explicit_embed_and_overrides(storage)
+        resolve_weak_types(storage)
+        resolve_neutral_types(storage, debug)
+        resolve_implicit_levels(storage, debug)
+        reorder_resolved_levels(storage, debug)
         self.apply_mirroring(storage)
         self._objs = [_ch['ch'] for _ch in storage['chars']]
         return
