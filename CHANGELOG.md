@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Support for zipped jpeg's ([#938](https://github.com/pdfminer/pdfminer.six/pull/938))
+- pdfminer.six demo API ([#961](https://github.com/pdfminer/pdfminer.six/pull/961))
 
 ### Fixed
 
