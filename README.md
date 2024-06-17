@@ -41,16 +41,19 @@ How to use
 
 * Install Python 3.8 or newer.
 * Install pdfminer.six.
-
-  `pip install pdfminer.six`
+* 
+  ```bash
+  pip install pdfminer.six
 
 * (Optionally) install extra dependencies for extracting images.
 
-  `pip install 'pdfminer.six[image]'`
+  ```bash
+  pip install 'pdfminer.six[image]'
 
 * Use the command-line interface to extract text from pdf.
 
-  `pdf2txt.py example.pdf`
+  ```bash
+  pdf2txt.py example.pdf
 
 * Or use it with Python. 
 
