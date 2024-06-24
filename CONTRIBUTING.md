@@ -63,10 +63,10 @@ Any contribution is appreciated! You might want to:
 2. Install dev dependencies
 
     ```sh
-    pip install -e .[dev]
+    pip install -e ".[dev]"
     ```
 
-3. Run the tests
+3. Run all formatting, linting and tests
 
     On all Python versions:
 
@@ -74,8 +74,8 @@ Any contribution is appreciated! You might want to:
     nox
    ```
    
-   Or on a single Python version:
+   Or only the tests on a single Python version:
    
    ```sh
-    nox -e py36
+    nox -e tests-3.12
     ```
