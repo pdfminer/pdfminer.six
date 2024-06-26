@@ -39,7 +39,7 @@ FileOrName = Union[pathlib.PurePath, str, io.IOBase]
 AnyIO = Union[TextIO, BinaryIO]
 
 
-class open_filename(object):
+class open_filename:
     """
     Context manager that allows opening a filename
     (str or pathlib.PurePath type is supported) and closes it on exit,

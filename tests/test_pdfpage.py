@@ -4,7 +4,7 @@ from pdfminer.pdfparser import PDFParser
 from tests.helpers import absolute_sample_path
 
 
-class TestPdfPage(object):
+class TestPdfPage:
     def test_page_labels(self):
         path = absolute_sample_path("contrib/pagelabels.pdf")
         expected_labels = ["iii", "iv", "1", "2", "1"]

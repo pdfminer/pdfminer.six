@@ -1,6 +1,5 @@
 import io
 import logging
-import sys
 import zlib
 from typing import (
     TYPE_CHECKING,
@@ -8,6 +7,7 @@ from typing import (
     Dict,
     Iterable,
     Optional,
+    Protocol,
     Union,
     List,
     Tuple,
@@ -44,25 +44,17 @@ LITERALS_JBIG2_DECODE = (LIT("JBIG2Decode"),)
 LITERALS_JPX_DECODE = (LIT("JPXDecode"),)
 
 
-if sys.version_info >= (3, 8):
-    from typing import Protocol
+class DecipherCallable(Protocol):
+    """Fully typed a decipher callback, with optional parameter."""
 
-    class DecipherCallable(Protocol):
-        """Fully typed a decipher callback, with optional parameter."""
-
-        def __call__(
-            self,
-            objid: int,
-            genno: int,
-            data: bytes,
-            attrs: Optional[Dict[str, Any]] = None,
-        ) -> bytes:
-            raise NotImplementedError
-
-else:  # Fallback for older Python
-    from typing import Callable
-
-    DecipherCallable = Callable[..., bytes]
+    def __call__(
+        self,
+        objid: int,
+        genno: int,
+        data: bytes,
+        attrs: Optional[Dict[str, Any]] = None,
+    ) -> bytes:
+        raise NotImplementedError
 
 
 class PDFObject(PSObject):
