@@ -7,19 +7,8 @@ from typing import Optional
 import atheris
 
 from pdfminer.layout import LAParams
-from pdfminer.psparser import PSException
 
 PDF_MAGIC_BYTES = b"%PDF-"
-
-# List of all exception message substrings explicitly raised by pdfminer that do not
-# inherit from PSException
-_EXPLICIT_EXCEPTION_MESSAGES = [
-    "Unsupported",
-    "duplicate labels",
-    "AcroForm",
-    "SASLPrep",
-    "Invalid",
-]
 
 
 def prepare_pdfminer_fuzzing() -> None:
@@ -27,17 +16,6 @@ def prepare_pdfminer_fuzzing() -> None:
     Used to disable logging of the pdfminer module
     """
     logging.getLogger("pdfminer").setLevel(logging.CRITICAL)
-
-
-def should_ignore_error(e: Exception) -> bool:
-    """
-    Determines if the given raised exception is explicitly raised by pdfminer
-    :param e: The exception to check
-    :return: Whether the exception should be ignored or re-thrown
-    """
-    return isinstance(e, PSException) or any(
-        em_ss in str(e) for em_ss in _EXPLICIT_EXCEPTION_MESSAGES
-    )
 
 
 @atheris.instrument_func  # type: ignore[misc]

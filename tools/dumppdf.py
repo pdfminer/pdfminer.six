@@ -11,8 +11,18 @@ import pdfminer
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
-from pdfminer.pdftypes import PDFObjectNotFound, PDFValueError
-from pdfminer.pdftypes import PDFStream, PDFObjRef, resolve1, stream_value
+from pdfminer.pdftypes import (
+    PDFStream,
+    PDFObjRef,
+    resolve1,
+    stream_value,
+)
+from pdfminer.pdfexceptions import (
+    PDFTypeError,
+    PDFValueError,
+    PDFObjectNotFound,
+    PDFIOError,
+)
 from pdfminer.psparser import PSKeyword, PSLiteral, LIT
 from pdfminer.utils import isnumber
 
@@ -92,7 +102,7 @@ def dumpxml(out: TextIO, obj: object, codec: Optional[str] = None) -> None:
         out.write("<number>%s</number>" % obj)
         return
 
-    raise TypeError(obj)
+    raise PDFTypeError(obj)
 
 
 def dumptrailers(
@@ -224,7 +234,7 @@ def extractembedded(fname: str, password: str, extractdir: str) -> None:
             )
         path = os.path.join(extractdir, "%.6d-%s" % (objid, filename))
         if os.path.exists(path):
-            raise IOError("file exists: %r" % path)
+            raise PDFIOError("file exists: %r" % path)
         print("extracting: %r" % path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         out = open(path, "wb")

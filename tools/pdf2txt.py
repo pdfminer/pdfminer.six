@@ -9,6 +9,7 @@ from typing import Any, Container, Iterable, List, Optional
 import pdfminer.high_level
 from pdfminer.layout import LAParams
 from pdfminer.utils import AnyIO
+from pdfminer.pdfexceptions import PDFValueError
 
 logging.basicConfig()
 
@@ -43,7 +44,7 @@ def extract_text(
     **kwargs: Any
 ) -> AnyIO:
     if not files:
-        raise ValueError("Must provide files to work upon!")
+        raise PDFValueError("Must provide files to work upon!")
 
     if output_type == "text" and outfile != "-":
         for override, alttype in OUTPUT_TYPES:

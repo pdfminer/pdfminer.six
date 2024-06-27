@@ -25,6 +25,8 @@ from typing import (
     cast,
 )
 
+from .pdfexceptions import PDFException, PDFValueError
+
 
 def get_bytes(data: bytes) -> Iterator[int]:
     yield from data
@@ -331,13 +333,16 @@ class CCITTG4Parser(BitParser):
     BitParser.add(UNCOMPRESSED, "T00000", "00000000011")
     BitParser.add(UNCOMPRESSED, "T10000", "00000000010")
 
-    class EOFB(Exception):
+    class CCITTException(PDFException):
         pass
 
-    class InvalidData(Exception):
+    class EOFB(CCITTException):
         pass
 
-    class ByteSkip(Exception):
+    class InvalidData(CCITTException):
+        pass
+
+    class ByteSkip(CCITTException):
         pass
 
     _color: int
@@ -584,7 +589,7 @@ def ccittfaxdecode(data: bytes, params: Dict[str, object]) -> bytes:
         reversed = cast(bool, params.get("BlackIs1"))
         parser = CCITTFaxDecoder(cols, bytealign=bytealign, reversed=reversed)
     else:
-        raise ValueError(K)
+        raise PDFValueError(K)
     parser.feedbytes(data)
     return parser.close()
 

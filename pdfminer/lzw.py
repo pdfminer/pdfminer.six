@@ -2,10 +2,12 @@ import logging
 from io import BytesIO
 from typing import BinaryIO, Iterator, List, Optional, cast
 
+from .pdfexceptions import PDFException, PDFEOFError
+
 logger = logging.getLogger(__name__)
 
 
-class CorruptDataError(Exception):
+class CorruptDataError(PDFException):
     pass
 
 
@@ -39,7 +41,7 @@ class LZWDecoder:
                 bits -= r
                 x = self.fp.read(1)
                 if not x:
-                    raise EOFError
+                    raise PDFEOFError
                 self.buff = ord(x)
                 self.bpos = 0
         return v

@@ -18,30 +18,18 @@ from typing import (
     Union,
 )
 
-from . import settings
+from . import settings, psexceptions
 from .utils import choplist
 
 log = logging.getLogger(__name__)
 
 
-class PSException(Exception):
-    pass
-
-
-class PSEOF(PSException):
-    pass
-
-
-class PSSyntaxError(PSException):
-    pass
-
-
-class PSTypeError(PSException):
-    pass
-
-
-class PSValueError(PSException):
-    pass
+# Adding aliases for these exceptions for backwards compatibility
+PSException = psexceptions.PSException
+PSEOF = psexceptions.PSEOF
+PSSyntaxError = psexceptions.PSSyntaxError
+PSTypeError = psexceptions.PSTypeError
+PSValueError = psexceptions.PSValueError
 
 
 class PSObject:
@@ -666,7 +654,7 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
                     self.curstack,
                 )
                 self.do_keyword(pos, token)
-                raise
+                raise PSException
             if self.context:
                 continue
             else:

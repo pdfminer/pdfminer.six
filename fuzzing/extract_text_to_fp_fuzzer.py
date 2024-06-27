@@ -10,10 +10,9 @@ with atheris.instrument_imports():
         prepare_pdfminer_fuzzing,
         is_valid_byte_stream,
         generate_layout_parameters,
-        should_ignore_error,
     )
     from pdfminer.high_level import extract_text_to_fp
-    from pdfminer.psparser import PSException
+    from pdfminer.psexceptions import PSException
 
 available_output_formats = ["text", "html", "xml", "tag"]
 available_layout_modes = ["exact", "normal", "loose"]
@@ -42,10 +41,6 @@ def fuzz_one_input(data: bytes) -> None:
             )
     except (AssertionError, PSException):
         return
-    except Exception as e:
-        if should_ignore_error(e):
-            return
-        raise e
 
 
 if __name__ == "__main__":

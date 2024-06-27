@@ -5,6 +5,7 @@ import sys
 from io import StringIO
 from typing import Any, BinaryIO, Container, Iterator, Optional, cast
 
+from .pdfexceptions import PDFValueError
 from .converter import (
     XMLConverter,
     HTMLConverter,
@@ -117,7 +118,7 @@ def extract_text_to_fp(
 
     else:
         msg = f"Output type can be text, html, xml or tag but is " f"{output_type}"
-        raise ValueError(msg)
+        raise PDFValueError(msg)
 
     assert device is not None
     interpreter = PDFPageInterpreter(rsrcmgr, device)
