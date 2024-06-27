@@ -2,7 +2,7 @@
 import atheris
 import sys
 
-from .fuzz_helpers import EnhancedFuzzedDataProvider
+from fuzzing.fuzz_helpers import EnhancedFuzzedDataProvider
 
 with atheris.instrument_imports():
     from .pdf_utils import PDFValidator, prepare_pdfminer_fuzzing
