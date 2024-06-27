@@ -36,7 +36,7 @@ def convert_font_metrics(path: str) -> None:
     See below for the output.
     """
     fonts = {}
-    with open(path, "r") as fileinput:
+    with open(path) as fileinput:
         for line in fileinput.readlines():
             f = line.strip().split(" ")
             if not f:
@@ -66,7 +66,7 @@ def convert_font_metrics(path: str) -> None:
         print("# -*- python -*-")
         print("FONT_METRICS = {")
         for (fontname, (props, chars)) in fonts.items():
-            print(" {!r}: {!r},".format(fontname, (props, chars)))
+            print(f" {fontname!r}: {(props, chars)!r},")
         print("}")
 
 

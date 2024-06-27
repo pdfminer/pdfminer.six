@@ -36,7 +36,7 @@ def main(argv):
     print("# -*- python -*-")
     print("FONT_METRICS = {")
     for (fontname, (props, chars)) in fonts.items():
-        print(" {!r}: {!r},".format(fontname, (props, chars)))
+        print(f" {fontname!r}: {(props, chars)!r},")
     print("}")
     return 0
 

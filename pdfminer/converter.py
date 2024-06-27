@@ -458,7 +458,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
 
     def write_footer(self) -> None:
         page_links = [
-            '<a href="#{}">{}</a>'.format(i, i) for i in range(1, self.pageno)
+            f'<a href="#{i}">{i}</a>' for i in range(1, self.pageno)
         ]
         s = '<div style="position:absolute; top:0px;">Page: %s</div>\n' % ", ".join(
             page_links
@@ -783,7 +783,7 @@ class XMLConverter(PDFConverter[AnyIO]):
                 )
                 self.write(s)
             elif isinstance(item, LTFigure):
-                s = '<figure name="%s" bbox="%s">\n' % (item.name, bbox2str(item.bbox))
+                s = '<figure name="{}" bbox="{}">\n'.format(item.name, bbox2str(item.bbox))
                 self.write(s)
                 for child in item:
                     render(child)
@@ -974,7 +974,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
                 self.write("</div>\n")
             elif isinstance(item, LTTextLine):
                 self.write(
-                    "<span class='ocr_line' title='%s'>" % ((self.bbox_repr(item.bbox)))
+                    "<span class='ocr_line' title='%s'>" % (self.bbox_repr(item.bbox))
                 )
                 for child_line in item:
                     render(child_line)

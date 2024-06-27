@@ -44,25 +44,20 @@ LITERALS_JBIG2_DECODE = (LIT("JBIG2Decode"),)
 LITERALS_JPX_DECODE = (LIT("JPXDecode"),)
 
 
-if sys.version_info >= (3, 8):
-    from typing import Protocol
+from typing import Protocol
 
-    class DecipherCallable(Protocol):
-        """Fully typed a decipher callback, with optional parameter."""
+class DecipherCallable(Protocol):
+    """Fully typed a decipher callback, with optional parameter."""
 
-        def __call__(
-            self,
-            objid: int,
-            genno: int,
-            data: bytes,
-            attrs: Optional[Dict[str, Any]] = None,
-        ) -> bytes:
-            raise NotImplementedError
+    def __call__(
+        self,
+        objid: int,
+        genno: int,
+        data: bytes,
+        attrs: Optional[Dict[str, Any]] = None,
+    ) -> bytes:
+        raise NotImplementedError
 
-else:  # Fallback for older Python
-    from typing import Callable
-
-    DecipherCallable = Callable[..., bytes]
 
 
 class PDFObject(PSObject):
@@ -333,7 +328,7 @@ class PDFStream(PDFObject):
 
                 except zlib.error as e:
                     if settings.STRICT:
-                        error_msg = "Invalid zlib bytes: {!r}, {!r}".format(e, data)
+                        error_msg = f"Invalid zlib bytes: {e!r}, {data!r}"
                         raise PDFException(error_msg)
 
                     try:

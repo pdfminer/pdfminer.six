@@ -12,9 +12,9 @@ def run(sample_path, options=None):
     absolute_path = absolute_sample_path(sample_path)
     with TemporaryFilePath() as output_file_name:
         if options:
-            s = "pdf2txt -o{} {} {}".format(output_file_name, options, absolute_path)
+            s = f"pdf2txt -o{output_file_name} {options} {absolute_path}"
         else:
-            s = "pdf2txt -o{} {}".format(output_file_name, absolute_path)
+            s = f"pdf2txt -o{output_file_name} {absolute_path}"
 
         pdf2txt.main(s.split(" ")[1:])
 
