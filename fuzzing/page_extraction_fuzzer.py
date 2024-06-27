@@ -2,20 +2,25 @@
 import atheris
 import sys
 
-from fuzzing.fuzz_helpers import EnhancedFuzzedDataProvider
+from fuzzing.fuzzed_data_provider import PdfminerFuzzedDataProvider
 
 with atheris.instrument_imports():
-    from .pdf_utils import PDFValidator, prepare_pdfminer_fuzzing
+    from fuzzing.utils import (
+        prepare_pdfminer_fuzzing,
+        is_valid_byte_stream,
+        generate_layout_parameters,
+        should_ignore_error,
+    )
     from pdfminer.high_level import extract_pages
     from pdfminer.psparser import PSException
 
 
 def fuzz_one_input(data: bytes) -> None:
-    if not PDFValidator.is_valid_byte_stream(data):
+    if not is_valid_byte_stream(data):
         # Not worth continuing with this test case
         return
 
-    fdp = EnhancedFuzzedDataProvider(data)
+    fdp = PdfminerFuzzedDataProvider(data)
 
     try:
         with fdp.ConsumeMemoryFile() as f:
@@ -24,13 +29,13 @@ def fuzz_one_input(data: bytes) -> None:
                     f,
                     maxpages=fdp.ConsumeIntInRange(0, 10),
                     page_numbers=fdp.ConsumeOptionalIntList(10, 0, 10),
-                    laparams=PDFValidator.generate_layout_parameters(fdp),
+                    laparams=generate_layout_parameters(fdp),
                 )
             )
     except (AssertionError, PSException):
         return
     except Exception as e:
-        if PDFValidator.should_ignore_error(e):
+        if should_ignore_error(e):
             return
         raise e
 

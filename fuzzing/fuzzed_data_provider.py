@@ -4,7 +4,7 @@ from typing import List, Optional
 from atheris import FuzzedDataProvider
 
 
-class EnhancedFuzzedDataProvider(FuzzedDataProvider):  # type: ignore[misc]
+class PdfminerFuzzedDataProvider(FuzzedDataProvider):  # type: ignore[misc]
     def ConsumeRandomBytes(self) -> bytes:
         int_range = self.ConsumeIntInRange(0, self.remaining_bytes())
         return bytes(self.ConsumeBytes(int_range))
