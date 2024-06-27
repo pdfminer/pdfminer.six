@@ -3,10 +3,10 @@ import sys
 
 import atheris
 
-from fuzz_helpers import EnhancedFuzzedDataProvider
+from .fuzz_helpers import EnhancedFuzzedDataProvider
 
 with atheris.instrument_imports():
-    from pdf_utils import PDFValidator, prepare_pdfminer_fuzzing
+    from .pdf_utils import PDFValidator, prepare_pdfminer_fuzzing
     from pdfminer.high_level import extract_text_to_fp
     from pdfminer.psparser import PSException
 
