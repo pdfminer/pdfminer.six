@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Support for zipped jpeg's ([#938](https://github.com/pdfminer/pdfminer.six/pull/938))
+- Support for setuptools-git-versioning version 2.0.0 ([#957](https://github.com/pdfminer/pdfminer.six/pull/957))
 
 ### Fixed
 
