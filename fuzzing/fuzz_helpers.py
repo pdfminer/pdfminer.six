@@ -1,4 +1,5 @@
 import io
+from typing import List, Optional
 
 from atheris import FuzzedDataProvider
 
@@ -23,3 +24,11 @@ class EnhancedFuzzedDataProvider(FuzzedDataProvider):  # type: ignore[misc]
             return io.BytesIO(self.ConsumeRemainingBytes())
         else:
             return io.BytesIO(self.ConsumeRandomBytes())
+
+    def ConsumeOptionalIntList(
+        self, max_count: int, min: int, max: int
+    ) -> Optional[List[int]]:
+        if self.ConsumeBool():
+            count = self.ConsumeIntInRange(0, max_count)
+            return [int(i) for i in self.ConsumeIntListInRange(count, min, max)]
+        return None

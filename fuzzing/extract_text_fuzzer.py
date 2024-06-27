@@ -19,14 +19,12 @@ def fuzz_one_input(data: bytes) -> None:
     fdp = EnhancedFuzzedDataProvider(data)
 
     try:
-        with fdp.ConsumeMemoryFile() as f:
-            max_pages = fdp.ConsumeIntInRange(0, 1000)
-            extract_text(
-                f,
-                maxpages=max_pages,
-                page_numbers=fdp.ConsumeIntList(fdp.ConsumeIntInRange(0, max_pages), 2),
-                laparams=PDFValidator.generate_layout_parameters(fdp),
-            )
+        extract_text(
+            fdp.ConsumeMemoryFile(),
+            maxpages=fdp.ConsumeIntInRange(0, 10),
+            page_numbers=fdp.ConsumeOptionalIntList(10, 0, 10),
+            laparams=PDFValidator.generate_layout_parameters(fdp),
+        )
     except (AssertionError, PSException):
         return
     except Exception as e:

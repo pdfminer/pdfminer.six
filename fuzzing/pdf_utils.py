@@ -52,20 +52,21 @@ class PDFValidator:
     def generate_layout_parameters(
         fdp: atheris.FuzzedDataProvider,
     ) -> Optional[LAParams]:
-        return (
-            LAParams(
-                line_overlap=fdp.ConsumeFloat(),
-                char_margin=fdp.ConsumeFloat(),
-                line_margin=fdp.ConsumeFloat(),
-                word_margin=fdp.ConsumeFloat(),
-                boxes_flow=fdp.ConsumeFloatInRange(-1.0, 1.0)
-                if fdp.ConsumeBool()
-                else None,
-                detect_vertical=fdp.ConsumeBool(),
-                all_texts=fdp.ConsumeBool(),
-            )
-            if fdp.ConsumeBool()
-            else None
+        if fdp.ConsumeBool():
+            return None
+
+        boxes_flow: Optional[float] = None
+        if fdp.ConsumeBool():
+            boxes_flow = fdp.ConsumeFloatInRange(-1.0, 1.0)
+
+        return LAParams(
+            line_overlap=fdp.ConsumeFloat(),
+            char_margin=fdp.ConsumeFloat(),
+            line_margin=fdp.ConsumeFloat(),
+            word_margin=fdp.ConsumeFloat(),
+            boxes_flow=boxes_flow,
+            detect_vertical=fdp.ConsumeBool(),
+            all_texts=fdp.ConsumeBool(),
         )
 
     @staticmethod

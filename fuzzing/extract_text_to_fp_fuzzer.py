@@ -23,14 +23,13 @@ def fuzz_one_input(data: bytes) -> None:
 
     try:
         with fdp.ConsumeMemoryFile(all_data=False) as f_in, io.BytesIO() as f_out:
-            max_pages = fdp.ConsumeIntInRange(0, 1000)
             extract_text_to_fp(
                 f_in,
                 f_out,
                 output_type=fdp.PickValueInList(available_output_formats),
                 laparams=PDFValidator.generate_layout_parameters(fdp),
-                maxpages=max_pages,
-                page_numbers=fdp.ConsumeIntList(fdp.ConsumeIntInRange(0, max_pages), 2),
+                maxpages=fdp.ConsumeIntInRange(0, 10),
+                page_numbers=fdp.ConsumeOptionalIntList(10, 0, 10),
                 scale=fdp.ConsumeFloatInRange(0.0, 2.0),
                 rotation=fdp.ConsumeIntInRange(0, 360),
                 layoutmode=fdp.PickValueInList(available_layout_modes),
