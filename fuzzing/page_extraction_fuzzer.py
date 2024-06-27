@@ -10,7 +10,7 @@ with atheris.instrument_imports():
     from pdfminer.psparser import PSException
 
 
-def test_one_input(data: bytes) -> None:
+def fuzz_one_input(data: bytes) -> None:
     if not PDFValidator.is_valid_byte_stream(data):
         # Not worth continuing with this test case
         return
@@ -40,5 +40,5 @@ def test_one_input(data: bytes) -> None:
 
 if __name__ == "__main__":
     prepare_pdfminer_fuzzing()
-    atheris.Setup(sys.argv, test_one_input)
+    atheris.Setup(sys.argv, fuzz_one_input)
     atheris.Fuzz()
