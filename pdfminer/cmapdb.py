@@ -3,9 +3,9 @@
 CMaps provide the mapping between character codes and Unicode
 code-points to character ids (CIDs).
 
-More information is available on the Adobe website:
+More information is available on:
 
-  http://opensource.adobe.com/wiki/display/cmap/CMap+Resources
+  https://github.com/adobe-type-tools/cmap-resources
 
 """
 
