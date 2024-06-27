@@ -71,7 +71,7 @@ class TestPlane:
         return plane, obj
 
 
-class TestFunctions(object):
+class TestFunctions:
     def test_shorten_str(self):
         s = shorten_str("Hello there World", 15)
         assert s == "Hello ... World"
