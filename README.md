@@ -55,7 +55,7 @@ How to use
   pdf2txt.py example.pdf
 
 * Or use it with Python. 
-```python
+  ```python
 from pdfminer.high_level import extract_text
 
 text = extract_text("example.pdf")
