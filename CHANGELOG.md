@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Support for zipped jpeg's ([#938](https://github.com/pdfminer/pdfminer.six/pull/938))
-- Added fuzzing harnesses for integration into Google's OSS-Fuzz
+- Fuzzing harnesses for integration into Google's OSS-Fuzz ([949](https://github.com/pdfminer/pdfminer.six/pull/949))
 
 ### Fixed
 
