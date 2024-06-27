@@ -10,10 +10,10 @@ with atheris.instrument_imports():
     from pdfminer.psparser import PSException
 
 
-def TestOneInput(data: bytes):
+def test_one_input(data: bytes) -> None:
     if not PDFValidator.is_valid_byte_stream(data):
         # Not worth continuing with this test case
-        return -1
+        return
 
     fdp = EnhancedFuzzedDataProvider(data)
 
@@ -31,18 +31,14 @@ def TestOneInput(data: bytes):
                 )
             )
     except (AssertionError, PSException):
-        return -1
+        return
     except Exception as e:
         if PDFValidator.should_ignore_error(e):
-            return -1
+            return
         raise e
 
 
-def main():
-    prepare_pdfminer_fuzzing()
-    atheris.Setup(sys.argv, TestOneInput)
-    atheris.Fuzz()
-
-
 if __name__ == "__main__":
-    main()
+    prepare_pdfminer_fuzzing()
+    atheris.Setup(sys.argv, test_one_input)
+    atheris.Fuzz()

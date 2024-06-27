@@ -14,10 +14,10 @@ available_output_formats = ["text", "html", "xml", "tag"]
 available_layout_modes = ["exact", "normal", "loose"]
 
 
-def TestOneInput(data: bytes):
+def test_one_input(data: bytes) -> None:
     if not PDFValidator.is_valid_byte_stream(data):
         # Not worth continuing with this test case
-        return -1
+        return
 
     fdp = EnhancedFuzzedDataProvider(data)
 
@@ -37,18 +37,14 @@ def TestOneInput(data: bytes):
                 strip_control=fdp.ConsumeBool(),
             )
     except (AssertionError, PSException):
-        return -1
+        return
     except Exception as e:
         if PDFValidator.should_ignore_error(e):
-            return -1
+            return
         raise e
-
-
-def main():
-    atheris.Setup(sys.argv, TestOneInput)
-    atheris.Fuzz()
 
 
 if __name__ == "__main__":
     prepare_pdfminer_fuzzing()
-    main()
+    atheris.Setup(sys.argv, test_one_input)
+    atheris.Fuzz()

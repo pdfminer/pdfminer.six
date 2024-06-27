@@ -20,7 +20,7 @@ _EXPLICIT_EXCEPTION_MESSAGES = [
 ]
 
 
-def prepare_pdfminer_fuzzing():
+def prepare_pdfminer_fuzzing() -> None:
     """
     Used to disable logging of the pdfminer module
     """
@@ -35,7 +35,7 @@ class PDFValidator:
     _PDF_MAGIC_BYTES = b"%PDF-"
 
     @staticmethod
-    @atheris.instrument_func
+    @atheris.instrument_func  # type: ignore[misc]
     def is_valid_byte_stream(data: bytes) -> bool:
         """Quick check to see if this is worth of passing to atheris
         :return: Whether the byte-stream passes the basic checks
@@ -48,7 +48,7 @@ class PDFValidator:
         return True
 
     @staticmethod
-    @atheris.instrument_func
+    @atheris.instrument_func  # type: ignore[misc]
     def generate_layout_parameters(
         fdp: atheris.FuzzedDataProvider,
     ) -> Optional[LAParams]:
