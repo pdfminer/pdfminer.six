@@ -25,7 +25,6 @@ from typing import (
     cast,
 )
 
-
 if TYPE_CHECKING:
     from .layout import LTComponent
 

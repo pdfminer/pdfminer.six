@@ -80,7 +80,7 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
                     assert self.doc is not None
                     obj = PDFObjRef(self.doc, objid, genno)
                     self.push((pos, obj))
-                except (TypeError, PSSyntaxError):
+                except PSSyntaxError:
                     pass
         elif token is self.KEYWORD_STREAM:
             # stream object
@@ -163,7 +163,7 @@ class PDFStreamParser(PDFParser):
                 (objid, genno) = (int(objid), int(genno))  # type: ignore[arg-type]
                 obj = PDFObjRef(self.doc, objid, genno)
                 self.push((pos, obj))
-            except (TypeError, PSSyntaxError):
+            except PSSyntaxError:
                 pass
             return
         elif token in (self.KEYWORD_OBJ, self.KEYWORD_ENDOBJ):
