@@ -20,12 +20,16 @@ def TestOneInput(data: bytes):
     try:
         with fdp.ConsumeMemoryFile() as f:
             max_pages = fdp.ConsumeIntInRange(0, 1000)
-            list(extract_pages(
-                f,
-                maxpages=max_pages,
-                page_numbers=fdp.ConsumeIntList(fdp.ConsumeIntInRange(0, max_pages), 2),
-                laparams=PDFValidator.generate_layout_parameters(fdp)
-            ))
+            list(
+                extract_pages(
+                    f,
+                    maxpages=max_pages,
+                    page_numbers=fdp.ConsumeIntList(
+                        fdp.ConsumeIntInRange(0, max_pages), 2
+                    ),
+                    laparams=PDFValidator.generate_layout_parameters(fdp),
+                )
+            )
     except (AssertionError, PSException):
         return -1
     except Exception as e:

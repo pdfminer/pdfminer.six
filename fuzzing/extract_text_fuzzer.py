@@ -25,7 +25,7 @@ def TestOneInput(data: bytes):
                 f,
                 maxpages=max_pages,
                 page_numbers=fdp.ConsumeIntList(fdp.ConsumeIntInRange(0, max_pages), 2),
-                laparams=PDFValidator.generate_layout_parameters(fdp)
+                laparams=PDFValidator.generate_layout_parameters(fdp),
             )
     except (AssertionError, PSException):
         return -1

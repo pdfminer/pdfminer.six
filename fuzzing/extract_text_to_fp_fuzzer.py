@@ -10,17 +10,8 @@ with atheris.instrument_imports():
     from pdfminer.high_level import extract_text_to_fp
     from pdfminer.psparser import PSException
 
-available_output_formats = [
-    'text',
-    'html',
-    'xml',
-    'tag'
-]
-available_layout_modes = [
-    'exact',
-    'normal',
-    'loose'
-]
+available_output_formats = ["text", "html", "xml", "tag"]
+available_layout_modes = ["exact", "normal", "loose"]
 
 
 def TestOneInput(data: bytes):
@@ -43,7 +34,7 @@ def TestOneInput(data: bytes):
                 scale=fdp.ConsumeFloatInRange(0.0, 2.0),
                 rotation=fdp.ConsumeIntInRange(0, 360),
                 layoutmode=fdp.PickValueInList(available_layout_modes),
-                strip_control=fdp.ConsumeBool()
+                strip_control=fdp.ConsumeBool(),
             )
     except (AssertionError, PSException):
         return -1

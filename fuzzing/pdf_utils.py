@@ -11,11 +11,11 @@ from pdfminer.psparser import PSException
 
 # List of all exception message substrings explicitly raised by pdfminer that do not inherit from PSException
 _EXPLICIT_EXCEPTION_MESSAGES = [
-    'Unsupported',
-    'duplicate labels',
-    'AcroForm',
-    'SASLPrep',
-    'Invalid'
+    "Unsupported",
+    "duplicate labels",
+    "AcroForm",
+    "SASLPrep",
+    "Invalid",
 ]
 
 
@@ -23,14 +23,15 @@ def prepare_pdfminer_fuzzing():
     """
     Used to disable logging of the pdfminer module
     """
-    logging.getLogger('pdfminer').setLevel(logging.CRITICAL)
+    logging.getLogger("pdfminer").setLevel(logging.CRITICAL)
 
 
 class PDFValidator:
     """
     Custom mutator class for PDFs for more efficient fuzzing
     """
-    _PDF_MAGIC_BYTES = b'%PDF-'
+
+    _PDF_MAGIC_BYTES = b"%PDF-"
 
     @staticmethod
     @atheris.instrument_func
@@ -41,23 +42,31 @@ class PDFValidator:
         """
         if not data.startswith(PDFValidator._PDF_MAGIC_BYTES):
             return False
-        if b'/Root' not in data:
+        if b"/Root" not in data:
             return False
 
         return True
 
     @staticmethod
     @atheris.instrument_func
-    def generate_layout_parameters(fdp: atheris.FuzzedDataProvider) -> Optional[LAParams]:
-        return LAParams(
-            line_overlap=fdp.ConsumeFloat(),
-            char_margin=fdp.ConsumeFloat(),
-            line_margin=fdp.ConsumeFloat(),
-            word_margin=fdp.ConsumeFloat(),
-            boxes_flow=fdp.ConsumeFloatInRange(-1.0, 1.0) if fdp.ConsumeBool() else None,
-            detect_vertical=fdp.ConsumeBool(),
-            all_texts=fdp.ConsumeBool()
-        ) if fdp.ConsumeBool() else None
+    def generate_layout_parameters(
+        fdp: atheris.FuzzedDataProvider,
+    ) -> Optional[LAParams]:
+        return (
+            LAParams(
+                line_overlap=fdp.ConsumeFloat(),
+                char_margin=fdp.ConsumeFloat(),
+                line_margin=fdp.ConsumeFloat(),
+                word_margin=fdp.ConsumeFloat(),
+                boxes_flow=fdp.ConsumeFloatInRange(-1.0, 1.0)
+                if fdp.ConsumeBool()
+                else None,
+                detect_vertical=fdp.ConsumeBool(),
+                all_texts=fdp.ConsumeBool(),
+            )
+            if fdp.ConsumeBool()
+            else None
+        )
 
     @staticmethod
     def should_ignore_error(e: Exception) -> bool:
@@ -66,4 +75,6 @@ class PDFValidator:
         :param e: The exception to check
         :return: Whether the exception should be ignored or re-thrown
         """
-        return isinstance(e, PSException) or any(em_ss in str(e) for em_ss in _EXPLICIT_EXCEPTION_MESSAGES)
+        return isinstance(e, PSException) or any(
+            em_ss in str(e) for em_ss in _EXPLICIT_EXCEPTION_MESSAGES
+        )
