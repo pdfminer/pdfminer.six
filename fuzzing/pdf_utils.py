@@ -9,7 +9,8 @@ import atheris
 from pdfminer.layout import LAParams
 from pdfminer.psparser import PSException
 
-# List of all exception message substrings explicitly raised by pdfminer that do not inherit from PSException
+# List of all exception message substrings explicitly raised by pdfminer that do not
+# inherit from PSException
 _EXPLICIT_EXCEPTION_MESSAGES = [
     "Unsupported",
     "duplicate labels",
@@ -36,8 +37,7 @@ class PDFValidator:
     @staticmethod
     @atheris.instrument_func
     def is_valid_byte_stream(data: bytes) -> bool:
-        """
-        Performs basic checks on the incoming byte-stream to determine if it is worth passing the input to the library
+        """Quick check to see if this is worth of passing to atheris
         :return: Whether the byte-stream passes the basic checks
         """
         if not data.startswith(PDFValidator._PDF_MAGIC_BYTES):
@@ -71,7 +71,7 @@ class PDFValidator:
     @staticmethod
     def should_ignore_error(e: Exception) -> bool:
         """
-        Determines if the given raised exception is an exception explicitly raised by pdfminer
+        Determines if the given raised exception is explicitly raised by pdfminer
         :param e: The exception to check
         :return: Whether the exception should be ignored or re-thrown
         """

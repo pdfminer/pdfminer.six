@@ -2,7 +2,6 @@ import io
 import tempfile
 import atheris
 import contextlib
-from typing import List, Set, Dict, Tuple, Any
 
 
 class EnhancedFuzzedDataProvider(atheris.FuzzedDataProvider):
