@@ -20,6 +20,7 @@ from .pdffont import PDFFont
 from .pdfinterp import Color
 from .pdfinterp import PDFGraphicState
 from .pdftypes import PDFStream
+from .pdfexceptions import PDFTypeError, PDFValueError
 from .utils import INF, PathSegment
 from .utils import LTComponentT
 from .utils import Matrix
@@ -105,9 +106,9 @@ class LAParams:
             if not (
                 isinstance(self.boxes_flow, int) or isinstance(self.boxes_flow, float)
             ):
-                raise TypeError(boxes_flow_err_msg)
+                raise PDFTypeError(boxes_flow_err_msg)
             if not -1 <= self.boxes_flow <= 1:
-                raise ValueError(boxes_flow_err_msg)
+                raise PDFValueError(boxes_flow_err_msg)
 
     def __repr__(self) -> str:
         return (
@@ -148,16 +149,16 @@ class LTComponent(LTItem):
 
     # Disable comparison.
     def __lt__(self, _: object) -> bool:
-        raise ValueError
+        raise PDFValueError
 
     def __le__(self, _: object) -> bool:
-        raise ValueError
+        raise PDFValueError
 
     def __gt__(self, _: object) -> bool:
-        raise ValueError
+        raise PDFValueError
 
     def __ge__(self, _: object) -> bool:
-        raise ValueError
+        raise PDFValueError
 
     def set_bbox(self, bbox: Rect) -> None:
         (x0, y0, x1, y1) = bbox

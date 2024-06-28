@@ -21,6 +21,7 @@ from .pdftypes import (
     LITERALS_JPX_DECODE,
     LITERALS_FLATE_DECODE,
 )
+from .pdfexceptions import PDFValueError
 
 PIL_ERROR_MESSAGE = (
     "Could not import Pillow. This dependency of pdfminer.six is not "
@@ -46,7 +47,7 @@ class BMPWriter:
         elif bits == 24:
             ncols = 0
         else:
-            raise ValueError(bits)
+            raise PDFValueError(bits)
         self.linesize = align32((self.width * self.bits + 7) // 8)
         self.datasize = self.linesize * self.height
         headersize = 14 + 40 + ncols * 4
@@ -189,7 +190,7 @@ class ImageWriter:
                     "There should never be more than one JBIG2Globals "
                     "associated with a JBIG2 embedded image"
                 )
-                raise ValueError(msg)
+                raise PDFValueError(msg)
             if len(global_streams) == 1:
                 input_stream.write(global_streams[0].get_data().rstrip(b"\n"))
             input_stream.write(image.stream.get_data())

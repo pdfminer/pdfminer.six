@@ -3,16 +3,15 @@ from io import BytesIO
 from typing import BinaryIO, TYPE_CHECKING, Optional, Union
 
 from . import settings
-from .pdftypes import PDFException
 from .pdftypes import PDFObjRef
+from .pdfexceptions import PDFException
 from .pdftypes import PDFStream
 from .pdftypes import dict_value
 from .pdftypes import int_value
 from .psparser import KWD
-from .psparser import PSEOF
+from .psexceptions import PSEOF, PSSyntaxError
 from .psparser import PSKeyword
 from .psparser import PSStackParser
-from .psparser import PSSyntaxError
 
 if TYPE_CHECKING:
     from .pdfdocument import PDFDocument
