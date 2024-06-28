@@ -8,7 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Support for zipped jpeg's ([#938](https://github.com/pdfminer/pdfminer.six/pull/938))
+
 - Fuzzing harnesses for integration into Google's OSS-Fuzz ([949](https://github.com/pdfminer/pdfminer.six/pull/949))
+- Support for setuptools-git-versioning version 2.0.0 ([#957](https://github.com/pdfminer/pdfminer.six/pull/957))
 
 ### Fixed
 
@@ -17,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `ValueError` wrong error message when specifying codec for text output  ([#902](https://github.com/pdfminer/pdfminer.six/pull/902))
 - Resolve stream filter parameters ([#906](https://github.com/pdfminer/pdfminer.six/pull/906))
 - Reading cmap's with whitespace in the name ([#935](https://github.com/pdfminer/pdfminer.six/pull/935))
+- Optimize `apply_png_predictor` by using lists ([#912](https://github.com/pdfminer/pdfminer.six/pull/912))
 
 ## [20231228]
 

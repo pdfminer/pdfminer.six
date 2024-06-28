@@ -140,16 +140,16 @@ def apply_png_predictor(
 
     nbytes = colors * columns * bitspercomponent // 8
     bpp = colors * bitspercomponent // 8  # number of bytes per complete pixel
-    buf = b""
-    line_above = b"\x00" * columns
+    buf = []
+    line_above = list(b"\x00" * columns)
     for scanline_i in range(0, len(data), nbytes + 1):
         filter_type = data[scanline_i]
         line_encoded = data[scanline_i + 1 : scanline_i + 1 + nbytes]
-        raw = b""
+        raw = []
 
         if filter_type == 0:
             # Filter type 0: None
-            raw += line_encoded
+            raw = list(line_encoded)
 
         elif filter_type == 1:
             # Filter type 1: Sub
@@ -164,7 +164,7 @@ def apply_png_predictor(
                 else:
                     raw_x_bpp = int(raw[j - bpp])
                 raw_x = (sub_x + raw_x_bpp) & 255
-                raw += bytes((raw_x,))
+                raw.append(raw_x)
 
         elif filter_type == 2:
             # Filter type 2: Up
@@ -175,7 +175,7 @@ def apply_png_predictor(
             # the prior scanline.
             for (up_x, prior_x) in zip(line_encoded, line_above):
                 raw_x = (up_x + prior_x) & 255
-                raw += bytes((raw_x,))
+                raw.append(raw_x)
 
         elif filter_type == 3:
             # Filter type 3: Average
@@ -193,7 +193,7 @@ def apply_png_predictor(
                     raw_x_bpp = int(raw[j - bpp])
                 prior_x = int(line_above[j])
                 raw_x = (average_x + (raw_x_bpp + prior_x) // 2) & 255
-                raw += bytes((raw_x,))
+                raw.append(raw_x)
 
         elif filter_type == 4:
             # Filter type 4: Paeth
@@ -214,14 +214,14 @@ def apply_png_predictor(
                 prior_x = int(line_above[j])
                 paeth = paeth_predictor(raw_x_bpp, prior_x, prior_x_bpp)
                 raw_x = (paeth_x + paeth) & 255
-                raw += bytes((raw_x,))
+                raw.append(raw_x)
 
         else:
             raise PDFValueError("Unsupported predictor value: %d" % filter_type)
 
-        buf += raw
+        buf.extend(raw)
         line_above = raw
-    return buf
+    return bytes(buf)
 
 
 Point = Tuple[float, float]

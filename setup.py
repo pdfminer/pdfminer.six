@@ -22,7 +22,7 @@ setup(
     setuptools_git_versioning={
         "enabled": True,
     },
-    setup_requires=["setuptools-git-versioning<2"],
+    setup_requires=["setuptools-git-versioning<3"],
     packages=["pdfminer"],
     package_data={"pdfminer": ["cmap/*.pickle.gz", "py.typed"]},
     install_requires=[
