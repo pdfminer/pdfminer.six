@@ -28,8 +28,6 @@ setup(
     install_requires=[
         "charset-normalizer >= 2.0.0",
         "cryptography >= 36.0.0",
-        'typing_extensions; python_version < "3.8"',
-        'importlib_metadata; python_version < "3.8"',
     ],
     extras_require=extras_require,
     description="PDF parser and analyzer",
@@ -49,7 +47,7 @@ setup(
         "layout analysis",
         "text mining",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.8",

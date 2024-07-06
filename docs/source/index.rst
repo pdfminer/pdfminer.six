@@ -59,7 +59,7 @@ Features
 Installation instructions
 =========================
 
-* Install Python 3.6 or newer.
+* Install Python 3.8 or newer.
 * Install pdfminer.six.
 
 ::

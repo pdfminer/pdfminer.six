@@ -1,13 +1,13 @@
 import io
 import logging
 import zlib
-from typing import Protocol
 from typing import (
     TYPE_CHECKING,
     Any,
     Dict,
     Iterable,
     Optional,
+    Protocol,
     Union,
     List,
     Tuple,
