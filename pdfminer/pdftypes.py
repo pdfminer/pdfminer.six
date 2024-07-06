@@ -1,7 +1,7 @@
 import io
 import logging
-import sys
 import zlib
+from typing import Protocol
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -44,8 +44,6 @@ LITERALS_JBIG2_DECODE = (LIT("JBIG2Decode"),)
 LITERALS_JPX_DECODE = (LIT("JPXDecode"),)
 
 
-from typing import Protocol
-
 class DecipherCallable(Protocol):
     """Fully typed a decipher callback, with optional parameter."""
 
@@ -57,7 +55,6 @@ class DecipherCallable(Protocol):
         attrs: Optional[Dict[str, Any]] = None,
     ) -> bytes:
         raise NotImplementedError
-
 
 
 class PDFObject(PSObject):

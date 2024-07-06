@@ -40,7 +40,7 @@ def extract_text(
     output_dir: Optional[str] = None,
     debug: bool = False,
     disable_caching: bool = False,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> AnyIO:
     if not files:
         raise ValueError("Must provide files to work upon!")
