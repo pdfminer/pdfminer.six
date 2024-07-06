@@ -1,9 +1,21 @@
+import sys
+
 from pathlib import Path
 from setuptools import setup
 
 root_dir = Path(__file__).parent
 with open(root_dir / "README.md") as f:
     readme = f.read()
+
+extras_require = {
+    "dev": ["pytest", "nox", "black", "mypy == 0.931"],
+    "docs": ["sphinx", "sphinx-argparse"],
+    "image": ["Pillow"],
+}
+
+if sys.version_info < (3, 12):
+    # There is currently no atheris support for Python 3.12
+    extras_require["dev"].append("atheris")
 
 setup(
     name="pdfminer.six",
@@ -19,11 +31,7 @@ setup(
         'typing_extensions; python_version < "3.8"',
         'importlib_metadata; python_version < "3.8"',
     ],
-    extras_require={
-        "dev": ["pytest", "nox", "black", "mypy == 0.931"],
-        "docs": ["sphinx", "sphinx-argparse"],
-        "image": ["Pillow"],
-    },
+    extras_require=extras_require,
     description="PDF parser and analyzer",
     long_description=readme,
     long_description_content_type="text/markdown",

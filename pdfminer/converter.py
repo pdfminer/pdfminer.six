@@ -41,6 +41,7 @@ from .pdffont import PDFUnicodeNotDefined
 from .pdfinterp import PDFGraphicState, PDFResourceManager
 from .pdfpage import PDFPage
 from .pdftypes import PDFStream
+from .pdfexceptions import PDFValueError
 from .utils import AnyIO, Point, Matrix, Rect, PathSegment, make_compat_str
 from .utils import apply_matrix_pt
 from .utils import bbox2str
@@ -410,9 +411,9 @@ class HTMLConverter(PDFConverter[AnyIO]):
 
         # write() assumes a codec for binary I/O, or no codec for text I/O.
         if self.outfp_binary and not self.codec:
-            raise ValueError("Codec is required for a binary I/O output")
+            raise PDFValueError("Codec is required for a binary I/O output")
         if not self.outfp_binary and self.codec:
-            raise ValueError("Codec must not be specified for a text I/O output")
+            raise PDFValueError("Codec must not be specified for a text I/O output")
 
         if text_colors is None:
             text_colors = {"char": "black"}
@@ -698,7 +699,7 @@ class XMLConverter(PDFConverter[AnyIO]):
 
         # write() assumes a codec for binary I/O, or no codec for text I/O.
         if self.outfp_binary == (not self.codec):
-            raise ValueError("Codec is required for a binary I/O output")
+            raise PDFValueError("Codec is required for a binary I/O output")
 
         self.imagewriter = imagewriter
         self.stripcontrol = stripcontrol

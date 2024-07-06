@@ -32,13 +32,13 @@ from typing import (
     Set,
 )
 
+from pdfminer.pdfexceptions import PDFException, PDFTypeError
 from .encodingdb import name2unicode
 from .psparser import KWD
-from .psparser import PSEOF
+from pdfminer.psexceptions import PSEOF, PSSyntaxError
 from .psparser import PSKeyword
 from .psparser import PSLiteral
 from .psparser import PSStackParser
-from .psparser import PSSyntaxError
 from .psparser import literal_name
 from .utils import choplist
 from .utils import nunpack
@@ -46,7 +46,7 @@ from .utils import nunpack
 log = logging.getLogger(__name__)
 
 
-class CMapError(Exception):
+class CMapError(PDFException):
     pass
 
 
@@ -202,7 +202,7 @@ class FileUnicodeMap(UnicodeMap):
         elif isinstance(code, int):
             unichr = chr(code)
         else:
-            raise TypeError(code)
+            raise PDFTypeError(code)
 
         # A0 = non-breaking space, some weird fonts can have a collision on a cid here.
         if unichr == "\u00A0" and self.cid2unichr.get(cid) == " ":

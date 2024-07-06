@@ -14,14 +14,12 @@ from typing import (
     cast,
 )
 
-from . import settings
+from . import settings, pdfexceptions
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
 from .ccitt import ccittfaxdecode
 from .lzw import lzwdecode
-from .psparser import LIT
-from .psparser import PSException
-from .psparser import PSObject
+from .psparser import LIT, PSObject
 from .runlength import rldecode
 from .utils import apply_png_predictor
 
@@ -61,24 +59,12 @@ class PDFObject(PSObject):
     pass
 
 
-class PDFException(PSException):
-    pass
-
-
-class PDFTypeError(PDFException):
-    pass
-
-
-class PDFValueError(PDFException):
-    pass
-
-
-class PDFObjectNotFound(PDFException):
-    pass
-
-
-class PDFNotImplementedError(PDFException):
-    pass
+# Adding aliases for these exceptions for backwards compatibility
+PDFException = pdfexceptions.PDFException
+PDFTypeError = pdfexceptions.PDFTypeError
+PDFValueError = pdfexceptions.PDFValueError
+PDFObjectNotFound = pdfexceptions.PDFObjectNotFound
+PDFNotImplementedError = pdfexceptions.PDFNotImplementedError
 
 
 class PDFObjRef(PDFObject):
