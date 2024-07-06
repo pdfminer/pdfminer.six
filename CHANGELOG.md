@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Updated Python 3.7 syntax to 3.8 ([#956](https://github.com/pdfminer/pdfminer.six/pull/956))
+- Updated all Python version specifications to a minimum of 3.8 ([#969](https://github.com/pdfminer/pdfminer.six/pull/969))
 
 ## [20231228]
 
