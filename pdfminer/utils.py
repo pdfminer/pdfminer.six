@@ -41,7 +41,7 @@ FileOrName = Union[pathlib.PurePath, str, io.IOBase]
 AnyIO = Union[TextIO, BinaryIO]
 
 
-class open_filename(object):
+class open_filename:
     """
     Context manager that allows opening a filename
     (str or pathlib.PurePath type is supported) and closes it on exit,
@@ -91,7 +91,7 @@ def shorten_str(s: str, size: int) -> str:
         return s[:size]
     if len(s) > size:
         length = (size - 5) // 2
-        return "{} ... {}".format(s[:length], s[-length:])
+        return f"{s[:length]} ... {s[-length:]}"
     else:
         return s
 
@@ -645,12 +645,12 @@ def enc(x: str) -> str:
 
 def bbox2str(bbox: Rect) -> str:
     (x0, y0, x1, y1) = bbox
-    return "{:.3f},{:.3f},{:.3f},{:.3f}".format(x0, y0, x1, y1)
+    return f"{x0:.3f},{y0:.3f},{x1:.3f},{y1:.3f}"
 
 
 def matrix2str(m: Matrix) -> str:
     (a, b, c, d, e, f) = m
-    return "[{:.2f},{:.2f},{:.2f},{:.2f}, ({:.2f},{:.2f})]".format(a, b, c, d, e, f)
+    return f"[{a:.2f},{b:.2f},{c:.2f},{d:.2f}, ({e:.2f},{f:.2f})]"
 
 
 def vecBetweenBoxes(obj1: "LTComponent", obj2: "LTComponent") -> Point:

@@ -157,12 +157,12 @@ class PDFXRef(PDFBaseXRef):
                 break
             f = line.split(b" ")
             if len(f) != 2:
-                error_msg = "Trailer not found: {!r}: line={!r}".format(parser, line)
+                error_msg = f"Trailer not found: {parser!r}: line={line!r}"
                 raise PDFNoValidXRef(error_msg)
             try:
                 (start, nobjs) = map(int, f)
             except ValueError:
-                error_msg = "Invalid line: {!r}: line={!r}".format(parser, line)
+                error_msg = f"Invalid line: {parser!r}: line={line!r}"
                 raise PDFNoValidXRef(error_msg)
             for objid in range(start, start + nobjs):
                 try:
@@ -829,7 +829,7 @@ class PDFDocument:
                 objid1 = x[-2]
         # #### end hack around malformed pdf files
         if objid1 != objid:
-            raise PDFSyntaxError("objid mismatch: {!r}={!r}".format(objid1, objid))
+            raise PDFSyntaxError(f"objid mismatch: {objid1!r}={objid!r}")
 
         if kwd != KWD(b"obj"):
             raise PDFSyntaxError("Invalid object spec: offset=%r" % pos)

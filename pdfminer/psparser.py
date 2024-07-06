@@ -120,7 +120,7 @@ KEYWORD_DICT_END = KWD(b">>")
 def literal_name(x: object) -> Any:
     if not isinstance(x, PSLiteral):
         if settings.STRICT:
-            raise PSTypeError("Literal required: {!r}".format(x))
+            raise PSTypeError(f"Literal required: {x!r}")
         else:
             name = x
     else:
@@ -580,7 +580,7 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
 
     def end_type(self, type: str) -> Tuple[int, List[PSStackType[ExtraT]]]:
         if self.curtype != type:
-            raise PSTypeError("Type mismatch: {!r} != {!r}".format(self.curtype, type))
+            raise PSTypeError(f"Type mismatch: {self.curtype!r} != {type!r}")
         objs = [obj for (_, obj) in self.curstack]
         (pos, self.curtype, self.curstack) = self.context.pop()
         log.debug("end_type: pos=%r, type=%r, objs=%r", pos, type, objs)

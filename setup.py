@@ -4,7 +4,7 @@ from pathlib import Path
 from setuptools import setup
 
 root_dir = Path(__file__).parent
-with open(root_dir / "README.md", "rt") as f:
+with open(root_dir / "README.md") as f:
     readme = f.read()
 
 extras_require = {

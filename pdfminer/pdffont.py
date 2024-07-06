@@ -1063,7 +1063,7 @@ class PDFCIDFont(PDFFont):
         cid_ordering = resolve1(self.cidsysteminfo.get("Ordering", b"unknown")).decode(
             "latin1"
         )
-        self.cidcoding = "{}-{}".format(cid_registry.strip(), cid_ordering.strip())
+        self.cidcoding = f"{cid_registry.strip()}-{cid_ordering.strip()}"
         self.cmap: CMapBase = self.get_cmap_from_spec(spec, strict)
 
         try:

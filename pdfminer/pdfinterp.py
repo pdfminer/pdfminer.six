@@ -320,7 +320,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             try:
                 (_, objs) = self.end_type("inline")
                 if len(objs) % 2 != 0:
-                    error_msg = "Invalid dictionary construct: {!r}".format(objs)
+                    error_msg = f"Invalid dictionary construct: {objs!r}"
                     raise PSTypeError(error_msg)
                 d = {literal_name(k): v for (k, v) in choplist(2, objs)}
                 (pos, data) = self.get_inline_data(pos + len(b"ID "))
