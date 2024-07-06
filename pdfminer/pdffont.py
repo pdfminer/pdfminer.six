@@ -28,8 +28,8 @@ from .cmapdb import UnicodeMap
 from .encodingdb import EncodingDB
 from .encodingdb import name2unicode
 from .fontmetrics import FONT_METRICS
-from .pdftypes import PDFException
 from .pdftypes import PDFStream
+from pdfminer.pdfexceptions import PDFException, PDFValueError, PDFKeyError
 from .pdftypes import dict_value
 from .pdftypes import int_value
 from .pdftypes import list_value
@@ -37,8 +37,8 @@ from .pdftypes import num_value
 from .pdftypes import resolve1, resolve_all
 from .pdftypes import stream_value
 from .psparser import KWD
+from pdfminer.psexceptions import PSEOF
 from .psparser import LIT
-from .psparser import PSEOF
 from .psparser import PSKeyword
 from .psparser import PSLiteral
 from .psparser import PSStackParser
@@ -674,7 +674,7 @@ class CFFFont:
                     self.gid2code[gid] = code
                     code += 1
         else:
-            raise ValueError("unsupported encoding format: %r" % format)
+            raise PDFValueError("unsupported encoding format: %r" % format)
         # Charsets
         self.name2gid = {}
         self.gid2name = {}
@@ -705,7 +705,7 @@ class CFFFont:
             # Format 2
             assert False, str(("Unhandled", format))
         else:
-            raise ValueError("unsupported charset format: %r" % format)
+            raise PDFValueError("unsupported charset format: %r" % format)
         return
 
     def getstr(self, sid: int) -> Union[str, bytes]:
@@ -717,7 +717,7 @@ class CFFFont:
 
 
 class TrueTypeFont:
-    class CMapNotFound(Exception):
+    class CMapNotFound(PDFException):
         pass
 
     def __init__(self, name: str, fp: BinaryIO) -> None:
@@ -1063,7 +1063,7 @@ class PDFCIDFont(PDFFont):
         cid_ordering = resolve1(self.cidsysteminfo.get("Ordering", b"unknown")).decode(
             "latin1"
         )
-        self.cidcoding = "{}-{}".format(cid_registry.strip(), cid_ordering.strip())
+        self.cidcoding = f"{cid_registry.strip()}-{cid_ordering.strip()}"
         self.cmap: CMapBase = self.get_cmap_from_spec(spec, strict)
 
         try:
@@ -1187,7 +1187,7 @@ class PDFCIDFont(PDFFont):
     def to_unichr(self, cid: int) -> str:
         try:
             if not self.unicode_map:
-                raise KeyError(cid)
+                raise PDFKeyError(cid)
             return self.unicode_map.get_unichr(cid)
         except KeyError:
             raise PDFUnicodeNotDefined(self.cidcoding, cid)

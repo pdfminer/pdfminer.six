@@ -6,8 +6,8 @@ from pdfminer.utils import Rect
 from . import settings
 from .pdfdocument import PDFDocument, PDFTextExtractionNotAllowed, PDFNoPageLabels
 from .pdfparser import PDFParser
-from .pdftypes import PDFObjectNotFound
 from .pdftypes import dict_value
+from .pdfexceptions import PDFObjectNotFound
 from .pdftypes import int_value
 from .pdftypes import list_value
 from .pdftypes import resolve1

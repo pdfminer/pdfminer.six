@@ -18,18 +18,18 @@ from .pdffont import PDFTrueTypeFont
 from .pdffont import PDFType1Font
 from .pdffont import PDFType3Font
 from .pdfpage import PDFPage
-from .pdftypes import PDFException
 from .pdftypes import PDFObjRef
+from .pdfexceptions import PDFException
 from .pdftypes import PDFStream
 from .pdftypes import dict_value
 from .pdftypes import list_value
 from .pdftypes import resolve1
 from .pdftypes import stream_value
 from .psparser import KWD
+from .psexceptions import PSEOF, PSTypeError
 from .psparser import LIT
-from .psparser import PSEOF
 from .psparser import PSKeyword
-from .psparser import PSLiteral, PSTypeError
+from .psparser import PSLiteral
 from .psparser import PSStackParser
 from .psparser import PSStackType
 from .psparser import keyword_name
@@ -320,7 +320,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             try:
                 (_, objs) = self.end_type("inline")
                 if len(objs) % 2 != 0:
-                    error_msg = "Invalid dictionary construct: {!r}".format(objs)
+                    error_msg = f"Invalid dictionary construct: {objs!r}"
                     raise PSTypeError(error_msg)
                 d = {literal_name(k): v for (k, v) in choplist(2, objs)}
                 (pos, data) = self.get_inline_data(pos + len(b"ID "))

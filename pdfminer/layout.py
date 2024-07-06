@@ -20,6 +20,7 @@ from .pdffont import PDFFont
 from .pdfinterp import Color
 from .pdfinterp import PDFGraphicState
 from .pdftypes import PDFStream
+from .pdfexceptions import PDFTypeError, PDFValueError
 from .utils import INF, PathSegment
 from .utils import LTComponentT
 from .utils import Matrix
@@ -105,9 +106,9 @@ class LAParams:
             if not (
                 isinstance(self.boxes_flow, int) or isinstance(self.boxes_flow, float)
             ):
-                raise TypeError(boxes_flow_err_msg)
+                raise PDFTypeError(boxes_flow_err_msg)
             if not -1 <= self.boxes_flow <= 1:
-                raise ValueError(boxes_flow_err_msg)
+                raise PDFValueError(boxes_flow_err_msg)
 
     def __repr__(self) -> str:
         return (
@@ -129,7 +130,7 @@ class LTText:
     """Interface for things that have text"""
 
     def __repr__(self) -> str:
-        return "<%s %r>" % (self.__class__.__name__, self.get_text())
+        return "<{} {!r}>".format(self.__class__.__name__, self.get_text())
 
     def get_text(self) -> str:
         """Text contained in this object"""
@@ -144,20 +145,20 @@ class LTComponent(LTItem):
         self.set_bbox(bbox)
 
     def __repr__(self) -> str:
-        return "<%s %s>" % (self.__class__.__name__, bbox2str(self.bbox))
+        return "<{} {}>".format(self.__class__.__name__, bbox2str(self.bbox))
 
     # Disable comparison.
     def __lt__(self, _: object) -> bool:
-        raise ValueError
+        raise PDFValueError
 
     def __le__(self, _: object) -> bool:
-        raise ValueError
+        raise PDFValueError
 
     def __gt__(self, _: object) -> bool:
-        raise ValueError
+        raise PDFValueError
 
     def __ge__(self, _: object) -> bool:
-        raise ValueError
+        raise PDFValueError
 
     def set_bbox(self, bbox: Rect) -> None:
         (x0, y0, x1, y1) = bbox
@@ -330,7 +331,7 @@ class LTImage(LTComponent):
             self.colorspace = [self.colorspace]
 
     def __repr__(self) -> str:
-        return "<%s(%s) %s %r>" % (
+        return "<{}({}) {} {!r}>".format(
             self.__class__.__name__,
             self.name,
             bbox2str(self.bbox),
@@ -410,7 +411,7 @@ class LTChar(LTComponent, LTText):
         return
 
     def __repr__(self) -> str:
-        return "<%s %s matrix=%s font=%r adv=%s text=%r>" % (
+        return "<{} {} matrix={} font={!r} adv={} text={!r}>".format(
             self.__class__.__name__,
             bbox2str(self.bbox),
             matrix2str(self.matrix),
@@ -503,7 +504,7 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         return
 
     def __repr__(self) -> str:
-        return "<%s %s %r>" % (
+        return "<{} {} {!r}>".format(
             self.__class__.__name__,
             bbox2str(self.bbox),
             self.get_text(),
@@ -674,7 +675,7 @@ class LTTextBox(LTTextContainer[LTTextLine]):
         return
 
     def __repr__(self) -> str:
-        return "<%s(%s) %s %r>" % (
+        return "<{}({}) {} {!r}>".format(
             self.__class__.__name__,
             self.index,
             bbox2str(self.bbox),
@@ -1007,7 +1008,7 @@ class LTFigure(LTLayoutContainer):
         return
 
     def __repr__(self) -> str:
-        return "<%s(%s) %s matrix=%s>" % (
+        return "<{}({}) {} matrix={}>".format(
             self.__class__.__name__,
             self.name,
             bbox2str(self.bbox),
@@ -1035,7 +1036,7 @@ class LTPage(LTLayoutContainer):
         return
 
     def __repr__(self) -> str:
-        return "<%s(%r) %s rotate=%r>" % (
+        return "<{}({!r}) {} rotate={!r}>".format(
             self.__class__.__name__,
             self.pageid,
             bbox2str(self.bbox),

@@ -41,6 +41,7 @@ from .pdffont import PDFUnicodeNotDefined
 from .pdfinterp import PDFGraphicState, PDFResourceManager
 from .pdfpage import PDFPage
 from .pdftypes import PDFStream
+from .pdfexceptions import PDFValueError
 from .utils import AnyIO, Point, Matrix, Rect, PathSegment, make_compat_str
 from .utils import apply_matrix_pt
 from .utils import bbox2str
@@ -410,9 +411,9 @@ class HTMLConverter(PDFConverter[AnyIO]):
 
         # write() assumes a codec for binary I/O, or no codec for text I/O.
         if self.outfp_binary and not self.codec:
-            raise ValueError("Codec is required for a binary I/O output")
+            raise PDFValueError("Codec is required for a binary I/O output")
         if not self.outfp_binary and self.codec:
-            raise ValueError("Codec must not be specified for a text I/O output")
+            raise PDFValueError("Codec must not be specified for a text I/O output")
 
         if text_colors is None:
             text_colors = {"char": "black"}
@@ -457,9 +458,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
         return
 
     def write_footer(self) -> None:
-        page_links = [
-            '<a href="#{}">{}</a>'.format(i, i) for i in range(1, self.pageno)
-        ]
+        page_links = [f'<a href="#{i}">{i}</a>' for i in range(1, self.pageno)]
         s = '<div style="position:absolute; top:0px;">Page: %s</div>\n' % ", ".join(
             page_links
         )
@@ -700,7 +699,7 @@ class XMLConverter(PDFConverter[AnyIO]):
 
         # write() assumes a codec for binary I/O, or no codec for text I/O.
         if self.outfp_binary == (not self.codec):
-            raise ValueError("Codec is required for a binary I/O output")
+            raise PDFValueError("Codec is required for a binary I/O output")
 
         self.imagewriter = imagewriter
         self.stripcontrol = stripcontrol
@@ -783,7 +782,9 @@ class XMLConverter(PDFConverter[AnyIO]):
                 )
                 self.write(s)
             elif isinstance(item, LTFigure):
-                s = '<figure name="%s" bbox="%s">\n' % (item.name, bbox2str(item.bbox))
+                s = '<figure name="{}" bbox="{}">\n'.format(
+                    item.name, bbox2str(item.bbox)
+                )
                 self.write(s)
                 for child in item:
                     render(child)
@@ -974,7 +975,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
                 self.write("</div>\n")
             elif isinstance(item, LTTextLine):
                 self.write(
-                    "<span class='ocr_line' title='%s'>" % ((self.bbox_repr(item.bbox)))
+                    "<span class='ocr_line' title='%s'>" % (self.bbox_repr(item.bbox))
                 )
                 for child_line in item:
                     render(child_line)

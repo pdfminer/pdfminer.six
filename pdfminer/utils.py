@@ -25,6 +25,8 @@ from typing import (
     cast,
 )
 
+from .pdfexceptions import PDFTypeError, PDFValueError
+
 if TYPE_CHECKING:
     from .layout import LTComponent
 
@@ -56,7 +58,7 @@ class open_filename:
             self.file_handler = cast(AnyIO, filename)
             self.closing = False
         else:
-            raise TypeError("Unsupported input type: %s" % type(filename))
+            raise PDFTypeError("Unsupported input type: %s" % type(filename))
 
     def __enter__(self) -> AnyIO:
         return self.file_handler
@@ -89,7 +91,7 @@ def shorten_str(s: str, size: int) -> str:
         return s[:size]
     if len(s) > size:
         length = (size - 5) // 2
-        return "{} ... {}".format(s[:length], s[-length:])
+        return f"{s[:length]} ... {s[-length:]}"
     else:
         return s
 
@@ -134,7 +136,7 @@ def apply_png_predictor(
     """
     if bitspercomponent not in [8, 1]:
         msg = "Unsupported `bitspercomponent': %d" % bitspercomponent
-        raise ValueError(msg)
+        raise PDFValueError(msg)
 
     nbytes = colors * columns * bitspercomponent // 8
     bpp = colors * bitspercomponent // 8  # number of bytes per complete pixel
@@ -215,7 +217,7 @@ def apply_png_predictor(
                 raw.append(raw_x)
 
         else:
-            raise ValueError("Unsupported predictor value: %d" % filter_type)
+            raise PDFValueError("Unsupported predictor value: %d" % filter_type)
 
         buf.extend(raw)
         line_above = raw
@@ -360,7 +362,7 @@ def nunpack(s: bytes, default: int = 0) -> int:
     elif length == 8:
         return cast(int, struct.unpack(">Q", s)[0])
     else:
-        raise TypeError("invalid length: %d" % length)
+        raise PDFTypeError("invalid length: %d" % length)
 
 
 PDFDocEncoding = "".join(
@@ -643,12 +645,12 @@ def enc(x: str) -> str:
 
 def bbox2str(bbox: Rect) -> str:
     (x0, y0, x1, y1) = bbox
-    return "{:.3f},{:.3f},{:.3f},{:.3f}".format(x0, y0, x1, y1)
+    return f"{x0:.3f},{y0:.3f},{x1:.3f},{y1:.3f}"
 
 
 def matrix2str(m: Matrix) -> str:
     (a, b, c, d, e, f) = m
-    return "[{:.2f},{:.2f},{:.2f},{:.2f}, ({:.2f},{:.2f})]".format(a, b, c, d, e, f)
+    return f"[{a:.2f},{b:.2f},{c:.2f},{d:.2f}, ({e:.2f},{f:.2f})]"
 
 
 def vecBetweenBoxes(obj1: "LTComponent", obj2: "LTComponent") -> Point:

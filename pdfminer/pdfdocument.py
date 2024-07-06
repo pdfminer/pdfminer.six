@@ -28,10 +28,7 @@ from .data_structures import NumberTree
 from .pdfparser import PDFSyntaxError, PDFParser, PDFStreamParser
 from .pdftypes import (
     DecipherCallable,
-    PDFException,
-    PDFTypeError,
     PDFStream,
-    PDFObjectNotFound,
     decipher_all,
     int_value,
     str_value,
@@ -40,7 +37,9 @@ from .pdftypes import (
     dict_value,
     stream_value,
 )
-from .psparser import PSEOF, literal_name, LIT, KWD
+from .pdfexceptions import PDFException, PDFTypeError, PDFObjectNotFound, PDFKeyError
+from .psparser import literal_name, LIT, KWD
+from .psexceptions import PSEOF
 from .utils import choplist, decode_text, nunpack, format_int_roman, format_int_alpha
 
 log = logging.getLogger(__name__)
@@ -130,7 +129,7 @@ class PDFBaseXRef:
     #     (strmid, index, genno)
     #  or (None, pos, genno)
     def get_pos(self, objid: int) -> Tuple[Optional[int], int, int]:
-        raise KeyError(objid)
+        raise PDFKeyError(objid)
 
     def load(self, parser: PDFParser) -> None:
         raise NotImplementedError
@@ -158,12 +157,12 @@ class PDFXRef(PDFBaseXRef):
                 break
             f = line.split(b" ")
             if len(f) != 2:
-                error_msg = "Trailer not found: {!r}: line={!r}".format(parser, line)
+                error_msg = f"Trailer not found: {parser!r}: line={line!r}"
                 raise PDFNoValidXRef(error_msg)
             try:
                 (start, nobjs) = map(int, f)
             except ValueError:
-                error_msg = "Invalid line: {!r}: line={!r}".format(parser, line)
+                error_msg = f"Invalid line: {parser!r}: line={line!r}"
                 raise PDFNoValidXRef(error_msg)
             for objid in range(start, start + nobjs):
                 try:
@@ -204,10 +203,7 @@ class PDFXRef(PDFBaseXRef):
         return self.offsets.keys()
 
     def get_pos(self, objid: int) -> Tuple[Optional[int], int, int]:
-        try:
-            return self.offsets[objid]
-        except KeyError:
-            raise
+        return self.offsets[objid]
 
 
 class PDFXRefFallback(PDFXRef):
@@ -323,7 +319,7 @@ class PDFXRefStream(PDFBaseXRef):
             else:
                 index += nobjs
         else:
-            raise KeyError(objid)
+            raise PDFKeyError(objid)
         assert self.entlen is not None
         assert self.data is not None
         assert self.fl1 is not None and self.fl2 is not None and self.fl3 is not None
@@ -338,7 +334,7 @@ class PDFXRefStream(PDFBaseXRef):
             return (f2, f3, 0)
         else:
             # this is a free object
-            raise KeyError(objid)
+            raise PDFKeyError(objid)
 
 
 class PDFStandardSecurityHandler:
@@ -833,7 +829,7 @@ class PDFDocument:
                 objid1 = x[-2]
         # #### end hack around malformed pdf files
         if objid1 != objid:
-            raise PDFSyntaxError("objid mismatch: {!r}={!r}".format(objid1, objid))
+            raise PDFSyntaxError(f"objid mismatch: {objid1!r}={objid!r}")
 
         if kwd != KWD(b"obj"):
             raise PDFSyntaxError("Invalid object spec: offset=%r" % pos)
@@ -924,7 +920,7 @@ class PDFDocument:
         try:
             names = dict_value(self.catalog["Names"])
         except (PDFTypeError, KeyError):
-            raise KeyError((cat, key))
+            raise PDFKeyError((cat, key))
         # may raise KeyError
         d0 = dict_value(names[cat])
 
@@ -944,7 +940,7 @@ class PDFDocument:
                     v = lookup(dict_value(c))
                     if v:
                         return v
-            raise KeyError((cat, key))
+            raise PDFKeyError((cat, key))
 
         return lookup(d0)
 
