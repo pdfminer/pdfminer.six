@@ -13,6 +13,7 @@ from typing import (
     Tuple,
     cast,
 )
+from warnings import warn
 
 from . import settings, pdfexceptions
 from .ascii85 import ascii85decode
@@ -66,12 +67,30 @@ PDFValueError = pdfexceptions.PDFValueError
 PDFObjectNotFound = pdfexceptions.PDFObjectNotFound
 PDFNotImplementedError = pdfexceptions.PDFNotImplementedError
 
+_DEFAULT = object()
+
 
 class PDFObjRef(PDFObject):
-    def __init__(self, doc: Optional["PDFDocument"], objid: int, _: object) -> None:
+    def __init__(
+        self, doc: Optional["PDFDocument"], objid: int, _: Any = _DEFAULT
+    ) -> None:
+        """Reference to a PDF object.
+
+        :param doc: The PDF document.
+        :param objid: The object number.
+        :param _: Unused argument for backwards compatibility.
+        """
+        if _ is not _DEFAULT:
+            warn(
+                "The third argument of PDFObjRef is unused and will be removed after "
+                "2024",
+                DeprecationWarning,
+            )
+
         if objid == 0:
             if settings.STRICT:
                 raise PDFValueError("PDF object id cannot be 0.")
+
         self.doc = doc
         self.objid = objid
 

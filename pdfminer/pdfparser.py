@@ -3,13 +3,14 @@ from io import BytesIO
 from typing import BinaryIO, TYPE_CHECKING, Optional, Union
 
 from . import settings
+from .casting import safe_int
 from .pdftypes import PDFObjRef
 from .pdfexceptions import PDFException
 from .pdftypes import PDFStream
 from .pdftypes import dict_value
 from .pdftypes import int_value
 from .psparser import KWD
-from .psexceptions import PSEOF, PSSyntaxError
+from .psexceptions import PSEOF
 from .psparser import PSKeyword
 from .psparser import PSStackParser
 
@@ -73,14 +74,12 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
         elif token is self.KEYWORD_R:
             # reference to indirect object
             if len(self.curstack) >= 2:
-                try:
-                    ((_, objid), (_, genno)) = self.pop(2)
-                    (objid, genno) = (int(objid), int(genno))  # type: ignore[arg-type]
-                    assert self.doc is not None
-                    obj = PDFObjRef(self.doc, objid, genno)
+                (_, _object_id), _ = self.pop(2)
+                object_id = safe_int(_object_id)
+                if object_id is not None:
+                    obj = PDFObjRef(self.doc, object_id)
                     self.push((pos, obj))
-                except PSSyntaxError:
-                    pass
+
         elif token is self.KEYWORD_STREAM:
             # stream object
             ((_, dic),) = self.pop(1)
@@ -157,19 +156,19 @@ class PDFStreamParser(PDFParser):
     def do_keyword(self, pos: int, token: PSKeyword) -> None:
         if token is self.KEYWORD_R:
             # reference to indirect object
-            try:
-                ((_, objid), (_, genno)) = self.pop(2)
-                (objid, genno) = (int(objid), int(genno))  # type: ignore[arg-type]
-                obj = PDFObjRef(self.doc, objid, genno)
+            (_, _object_id), _ = self.pop(2)
+            object_id = safe_int(_object_id)
+            if object_id is not None:
+                obj = PDFObjRef(self.doc, object_id)
                 self.push((pos, obj))
-            except PSSyntaxError:
-                pass
             return
+
         elif token in (self.KEYWORD_OBJ, self.KEYWORD_ENDOBJ):
             if settings.STRICT:
                 # See PDF Spec 3.4.6: Only the object values are stored in the
                 # stream; the obj and endobj keywords are not used.
                 raise PDFSyntaxError("Keyword endobj found in stream")
             return
+
         # others
         self.push((pos, token))
