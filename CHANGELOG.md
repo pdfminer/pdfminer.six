@@ -5,9 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Deprecated
+
+- The third argument (generation number) to `PDFObjRef` ([#972](https://github.com/pdfminer/pdfminer.six/pull/972))
+
 ### Fixed
 
 - `TypeError` when PDF object reference cannot be parsed as int ([#972](https://github.com/pdfminer/pdfminer.six/pull/972))])
+
+### Removed
+
+- Deprecated tools, functions and classes ([#974](https://github.com/pdfminer/pdfminer.six/pull/974))
 
 ## [20240706]
 
