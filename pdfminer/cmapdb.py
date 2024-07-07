@@ -479,27 +479,3 @@ class CMapParser(PSStackParser[PSKeyword]):
                 "(cid) values in the output. "
             )
             log.warning(base_msg + msg)
-
-
-def main(argv: List[str]) -> None:
-    from warnings import warn
-
-    warn(
-        "The function main() from cmapdb.py will be removed in 2023. It was probably "
-        "introduced for testing purposes a long time ago, and no longer relevant. "
-        "Feel free to create a GitHub issue if you disagree.",
-        DeprecationWarning,
-    )
-
-    args = argv[1:]
-    for fname in args:
-        fp = open(fname, "rb")
-        cmap = FileUnicodeMap()
-        CMapParser(cmap, fp).run()
-        fp.close()
-        cmap.dump()
-    return
-
-
-if __name__ == "__main__":
-    main(sys.argv)

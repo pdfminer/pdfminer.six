@@ -6,8 +6,11 @@ Unicode characters instead of using decimal/hex character code.
 The following data was taken by
 
   $ wget https://partners.adobe.com/public/developer/en/opentype/glyphlist.txt
-  $ python tools/conv_glyphlist.py glyphlist.txt > glyphlist.py
 
+```python
+from pdfminer.glyphlist import convert_glyphlist
+
+convert_glyphlist("glyphlist.txt")
 """
 
 # ###################################################################################
