@@ -100,18 +100,6 @@ class PDFTextExtractionNotAllowed(PDFEncryptionError):
     pass
 
 
-class PDFTextExtractionNotAllowedError(PDFTextExtractionNotAllowed):
-    def __init__(self, *args: object) -> None:
-        from warnings import warn
-
-        warn(
-            "PDFTextExtractionNotAllowedError will be removed in the future. "
-            "Use PDFTextExtractionNotAllowed instead.",
-            DeprecationWarning,
-        )
-        super().__init__(*args)
-
-
 # some predefined literals and keywords.
 LITERAL_OBJSTM = LIT("ObjStm")
 LITERAL_XREF = LIT("XRef")

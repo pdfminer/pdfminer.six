@@ -1,6 +1,5 @@
 import logging
 import struct
-import sys
 from io import BytesIO
 from typing import (
     Any,
@@ -1191,25 +1190,3 @@ class PDFCIDFont(PDFFont):
             return self.unicode_map.get_unichr(cid)
         except KeyError:
             raise PDFUnicodeNotDefined(self.cidcoding, cid)
-
-
-def main(argv: List[str]) -> None:
-    from warnings import warn
-
-    warn(
-        "The function main() from pdffont.py will be removed in 2023. It was probably "
-        "introduced for testing purposes a long time ago, and no longer relevant. "
-        "Feel free to create a GitHub issue if you disagree.",
-        DeprecationWarning,
-    )
-
-    for fname in argv[1:]:
-        fp = open(fname, "rb")
-        font = CFFFont(fname, fp)
-        print(font)
-        fp.close()
-    return
-
-
-if __name__ == "__main__":
-    main(sys.argv)
