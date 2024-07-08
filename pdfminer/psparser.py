@@ -117,20 +117,15 @@ KEYWORD_DICT_BEGIN = KWD(b"<<")
 KEYWORD_DICT_END = KWD(b">>")
 
 
-def literal_name(x: object) -> Any:
-    if not isinstance(x, PSLiteral):
+def literal_name(x: object) -> str:
+    if isinstance(x, PSLiteral):
+        name = x.name
+    else:
         if settings.STRICT:
             raise PSTypeError(f"Literal required: {x!r}")
-        else:
-            name = x
-    else:
-        name = x.name
-        if not isinstance(name, str):
-            try:
-                name = str(name, "utf-8")
-            except Exception:
-                pass
-    return name
+        name = x
+
+    return str(name)
 
 
 def keyword_name(x: object) -> Any:
