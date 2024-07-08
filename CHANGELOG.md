@@ -11,8 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- `TypeError` when PDF object reference cannot be parsed as int ([#972](https://github.com/pdfminer/pdfminer.six/pull/972))])
-- `TypeError` when PDF literal cannot be converted to str ([#978](https://github.com/pdfminer/pdfminer.six/pull/978))
+- `TypeError` when corrupt PDF object reference cannot be parsed as int ([#972](https://github.com/pdfminer/pdfminer.six/pull/972))])
+- `TypeError` when corrupt PDF literal cannot be converted to str ([#978](https://github.com/pdfminer/pdfminer.six/pull/978))
+- `ValueError` when corrupt PDF specifies a negative xref location ([#980](http://github.com/pdfminer/pdfminer.six/pull/980))
 
 ### Removed
 
