@@ -117,23 +117,21 @@ KEYWORD_DICT_BEGIN = KWD(b"<<")
 KEYWORD_DICT_END = KWD(b">>")
 
 
-def literal_name(x: object) -> Any:
-    if not isinstance(x, PSLiteral):
+def literal_name(x: Any) -> str:
+    if isinstance(x, PSLiteral):
+        if isinstance(x.name, str):
+            return x.name
+        try:
+            return str(x.name, "utf-8")
+        except UnicodeDecodeError:
+            return str(x.name)
+    else:
         if settings.STRICT:
             raise PSTypeError(f"Literal required: {x!r}")
-        else:
-            name = x
-    else:
-        name = x.name
-        if not isinstance(name, str):
-            try:
-                name = str(name, "utf-8")
-            except Exception:
-                pass
-    return name
+        return str(x)
 
 
-def keyword_name(x: object) -> Any:
+def keyword_name(x: Any) -> Any:
     if not isinstance(x, PSKeyword):
         if settings.STRICT:
             raise PSTypeError("Keyword required: %r" % x)
@@ -523,12 +521,13 @@ class PSBaseParser:
 
 
 # Stack slots may by occupied by any of:
+#  * the name of a literal
 #  * the PSBaseParserToken types
 #  * list (via KEYWORD_ARRAY)
 #  * dict (via KEYWORD_DICT)
 #  * subclass-specific extensions (e.g. PDFStream, PDFObjRef) via ExtraT
 ExtraT = TypeVar("ExtraT")
-PSStackType = Union[float, bool, PSLiteral, bytes, List, Dict, ExtraT]
+PSStackType = Union[str, float, bool, PSLiteral, bytes, List, Dict, ExtraT]
 PSStackEntry = Tuple[int, PSStackType[ExtraT]]
 
 
