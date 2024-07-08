@@ -947,7 +947,7 @@ class PDFPageInterpreter:
 
     def do_Do(self, xobjid_arg: PDFStackT) -> None:
         """Invoke named XObject"""
-        xobjid = cast(str, literal_name(xobjid_arg))
+        xobjid = literal_name(xobjid_arg)
         try:
             xobj = stream_value(self.xobjmap[xobjid])
         except KeyError:
