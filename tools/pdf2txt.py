@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """A command line tool for extracting text and images from PDF and
-output it to plain text, html, xml or tags."""
+output it to plain text, html, xml or tags.
+"""
+
 import argparse
 import logging
 import sys
@@ -8,8 +10,8 @@ from typing import Any, Container, Iterable, List, Optional
 
 import pdfminer.high_level
 from pdfminer.layout import LAParams
-from pdfminer.utils import AnyIO
 from pdfminer.pdfexceptions import PDFValueError
+from pdfminer.utils import AnyIO
 
 logging.basicConfig()
 
@@ -96,7 +98,8 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     parse_params = parser.add_argument_group(
-        "Parser", description="Used during PDF parsing"
+        "Parser",
+        description="Used during PDF parsing",
     )
     parse_params.add_argument(
         "--page-numbers",
@@ -138,7 +141,8 @@ def create_parser() -> argparse.ArgumentParser:
 
     la_params = LAParams()  # will be used for defaults
     la_param_group = parser.add_argument_group(
-        "Layout analysis", description="Used during layout analysis."
+        "Layout analysis",
+        description="Used during layout analysis.",
     )
     la_param_group.add_argument(
         "--no-laparams",
@@ -212,7 +216,8 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     output_params = parser.add_argument_group(
-        "Output", description="Used during output generation."
+        "Output",
+        description="Used during output generation.",
     )
     output_params.add_argument(
         "--outfile",

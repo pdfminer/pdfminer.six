@@ -1,6 +1,6 @@
 import sys
-
 from pathlib import Path
+
 from setuptools import setup
 
 root_dir = Path(__file__).parent

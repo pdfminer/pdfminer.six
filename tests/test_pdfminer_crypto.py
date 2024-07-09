@@ -1,9 +1,9 @@
-"""Test of various compression/encoding modules (previously in doctests)
-"""
+"""Test of various compression/encoding modules (previously in doctests)"""
+
 import binascii
 
 from pdfminer.arcfour import Arcfour
-from pdfminer.ascii85 import asciihexdecode, ascii85decode
+from pdfminer.ascii85 import ascii85decode, asciihexdecode
 from pdfminer.lzw import lzwdecode
 from pdfminer.runlength import rldecode
 
@@ -21,7 +21,8 @@ def dehex(b):
 class TestAscii85:
     def test_ascii85decode(self):
         """The sample string is taken from:
-        http://en.wikipedia.org/w/index.php?title=Ascii85"""
+        http://en.wikipedia.org/w/index.php?title=Ascii85
+        """
         assert ascii85decode(b"9jqo^BlbD-BleB1DJ+*+F(f,q") == b"Man is distinguished"
         assert ascii85decode(b"E,9)oF*2M7/c~>") == b"pleasure."
 

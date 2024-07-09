@@ -157,8 +157,9 @@ class TestExtractPages(unittest.TestCase):
         # Extract with line_margin 0.19 should break into 3 separate textboxes.
         pages = list(
             extract_pages(
-                self._get_test_file_path(), laparams=LAParams(line_margin=0.19)
-            )
+                self._get_test_file_path(),
+                laparams=LAParams(line_margin=0.19),
+            ),
         )
         self.assertEqual(len(pages), 1)
         page = pages[0]
@@ -172,8 +173,9 @@ class TestExtractPages(unittest.TestCase):
         # Extract with line_margin 0.21 should merge into one textbox.
         pages = list(
             extract_pages(
-                self._get_test_file_path(), laparams=LAParams(line_margin=0.21)
-            )
+                self._get_test_file_path(),
+                laparams=LAParams(line_margin=0.21),
+            ),
         )
         self.assertEqual(len(pages), 1)
         page = pages[0]
@@ -185,8 +187,9 @@ class TestExtractPages(unittest.TestCase):
     def test_no_boxes_flow(self):
         pages = list(
             extract_pages(
-                self._get_test_file_path(), laparams=LAParams(boxes_flow=None)
-            )
+                self._get_test_file_path(),
+                laparams=LAParams(boxes_flow=None),
+            ),
         )
         self.assertEqual(len(pages), 1)
         page = pages[0]

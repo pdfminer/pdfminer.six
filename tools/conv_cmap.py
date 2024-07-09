@@ -18,7 +18,6 @@ class CMapConverter:
 
     def get_maps(self, enc):
         if enc.endswith("-H"):
-
             (hmapenc, vmapenc) = (enc, None)
         elif enc == "H":
             (hmapenc, vmapenc) = ("H", "V")
@@ -85,7 +84,7 @@ class CMapConverter:
             cid = int(values[0])
             unimap_h = {}
             unimap_v = {}
-            for (enc, value) in zip(encs, values):
+            for enc, value in zip(encs, values):
                 if enc == "CID":
                     continue
                 if value == "*":
@@ -149,7 +148,7 @@ def main(argv):
 
     def usage():
         print(
-            "usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]" % argv[0]
+            "usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]" % argv[0],
         )
         return 100
 
@@ -158,7 +157,7 @@ def main(argv):
     except getopt.GetoptError:
         return usage()
     enc2codec = {}
-    for (k, v) in opts:
+    for k, v in opts:
         if k == "-c":
             (enc, _, codec) = v.partition("=")
             enc2codec[enc] = codec

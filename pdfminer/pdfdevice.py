@@ -1,28 +1,29 @@
 from typing import (
+    TYPE_CHECKING,
     BinaryIO,
     Iterable,
     List,
     Optional,
     Sequence,
-    TYPE_CHECKING,
     Union,
     cast,
 )
 
+from pdfminer import utils
+from pdfminer.pdfcolor import PDFColorSpace
+from pdfminer.pdffont import PDFFont, PDFUnicodeNotDefined
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdftypes import PDFStream
 from pdfminer.psparser import PSLiteral
-from . import utils
-from .pdfcolor import PDFColorSpace
-from .pdffont import PDFFont
-from .pdffont import PDFUnicodeNotDefined
-from .pdfpage import PDFPage
-from .pdftypes import PDFStream
-from .utils import Matrix, Point, Rect, PathSegment
+from pdfminer.utils import Matrix, PathSegment, Point, Rect
 
 if TYPE_CHECKING:
-    from .pdfinterp import PDFGraphicState
-    from .pdfinterp import PDFResourceManager
-    from .pdfinterp import PDFTextState
-    from .pdfinterp import PDFStackT
+    from pdfminer.pdfinterp import (
+        PDFGraphicState,
+        PDFResourceManager,
+        PDFStackT,
+        PDFTextState,
+    )
 
 
 PDFTextSeq = Iterable[Union[int, float, bytes]]
@@ -241,7 +242,10 @@ class PDFTextDevice(PDFDevice):
 
 class TagExtractor(PDFDevice):
     def __init__(
-        self, rsrcmgr: "PDFResourceManager", outfp: BinaryIO, codec: str = "utf-8"
+        self,
+        rsrcmgr: "PDFResourceManager",
+        outfp: BinaryIO,
+        codec: str = "utf-8",
     ) -> None:
         PDFDevice.__init__(self, rsrcmgr)
         self.outfp = outfp
@@ -292,7 +296,7 @@ class TagExtractor(PDFDevice):
                 [
                     f' {utils.enc(k)}="{utils.make_compat_str(v)}"'
                     for (k, v) in sorted(props.items())
-                ]
+                ],
             )
         out_s = f"<{utils.enc(cast(str, tag.name))}{s}>"
         self._write(out_s)

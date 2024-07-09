@@ -10,18 +10,20 @@ except ImportError:
     # Literal was introduced in Python 3.8
     from typing_extensions import Literal  # type: ignore[assignment]
 
-from .jbig2 import JBIG2StreamReader, JBIG2StreamWriter
-from .layout import LTImage
-from .pdfcolor import LITERAL_DEVICE_CMYK
-from .pdfcolor import LITERAL_DEVICE_GRAY
-from .pdfcolor import LITERAL_DEVICE_RGB
-from .pdftypes import (
+from pdfminer.jbig2 import JBIG2StreamReader, JBIG2StreamWriter
+from pdfminer.layout import LTImage
+from pdfminer.pdfcolor import (
+    LITERAL_DEVICE_CMYK,
+    LITERAL_DEVICE_GRAY,
+    LITERAL_DEVICE_RGB,
+)
+from pdfminer.pdfexceptions import PDFValueError
+from pdfminer.pdftypes import (
     LITERALS_DCT_DECODE,
+    LITERALS_FLATE_DECODE,
     LITERALS_JBIG2_DECODE,
     LITERALS_JPX_DECODE,
-    LITERALS_FLATE_DECODE,
 )
-from .pdfexceptions import PDFValueError
 
 PIL_ERROR_MESSAGE = (
     "Could not import Pillow. This dependency of pdfminer.six is not "
@@ -67,7 +69,13 @@ class BMPWriter:
         )
         assert len(info) == 40, str(len(info))
         header = struct.pack(
-            "<ccIHHI", b"B", b"M", headersize + self.datasize, 0, 0, headersize
+            "<ccIHHI",
+            b"B",
+            b"M",
+            headersize + self.datasize,
+            0,
+            0,
+            headersize,
         )
         assert len(header) == 14, str(len(header))
         self.fp.write(header)
@@ -203,7 +211,12 @@ class ImageWriter:
         return name
 
     def _save_bmp(
-        self, image: LTImage, width: int, height: int, bytes_per_line: int, bits: int
+        self,
+        image: LTImage,
+        width: int,
+        height: int,
+        bytes_per_line: int,
+        bits: int,
     ) -> str:
         """Save a BMP encoded image"""
         name, path = self._create_unique_image_name(image, ".bmp")
@@ -223,8 +236,10 @@ class ImageWriter:
         channels = len(image.stream.get_data()) / width / height / (image.bits / 8)
         with open(path, "wb") as fp:
             try:
-                from PIL import Image  # type: ignore[import]
-                from PIL import ImageOps
+                from PIL import (
+                    Image,  # type: ignore[import]
+                    ImageOps,
+                )
             except ImportError:
                 raise ImportError(PIL_ERROR_MESSAGE)
 

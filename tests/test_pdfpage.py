@@ -12,5 +12,5 @@ class TestPdfPage:
         with open(path, "rb") as fp:
             parser = PDFParser(fp)
             doc = PDFDocument(parser)
-            for (i, page) in enumerate(PDFPage.create_pages(doc)):
+            for i, page in enumerate(PDFPage.create_pages(doc)):
                 assert page.label == expected_labels[i]

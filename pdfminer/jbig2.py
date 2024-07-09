@@ -1,9 +1,9 @@
 import math
 import os
-from struct import pack, unpack, calcsize
+from struct import calcsize, pack, unpack
 from typing import BinaryIO, Dict, Iterable, List, Optional, Tuple, Union, cast
 
-from .pdfexceptions import PDFValueError
+from pdfminer.pdfexceptions import PDFValueError
 
 # segment structure base
 SEG_STRUCT = [
@@ -32,7 +32,7 @@ SEG_TYPE_END_OF_PAGE = 49
 SEG_TYPE_END_OF_FILE = 51
 
 # file literals
-FILE_HEADER_ID = b"\x97\x4A\x42\x32\x0D\x0A\x1A\x0A"
+FILE_HEADER_ID = b"\x97\x4a\x42\x32\x0d\x0a\x1a\x0a"
 FILE_HEAD_FLAG_SEQUENTIAL = 0b00000001
 
 
@@ -45,7 +45,7 @@ def check_flag(flag: int, value: int) -> bool:
 
 
 def masked_value(mask: int, value: int) -> int:
-    for bit_pos in range(0, 31):
+    for bit_pos in range(31):
         if bit_set(bit_pos, mask):
             return (value & mask) >> bit_pos
 
@@ -53,7 +53,7 @@ def masked_value(mask: int, value: int) -> int:
 
 
 def mask_value(mask: int, value: int) -> int:
-    for bit_pos in range(0, 31):
+    for bit_pos in range(31):
         if bit_set(bit_pos, mask):
             return (value & (mask >> bit_pos)) << bit_pos
 
@@ -69,7 +69,8 @@ def unpack_int(format: str, buffer: bytes) -> int:
 JBIG2SegmentFlags = Dict[str, Union[int, bool]]
 JBIG2RetentionFlags = Dict[str, Union[int, List[int], List[bool]]]
 JBIG2Segment = Dict[
-    str, Union[bool, int, bytes, JBIG2SegmentFlags, JBIG2RetentionFlags]
+    str,
+    Union[bool, int, bytes, JBIG2SegmentFlags, JBIG2RetentionFlags],
 ]
 
 
@@ -107,7 +108,10 @@ class JBIG2StreamReader:
             return False
 
     def parse_flags(
-        self, segment: JBIG2Segment, flags: int, field: bytes
+        self,
+        segment: JBIG2Segment,
+        flags: int,
+        field: bytes,
     ) -> JBIG2SegmentFlags:
         return {
             "deferred": check_flag(HEADER_FLAG_DEFERRED, flags),
@@ -116,7 +120,10 @@ class JBIG2StreamReader:
         }
 
     def parse_retention_flags(
-        self, segment: JBIG2Segment, flags: int, field: bytes
+        self,
+        segment: JBIG2Segment,
+        flags: int,
+        field: bytes,
     ) -> JBIG2RetentionFlags:
         ref_count = masked_value(REF_COUNT_SHORT_MASK, flags)
         retain_segments = []
@@ -164,16 +171,18 @@ class JBIG2StreamReader:
         return page
 
     def parse_data_length(
-        self, segment: JBIG2Segment, length: int, field: bytes
+        self,
+        segment: JBIG2Segment,
+        length: int,
+        field: bytes,
     ) -> int:
         if length:
             if (
                 cast(JBIG2SegmentFlags, segment["flags"])["type"]
                 == SEG_TYPE_IMMEDIATE_GEN_REGION
             ) and (length == DATA_LEN_UNKNOWN):
-
                 raise NotImplementedError(
-                    "Working with unknown segment length " "is not implemented yet"
+                    "Working with unknown segment length is not implemented yet",
                 )
             else:
                 segment["raw_data"] = self.stream.read(length)
@@ -194,7 +203,9 @@ class JBIG2StreamWriter:
         self.stream = stream
 
     def write_segments(
-        self, segments: Iterable[JBIG2Segment], fix_last_page: bool = True
+        self,
+        segments: Iterable[JBIG2Segment],
+        fix_last_page: bool = True,
     ) -> int:
         data_len = 0
         current_page: Optional[int] = None
@@ -227,7 +238,9 @@ class JBIG2StreamWriter:
         return data_len
 
     def write_file(
-        self, segments: Iterable[JBIG2Segment], fix_last_page: bool = True
+        self,
+        segments: Iterable[JBIG2Segment],
+        fix_last_page: bool = True,
     ) -> int:
         header = FILE_HEADER_ID
         header_flags = FILE_HEAD_FLAG_SEQUENTIAL
@@ -288,7 +301,9 @@ class JBIG2StreamWriter:
         return pack(">B", flags)
 
     def encode_retention_flags(
-        self, value: JBIG2RetentionFlags, segment: JBIG2Segment
+        self,
+        value: JBIG2RetentionFlags,
+        segment: JBIG2Segment,
     ) -> bytes:
         flags = []
         flags_format = ">B"

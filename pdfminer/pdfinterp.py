@@ -3,41 +3,48 @@ import re
 from io import BytesIO
 from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union, cast
 
-from . import settings
-from .cmapdb import CMap
-from .cmapdb import CMapBase
-from .cmapdb import CMapDB
-from .pdfcolor import PDFColorSpace
-from .pdfcolor import PREDEFINED_COLORSPACE
-from .pdfdevice import PDFDevice
-from .pdfdevice import PDFTextSeq
-from .pdffont import PDFCIDFont
-from .pdffont import PDFFont
-from .pdffont import PDFFontError
-from .pdffont import PDFTrueTypeFont
-from .pdffont import PDFType1Font
-from .pdffont import PDFType3Font
-from .pdfpage import PDFPage
-from .pdftypes import PDFObjRef
-from .pdfexceptions import PDFException
-from .pdftypes import PDFStream
-from .pdftypes import dict_value
-from .pdftypes import list_value
-from .pdftypes import resolve1
-from .pdftypes import stream_value
-from .psparser import KWD
-from .psexceptions import PSEOF, PSTypeError
-from .psparser import LIT
-from .psparser import PSKeyword
-from .psparser import PSLiteral
-from .psparser import PSStackParser
-from .psparser import PSStackType
-from .psparser import keyword_name
-from .psparser import literal_name
-from .utils import MATRIX_IDENTITY
-from .utils import Matrix, Point, PathSegment, Rect
-from .utils import choplist
-from .utils import mult_matrix
+from pdfminer import settings
+from pdfminer.cmapdb import CMap, CMapBase, CMapDB
+from pdfminer.pdfcolor import PREDEFINED_COLORSPACE, PDFColorSpace
+from pdfminer.pdfdevice import PDFDevice, PDFTextSeq
+from pdfminer.pdfexceptions import PDFException
+from pdfminer.pdffont import (
+    PDFCIDFont,
+    PDFFont,
+    PDFFontError,
+    PDFTrueTypeFont,
+    PDFType1Font,
+    PDFType3Font,
+)
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdftypes import (
+    PDFObjRef,
+    PDFStream,
+    dict_value,
+    list_value,
+    resolve1,
+    stream_value,
+)
+from pdfminer.psexceptions import PSEOF, PSTypeError
+from pdfminer.psparser import (
+    KWD,
+    LIT,
+    PSKeyword,
+    PSLiteral,
+    PSStackParser,
+    PSStackType,
+    keyword_name,
+    literal_name,
+)
+from pdfminer.utils import (
+    MATRIX_IDENTITY,
+    Matrix,
+    PathSegment,
+    Point,
+    Rect,
+    choplist,
+    mult_matrix,
+)
 
 log = logging.getLogger(__name__)
 
@@ -181,9 +188,7 @@ class PDFResourceManager:
 
     def get_procset(self, procs: Sequence[object]) -> None:
         for proc in procs:
-            if proc is LITERAL_PDF:
-                pass
-            elif proc is LITERAL_TEXT:
+            if proc is LITERAL_PDF or proc is LITERAL_TEXT:
                 pass
             else:
                 pass
@@ -286,9 +291,12 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 c = bytes((ci,))
                 data += c
                 self.charpos += 1
-                if len(target) <= i and c.isspace():
-                    i += 1
-                elif i < len(target) and c == (bytes((target[i],))):
+                if (
+                    len(target) <= i
+                    and c.isspace()
+                    or i < len(target)
+                    and c == (bytes((target[i],)))
+                ):
                     i += 1
                 else:
                     i = 0
@@ -365,31 +373,31 @@ class PDFPageInterpreter:
                 name = literal_name(spec[0])
             else:
                 name = literal_name(spec)
-            if name == "ICCBased" and isinstance(spec, list) and 2 <= len(spec):
+            if name == "ICCBased" and isinstance(spec, list) and len(spec) >= 2:
                 return PDFColorSpace(name, stream_value(spec[1])["N"])
-            elif name == "DeviceN" and isinstance(spec, list) and 2 <= len(spec):
+            elif name == "DeviceN" and isinstance(spec, list) and len(spec) >= 2:
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
                 return PREDEFINED_COLORSPACE.get(name)
 
-        for (k, v) in dict_value(resources).items():
+        for k, v in dict_value(resources).items():
             log.debug("Resource: %r: %r", k, v)
             if k == "Font":
-                for (fontid, spec) in dict_value(v).items():
+                for fontid, spec in dict_value(v).items():
                     objid = None
                     if isinstance(spec, PDFObjRef):
                         objid = spec.objid
                     spec = dict_value(spec)
                     self.fontmap[fontid] = self.rsrcmgr.get_font(objid, spec)
             elif k == "ColorSpace":
-                for (csid, spec) in dict_value(v).items():
+                for csid, spec in dict_value(v).items():
                     colorspace = get_colorspace(resolve1(spec))
                     if colorspace is not None:
                         self.csmap[csid] = colorspace
             elif k == "ProcSet":
                 self.rsrcmgr.get_procset(list_value(v))
             elif k == "XObject":
-                for (xobjid, xobjstrm) in dict_value(v).items():
+                for xobjid, xobjstrm in dict_value(v).items():
                     self.xobjmap[xobjid] = xobjstrm
 
     def init_state(self, ctm: Matrix) -> None:
@@ -423,7 +431,8 @@ class PDFPageInterpreter:
         return (self.ctm, self.textstate.copy(), self.graphicstate.copy())
 
     def set_current_state(
-        self, state: Tuple[Matrix, PDFTextState, PDFGraphicState]
+        self,
+        state: Tuple[Matrix, PDFTextState, PDFGraphicState],
     ) -> None:
         (self.ctm, self.textstate, self.graphicstate) = state
         self.device.set_ctm(self.ctm)
@@ -480,7 +489,7 @@ class PDFPageInterpreter:
 
     def do_gs(self, name: PDFStackT) -> None:
         """Set parameters from graphics state parameter dictionary"""
-        # todo
+        # TODO
 
     def do_m(self, x: PDFStackT, y: PDFStackT) -> None:
         """Begin new subpath"""
@@ -509,19 +518,19 @@ class PDFPageInterpreter:
                 cast(float, y2),
                 cast(float, x3),
                 cast(float, y3),
-            )
+            ),
         )
 
     def do_v(self, x2: PDFStackT, y2: PDFStackT, x3: PDFStackT, y3: PDFStackT) -> None:
         """Append curved segment to path (initial point replicated)"""
         self.curpath.append(
-            ("v", cast(float, x2), cast(float, y2), cast(float, x3), cast(float, y3))
+            ("v", cast(float, x2), cast(float, y2), cast(float, x3), cast(float, y3)),
         )
 
     def do_y(self, x1: PDFStackT, y1: PDFStackT, x3: PDFStackT, y3: PDFStackT) -> None:
         """Append curved segment to path (final point replicated)"""
         self.curpath.append(
-            ("y", cast(float, x1), cast(float, y1), cast(float, x3), cast(float, y3))
+            ("y", cast(float, x1), cast(float, y1), cast(float, x3), cast(float, y3)),
         )
 
     def do_h(self) -> None:
@@ -832,7 +841,10 @@ class PDFPageInterpreter:
             return
         assert self.ncs is not None
         self.device.render_string(
-            self.textstate, cast(PDFTextSeq, seq), self.ncs, self.graphicstate.copy()
+            self.textstate,
+            cast(PDFTextSeq, seq),
+            self.ncs,
+            self.graphicstate.copy(),
         )
 
     def do_Tj(self, s: PDFStackT) -> None:
@@ -895,7 +907,9 @@ class PDFPageInterpreter:
                 resources = self.resources.copy()
             self.device.begin_figure(xobjid, bbox, matrix)
             interpreter.render_contents(
-                resources, [xobj], ctm=mult_matrix(matrix, self.ctm)
+                resources,
+                [xobj],
+                ctm=mult_matrix(matrix, self.ctm),
             )
             self.device.end_figure(xobjid)
         elif subtype is LITERAL_IMAGE and "Width" in xobj and "Height" in xobj:
@@ -932,7 +946,10 @@ class PDFPageInterpreter:
         This method may be called recursively.
         """
         log.debug(
-            "render_contents: resources=%r, streams=%r, ctm=%r", resources, streams, ctm
+            "render_contents: resources=%r, streams=%r, ctm=%r",
+            resources,
+            streams,
+            ctm,
         )
         self.init_resources(resources)
         self.init_state(ctm)
@@ -952,7 +969,8 @@ class PDFPageInterpreter:
             if isinstance(obj, PSKeyword):
                 name = keyword_name(obj)
                 method = "do_%s" % name.replace("*", "_a").replace('"', "_w").replace(
-                    "'", "_q"
+                    "'",
+                    "_q",
                 )
                 if hasattr(self, method):
                     func = getattr(self, method)
@@ -965,9 +983,8 @@ class PDFPageInterpreter:
                     else:
                         log.debug("exec: %s", name)
                         func()
-                else:
-                    if settings.STRICT:
-                        error_msg = "Unknown operator: %r" % name
-                        raise PDFInterpreterError(error_msg)
+                elif settings.STRICT:
+                    error_msg = "Unknown operator: %r" % name
+                    raise PDFInterpreterError(error_msg)
             else:
                 self.push(obj)

@@ -1,29 +1,25 @@
 #!/usr/bin/env python3
 """Extract pdf structure in XML format"""
+
 import logging
 import os.path
 import re
 import sys
-from typing import Any, Container, Dict, Iterable, List, Optional, TextIO, Union, cast
 from argparse import ArgumentParser
+from typing import Any, Container, Dict, Iterable, List, Optional, TextIO, Union, cast
 
 import pdfminer
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback
-from pdfminer.pdfpage import PDFPage
-from pdfminer.pdfparser import PDFParser
-from pdfminer.pdftypes import (
-    PDFStream,
-    PDFObjRef,
-    resolve1,
-    stream_value,
-)
 from pdfminer.pdfexceptions import (
+    PDFIOError,
+    PDFObjectNotFound,
     PDFTypeError,
     PDFValueError,
-    PDFObjectNotFound,
-    PDFIOError,
 )
-from pdfminer.psparser import PSKeyword, PSLiteral, LIT
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdftypes import PDFObjRef, PDFStream, resolve1, stream_value
+from pdfminer.psparser import LIT, PSKeyword, PSLiteral
 from pdfminer.utils import isnumber
 
 logging.basicConfig()
@@ -47,7 +43,7 @@ def dumpxml(out: TextIO, obj: object, codec: Optional[str] = None) -> None:
 
     if isinstance(obj, dict):
         out.write('<dict size="%d">\n' % len(obj))
-        for (k, v) in obj.items():
+        for k, v in obj.items():
             out.write("<key>%s</key>\n" % k)
             out.write("<value>")
             dumpxml(out, v)
@@ -106,7 +102,9 @@ def dumpxml(out: TextIO, obj: object, codec: Optional[str] = None) -> None:
 
 
 def dumptrailers(
-    out: TextIO, doc: PDFDocument, show_fallback_xref: bool = False
+    out: TextIO,
+    doc: PDFDocument,
+    show_fallback_xref: bool = False,
 ) -> None:
     for xref in doc.xrefs:
         if not isinstance(xref, PDFXRefFallback) or show_fallback_xref:
@@ -181,7 +179,7 @@ def dumpoutline(
     try:
         outlines = doc.get_outlines()
         outfp.write("<outlines>\n")
-        for (level, title, dest, a, se) in outlines:
+        for level, title, dest, a, se in outlines:
             pageno = None
             if dest:
                 dest = resolve_dest(dest)
@@ -227,7 +225,7 @@ def extractembedded(fname: str, password: str, extractdir: str) -> None:
         if fileobj.get("Type") is not LITERAL_EMBEDDEDFILE:
             raise PDFValueError(
                 "unable to process PDF: reference for %r "
-                "is not an EmbeddedFile" % (filename)
+                "is not an EmbeddedFile" % (filename),
             )
         path = os.path.join(extractdir, "%.6d-%s" % (objid, filename))
         if os.path.exists(path):
@@ -273,7 +271,7 @@ def dumppdf(
             obj = doc.getobj(objid)
             dumpxml(outfp, obj, codec=codec)
     if pagenos:
-        for (pageno, page) in enumerate(PDFPage.create_pages(doc)):
+        for pageno, page in enumerate(PDFPage.create_pages(doc)):
             if pageno in pagenos:
                 if codec:
                     for obj in page.contents:
@@ -322,11 +320,15 @@ def create_parser() -> ArgumentParser:
         help="Extract structure of outline",
     )
     procedure_parser.add_argument(
-        "--extract-embedded", "-E", type=str, help="Extract embedded files"
+        "--extract-embedded",
+        "-E",
+        type=str,
+        help="Extract embedded files",
     )
 
     parse_params = parser.add_argument_group(
-        "Parser", description="Used during PDF parsing"
+        "Parser",
+        description="Used during PDF parsing",
     )
     parse_params.add_argument(
         "--page-numbers",
@@ -372,7 +374,8 @@ def create_parser() -> ArgumentParser:
     )
 
     output_params = parser.add_argument_group(
-        "Output", description="Used during output generation."
+        "Output",
+        description="Used during output generation.",
     )
     output_params.add_argument(
         "--outfile",

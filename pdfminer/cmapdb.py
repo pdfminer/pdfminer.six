@@ -1,4 +1,4 @@
-""" Adobe character mapping (CMap) support.
+"""Adobe character mapping (CMap) support.
 
 CMaps provide the mapping between character codes and Unicode
 code-points to character ids (CIDs).
@@ -25,23 +25,18 @@ from typing import (
     List,
     MutableMapping,
     Optional,
+    Set,
     TextIO,
     Tuple,
     Union,
     cast,
-    Set,
 )
 
+from pdfminer.encodingdb import name2unicode
 from pdfminer.pdfexceptions import PDFException, PDFTypeError
-from .encodingdb import name2unicode
-from .psparser import KWD
 from pdfminer.psexceptions import PSEOF, PSSyntaxError
-from .psparser import PSKeyword
-from .psparser import PSLiteral
-from .psparser import PSStackParser
-from .psparser import literal_name
-from .utils import choplist
-from .utils import nunpack
+from pdfminer.psparser import KWD, PSKeyword, PSLiteral, PSStackParser, literal_name
+from pdfminer.utils import choplist, nunpack
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +46,6 @@ class CMapError(PDFException):
 
 
 class CMapBase:
-
     debug = 0
 
     def __init__(self, **kwargs: object) -> None:
@@ -88,7 +82,7 @@ class CMap(CMapBase):
         assert isinstance(cmap, CMap), str(type(cmap))
 
         def copy(dst: Dict[int, object], src: Dict[int, object]) -> None:
-            for (k, v) in src.items():
+            for k, v in src.items():
                 if isinstance(v, dict):
                     d: Dict[int, object] = {}
                     dst[k] = d
@@ -121,7 +115,7 @@ class CMap(CMapBase):
         if code2cid is None:
             code2cid = self.code2cid
             code = ()
-        for (k, v) in sorted(code2cid.items()):
+        for k, v in sorted(code2cid.items()):
             c = code + (k,)
             if isinstance(v, int):
                 out.write("code %r = cid %d\n" % (c, v))
@@ -160,7 +154,7 @@ class UnicodeMap(CMapBase):
         return self.cid2unichr[cid]
 
     def dump(self, out: TextIO = sys.stdout) -> None:
-        for (k, v) in sorted(self.cid2unichr.items()):
+        for k, v in sorted(self.cid2unichr.items()):
             out.write("cid %d = unicode %r\n" % (k, v))
 
 
@@ -174,7 +168,7 @@ class IdentityUnicodeMap(UnicodeMap):
 class FileCMap(CMap):
     def add_code2cid(self, code: str, cid: int) -> None:
         assert isinstance(code, str) and isinstance(cid, int), str(
-            (type(code), type(cid))
+            (type(code), type(cid)),
         )
         d = self.code2cid
         for c in code[:-1]:
@@ -205,7 +199,7 @@ class FileUnicodeMap(UnicodeMap):
             raise PDFTypeError(code)
 
         # A0 = non-breaking space, some weird fonts can have a collision on a cid here.
-        if unichr == "\u00A0" and self.cid2unichr.get(cid) == " ":
+        if unichr == "\u00a0" and self.cid2unichr.get(cid) == " ":
             return
         self.cid2unichr[cid] = unichr
 
@@ -229,7 +223,6 @@ class PyUnicodeMap(UnicodeMap):
 
 
 class CMapDB:
-
     _cmap_cache: Dict[str, PyCMap] = {}
     _umap_cache: Dict[str, List[PyUnicodeMap]] = {}
 
@@ -253,8 +246,7 @@ class CMapDB:
                     return type(str(name), (), pickle.loads(gzfile.read()))
                 finally:
                     gzfile.close()
-        else:
-            raise CMapDB.CMapNotFound(name)
+        raise CMapDB.CMapNotFound(name)
 
     @classmethod
     def get_cmap(cls, name: str) -> CMapBase:
@@ -364,7 +356,7 @@ class CMapParser(PSStackParser[PSKeyword]):
 
         if token is self.KEYWORD_ENDCIDRANGE:
             objs = [obj for (__, obj) in self.popall()]
-            for (start_byte, end_byte, cid) in choplist(3, objs):
+            for start_byte, end_byte, cid in choplist(3, objs):
                 if not isinstance(start_byte, bytes):
                     self._warn_once("The start object of begincidrange is not a byte.")
                     continue
@@ -377,7 +369,7 @@ class CMapParser(PSStackParser[PSKeyword]):
                 if len(start_byte) != len(end_byte):
                     self._warn_once(
                         "The start and end byte of begincidrange have "
-                        "different lengths."
+                        "different lengths.",
                     )
                     continue
                 start_prefix = start_byte[:-4]
@@ -385,7 +377,7 @@ class CMapParser(PSStackParser[PSKeyword]):
                 if start_prefix != end_prefix:
                     self._warn_once(
                         "The prefix of the start and end byte of "
-                        "begincidrange are not the same."
+                        "begincidrange are not the same.",
                     )
                     continue
                 svar = start_byte[-4:]
@@ -404,7 +396,7 @@ class CMapParser(PSStackParser[PSKeyword]):
 
         if token is self.KEYWORD_ENDCIDCHAR:
             objs = [obj for (__, obj) in self.popall()]
-            for (cid, code) in choplist(2, objs):
+            for cid, code in choplist(2, objs):
                 if isinstance(code, bytes) and isinstance(cid, int):
                     self.cmap.add_cid2unichr(cid, code)
             return
@@ -415,7 +407,7 @@ class CMapParser(PSStackParser[PSKeyword]):
 
         if token is self.KEYWORD_ENDBFRANGE:
             objs = [obj for (__, obj) in self.popall()]
-            for (start_byte, end_byte, code) in choplist(3, objs):
+            for start_byte, end_byte, code in choplist(3, objs):
                 if not isinstance(start_byte, bytes):
                     self._warn_once("The start object is not a byte.")
                     continue
@@ -431,7 +423,7 @@ class CMapParser(PSStackParser[PSKeyword]):
                     if len(code) != end - start + 1:
                         self._warn_once(
                             "The difference between the start and end "
-                            "offsets does not match the code length."
+                            "offsets does not match the code length.",
                         )
                     for cid, unicode_value in zip(range(start, end + 1), code):
                         self.cmap.add_cid2unichr(cid, unicode_value)
@@ -452,7 +444,7 @@ class CMapParser(PSStackParser[PSKeyword]):
 
         if token is self.KEYWORD_ENDBFCHAR:
             objs = [obj for (__, obj) in self.popall()]
-            for (cid, code) in choplist(2, objs):
+            for cid, code in choplist(2, objs):
                 if isinstance(cid, bytes) and isinstance(code, bytes):
                     self.cmap.add_cid2unichr(nunpack(cid), code)
             return

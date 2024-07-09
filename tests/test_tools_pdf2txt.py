@@ -3,9 +3,9 @@ import os
 from shutil import rmtree
 from tempfile import mkdtemp
 
-import tools.pdf2txt as pdf2txt
 from tests.helpers import absolute_sample_path
 from tests.tempfilepath import TemporaryFilePath
+from tools import pdf2txt
 
 
 def run(sample_path, options=None):
@@ -64,7 +64,8 @@ class TestPdf2Txt:
 
     def test_contrib_issue_350(self):
         """Regression test for
-        https://github.com/pdfminer/pdfminer.six/issues/350"""
+        https://github.com/pdfminer/pdfminer.six/issues/350
+        """
         run("contrib/issue-00352-asw-oct96-p41.pdf")
 
     def test_scancode_patchelf(self):

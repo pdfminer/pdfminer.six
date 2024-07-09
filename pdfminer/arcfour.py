@@ -1,9 +1,8 @@
-""" Python implementation of Arcfour encryption algorithm.
+"""Python implementation of Arcfour encryption algorithm.
 See https://en.wikipedia.org/wiki/RC4
 This code is in the public domain.
 
 """
-
 
 from typing import Sequence
 

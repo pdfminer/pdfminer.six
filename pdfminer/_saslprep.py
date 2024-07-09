@@ -21,10 +21,10 @@
 __all__ = ["saslprep"]
 
 import stringprep
-from typing import Callable, Tuple
 import unicodedata
+from typing import Callable, Tuple
 
-from .pdfexceptions import PDFValueError
+from pdfminer.pdfexceptions import PDFValueError
 
 # RFC4013 section 2.3 prohibited output.
 _PROHIBITED: Tuple[Callable[[str], bool], ...] = (
@@ -66,7 +66,11 @@ def saslprep(data: str, prohibit_unassigned_code_points: bool = True) -> str:
     in_table_c12 = stringprep.in_table_c12
     in_table_b1 = stringprep.in_table_b1
     data = "".join(
-        ["\u0020" if in_table_c12(elt) else elt for elt in data if not in_table_b1(elt)]
+        [
+            "\u0020" if in_table_c12(elt) else elt
+            for elt in data
+            if not in_table_b1(elt)
+        ],
     )
 
     # RFC3454 section 2, step 2 - Normalize

@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 import io
-
-# -*- coding: utf-8 -*-
-
 import logging
 import re
 from typing import (
@@ -19,8 +16,8 @@ from typing import (
     Union,
 )
 
-from . import settings, psexceptions
-from .utils import choplist
+from pdfminer import psexceptions, settings
+from pdfminer.utils import choplist
 
 log = logging.getLogger(__name__)
 
@@ -36,11 +33,8 @@ PSValueError = psexceptions.PSValueError
 class PSObject:
     """Base class for all PS or PDF-related data types."""
 
-    pass
-
 
 class PSLiteral(PSObject):
-
     """A class that represents a PostScript literal.
 
     Postscript literals are used as identifiers, such as
@@ -63,7 +57,6 @@ class PSLiteral(PSObject):
 
 
 class PSKeyword(PSObject):
-
     """A class that represents a PostScript keyword.
 
     PostScript keywords are a dozen of predefined words.
@@ -170,7 +163,6 @@ PSBaseParserToken = Union[float, bool, PSLiteral, PSKeyword, bytes]
 
 
 class PSBaseParser:
-
     """Most basic PostScript parser that performs only tokenization."""
 
     BUFSIZ = 4096
@@ -260,7 +252,7 @@ class PSBaseParser:
         self.fp.seek(0, io.SEEK_END)
         pos = self.fp.tell()
         buf = b""
-        while 0 < pos:
+        while pos > 0:
             prevpos = pos
             pos = max(0, pos - self.BUFSIZ)
             self.fp.seek(pos)
@@ -500,7 +492,8 @@ class PSBaseParser:
         j = m.start(0)
         self._curtoken += s[i:j]
         token = HEX_PAIR.sub(
-            lambda m: bytes((int(m.group(0), 16),)), SPC.sub(b"", self._curtoken)
+            lambda m: bytes((int(m.group(0), 16),)),
+            SPC.sub(b"", self._curtoken),
         )
         self._add_token(token)
         self._parse1 = self._parse_main
@@ -631,7 +624,10 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
                         raise
             elif isinstance(token, PSKeyword):
                 log.debug(
-                    "do_keyword: pos=%r, token=%r, stack=%r", pos, token, self.curstack
+                    "do_keyword: pos=%r, token=%r, stack=%r",
+                    pos,
+                    token,
+                    self.curstack,
                 )
                 self.do_keyword(pos, token)
             else:

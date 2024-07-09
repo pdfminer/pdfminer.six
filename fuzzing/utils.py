@@ -1,6 +1,5 @@
-"""
-Utilities shared across the various PDF fuzzing harnesses
-"""
+"""Utilities shared across the various PDF fuzzing harnesses"""
+
 import logging
 from typing import Optional
 
@@ -12,9 +11,7 @@ PDF_MAGIC_BYTES = b"%PDF-"
 
 
 def prepare_pdfminer_fuzzing() -> None:
-    """
-    Used to disable logging of the pdfminer module
-    """
+    """Used to disable logging of the pdfminer module"""
     logging.getLogger("pdfminer").setLevel(logging.CRITICAL)
 
 

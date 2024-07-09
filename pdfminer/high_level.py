@@ -5,20 +5,20 @@ import sys
 from io import StringIO
 from typing import Any, BinaryIO, Container, Iterator, Optional, cast
 
-from .pdfexceptions import PDFValueError
-from .converter import (
-    XMLConverter,
-    HTMLConverter,
-    TextConverter,
-    PDFPageAggregator,
+from pdfminer.converter import (
     HOCRConverter,
+    HTMLConverter,
+    PDFPageAggregator,
+    TextConverter,
+    XMLConverter,
 )
-from .image import ImageWriter
-from .layout import LAParams, LTPage
-from .pdfdevice import PDFDevice, TagExtractor
-from .pdfinterp import PDFResourceManager, PDFPageInterpreter
-from .pdfpage import PDFPage
-from .utils import open_filename, FileOrName, AnyIO
+from pdfminer.image import ImageWriter
+from pdfminer.layout import LAParams, LTPage
+from pdfminer.pdfdevice import PDFDevice, TagExtractor
+from pdfminer.pdfexceptions import PDFValueError
+from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
+from pdfminer.pdfpage import PDFPage
+from pdfminer.utils import AnyIO, FileOrName, open_filename
 
 
 def extract_text_to_fp(
@@ -83,7 +83,11 @@ def extract_text_to_fp(
 
     if output_type == "text":
         device = TextConverter(
-            rsrcmgr, outfp, codec=codec, laparams=laparams, imagewriter=imagewriter
+            rsrcmgr,
+            outfp,
+            codec=codec,
+            laparams=laparams,
+            imagewriter=imagewriter,
         )
 
     elif output_type == "xml":
@@ -109,7 +113,11 @@ def extract_text_to_fp(
 
     elif output_type == "hocr":
         device = HOCRConverter(
-            rsrcmgr, outfp, codec=codec, laparams=laparams, stripcontrol=strip_control
+            rsrcmgr,
+            outfp,
+            codec=codec,
+            laparams=laparams,
+            stripcontrol=strip_control,
         )
 
     elif output_type == "tag":
@@ -117,7 +125,7 @@ def extract_text_to_fp(
         device = TagExtractor(rsrcmgr, cast(BinaryIO, outfp), codec=codec)
 
     else:
-        msg = f"Output type can be text, html, xml or tag but is " f"{output_type}"
+        msg = f"Output type can be text, html, xml or tag but is {output_type}"
         raise PDFValueError(msg)
 
     assert device is not None
@@ -207,7 +215,11 @@ def extract_pages(
         device = PDFPageAggregator(resource_manager, laparams=laparams)
         interpreter = PDFPageInterpreter(resource_manager, device)
         for page in PDFPage.get_pages(
-            fp, page_numbers, maxpages=maxpages, password=password, caching=caching
+            fp,
+            page_numbers,
+            maxpages=maxpages,
+            password=password,
+            caching=caching,
         ):
             interpreter.process_page(page)
             layout = device.get_result()

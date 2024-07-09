@@ -1,8 +1,8 @@
 import logging
 from io import BytesIO
 
-from pdfminer.psparser import KWD, LIT, PSBaseParser, PSStackParser
 from pdfminer.psexceptions import PSEOF
+from pdfminer.psparser import KWD, LIT, PSBaseParser, PSStackParser
 
 logger = logging.getLogger(__name__)
 

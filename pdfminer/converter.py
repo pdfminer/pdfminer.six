@@ -15,38 +15,48 @@ from typing import (
     cast,
 )
 
+from pdfminer import utils
+from pdfminer.image import ImageWriter
+from pdfminer.layout import (
+    LAParams,
+    LTAnno,
+    LTChar,
+    LTComponent,
+    LTContainer,
+    LTCurve,
+    LTFigure,
+    LTImage,
+    LTItem,
+    LTLayoutContainer,
+    LTLine,
+    LTPage,
+    LTRect,
+    LTText,
+    LTTextBox,
+    LTTextBoxVertical,
+    LTTextGroup,
+    LTTextLine,
+    TextGroupElement,
+)
 from pdfminer.pdfcolor import PDFColorSpace
-from . import utils
-from .image import ImageWriter
-from .layout import LAParams, LTComponent, TextGroupElement
-from .layout import LTAnno
-from .layout import LTChar
-from .layout import LTContainer
-from .layout import LTCurve
-from .layout import LTFigure
-from .layout import LTImage
-from .layout import LTItem
-from .layout import LTLayoutContainer
-from .layout import LTLine
-from .layout import LTPage
-from .layout import LTRect
-from .layout import LTText
-from .layout import LTTextBox
-from .layout import LTTextBoxVertical
-from .layout import LTTextGroup
-from .layout import LTTextLine
-from .pdfdevice import PDFTextDevice
-from .pdffont import PDFFont
-from .pdffont import PDFUnicodeNotDefined
-from .pdfinterp import PDFGraphicState, PDFResourceManager
-from .pdfpage import PDFPage
-from .pdftypes import PDFStream
-from .pdfexceptions import PDFValueError
-from .utils import AnyIO, Point, Matrix, Rect, PathSegment, make_compat_str
-from .utils import apply_matrix_pt
-from .utils import bbox2str
-from .utils import enc
-from .utils import mult_matrix
+from pdfminer.pdfdevice import PDFTextDevice
+from pdfminer.pdfexceptions import PDFValueError
+from pdfminer.pdffont import PDFFont, PDFUnicodeNotDefined
+from pdfminer.pdfinterp import PDFGraphicState, PDFResourceManager
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdftypes import PDFStream
+from pdfminer.utils import (
+    AnyIO,
+    Matrix,
+    PathSegment,
+    Point,
+    Rect,
+    apply_matrix_pt,
+    bbox2str,
+    enc,
+    make_compat_str,
+    mult_matrix,
+)
 
 log = logging.getLogger(__name__)
 
@@ -305,9 +315,7 @@ class PDFConverter(PDFLayoutAnalyzer, Generic[IOType]):
             return False
         elif isinstance(outfp, io.BytesIO):
             return True
-        elif isinstance(outfp, io.StringIO):
-            return False
-        elif isinstance(outfp, io.TextIOBase):
+        elif isinstance(outfp, io.StringIO) or isinstance(outfp, io.TextIOBase):
             return False
 
         return True
@@ -404,7 +412,12 @@ class HTMLConverter(PDFConverter[AnyIO]):
         text_colors: Optional[Dict[str, str]] = None,
     ) -> None:
         PDFConverter.__init__(
-            self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams
+            self,
+            rsrcmgr,
+            outfp,
+            codec=codec,
+            pageno=pageno,
+            laparams=laparams,
         )
 
         # write() assumes a codec for binary I/O, or no codec for text I/O.
@@ -455,7 +468,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
     def write_footer(self) -> None:
         page_links = [f'<a href="#{i}">{i}</a>' for i in range(1, self.pageno)]
         s = '<div style="position:absolute; top:0px;">Page: %s</div>\n' % ", ".join(
-            page_links
+            page_links,
         )
         self.write(s)
         self.write("</body></html>\n")
@@ -464,7 +477,13 @@ class HTMLConverter(PDFConverter[AnyIO]):
         self.write(enc(text))
 
     def place_rect(
-        self, color: str, borderwidth: int, x: float, y: float, w: float, h: float
+        self,
+        color: str,
+        borderwidth: int,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
     ) -> None:
         color2 = self.rect_colors.get(color)
         if color2 is not None:
@@ -486,7 +505,13 @@ class HTMLConverter(PDFConverter[AnyIO]):
         self.place_rect(color, borderwidth, item.x0, item.y1, item.width, item.height)
 
     def place_image(
-        self, item: LTImage, borderwidth: int, x: float, y: float, w: float, h: float
+        self,
+        item: LTImage,
+        borderwidth: int,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
     ) -> None:
         if self.imagewriter is not None:
             name = self.imagewriter.export_image(item)
@@ -505,7 +530,12 @@ class HTMLConverter(PDFConverter[AnyIO]):
             self.write(s)
 
     def place_text(
-        self, color: str, text: str, x: float, y: float, size: float
+        self,
+        color: str,
+        text: str,
+        x: float,
+        y: float,
+        size: float,
     ) -> None:
         color2 = self.text_colors.get(color)
         if color2 is not None:
@@ -566,7 +596,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
             fontname_without_subset_tag = fontname.split("+")[-1]
             self.write(
                 '<span style="font-family: %s; font-size:%dpx">'
-                % (fontname_without_subset_tag, fontsize * self.scale * self.fontscale)
+                % (fontname_without_subset_tag, fontsize * self.scale * self.fontscale),
             )
             self._font = font
         self.write_text(text)
@@ -589,12 +619,10 @@ class HTMLConverter(PDFConverter[AnyIO]):
                 if self.showpageno:
                     self.write(
                         '<div style="position:absolute; top:%dpx;">'
-                        % ((self._yoffset - item.y1) * self.scale)
+                        % ((self._yoffset - item.y1) * self.scale),
                     )
                     self.write(
-                        '<a name="{}">Page {}</a></div>\n'.format(
-                            item.pageid, item.pageid
-                        )
+                        f'<a name="{item.pageid}">Page {item.pageid}</a></div>\n',
                     )
                 for child in item:
                     render(child)
@@ -610,48 +638,54 @@ class HTMLConverter(PDFConverter[AnyIO]):
                 self.end_div("figure")
             elif isinstance(item, LTImage):
                 self.place_image(item, 1, item.x0, item.y1, item.width, item.height)
-            else:
-                if self.layoutmode == "exact":
-                    if isinstance(item, LTTextLine):
-                        self.place_border("textline", 1, item)
-                        for child in item:
-                            render(child)
-                    elif isinstance(item, LTTextBox):
-                        self.place_border("textbox", 1, item)
-                        self.place_text(
-                            "textbox", str(item.index + 1), item.x0, item.y1, 20
-                        )
-                        for child in item:
-                            render(child)
-                    elif isinstance(item, LTChar):
-                        self.place_border("char", 1, item)
-                        self.place_text(
-                            "char", item.get_text(), item.x0, item.y1, item.size
-                        )
-                else:
-                    if isinstance(item, LTTextLine):
-                        for child in item:
-                            render(child)
-                        if self.layoutmode != "loose":
-                            self.put_newline()
-                    elif isinstance(item, LTTextBox):
-                        self.begin_div(
-                            "textbox",
-                            1,
-                            item.x0,
-                            item.y1,
-                            item.width,
-                            item.height,
-                            item.get_writing_mode(),
-                        )
-                        for child in item:
-                            render(child)
-                        self.end_div("textbox")
-                    elif isinstance(item, LTChar):
-                        fontname = make_compat_str(item.fontname)
-                        self.put_text(item.get_text(), fontname, item.size)
-                    elif isinstance(item, LTText):
-                        self.write_text(item.get_text())
+            elif self.layoutmode == "exact":
+                if isinstance(item, LTTextLine):
+                    self.place_border("textline", 1, item)
+                    for child in item:
+                        render(child)
+                elif isinstance(item, LTTextBox):
+                    self.place_border("textbox", 1, item)
+                    self.place_text(
+                        "textbox",
+                        str(item.index + 1),
+                        item.x0,
+                        item.y1,
+                        20,
+                    )
+                    for child in item:
+                        render(child)
+                elif isinstance(item, LTChar):
+                    self.place_border("char", 1, item)
+                    self.place_text(
+                        "char",
+                        item.get_text(),
+                        item.x0,
+                        item.y1,
+                        item.size,
+                    )
+            elif isinstance(item, LTTextLine):
+                for child in item:
+                    render(child)
+                if self.layoutmode != "loose":
+                    self.put_newline()
+            elif isinstance(item, LTTextBox):
+                self.begin_div(
+                    "textbox",
+                    1,
+                    item.x0,
+                    item.y1,
+                    item.width,
+                    item.height,
+                    item.get_writing_mode(),
+                )
+                for child in item:
+                    render(child)
+                self.end_div("textbox")
+            elif isinstance(item, LTChar):
+                fontname = make_compat_str(item.fontname)
+                self.put_text(item.get_text(), fontname, item.size)
+            elif isinstance(item, LTText):
+                self.write_text(item.get_text())
 
         render(ltpage)
         self._yoffset += self.pagemargin
@@ -661,7 +695,6 @@ class HTMLConverter(PDFConverter[AnyIO]):
 
 
 class XMLConverter(PDFConverter[AnyIO]):
-
     CONTROL = re.compile("[\x00-\x08\x0b-\x0c\x0e-\x1f]")
 
     def __init__(
@@ -675,7 +708,12 @@ class XMLConverter(PDFConverter[AnyIO]):
         stripcontrol: bool = False,
     ) -> None:
         PDFConverter.__init__(
-            self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams
+            self,
+            rsrcmgr,
+            outfp,
+            codec=codec,
+            pageno=pageno,
+            laparams=laparams,
         )
 
         # write() assumes a codec for binary I/O, or no codec for text I/O.
@@ -712,7 +750,7 @@ class XMLConverter(PDFConverter[AnyIO]):
             if isinstance(item, LTTextBox):
                 self.write(
                     '<textbox id="%d" bbox="%s" />\n'
-                    % (item.index, bbox2str(item.bbox))
+                    % (item.index, bbox2str(item.bbox)),
                 )
             elif isinstance(item, LTTextGroup):
                 self.write('<textgroup bbox="%s">\n' % bbox2str(item.bbox))
@@ -757,9 +795,7 @@ class XMLConverter(PDFConverter[AnyIO]):
                 )
                 self.write(s)
             elif isinstance(item, LTFigure):
-                s = '<figure name="{}" bbox="{}">\n'.format(
-                    item.name, bbox2str(item.bbox)
-                )
+                s = f'<figure name="{item.name}" bbox="{bbox2str(item.bbox)}">\n'
                 self.write(s)
                 for child in item:
                     render(child)
@@ -804,11 +840,12 @@ class XMLConverter(PDFConverter[AnyIO]):
                     name = self.imagewriter.export_image(item)
                     self.write(
                         '<image src="%s" width="%d" height="%d" />\n'
-                        % (enc(name), item.width, item.height)
+                        % (enc(name), item.width, item.height),
                     )
                 else:
                     self.write(
-                        '<image width="%d" height="%d" />\n' % (item.width, item.height)
+                        '<image width="%d" height="%d" />\n'
+                        % (item.width, item.height),
                     )
             else:
                 assert False, str(("Unhandled", item))
@@ -848,7 +885,12 @@ class HOCRConverter(PDFConverter[AnyIO]):
         stripcontrol: bool = False,
     ):
         PDFConverter.__init__(
-            self, rsrcmgr, outfp, codec=codec, pageno=pageno, laparams=laparams
+            self,
+            rsrcmgr,
+            outfp,
+            codec=codec,
+            pageno=pageno,
+            laparams=laparams,
         )
         self.stripcontrol = stripcontrol
         self.within_chars = False
@@ -874,24 +916,24 @@ class HOCRConverter(PDFConverter[AnyIO]):
         if self.codec:
             self.write(
                 "<html xmlns='http://www.w3.org/1999/xhtml' "
-                "xml:lang='en' lang='en' charset='%s'>\n" % self.codec
+                "xml:lang='en' lang='en' charset='%s'>\n" % self.codec,
             )
         else:
             self.write(
                 "<html xmlns='http://www.w3.org/1999/xhtml' "
-                "xml:lang='en' lang='en'>\n"
+                "xml:lang='en' lang='en'>\n",
             )
         self.write("<head>\n")
         self.write("<title></title>\n")
         self.write(
-            "<meta http-equiv='Content-Type' " "content='text/html;charset=utf-8' />\n"
+            "<meta http-equiv='Content-Type' content='text/html;charset=utf-8' />\n",
         )
         self.write(
-            "<meta name='ocr-system' " "content='pdfminer.six HOCR Converter' />\n"
+            "<meta name='ocr-system' content='pdfminer.six HOCR Converter' />\n",
         )
         self.write(
             "  <meta name='ocr-capabilities'"
-            " content='ocr_page ocr_block ocr_line ocrx_word'/>\n"
+            " content='ocr_page ocr_block ocr_line ocrx_word'/>\n",
         )
         self.write("</head>\n")
         self.write("<body>\n")
@@ -899,7 +941,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
     def write_footer(self) -> None:
         self.write("<!-- comment in the following line to debug -->\n")
         self.write(
-            "<!--script src='https://unpkg.com/hocrjs'>" "</script--></body></html>\n"
+            "<!--script src='https://unpkg.com/hocrjs'></script--></body></html>\n",
         )
 
     def write_text(self, text: str) -> None:
@@ -928,7 +970,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
                         self.working_size,
                         self.working_text.strip(),
                     )
-                )
+                ),
             )
         self.within_chars = False
 
@@ -940,14 +982,14 @@ class HOCRConverter(PDFConverter[AnyIO]):
                 self.page_bbox = item.bbox
                 self.write(
                     "<div class='ocr_page' id='%s' title='%s'>\n"
-                    % (item.pageid, self.bbox_repr(item.bbox))
+                    % (item.pageid, self.bbox_repr(item.bbox)),
                 )
                 for child in item:
                     render(child)
                 self.write("</div>\n")
             elif isinstance(item, LTTextLine):
                 self.write(
-                    "<span class='ocr_line' title='%s'>" % (self.bbox_repr(item.bbox))
+                    "<span class='ocr_line' title='%s'>" % (self.bbox_repr(item.bbox)),
                 )
                 for child_line in item:
                     render(child_line)
@@ -955,7 +997,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
             elif isinstance(item, LTTextBox):
                 self.write(
                     "<div class='ocr_block' id='%d' title='%s'>\n"
-                    % (item.index, self.bbox_repr(item.bbox))
+                    % (item.index, self.bbox_repr(item.bbox)),
                 )
                 for child in item:
                     render(child)
@@ -967,27 +1009,26 @@ class HOCRConverter(PDFConverter[AnyIO]):
                     self.working_bbox = item.bbox
                     self.working_font = item.fontname
                     self.working_size = item.size
+                elif len(item.get_text().strip()) == 0:
+                    self.write_word()
+                    self.write(item.get_text())
                 else:
-                    if len(item.get_text().strip()) == 0:
+                    if (
+                        self.working_bbox[1] != item.bbox[1]
+                        or self.working_font != item.fontname
+                        or self.working_size != item.size
+                    ):
                         self.write_word()
-                        self.write(item.get_text())
-                    else:
-                        if (
-                            self.working_bbox[1] != item.bbox[1]
-                            or self.working_font != item.fontname
-                            or self.working_size != item.size
-                        ):
-                            self.write_word()
-                            self.working_bbox = item.bbox
-                            self.working_font = item.fontname
-                            self.working_size = item.size
-                        self.working_text += item.get_text()
-                        self.working_bbox = (
-                            self.working_bbox[0],
-                            self.working_bbox[1],
-                            item.bbox[2],
-                            self.working_bbox[3],
-                        )
+                        self.working_bbox = item.bbox
+                        self.working_font = item.fontname
+                        self.working_size = item.size
+                    self.working_text += item.get_text()
+                    self.working_bbox = (
+                        self.working_bbox[0],
+                        self.working_bbox[1],
+                        item.bbox[2],
+                        self.working_bbox[3],
+                    )
 
         render(ltpage)
 
