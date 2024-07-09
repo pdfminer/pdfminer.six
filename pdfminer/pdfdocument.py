@@ -950,19 +950,28 @@ class PDFDocument:
     def find_xref(self, parser: PDFParser) -> int:
         """Internal function used to locate the first XRef."""
         # search the last xref table by scanning the file backwards.
-        prev = None
+        prev = b""
         for line in parser.revreadlines():
             line = line.strip()
             log.debug("find_xref: %r", line)
+
             if line == b"startxref":
-                break
+                log.debug("xref found: pos=%r", prev)
+
+                if not prev.isdigit():
+                    raise PDFNoValidXRef(f"Invalid xref position: {prev!r}")
+
+                start = int(prev)
+
+                if not start >= 0:
+                    raise PDFNoValidXRef(f"Invalid negative xref position: {start}")
+
+                return start
+
             if line:
                 prev = line
-        else:
-            raise PDFNoValidXRef("Unexpected EOF")
-        log.debug("xref found: pos=%r", prev)
-        assert prev is not None
-        return int(prev)
+
+        raise PDFNoValidXRef("Unexpected EOF")
 
     # read xref table
     def read_xref_from(
