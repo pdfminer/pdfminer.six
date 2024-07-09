@@ -1,6 +1,6 @@
 import itertools
 import logging
-from typing import Any, BinaryIO, Container, Dict, Iterator, List, Optional, Tuple
+from typing import Any, BinaryIO, Container, Dict, Iterator, List, Optional, Set, Tuple
 
 from pdfminer import settings
 from pdfminer.pdfdocument import (
@@ -96,33 +96,43 @@ class PDFPage:
 
     @classmethod
     def create_pages(cls, document: PDFDocument) -> Iterator["PDFPage"]:
-        def search(
-            obj: object,
-            parent: Dict[str, object],
-        ) -> Iterator[Tuple[int, Dict[object, Dict[object, object]]]]:
+        def depth_first_search(
+            obj: Any,
+            parent: Dict[str, Any],
+            visited: Optional[Set[Any]] = None,
+        ) -> Iterator[Tuple[int, Dict[Any, Dict[Any, Any]]]]:
             if isinstance(obj, int):
-                objid = obj
-                tree = dict_value(document.getobj(objid)).copy()
+                object_id = obj
+                object_properties = dict_value(document.getobj(object_id)).copy()
             else:
                 # This looks broken. obj.objid means obj could be either
                 # PDFObjRef or PDFStream, but neither is valid for dict_value.
-                objid = obj.objid  # type: ignore[attr-defined]
-                tree = dict_value(obj).copy()
+                object_id = obj.objid  # type: ignore[attr-defined]
+                object_properties = dict_value(obj).copy()
+
+            # Avoid recursion errors by keeping track of visited nodes
+            if visited is None:
+                visited = set()
+            if object_id in visited:
+                return
+            visited.add(object_id)
+
             for k, v in parent.items():
-                if k in cls.INHERITABLE_ATTRS and k not in tree:
-                    tree[k] = v
+                if k in cls.INHERITABLE_ATTRS and k not in object_properties:
+                    object_properties[k] = v
 
-            tree_type = tree.get("Type")
-            if tree_type is None and not settings.STRICT:  # See #64
-                tree_type = tree.get("type")
+            object_type = object_properties.get("Type")
+            if object_type is None and not settings.STRICT:  # See #64
+                object_type = object_properties.get("type")
 
-            if tree_type is LITERAL_PAGES and "Kids" in tree:
-                log.debug("Pages: Kids=%r", tree["Kids"])
-                for c in list_value(tree["Kids"]):
-                    yield from search(c, tree)
-            elif tree_type is LITERAL_PAGE:
-                log.debug("Page: %r", tree)
-                yield (objid, tree)
+            if object_type is LITERAL_PAGES and "Kids" in object_properties:
+                log.debug("Pages: Kids=%r", object_properties["Kids"])
+                for child in list_value(object_properties["Kids"]):
+                    yield from depth_first_search(child, object_properties, visited)
+
+            elif object_type is LITERAL_PAGE:
+                log.debug("Page: %r", object_properties)
+                yield (object_id, object_properties)
 
         try:
             page_labels: Iterator[Optional[str]] = document.get_page_labels()
@@ -131,7 +141,7 @@ class PDFPage:
 
         pages = False
         if "Pages" in document.catalog:
-            objects = search(document.catalog["Pages"], document.catalog)
+            objects = depth_first_search(document.catalog["Pages"], document.catalog)
             for objid, tree in objects:
                 yield cls(document, objid, tree, next(page_labels))
                 pages = True
