@@ -4,6 +4,7 @@ See: https://github.com/adobe-type-tools/agl-specification#2-the-mapping
 While not in the specification, lowercase unicode often occurs in pdf's.
 Therefore lowercase unittest variants are added.
 """
+
 import pytest
 
 from pdfminer.encodingdb import EncodingDB, name2unicode
@@ -12,32 +13,37 @@ from pdfminer.psparser import PSLiteral
 
 def test_name2unicode_name_in_agl():
     """The name "Lcommaaccent" has a single component,
-    which is mapped to the string U+013B by AGL"""
-    assert "\u013B" == name2unicode("Lcommaaccent")
+    which is mapped to the string U+013B by AGL
+    """
+    assert name2unicode("Lcommaaccent") == "\u013b"
 
 
 def test_name2unicode_uni():
     """The components "Lcommaaccent," "uni013B," and "u013B"
-    all map to the string U+013B"""
-    assert "\u013B" == name2unicode("uni013B")
+    all map to the string U+013B
+    """
+    assert name2unicode("uni013B") == "\u013b"
 
 
 def test_name2unicode_uni_lowercase():
     """The components "Lcommaaccent," "uni013B," and "u013B"
-    all map to the string U+013B"""
-    assert "\u013B" == name2unicode("uni013b")
+    all map to the string U+013B
+    """
+    assert name2unicode("uni013b") == "\u013b"
 
 
 def test_name2unicode_uni_with_sequence_of_digits():
     """The name "uni20AC0308" has a single component,
-    which is mapped to the string U+20AC U+0308"""
-    assert "\u20AC\u0308" == name2unicode("uni20AC0308")
+    which is mapped to the string U+20AC U+0308
+    """
+    assert name2unicode("uni20AC0308") == "\u20ac\u0308"
 
 
 def test_name2unicode_uni_with_sequence_of_digits_lowercase():
     """The name "uni20AC0308" has a single component,
-    which is mapped to the string U+20AC U+0308"""
-    assert "\u20AC\u0308" == name2unicode("uni20ac0308")
+    which is mapped to the string U+20AC U+0308
+    """
+    assert name2unicode("uni20ac0308") == "\u20ac\u0308"
 
 
 def test_name2unicode_uni_empty_string():
@@ -45,8 +51,9 @@ def test_name2unicode_uni_empty_string():
     which is mapped to a euro-sign.
 
     According to the specification this should be mapped to an empty string,
-    but we also want to support lowercase hexadecimals"""
-    assert "\u20ac" == name2unicode("uni20ac")
+    but we also want to support lowercase hexadecimals
+    """
+    assert name2unicode("uni20ac") == "\u20ac"
 
 
 def test_name2unicode_uni_empty_string_long():
@@ -71,74 +78,91 @@ def test_name2unicode_uni_empty_string_long_lowercase():
     This form cannot be used to map to the character which is
     expressed as D801 DC0C in UTF-16, specifically U+1040C.
     This character can be correctly mapped by using the
-    glyph name "u1040C."""
+    glyph name "u1040C.
+    """
     with pytest.raises(KeyError):
         name2unicode("uniD801DC0C")
 
 
 def test_name2unicode_uni_pua():
     """ "Ogoneksmall" and "uniF6FB" both map to the string that corresponds to
-    U+F6FB."""
-    assert "\uF6FB" == name2unicode("uniF6FB")
+    U+F6FB.
+    """
+    assert name2unicode("uniF6FB") == "\uf6fb"
 
 
 def test_name2unicode_uni_pua_lowercase():
     """ "Ogoneksmall" and "uniF6FB" both map to the string that corresponds to
-    U+F6FB."""
-    assert "\uF6FB" == name2unicode("unif6fb")
+    U+F6FB.
+    """
+    assert name2unicode("unif6fb") == "\uf6fb"
 
 
 def test_name2unicode_u_with_4_digits():
     """The components "Lcommaaccent," "uni013B," and "u013B" all map to the
-    string U+013B"""
-    assert "\u013B" == name2unicode("u013B")
+    string U+013B
+    """
+    assert name2unicode("u013B") == "\u013b"
 
 
 def test_name2unicode_u_with_4_digits_lowercase():
     """The components "Lcommaaccent," "uni013B," and "u013B" all map to the
-    string U+013B"""
-    assert "\u013B" == name2unicode("u013b")
+    string U+013B
+    """
+    assert name2unicode("u013b") == "\u013b"
 
 
 def test_name2unicode_u_with_5_digits():
     """The name "u1040C" has a single component, which is mapped to the string
-    U+1040C"""
-    assert "\U0001040C" == name2unicode("u1040C")
+    U+1040C
+    """
+    assert name2unicode("u1040C") == "\U0001040c"
 
 
 def test_name2unicode_u_with_5_digits_lowercase():
     """The name "u1040C" has a single component, which is mapped to the string
-    U+1040C"""
-    assert "\U0001040C" == name2unicode("u1040c")
+    U+1040C
+    """
+    assert name2unicode("u1040c") == "\U0001040c"
 
 
 def test_name2unicode_multiple_components():
     """The name "Lcommaaccent_uni20AC0308_u1040C.alternate" is mapped to the
-    string U+013B U+20AC U+0308 U+1040C"""
-    assert "\u013B\u20AC\u0308\U0001040C" == name2unicode(
-        "Lcommaaccent_uni20AC0308_u1040C.alternate"
+    string U+013B U+20AC U+0308 U+1040C
+    """
+    assert (
+        name2unicode(
+            "Lcommaaccent_uni20AC0308_u1040C.alternate",
+        )
+        == "\u013b\u20ac\u0308\U0001040c"
     )
 
 
 def test_name2unicode_multiple_components_lowercase():
     """The name "Lcommaaccent_uni20AC0308_u1040C.alternate" is mapped to the
-    string U+013B U+20AC U+0308 U+1040C"""
-    assert "\u013B\u20AC\u0308\U0001040C" == name2unicode(
-        "Lcommaaccent_uni20ac0308_u1040c.alternate"
+    string U+013B U+20AC U+0308 U+1040C
+    """
+    assert (
+        name2unicode(
+            "Lcommaaccent_uni20ac0308_u1040c.alternate",
+        )
+        == "\u013b\u20ac\u0308\U0001040c"
     )
 
 
 def test_name2unicode_foo():
     """The name 'foo' maps to an empty string,
     because 'foo' is not in AGL,
-    and because it does not start with a 'u.'"""
+    and because it does not start with a 'u.'
+    """
     with pytest.raises(KeyError):
         name2unicode("foo")
 
 
 def test_name2unicode_notdef():
     """The name ".notdef" is reduced to an empty string (step 1)
-    and mapped to an empty string (step 3)"""
+    and mapped to an empty string (step 3)
+    """
     with pytest.raises(KeyError):
         name2unicode(".notdef")
 
@@ -146,8 +170,9 @@ def test_name2unicode_notdef():
 def test_name2unicode_pua_ogoneksmall():
     """ "
     Ogoneksmall" and "uniF6FB" both map to the string
-    that corresponds to U+F6FB."""
-    assert "\uF6FB" == name2unicode("Ogoneksmall")
+    that corresponds to U+F6FB.
+    """
+    assert name2unicode("Ogoneksmall") == "\uf6fb"
 
 
 def test_name2unicode_overflow_error():

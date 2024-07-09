@@ -7,8 +7,7 @@
 
 
 def rldecode(data: bytes) -> bytes:
-    """
-    RunLength decoder (Adobe version) implementation based on PDF Reference
+    """RunLength decoder (Adobe version) implementation based on PDF Reference
     version 1.4 section 3.3.4:
         The RunLengthDecode filter decodes data that has been encoded in a
         simple byte-oriented format based on run length. The encoded data

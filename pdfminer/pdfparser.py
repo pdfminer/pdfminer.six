@@ -2,15 +2,15 @@ import logging
 from io import BytesIO
 from typing import TYPE_CHECKING, BinaryIO, Optional, Union
 
-from . import settings
-from .casting import safe_int
-from .pdfexceptions import PDFException
-from .pdftypes import PDFObjRef, PDFStream, dict_value, int_value
-from .psexceptions import PSEOF
-from .psparser import KWD, PSKeyword, PSStackParser
+from pdfminer import settings
+from pdfminer.casting import safe_int
+from pdfminer.pdfexceptions import PDFException
+from pdfminer.pdftypes import PDFObjRef, PDFStream, dict_value, int_value
+from pdfminer.psexceptions import PSEOF
+from pdfminer.psparser import KWD, PSKeyword, PSStackParser
 
 if TYPE_CHECKING:
-    from .pdfdocument import PDFDocument
+    from pdfminer.pdfdocument import PDFDocument
 
 log = logging.getLogger(__name__)
 
@@ -21,8 +21,7 @@ class PDFSyntaxError(PDFException):
 
 # PDFParser stack holds all the base types plus PDFStream, PDFObjRef, and None
 class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
-    """
-    PDFParser fetch PDF objects from a file stream.
+    """PDFParser fetch PDF objects from a file stream.
     It can handle indirect references by referring to
     a PDF document set by set_document method.
     It also reads XRefs at the end of every PDF file.
@@ -39,7 +38,7 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
 
     def __init__(self, fp: BinaryIO) -> None:
         PSStackParser.__init__(self, fp)
-        self.doc: Optional["PDFDocument"] = None
+        self.doc: Optional[PDFDocument] = None
         self.fallback = False
 
     def set_document(self, doc: "PDFDocument") -> None:
@@ -55,7 +54,6 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
 
     def do_keyword(self, pos: int, token: PSKeyword) -> None:
         """Handles PDF-related keywords."""
-
         if token in (self.KEYWORD_XREF, self.KEYWORD_STARTXREF):
             self.add_results(*self.pop(1))
 
@@ -132,8 +130,7 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
 
 
 class PDFStreamParser(PDFParser):
-    """
-    PDFStreamParser is used to parse PDF content streams
+    """PDFStreamParser is used to parse PDF content streams
     that is contained in each page and has instructions
     for rendering the page. A reference to a PDF document is
     needed because a PDF content stream can also have

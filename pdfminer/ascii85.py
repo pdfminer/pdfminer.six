@@ -1,4 +1,4 @@
-""" Python implementation of ASCII85/ASCIIHex decoder (Adobe version).
+"""Python implementation of ASCII85/ASCIIHex decoder (Adobe version).
 
 This code is in the public domain.
 
@@ -10,8 +10,7 @@ import struct
 
 # ascii85decode(data)
 def ascii85decode(data: bytes) -> bytes:
-    """
-    In ASCII85 encoding, every four bytes are encoded with five ASCII
+    """In ASCII85 encoding, every four bytes are encoded with five ASCII
     letters, using 85 different types of characters (as 256**4 < 85**5).
     When the length of the original bytes is not a multiple of 4, a special
     rule is used for round up.
@@ -24,7 +23,7 @@ def ascii85decode(data: bytes) -> bytes:
     out = b""
     for i in iter(data):
         c = bytes((i,))
-        if b"!" <= c and c <= b"u":
+        if c >= b"!" and c <= b"u":
             n += 1
             b = b * 85 + (ord(c) - 33)
             if n == 5:
@@ -48,8 +47,7 @@ trail_re = re.compile(rb"^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$", re.IGNORECASE)
 
 
 def asciihexdecode(data: bytes) -> bytes:
-    """
-    ASCIIHexDecode filter: PDFReference v1.4 section 3.3.1
+    """ASCIIHexDecode filter: PDFReference v1.4 section 3.3.1
     For each pair of ASCII hexadecimal digits (0-9 and A-F or a-f), the
     ASCIIHexDecode filter produces one byte of binary data. All white-space
     characters are ignored. A right angle bracket character (>) indicates

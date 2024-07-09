@@ -7,37 +7,15 @@ PYTHON_MODULES = ["fuzzing", "pdfminer", "tools", "tests", "noxfile.py", "setup.
 
 
 @nox.session
-def format_isort(session):
-    session.install("isort")
-    if "CI" in os.environ:
-        session.run("isort", "--check", *PYTHON_MODULES)
-    else:
-        session.run("isort", *PYTHON_MODULES)
-
-
-@nox.session
-def format_autoflake(session):
-    session.install("autoflake")
-    if "CI" in os.environ:
-        session.run("autoflake", "--check-diff", *PYTHON_MODULES)
-    else:
-        session.run("autoflake", "--in-place", *PYTHON_MODULES)
-
-
-@nox.session
 def format(session):
-    session.install("black<23")
+    session.install("ruff==0.5.1")
     # Format files locally with black, but only check in cicd
     if "CI" in os.environ:
-        session.run("black", "--check", *PYTHON_MODULES)
+        session.run("ruff", "check")
+        session.run("ruff", "format", "--check")
     else:
-        session.run("black", *PYTHON_MODULES)
-
-
-@nox.session
-def lint(session):
-    session.install("flake8")
-    session.run("flake8", *PYTHON_MODULES, "--count", "--statistics")
+        session.run("ruff", "check", "--fix")
+        session.run("ruff", "format")
 
 
 @nox.session
@@ -66,8 +44,20 @@ def docs(session):
     session.install("setuptools")
     session.install("-e", ".[docs]")
     session.run(
-        "python", "-m", "sphinx", "-b", "html", "docs/source", "docs/build/html"
+        "python",
+        "-m",
+        "sphinx",
+        "-b",
+        "html",
+        "docs/source",
+        "docs/build/html",
     )
     session.run(
-        "python", "-m", "sphinx", "-b", "doctest", "docs/source", "docs/build/doctest"
+        "python",
+        "-m",
+        "sphinx",
+        "-b",
+        "doctest",
+        "docs/source",
+        "docs/build/doctest",
     )

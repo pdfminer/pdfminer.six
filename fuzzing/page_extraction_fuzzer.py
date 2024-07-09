@@ -30,7 +30,7 @@ def fuzz_one_input(data: bytes) -> None:
                     maxpages=fdp.ConsumeIntInRange(0, 10),
                     page_numbers=fdp.ConsumeOptionalIntList(10, 0, 10),
                     laparams=generate_layout_parameters(fdp),
-                )
+                ),
             )
     except (AssertionError, PSException):
         return

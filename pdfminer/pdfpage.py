@@ -2,13 +2,17 @@ import itertools
 import logging
 from typing import Any, BinaryIO, Container, Dict, Iterator, List, Optional, Tuple
 
-from . import settings
-from .pdfdocument import PDFDocument, PDFNoPageLabels, PDFTextExtractionNotAllowed
-from .pdfexceptions import PDFObjectNotFound, PDFValueError
-from .pdfparser import PDFParser
-from .pdftypes import dict_value, int_value, list_value, resolve1
-from .psparser import LIT
-from .utils import parse_rect
+from pdfminer import settings
+from pdfminer.pdfdocument import (
+    PDFDocument,
+    PDFNoPageLabels,
+    PDFTextExtractionNotAllowed,
+)
+from pdfminer.pdfexceptions import PDFObjectNotFound, PDFValueError
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdftypes import dict_value, int_value, list_value, resolve1
+from pdfminer.psparser import LIT
+from pdfminer.utils import parse_rect
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +28,8 @@ class PDFPage:
     of keys and values, which describe the properties of a page
     and point to its contents.
 
-    Attributes:
+    Attributes
+    ----------
       doc: a PDFDocument object.
       pageid: any Python object that can uniquely identify the page.
       attrs: a dictionary of page attributes.
@@ -37,10 +42,15 @@ class PDFPage:
       annots: the page annotations.
       beads: a chain that represents natural reading order.
       label: the page's label (typically, the logical page number).
+
     """
 
     def __init__(
-        self, doc: PDFDocument, pageid: object, attrs: object, label: Optional[str]
+        self,
+        doc: PDFDocument,
+        pageid: object,
+        attrs: object,
+        label: Optional[str],
     ) -> None:
         """Initialize a page object.
 
@@ -55,7 +65,7 @@ class PDFPage:
         self.label = label
         self.lastmod = resolve1(self.attrs.get("LastModified"))
         self.resources: Dict[object, object] = resolve1(
-            self.attrs.get("Resources", dict())
+            self.attrs.get("Resources", dict()),
         )
         mediabox_params: List[Any] = [
             resolve1(mediabox_param) for mediabox_param in self.attrs["MediaBox"]
@@ -80,16 +90,15 @@ class PDFPage:
         self.contents: List[object] = contents
 
     def __repr__(self) -> str:
-        return "<PDFPage: Resources={!r}, MediaBox={!r}>".format(
-            self.resources, self.mediabox
-        )
+        return f"<PDFPage: Resources={self.resources!r}, MediaBox={self.mediabox!r}>"
 
     INHERITABLE_ATTRS = {"Resources", "MediaBox", "CropBox", "Rotate"}
 
     @classmethod
     def create_pages(cls, document: PDFDocument) -> Iterator["PDFPage"]:
         def search(
-            obj: object, parent: Dict[str, object]
+            obj: object,
+            parent: Dict[str, object],
         ) -> Iterator[Tuple[int, Dict[object, Dict[object, object]]]]:
             if isinstance(obj, int):
                 objid = obj
@@ -99,7 +108,7 @@ class PDFPage:
                 # PDFObjRef or PDFStream, but neither is valid for dict_value.
                 objid = obj.objid  # type: ignore[attr-defined]
                 tree = dict_value(obj).copy()
-            for (k, v) in parent.items():
+            for k, v in parent.items():
                 if k in cls.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
 
@@ -123,7 +132,7 @@ class PDFPage:
         pages = False
         if "Pages" in document.catalog:
             objects = search(document.catalog["Pages"], document.catalog)
-            for (objid, tree) in objects:
+            for objid, tree in objects:
                 yield cls(document, objid, tree, next(page_labels))
                 pages = True
         if not pages:
@@ -167,7 +176,7 @@ class PDFPage:
                 )
                 log.warning(warning_msg)
         # Process each page contained in the document.
-        for (pageno, page) in enumerate(cls.create_pages(doc)):
+        for pageno, page in enumerate(cls.create_pages(doc)):
             if pagenos and (pageno not in pagenos):
                 continue
             yield page

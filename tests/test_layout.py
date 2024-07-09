@@ -15,8 +15,7 @@ from tests.helpers import absolute_sample_path
 
 class TestGroupTextLines(unittest.TestCase):
     def test_parent_with_wrong_bbox_returns_non_empty_neighbour_list(self):
-        """
-        LTLayoutContainer.group_textlines() should return all the lines in a
+        """LTLayoutContainer.group_textlines() should return all the lines in a
         separate LTTextBoxes if they do not overlap. Even when the bounding box
         of the parent container does not contain all the lines.
         """
