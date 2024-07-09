@@ -2,12 +2,12 @@ import itertools
 import logging
 from typing import BinaryIO, Container, Dict, Iterator, List, Optional, Tuple, Any
 
-from pdfminer.utils import Rect
+from pdfminer.utils import parse_rect
 from . import settings
 from .pdfdocument import PDFDocument, PDFTextExtractionNotAllowed, PDFNoPageLabels
 from .pdfparser import PDFParser
 from .pdftypes import dict_value
-from .pdfexceptions import PDFObjectNotFound
+from .pdfexceptions import PDFObjectNotFound, PDFValueError
 from .pdftypes import int_value
 from .pdftypes import list_value
 from .pdftypes import resolve1
@@ -63,11 +63,14 @@ class PDFPage:
         mediabox_params: List[Any] = [
             resolve1(mediabox_param) for mediabox_param in self.attrs["MediaBox"]
         ]
-        self.mediabox: Rect = resolve1(mediabox_params)
+        self.mediabox = parse_rect(resolve1(mediabox_params))
+        self.cropbox = self.mediabox
         if "CropBox" in self.attrs:
-            self.cropbox: Rect = resolve1(self.attrs["CropBox"])
-        else:
-            self.cropbox = self.mediabox
+            try:
+                self.cropbox = parse_rect(resolve1(self.attrs["CropBox"]))
+            except PDFValueError:
+                pass
+
         self.rotate = (int_value(self.attrs.get("Rotate", 0)) + 360) % 360
         self.annots = self.attrs.get("Annots")
         self.beads = self.attrs.get("B")
