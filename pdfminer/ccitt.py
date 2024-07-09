@@ -352,7 +352,6 @@ class CCITTG4Parser(BitParser):
         self.width = width
         self.bytealign = bytealign
         self.reset()
-        return
 
     def feedbytes(self, data: bytes) -> None:
         for byte in get_bytes(data):
@@ -364,7 +363,6 @@ class CCITTG4Parser(BitParser):
                 self._state = self.MODE
             except self.EOFB:
                 break
-        return
 
     def _parse_mode(self, mode: object) -> BitParserState:
         if mode == "p":
@@ -453,18 +451,15 @@ class CCITTG4Parser(BitParser):
         self._reset_line()
         self._accept = self._parse_mode
         self._state = self.MODE
-        return
 
     def output_line(self, y: int, bits: Sequence[int]) -> None:
         print(y, "".join(str(b) for b in bits))
-        return
 
     def _reset_line(self) -> None:
         self._refline = self._curline
         self._curline = array.array("b", [1] * self.width)
         self._curpos = -1
         self._color = 1
-        return
 
     def _flush_line(self) -> None:
         if self.width <= self._curpos:
@@ -473,7 +468,6 @@ class CCITTG4Parser(BitParser):
             self._reset_line()
             if self.bytealign:
                 raise self.ByteSkip
-        return
 
     def _do_vertical(self, dx: int) -> None:
         x1 = self._curpos + 1
@@ -500,7 +494,6 @@ class CCITTG4Parser(BitParser):
                 self._curline[x] = self._color
         self._curpos = x1
         self._color = 1 - self._color
-        return
 
     def _do_pass(self) -> None:
         x1 = self._curpos + 1
@@ -531,7 +524,6 @@ class CCITTG4Parser(BitParser):
         for x in range(self._curpos, x1):
             self._curline[x] = self._color
         self._curpos = x1
-        return
 
     def _do_horizontal(self, n1: int, n2: int) -> None:
         if self._curpos < 0:
@@ -548,14 +540,12 @@ class CCITTG4Parser(BitParser):
             self._curline[x] = 1 - self._color
             x += 1
         self._curpos = x
-        return
 
     def _do_uncompressed(self, bits: str) -> None:
         for c in bits:
             self._curline[self._curpos] = int(c)
             self._curpos += 1
             self._flush_line()
-        return
 
 
 class CCITTFaxDecoder(CCITTG4Parser):
@@ -565,7 +555,6 @@ class CCITTFaxDecoder(CCITTG4Parser):
         CCITTG4Parser.__init__(self, width, bytealign=bytealign)
         self.reversed = reversed
         self._buf = b""
-        return
 
     def close(self) -> bytes:
         return self._buf
@@ -578,7 +567,6 @@ class CCITTFaxDecoder(CCITTG4Parser):
             if b:
                 arr[i // 8] += (128, 64, 32, 16, 8, 4, 2, 1)[i % 8]
         self._buf += arr.tobytes()
-        return
 
 
 def ccittfaxdecode(data: bytes, params: Dict[str, object]) -> bytes:
@@ -608,7 +596,6 @@ def main(argv: List[str]) -> None:
 
             CCITTG4Parser.__init__(self, width, bytealign=bytealign)
             self.img = pygame.Surface((self.width, 1000))
-            return
 
         def output_line(self, y: int, bits: Sequence[int]) -> None:
             for (x, b) in enumerate(bits):
@@ -616,13 +603,11 @@ def main(argv: List[str]) -> None:
                     self.img.set_at((x, y), (255, 255, 255))
                 else:
                     self.img.set_at((x, y), (0, 0, 0))
-            return
 
         def close(self) -> None:
             import pygame
 
             pygame.image.save(self.img, "out.bmp")
-            return
 
     for path in argv[1:]:
         fp = open(path, "rb")
@@ -631,4 +616,3 @@ def main(argv: List[str]) -> None:
         parser.feedbytes(fp.read())
         parser.close()
         fp.close()
-    return

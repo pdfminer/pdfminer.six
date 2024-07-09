@@ -117,7 +117,6 @@ class Type1FontHeaderParser(PSStackParser[int]):
     def __init__(self, data: BinaryIO) -> None:
         PSStackParser.__init__(self, data)
         self._cid2unicode: Dict[int, str] = {}
-        return
 
     def get_encoding(self) -> Dict[int, str]:
         """Parse the font encoding.
@@ -149,7 +148,6 @@ class Type1FontHeaderParser(PSStackParser[int]):
             ((_, key), (_, value)) = self.pop(2)
             if isinstance(key, int) and isinstance(value, PSLiteral):
                 self.add_results((key, literal_name(value)))
-        return
 
 
 NIBBLES = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "e", "e-", None, "-")
@@ -613,7 +611,6 @@ class CFFFont:
                 self.offsets.append(nunpack(self.fp.read(offsize)))
             self.base = self.fp.tell() - 1
             self.fp.seek(self.base + self.offsets[-1])
-            return
 
         def __repr__(self) -> str:
             return "<INDEX: size=%d>" % len(self)
@@ -705,7 +702,6 @@ class CFFFont:
             assert False, str(("Unhandled", format))
         else:
             raise PDFValueError("unsupported charset format: %r" % format)
-        return
 
     def getstr(self, sid: int) -> Union[str, bytes]:
         # This returns str for one of the STANDARD_STRINGS but bytes otherwise,
@@ -738,7 +734,6 @@ class TrueTypeFont:
             # corrupted PDFs we would like to get as much information as
             # possible, so continue.
             pass
-        return
 
     def create_unicode_map(self) -> FileUnicodeMap:
         if b"cmap" not in self.tables:
@@ -885,7 +880,6 @@ class PDFFont:
         # descent to negative.
         if self.descent > 0:
             self.descent = -self.descent
-        return
 
     def __repr__(self) -> str:
         return "<PDFFont>"
@@ -968,7 +962,6 @@ class PDFSimpleFont(PDFFont):
             self.unicode_map = FileUnicodeMap()
             CMapParser(self.unicode_map, BytesIO(strm.get_data())).run()
         PDFFont.__init__(self, descriptor, widths)
-        return
 
     def to_unichr(self, cid: int) -> str:
         if self.unicode_map:
@@ -1009,7 +1002,6 @@ class PDFType1Font(PDFSimpleFont):
             data = self.fontfile.get_data()[:length1]
             parser = Type1FontHeaderParser(BytesIO(data))
             self.cid2unicode = parser.get_encoding()
-        return
 
     def __repr__(self) -> str:
         return "<PDFType1Font: basefont=%r>" % self.basefont
@@ -1034,7 +1026,6 @@ class PDFType3Font(PDFSimpleFont):
         self.matrix = cast(Matrix, tuple(list_value(spec.get("FontMatrix"))))
         (_, self.descent, _, self.ascent) = self.bbox
         (self.hscale, self.vscale) = apply_matrix_norm(self.matrix, (1, 1))
-        return
 
     def __repr__(self) -> str:
         return "<PDFType3Font>"
@@ -1120,7 +1111,6 @@ class PDFCIDFont(PDFFont):
             widths = get_widths(list_value(spec.get("W", [])))
             default_width = spec.get("DW", 1000)
         PDFFont.__init__(self, descriptor, widths, default_width=default_width)
-        return
 
     def get_cmap_from_spec(self, spec: Mapping[str, Any], strict: bool) -> CMapBase:
         """Get cmap from font specification

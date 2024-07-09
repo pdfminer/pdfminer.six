@@ -121,7 +121,6 @@ def dumptrailers(
             "contains all objects."
         )
         logger.warning(msg)
-    return
 
 
 def dumpallobjs(
@@ -148,7 +147,6 @@ def dumpallobjs(
                 print("not found: %r" % e)
     dumptrailers(out, doc, show_fallback_xref)
     out.write("</pdf>")
-    return
 
 
 def dumpoutline(
@@ -209,7 +207,6 @@ def dumpoutline(
         pass
     parser.close()
     fp.close()
-    return
 
 
 LITERAL_FILESPEC = LIT("Filespec")
@@ -240,7 +237,6 @@ def extractembedded(fname: str, password: str, extractdir: str) -> None:
         out = open(path, "wb")
         out.write(fileobj.get_data())
         out.close()
-        return
 
     with open(fname, "rb") as fp:
         parser = PDFParser(fp)
@@ -256,7 +252,6 @@ def extractembedded(fname: str, password: str, extractdir: str) -> None:
                 ):
                     extracted_objids.add(objid)
                     extract1(objid, obj)
-    return
 
 
 def dumppdf(
@@ -293,7 +288,6 @@ def dumppdf(
     fp.close()
     if codec not in ("raw", "binary"):
         outfp.write("\n")
-    return
 
 
 def create_parser() -> ArgumentParser:

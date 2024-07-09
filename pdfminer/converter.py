@@ -357,10 +357,8 @@ class TextConverter(PDFConverter[AnyIO]):
     # is text.  This stops all the image and drawing output from being
     # recorded and taking up RAM.
     def render_image(self, name: str, stream: PDFStream) -> None:
-        if self.imagewriter is None:
-            return
-        PDFConverter.render_image(self, name, stream)
-        return
+        if self.imagewriter is not None:
+            PDFConverter.render_image(self, name, stream)
 
     def paint_path(
         self,
@@ -370,7 +368,7 @@ class TextConverter(PDFConverter[AnyIO]):
         evenodd: bool,
         path: Sequence[PathSegment],
     ) -> None:
-        return
+        pass
 
 
 class HTMLConverter(PDFConverter[AnyIO]):
@@ -435,14 +433,12 @@ class HTMLConverter(PDFConverter[AnyIO]):
         self._font: Optional[Tuple[str, float]] = None
         self._fontstack: List[Optional[Tuple[str, float]]] = []
         self.write_header()
-        return
 
     def write(self, text: str) -> None:
         if self.codec:
             cast(BinaryIO, self.outfp).write(text.encode(self.codec))
         else:
             cast(TextIO, self.outfp).write(text)
-        return
 
     def write_header(self) -> None:
         self.write("<html><head>\n")
@@ -455,7 +451,6 @@ class HTMLConverter(PDFConverter[AnyIO]):
             s = '<meta http-equiv="Content-Type" content="text/html">\n'
         self.write(s)
         self.write("</head><body>\n")
-        return
 
     def write_footer(self) -> None:
         page_links = [f'<a href="#{i}">{i}</a>' for i in range(1, self.pageno)]
@@ -464,11 +459,9 @@ class HTMLConverter(PDFConverter[AnyIO]):
         )
         self.write(s)
         self.write("</body></html>\n")
-        return
 
     def write_text(self, text: str) -> None:
         self.write(enc(text))
-        return
 
     def place_rect(
         self, color: str, borderwidth: int, x: float, y: float, w: float, h: float
@@ -488,11 +481,9 @@ class HTMLConverter(PDFConverter[AnyIO]):
                 )
             )
             self.write(s)
-        return
 
     def place_border(self, color: str, borderwidth: int, item: LTComponent) -> None:
         self.place_rect(color, borderwidth, item.x0, item.y1, item.width, item.height)
-        return
 
     def place_image(
         self, item: LTImage, borderwidth: int, x: float, y: float, w: float, h: float
@@ -512,7 +503,6 @@ class HTMLConverter(PDFConverter[AnyIO]):
                 )
             )
             self.write(s)
-        return
 
     def place_text(
         self, color: str, text: str, x: float, y: float, size: float
@@ -532,7 +522,6 @@ class HTMLConverter(PDFConverter[AnyIO]):
             self.write(s)
             self.write_text(text)
             self.write("</span>\n")
-        return
 
     def begin_div(
         self,
@@ -561,14 +550,12 @@ class HTMLConverter(PDFConverter[AnyIO]):
             )
         )
         self.write(s)
-        return
 
     def end_div(self, color: str) -> None:
         if self._font is not None:
             self.write("</span>")
         self._font = self._fontstack.pop()
         self.write("</div>")
-        return
 
     def put_text(self, text: str, fontname: str, fontsize: float) -> None:
         font = (fontname, fontsize)
@@ -583,11 +570,9 @@ class HTMLConverter(PDFConverter[AnyIO]):
             )
             self._font = font
         self.write_text(text)
-        return
 
     def put_newline(self) -> None:
         self.write("<br>")
-        return
 
     def receive_layout(self, ltpage: LTPage) -> None:
         def show_group(item: Union[LTTextGroup, TextGroupElement]) -> None:
@@ -595,7 +580,6 @@ class HTMLConverter(PDFConverter[AnyIO]):
                 self.place_border("textgroup", 1, item)
                 for child in item:
                     show_group(child)
-            return
 
         def render(item: LTItem) -> None:
             child: LTItem
@@ -668,15 +652,12 @@ class HTMLConverter(PDFConverter[AnyIO]):
                         self.put_text(item.get_text(), fontname, item.size)
                     elif isinstance(item, LTText):
                         self.write_text(item.get_text())
-            return
 
         render(ltpage)
         self._yoffset += self.pagemargin
-        return
 
     def close(self) -> None:
         self.write_footer()
-        return
 
 
 class XMLConverter(PDFConverter[AnyIO]):
@@ -704,14 +685,12 @@ class XMLConverter(PDFConverter[AnyIO]):
         self.imagewriter = imagewriter
         self.stripcontrol = stripcontrol
         self.write_header()
-        return
 
     def write(self, text: str) -> None:
         if self.codec:
             cast(BinaryIO, self.outfp).write(text.encode(self.codec))
         else:
             cast(TextIO, self.outfp).write(text)
-        return
 
     def write_header(self) -> None:
         if self.codec:
@@ -719,17 +698,14 @@ class XMLConverter(PDFConverter[AnyIO]):
         else:
             self.write('<?xml version="1.0" ?>\n')
         self.write("<pages>\n")
-        return
 
     def write_footer(self) -> None:
         self.write("</pages>\n")
-        return
 
     def write_text(self, text: str) -> None:
         if self.stripcontrol:
             text = self.CONTROL.sub("", text)
         self.write(enc(text))
-        return
 
     def receive_layout(self, ltpage: LTPage) -> None:
         def show_group(item: LTItem) -> None:
@@ -743,7 +719,6 @@ class XMLConverter(PDFConverter[AnyIO]):
                 for child in item:
                     show_group(child)
                 self.write("</textgroup>\n")
-            return
 
         def render(item: LTItem) -> None:
             child: LTItem
@@ -837,14 +812,11 @@ class XMLConverter(PDFConverter[AnyIO]):
                     )
             else:
                 assert False, str(("Unhandled", item))
-            return
 
         render(ltpage)
-        return
 
     def close(self) -> None:
         self.write_footer()
-        return
 
 
 class HOCRConverter(PDFConverter[AnyIO]):

@@ -12,7 +12,6 @@ class CMapConverter:
         self.is_vertical = {}
         self.cid2unichr_h = {}  # {cid: unichr}
         self.cid2unichr_v = {}  # {cid: unichr}
-        return
 
     def get_encs(self):
         return self.code2cid.keys()
@@ -63,7 +62,6 @@ class CMapConverter:
                 b = code[-1]
                 if force or ((b not in dmap) or dmap[b] == cid):
                     dmap[b] = cid
-                return
 
             def add(unimap, enc, code):
                 try:
@@ -77,7 +75,6 @@ class CMapConverter:
                     pass
                 except UnicodeError:
                     pass
-                return
 
             def pick(unimap):
                 chars = list(unimap.items())
@@ -130,15 +127,12 @@ class CMapConverter:
             if unimap_v or unimap_h:
                 self.cid2unichr_v[cid] = pick(unimap_v or unimap_h)
 
-        return
-
     def dump_cmap(self, fp, enc):
         data = dict(
             IS_VERTICAL=self.is_vertical.get(enc, False),
             CODE2CID=self.code2cid.get(enc),
         )
         fp.write(pickle.dumps(data, 2))
-        return
 
     def dump_unicodemap(self, fp):
         data = dict(
@@ -146,7 +140,6 @@ class CMapConverter:
             CID2UNICHR_V=self.cid2unichr_v,
         )
         fp.write(pickle.dumps(data, 2))
-        return
 
 
 def main(argv):
@@ -197,7 +190,6 @@ def main(argv):
     fp = gzip.open(path, "wb")
     converter.dump_unicodemap(fp)
     fp.close()
-    return
 
 
 if __name__ == "__main__":

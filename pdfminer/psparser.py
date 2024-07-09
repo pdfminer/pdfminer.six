@@ -183,11 +183,10 @@ class PSBaseParser:
         return "<%s: %r, bufpos=%d>" % (self.__class__.__name__, self.fp, self.bufpos)
 
     def flush(self) -> None:
-        return
+        pass
 
     def close(self) -> None:
         self.flush()
-        return
 
     def tell(self) -> int:
         return self.bufpos + self.charpos
@@ -199,7 +198,6 @@ class PSBaseParser:
         self.fp.seek(pos)
         log.debug("poll(%d): %r", pos, self.fp.read(n))
         self.fp.seek(pos0)
-        return
 
     def seek(self, pos: int) -> None:
         """Seeks the parser to the given position."""
@@ -214,7 +212,6 @@ class PSBaseParser:
         self._curtoken = b""
         self._curtokenpos = 0
         self._tokens: List[Tuple[int, PSBaseParserToken]] = []
-        return
 
     def fillbuf(self) -> None:
         if self.charpos < len(self.buf):
@@ -225,7 +222,6 @@ class PSBaseParser:
         if not self.buf:
             raise PSEOF("Unexpected EOF")
         self.charpos = 0
-        return
 
     def nextline(self) -> Tuple[int, bytes]:
         """Fetches a next line that ends either with \\r or \\n."""
@@ -279,7 +275,6 @@ class PSBaseParser:
                 yield s[n:] + buf
                 s = s[:n]
                 buf = b""
-        return
 
     def _parse_main(self, s: bytes, i: int) -> int:
         m = NONSPC.search(s, i)
@@ -329,7 +324,6 @@ class PSBaseParser:
 
     def _add_token(self, obj: PSBaseParserToken) -> None:
         self._tokens.append((self._curtokenpos, obj))
-        return
 
     def _parse_comment(self, s: bytes, i: int) -> int:
         m = EOL.search(s, i)
@@ -536,23 +530,19 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
     def __init__(self, fp: BinaryIO) -> None:
         PSBaseParser.__init__(self, fp)
         self.reset()
-        return
 
     def reset(self) -> None:
         self.context: List[Tuple[int, Optional[str], List[PSStackEntry[ExtraT]]]] = []
         self.curtype: Optional[str] = None
         self.curstack: List[PSStackEntry[ExtraT]] = []
         self.results: List[PSStackEntry[ExtraT]] = []
-        return
 
     def seek(self, pos: int) -> None:
         PSBaseParser.seek(self, pos)
         self.reset()
-        return
 
     def push(self, *objs: PSStackEntry[ExtraT]) -> None:
         self.curstack.extend(objs)
-        return
 
     def pop(self, n: int) -> List[PSStackEntry[ExtraT]]:
         objs = self.curstack[-n:]
@@ -570,13 +560,11 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
         except Exception:
             log.debug("add_results: (unprintable object)")
         self.results.extend(objs)
-        return
 
     def start_type(self, pos: int, type: str) -> None:
         self.context.append((pos, self.curtype, self.curstack))
         (self.curtype, self.curstack) = (type, [])
         log.debug("start_type: pos=%r, type=%r", pos, type)
-        return
 
     def end_type(self, type: str) -> Tuple[int, List[PSStackType[ExtraT]]]:
         if self.curtype != type:
@@ -587,7 +575,7 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
         return (pos, objs)
 
     def do_keyword(self, pos: int, token: PSKeyword) -> None:
-        return
+        pass
 
     def nextobject(self) -> PSStackEntry[ExtraT]:
         """Yields a list of objects.

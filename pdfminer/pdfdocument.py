@@ -281,7 +281,6 @@ class PDFXRefStream(PDFBaseXRef):
             self.fl2,
             self.fl3,
         )
-        return
 
     def get_trailer(self) -> Dict[str, Any]:
         return self.trailer
@@ -296,7 +295,6 @@ class PDFXRefStream(PDFBaseXRef):
                 f1 = nunpack(ent[: self.fl1], 1)
                 if f1 == 1 or f1 == 2:
                     yield start + i
-        return
 
     def get_pos(self, objid: int) -> Tuple[Optional[int], int, int]:
         index = 0
@@ -340,7 +338,6 @@ class PDFStandardSecurityHandler:
         self.param = param
         self.password = password
         self.init()
-        return
 
     def init(self) -> None:
         self.init_params()
@@ -348,7 +345,6 @@ class PDFStandardSecurityHandler:
             error_msg = "Unsupported revision: param=%r" % self.param
             raise PDFEncryptionError(error_msg)
         self.init_key()
-        return
 
     def init_params(self) -> None:
         self.v = int_value(self.param.get("V", 0))
@@ -357,13 +353,11 @@ class PDFStandardSecurityHandler:
         self.o = str_value(self.param["O"])
         self.u = str_value(self.param["U"])
         self.length = int_value(self.param.get("Length", 40))
-        return
 
     def init_key(self) -> None:
         self.key = self.authenticate(self.password)
         if self.key is None:
             raise PDFPasswordIncorrect
-        return
 
     def is_printable(self) -> bool:
         return bool(self.p & 4)
@@ -491,7 +485,6 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
         if self.strf not in self.cfm:
             error_msg = "Undefined crypt filter: param=%r" % self.param
             raise PDFEncryptionError(error_msg)
-        return
 
     def get_cfm(self, name: str) -> Optional[Callable[[int, int, bytes], bytes]]:
         if name == "V2":
@@ -555,7 +548,6 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         self.u_hash = self.u[:32]
         self.u_validation_salt = self.u[32:40]
         self.u_key_salt = self.u[40:]
-        return
 
     def get_cfm(self, name: str) -> Optional[Callable[[int, int, bytes], bytes]]:
         if name == "AESV3":
@@ -737,7 +729,6 @@ class PDFDocument:
         if self.catalog.get("Type") is not LITERAL_CATALOG:
             if settings.STRICT:
                 raise PDFSyntaxError("Catalog not found!")
-        return
 
     KEYWORD_OBJ = KWD(b"obj")
 
@@ -759,7 +750,6 @@ class PDFDocument:
         self.is_extractable = handler.is_extractable()
         assert self._parser is not None
         self._parser.fallback = False  # need to read streams with exact length
-        return
 
     def _getobj_objstm(self, stream: PDFStream, index: int, objid: int) -> object:
         if stream.objid in self._parsed_objs:
@@ -882,7 +872,6 @@ class PDFDocument:
                 yield from search(entry["First"], level + 1)
             if "Next" in entry:
                 yield from search(entry["Next"], level)
-            return
 
         return search(self.catalog["Outlines"], 0)
 
@@ -1006,7 +995,6 @@ class PDFDocument:
             # find previous xref
             pos = int_value(trailer["Prev"])
             self.read_xref_from(parser, pos, xrefs)
-        return
 
 
 class PageLabels(NumberTree):
