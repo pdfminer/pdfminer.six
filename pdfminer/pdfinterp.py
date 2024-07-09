@@ -4,10 +4,11 @@ from io import BytesIO
 from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union, cast
 
 from pdfminer import settings
+from pdfminer.casting import safe_float
 from pdfminer.cmapdb import CMap, CMapBase, CMapDB
 from pdfminer.pdfcolor import PREDEFINED_COLORSPACE, PDFColorSpace
 from pdfminer.pdfdevice import PDFDevice, PDFTextSeq
-from pdfminer.pdfexceptions import PDFException
+from pdfminer.pdfexceptions import PDFException, PDFValueError
 from pdfminer.pdffont import (
     PDFCIDFont,
     PDFFont,
@@ -791,20 +792,44 @@ class PDFPageInterpreter:
         self.textstate.rise = cast(float, rise)
 
     def do_Td(self, tx: PDFStackT, ty: PDFStackT) -> None:
-        """Move text position"""
-        tx = cast(float, tx)
-        ty = cast(float, ty)
-        (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
+        """Move to the start of the next line
+
+        Offset from the start of the current line by (tx , ty).
+        """
+        tx_ = safe_float(tx)
+        ty_ = safe_float(ty)
+        if tx_ is not None and ty_ is not None:
+            (a, b, c, d, e, f) = self.textstate.matrix
+            e_new = tx_ * a + ty_ * c + e
+            f_new = tx_ * b + ty_ * d + f
+            self.textstate.matrix = (a, b, c, d, e_new, f_new)
+
+        elif settings.STRICT:
+            raise PDFValueError(f"Invalid offset ({tx!r}, {ty!r}) for Td")
+
         self.textstate.linematrix = (0, 0)
 
     def do_TD(self, tx: PDFStackT, ty: PDFStackT) -> None:
-        """Move text position and set leading"""
-        tx = cast(float, tx)
-        ty = cast(float, ty)
-        (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
-        self.textstate.leading = ty
+        """Move to the start of the next line.
+
+        offset from the start of the current line by (tx , ty). As a side effect, this
+        operator sets the leading parameter in the text state.
+        """
+        tx_ = safe_float(tx)
+        ty_ = safe_float(ty)
+
+        if tx_ is not None and ty_ is not None:
+            (a, b, c, d, e, f) = self.textstate.matrix
+            e_new = tx_ * a + ty_ * c + e
+            f_new = tx_ * b + ty_ * d + f
+            self.textstate.matrix = (a, b, c, d, e_new, f_new)
+
+        elif settings.STRICT:
+            raise PDFValueError("Invalid offset ({tx}, {ty}) for TD")
+
+        if ty_ is not None:
+            self.textstate.leading = ty_
+
         self.textstate.linematrix = (0, 0)
 
     def do_Tm(
@@ -961,7 +986,7 @@ class PDFPageInterpreter:
         except PSEOF:
             # empty page
             return
-        while 1:
+        while True:
             try:
                 (_, obj) = parser.nextobject()
             except PSEOF:
