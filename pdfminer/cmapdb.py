@@ -25,23 +25,18 @@ from typing import (
     List,
     MutableMapping,
     Optional,
+    Set,
     TextIO,
     Tuple,
     Union,
     cast,
-    Set,
 )
 
-from pdfminer.pdfexceptions import PDFException, PDFTypeError
 from .encodingdb import name2unicode
-from .psparser import KWD
-from pdfminer.psexceptions import PSEOF, PSSyntaxError
-from .psparser import PSKeyword
-from .psparser import PSLiteral
-from .psparser import PSStackParser
-from .psparser import literal_name
-from .utils import choplist
-from .utils import nunpack
+from .pdfexceptions import PDFException, PDFTypeError
+from .psexceptions import PSEOF, PSSyntaxError
+from .psparser import KWD, PSKeyword, PSLiteral, PSStackParser, literal_name
+from .utils import choplist, nunpack
 
 log = logging.getLogger(__name__)
 

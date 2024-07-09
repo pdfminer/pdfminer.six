@@ -1,18 +1,13 @@
 import logging
 from io import BytesIO
-from typing import BinaryIO, TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, BinaryIO, Optional, Union
 
 from . import settings
 from .casting import safe_int
-from .pdftypes import PDFObjRef
 from .pdfexceptions import PDFException
-from .pdftypes import PDFStream
-from .pdftypes import dict_value
-from .pdftypes import int_value
-from .psparser import KWD
+from .pdftypes import PDFObjRef, PDFStream, dict_value, int_value
 from .psexceptions import PSEOF
-from .psparser import PSKeyword
-from .psparser import PSStackParser
+from .psparser import KWD, PSKeyword, PSStackParser
 
 if TYPE_CHECKING:
     from .pdfdocument import PDFDocument

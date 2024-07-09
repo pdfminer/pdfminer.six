@@ -1,17 +1,14 @@
 import itertools
 import logging
-from typing import BinaryIO, Container, Dict, Iterator, List, Optional, Tuple, Any
+from typing import Any, BinaryIO, Container, Dict, Iterator, List, Optional, Tuple
 
-from pdfminer.utils import parse_rect
 from . import settings
-from .pdfdocument import PDFDocument, PDFTextExtractionNotAllowed, PDFNoPageLabels
-from .pdfparser import PDFParser
-from .pdftypes import dict_value
+from .pdfdocument import PDFDocument, PDFNoPageLabels, PDFTextExtractionNotAllowed
 from .pdfexceptions import PDFObjectNotFound, PDFValueError
-from .pdftypes import int_value
-from .pdftypes import list_value
-from .pdftypes import resolve1
+from .pdfparser import PDFParser
+from .pdftypes import dict_value, int_value, list_value, resolve1
 from .psparser import LIT
+from .utils import parse_rect
 
 log = logging.getLogger(__name__)
 

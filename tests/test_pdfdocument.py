@@ -3,9 +3,9 @@ import itertools
 import pytest
 
 from pdfminer.pdfdocument import PDFDocument, PDFNoPageLabels
+from pdfminer.pdfexceptions import PDFObjectNotFound
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import dict_value, int_value
-from pdfminer.pdfexceptions import PDFObjectNotFound
 from tests.helpers import absolute_sample_path
 
 

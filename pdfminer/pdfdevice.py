@@ -1,28 +1,24 @@
 from typing import (
+    TYPE_CHECKING,
     BinaryIO,
     Iterable,
     List,
     Optional,
     Sequence,
-    TYPE_CHECKING,
     Union,
     cast,
 )
 
-from pdfminer.psparser import PSLiteral
 from . import utils
 from .pdfcolor import PDFColorSpace
-from .pdffont import PDFFont
-from .pdffont import PDFUnicodeNotDefined
+from .pdffont import PDFFont, PDFUnicodeNotDefined
 from .pdfpage import PDFPage
 from .pdftypes import PDFStream
-from .utils import Matrix, Point, Rect, PathSegment
+from .psparser import PSLiteral
+from .utils import Matrix, PathSegment, Point, Rect
 
 if TYPE_CHECKING:
-    from .pdfinterp import PDFGraphicState
-    from .pdfinterp import PDFResourceManager
-    from .pdfinterp import PDFTextState
-    from .pdfinterp import PDFStackT
+    from .pdfinterp import PDFGraphicState, PDFResourceManager, PDFStackT, PDFTextState
 
 
 PDFTextSeq = Iterable[Union[int, float, bytes]]

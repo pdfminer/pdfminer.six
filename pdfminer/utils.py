@@ -7,6 +7,7 @@ import string
 import struct
 from html import escape
 from typing import (
+    TYPE_CHECKING,
     Any,
     BinaryIO,
     Callable,
@@ -21,7 +22,6 @@ from typing import (
     Tuple,
     TypeVar,
     Union,
-    TYPE_CHECKING,
     cast,
 )
 

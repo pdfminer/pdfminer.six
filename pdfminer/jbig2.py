@@ -1,6 +1,6 @@
 import math
 import os
-from struct import pack, unpack, calcsize
+from struct import calcsize, pack, unpack
 from typing import BinaryIO, Dict, Iterable, List, Optional, Tuple, Union, cast
 
 from .pdfexceptions import PDFValueError

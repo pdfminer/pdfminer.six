@@ -1,9 +1,9 @@
 import io
 from tempfile import TemporaryFile
 
-from pdfminer.converter import PDFLayoutAnalyzer, PDFConverter
+from pdfminer.converter import PDFConverter, PDFLayoutAnalyzer
 from pdfminer.high_level import extract_pages
-from pdfminer.layout import LTChar, LTContainer, LTRect, LTLine, LTCurve
+from pdfminer.layout import LTChar, LTContainer, LTCurve, LTLine, LTRect
 from pdfminer.pdfinterp import PDFGraphicState
 from tests.helpers import absolute_sample_path
 

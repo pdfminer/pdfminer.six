@@ -3,7 +3,7 @@
 import binascii
 
 from pdfminer.arcfour import Arcfour
-from pdfminer.ascii85 import asciihexdecode, ascii85decode
+from pdfminer.ascii85 import ascii85decode, asciihexdecode
 from pdfminer.lzw import lzwdecode
 from pdfminer.runlength import rldecode
 

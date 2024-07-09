@@ -24,6 +24,5 @@ Pipfile
 Pipfile.lock
 .noseids
 .vscode/
-pyproject.toml
 poetry.lock
 .eggs

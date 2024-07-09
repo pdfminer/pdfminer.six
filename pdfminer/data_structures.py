@@ -2,7 +2,7 @@ from typing import Any, Iterable, List, Optional, Tuple
 
 from pdfminer import settings
 from pdfminer.pdfparser import PDFSyntaxError
-from pdfminer.pdftypes import list_value, int_value, dict_value
+from pdfminer.pdftypes import dict_value, int_value, list_value
 from pdfminer.utils import choplist
 
 

@@ -2,7 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
-from pdfminer.cmapdb import IdentityCMap, CMap, IdentityCMapByte
+from pdfminer.cmapdb import CMap, IdentityCMap, IdentityCMapByte
 from pdfminer.pdffont import PDFCIDFont
 from pdfminer.pdftypes import PDFStream
 from pdfminer.psparser import PSLiteral

@@ -6,7 +6,7 @@ Therefore lowercase unittest variants are added.
 """
 import pytest
 
-from pdfminer.encodingdb import name2unicode, EncodingDB
+from pdfminer.encodingdb import EncodingDB, name2unicode
 from pdfminer.psparser import PSLiteral
 
 

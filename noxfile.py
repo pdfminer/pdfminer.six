@@ -2,9 +2,26 @@ import os
 
 import nox
 
-
 PYTHON_ALL_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 PYTHON_MODULES = ["fuzzing", "pdfminer", "tools", "tests", "noxfile.py", "setup.py"]
+
+
+@nox.session
+def format_isort(session):
+    session.install("isort")
+    if "CI" in os.environ:
+        session.run("isort", "--check", *PYTHON_MODULES)
+    else:
+        session.run("isort", *PYTHON_MODULES)
+
+
+@nox.session
+def format_autoflake(session):
+    session.install("autoflake")
+    if "CI" in os.environ:
+        session.run("autoflake", "--check-diff", *PYTHON_MODULES)
+    else:
+        session.run("autoflake", "--in-place", *PYTHON_MODULES)
 
 
 @nox.session

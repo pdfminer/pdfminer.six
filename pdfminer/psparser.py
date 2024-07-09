@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 import io
-
-# -*- coding: utf-8 -*-
-
 import logging
 import re
 from typing import (
@@ -19,7 +16,7 @@ from typing import (
     Union,
 )
 
-from . import settings, psexceptions
+from . import psexceptions, settings
 from .utils import choplist
 
 log = logging.getLogger(__name__)
@@ -35,8 +32,6 @@ PSValueError = psexceptions.PSValueError
 
 class PSObject:
     """Base class for all PS or PDF-related data types."""
-
-    pass
 
 
 class PSLiteral(PSObject):

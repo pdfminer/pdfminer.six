@@ -1,7 +1,7 @@
 """Helper module, which provides a TemporaryFilePath() context manager"""
 
-import tempfile
 import os
+import tempfile
 
 
 class TemporaryFilePath:

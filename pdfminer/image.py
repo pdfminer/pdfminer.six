@@ -12,16 +12,14 @@ except ImportError:
 
 from .jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from .layout import LTImage
-from .pdfcolor import LITERAL_DEVICE_CMYK
-from .pdfcolor import LITERAL_DEVICE_GRAY
-from .pdfcolor import LITERAL_DEVICE_RGB
+from .pdfcolor import LITERAL_DEVICE_CMYK, LITERAL_DEVICE_GRAY, LITERAL_DEVICE_RGB
+from .pdfexceptions import PDFValueError
 from .pdftypes import (
     LITERALS_DCT_DECODE,
+    LITERALS_FLATE_DECODE,
     LITERALS_JBIG2_DECODE,
     LITERALS_JPX_DECODE,
-    LITERALS_FLATE_DECODE,
 )
-from .pdfexceptions import PDFValueError
 
 PIL_ERROR_MESSAGE = (
     "Could not import Pillow. This dependency of pdfminer.six is not "

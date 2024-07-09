@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-import atheris
 import sys
+
+import atheris
 
 from fuzzing.fuzzed_data_provider import PdfminerFuzzedDataProvider
 
 with atheris.instrument_imports():
     from fuzzing.utils import (
-        prepare_pdfminer_fuzzing,
-        is_valid_byte_stream,
         generate_layout_parameters,
+        is_valid_byte_stream,
+        prepare_pdfminer_fuzzing,
     )
     from pdfminer.high_level import extract_pages
     from pdfminer.psexceptions import PSException

@@ -15,38 +15,48 @@ from typing import (
     cast,
 )
 
-from pdfminer.pdfcolor import PDFColorSpace
 from . import utils
 from .image import ImageWriter
-from .layout import LAParams, LTComponent, TextGroupElement
-from .layout import LTAnno
-from .layout import LTChar
-from .layout import LTContainer
-from .layout import LTCurve
-from .layout import LTFigure
-from .layout import LTImage
-from .layout import LTItem
-from .layout import LTLayoutContainer
-from .layout import LTLine
-from .layout import LTPage
-from .layout import LTRect
-from .layout import LTText
-from .layout import LTTextBox
-from .layout import LTTextBoxVertical
-from .layout import LTTextGroup
-from .layout import LTTextLine
+from .layout import (
+    LAParams,
+    LTAnno,
+    LTChar,
+    LTComponent,
+    LTContainer,
+    LTCurve,
+    LTFigure,
+    LTImage,
+    LTItem,
+    LTLayoutContainer,
+    LTLine,
+    LTPage,
+    LTRect,
+    LTText,
+    LTTextBox,
+    LTTextBoxVertical,
+    LTTextGroup,
+    LTTextLine,
+    TextGroupElement,
+)
 from .pdfdevice import PDFTextDevice
-from .pdffont import PDFFont
-from .pdffont import PDFUnicodeNotDefined
+from .pdfexceptions import PDFValueError
+from .pdffont import PDFFont, PDFUnicodeNotDefined
 from .pdfinterp import PDFGraphicState, PDFResourceManager
 from .pdfpage import PDFPage
 from .pdftypes import PDFStream
-from .pdfexceptions import PDFValueError
-from .utils import AnyIO, Point, Matrix, Rect, PathSegment, make_compat_str
-from .utils import apply_matrix_pt
-from .utils import bbox2str
-from .utils import enc
-from .utils import mult_matrix
+from .utils import (
+    AnyIO,
+    Matrix,
+    PathSegment,
+    Point,
+    Rect,
+    apply_matrix_pt,
+    bbox2str,
+    enc,
+    make_compat_str,
+    mult_matrix,
+)
+from pdfminer.pdfcolor import PDFColorSpace
 
 log = logging.getLogger(__name__)
 

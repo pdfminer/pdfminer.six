@@ -2,6 +2,7 @@ import logging
 import struct
 from io import BytesIO
 from typing import (
+    TYPE_CHECKING,
     Any,
     BinaryIO,
     Dict,
@@ -13,40 +14,34 @@ from typing import (
     Tuple,
     Union,
     cast,
-    TYPE_CHECKING,
 )
 
 from . import settings
-from .cmapdb import CMap
-from .cmapdb import CMapBase
-from .cmapdb import CMapDB
-from .cmapdb import CMapParser
-from .cmapdb import FileUnicodeMap
-from .cmapdb import IdentityUnicodeMap
-from .cmapdb import UnicodeMap
-from .encodingdb import EncodingDB
-from .encodingdb import name2unicode
+from .cmapdb import (
+    CMap,
+    CMapBase,
+    CMapDB,
+    CMapParser,
+    FileUnicodeMap,
+    IdentityUnicodeMap,
+    UnicodeMap,
+)
+from .encodingdb import EncodingDB, name2unicode
 from .fontmetrics import FONT_METRICS
-from .pdftypes import PDFStream
-from pdfminer.pdfexceptions import PDFException, PDFValueError, PDFKeyError
-from .pdftypes import dict_value
-from .pdftypes import int_value
-from .pdftypes import list_value
-from .pdftypes import num_value
-from .pdftypes import resolve1, resolve_all
-from .pdftypes import stream_value
-from .psparser import KWD
-from pdfminer.psexceptions import PSEOF
-from .psparser import LIT
-from .psparser import PSKeyword
-from .psparser import PSLiteral
-from .psparser import PSStackParser
-from .psparser import literal_name
-from .utils import Matrix, Point
-from .utils import Rect
-from .utils import apply_matrix_norm
-from .utils import choplist
-from .utils import nunpack
+from .pdfexceptions import PDFException, PDFKeyError, PDFValueError
+from .pdftypes import (
+    PDFStream,
+    dict_value,
+    int_value,
+    list_value,
+    num_value,
+    resolve1,
+    resolve_all,
+    stream_value,
+)
+from .psexceptions import PSEOF
+from .psparser import KWD, LIT, PSKeyword, PSLiteral, PSStackParser, literal_name
+from .utils import Matrix, Point, Rect, apply_matrix_norm, choplist, nunpack
 
 if TYPE_CHECKING:
     from .pdfinterp import PDFResourceManager

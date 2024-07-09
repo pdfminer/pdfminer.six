@@ -4,40 +4,47 @@ from io import BytesIO
 from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union, cast
 
 from . import settings
-from .cmapdb import CMap
-from .cmapdb import CMapBase
-from .cmapdb import CMapDB
-from .pdfcolor import PDFColorSpace
-from .pdfcolor import PREDEFINED_COLORSPACE
-from .pdfdevice import PDFDevice
-from .pdfdevice import PDFTextSeq
-from .pdffont import PDFCIDFont
-from .pdffont import PDFFont
-from .pdffont import PDFFontError
-from .pdffont import PDFTrueTypeFont
-from .pdffont import PDFType1Font
-from .pdffont import PDFType3Font
-from .pdfpage import PDFPage
-from .pdftypes import PDFObjRef
+from .cmapdb import CMap, CMapBase, CMapDB
+from .pdfcolor import PREDEFINED_COLORSPACE, PDFColorSpace
+from .pdfdevice import PDFDevice, PDFTextSeq
 from .pdfexceptions import PDFException
-from .pdftypes import PDFStream
-from .pdftypes import dict_value
-from .pdftypes import list_value
-from .pdftypes import resolve1
-from .pdftypes import stream_value
-from .psparser import KWD
+from .pdffont import (
+    PDFCIDFont,
+    PDFFont,
+    PDFFontError,
+    PDFTrueTypeFont,
+    PDFType1Font,
+    PDFType3Font,
+)
+from .pdfpage import PDFPage
+from .pdftypes import (
+    PDFObjRef,
+    PDFStream,
+    dict_value,
+    list_value,
+    resolve1,
+    stream_value,
+)
 from .psexceptions import PSEOF, PSTypeError
-from .psparser import LIT
-from .psparser import PSKeyword
-from .psparser import PSLiteral
-from .psparser import PSStackParser
-from .psparser import PSStackType
-from .psparser import keyword_name
-from .psparser import literal_name
-from .utils import MATRIX_IDENTITY
-from .utils import Matrix, Point, PathSegment, Rect
-from .utils import choplist
-from .utils import mult_matrix
+from .psparser import (
+    KWD,
+    LIT,
+    PSKeyword,
+    PSLiteral,
+    PSStackParser,
+    PSStackType,
+    keyword_name,
+    literal_name,
+)
+from .utils import (
+    MATRIX_IDENTITY,
+    Matrix,
+    PathSegment,
+    Point,
+    Rect,
+    choplist,
+    mult_matrix,
+)
 
 log = logging.getLogger(__name__)
 

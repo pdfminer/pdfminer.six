@@ -2,7 +2,7 @@ import logging
 from io import BytesIO
 from typing import BinaryIO, Iterator, List, Optional, cast
 
-from .pdfexceptions import PDFException, PDFEOFError
+from .pdfexceptions import PDFEOFError, PDFException
 
 logger = logging.getLogger(__name__)
 

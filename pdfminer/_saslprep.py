@@ -21,8 +21,8 @@
 __all__ = ["saslprep"]
 
 import stringprep
-from typing import Callable, Tuple
 import unicodedata
+from typing import Callable, Tuple
 
 from .pdfexceptions import PDFValueError
 

@@ -6,18 +6,17 @@ from typing import (
     Any,
     Dict,
     Iterable,
+    List,
     Optional,
     Protocol,
-    Union,
-    List,
     Tuple,
+    Union,
     cast,
 )
 from warnings import warn
 
-from . import settings, pdfexceptions
-from .ascii85 import ascii85decode
-from .ascii85 import asciihexdecode
+from . import pdfexceptions, settings
+from .ascii85 import ascii85decode, asciihexdecode
 from .ccitt import ccittfaxdecode
 from .lzw import lzwdecode
 from .psparser import LIT, PSObject

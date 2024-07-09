@@ -4,26 +4,21 @@ import logging
 import os.path
 import re
 import sys
-from typing import Any, Container, Dict, Iterable, List, Optional, TextIO, Union, cast
 from argparse import ArgumentParser
+from typing import Any, Container, Dict, Iterable, List, Optional, TextIO, Union, cast
 
 import pdfminer
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback
-from pdfminer.pdfpage import PDFPage
-from pdfminer.pdfparser import PDFParser
-from pdfminer.pdftypes import (
-    PDFStream,
-    PDFObjRef,
-    resolve1,
-    stream_value,
-)
 from pdfminer.pdfexceptions import (
+    PDFIOError,
+    PDFObjectNotFound,
     PDFTypeError,
     PDFValueError,
-    PDFObjectNotFound,
-    PDFIOError,
 )
-from pdfminer.psparser import PSKeyword, PSLiteral, LIT
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdftypes import PDFObjRef, PDFStream, resolve1, stream_value
+from pdfminer.psparser import LIT, PSKeyword, PSLiteral
 from pdfminer.utils import isnumber
 
 logging.basicConfig()

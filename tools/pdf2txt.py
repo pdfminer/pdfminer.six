@@ -8,8 +8,8 @@ from typing import Any, Container, Iterable, List, Optional
 
 import pdfminer.high_level
 from pdfminer.layout import LAParams
-from pdfminer.utils import AnyIO
 from pdfminer.pdfexceptions import PDFValueError
+from pdfminer.utils import AnyIO
 
 logging.basicConfig()
 

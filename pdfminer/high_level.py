@@ -5,20 +5,20 @@ import sys
 from io import StringIO
 from typing import Any, BinaryIO, Container, Iterator, Optional, cast
 
-from .pdfexceptions import PDFValueError
 from .converter import (
-    XMLConverter,
-    HTMLConverter,
-    TextConverter,
-    PDFPageAggregator,
     HOCRConverter,
+    HTMLConverter,
+    PDFPageAggregator,
+    TextConverter,
+    XMLConverter,
 )
 from .image import ImageWriter
 from .layout import LAParams, LTPage
 from .pdfdevice import PDFDevice, TagExtractor
-from .pdfinterp import PDFResourceManager, PDFPageInterpreter
+from .pdfexceptions import PDFValueError
+from .pdfinterp import PDFPageInterpreter, PDFResourceManager
 from .pdfpage import PDFPage
-from .utils import open_filename, FileOrName, AnyIO
+from .utils import AnyIO, FileOrName, open_filename
 
 
 def extract_text_to_fp(

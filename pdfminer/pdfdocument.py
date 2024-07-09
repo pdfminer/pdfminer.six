@@ -2,7 +2,7 @@ import itertools
 import logging
 import re
 import struct
-from hashlib import sha256, md5, sha384, sha512
+from hashlib import md5, sha256, sha384, sha512
 from typing import (
     Any,
     Callable,
@@ -25,22 +25,22 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from . import settings
 from .arcfour import Arcfour
 from .data_structures import NumberTree
-from .pdfparser import PDFSyntaxError, PDFParser, PDFStreamParser
+from .pdfexceptions import PDFException, PDFKeyError, PDFObjectNotFound, PDFTypeError
+from .pdfparser import PDFParser, PDFStreamParser, PDFSyntaxError
 from .pdftypes import (
     DecipherCallable,
     PDFStream,
     decipher_all,
-    int_value,
-    str_value,
-    list_value,
-    uint_value,
     dict_value,
+    int_value,
+    list_value,
+    str_value,
     stream_value,
+    uint_value,
 )
-from .pdfexceptions import PDFException, PDFTypeError, PDFObjectNotFound, PDFKeyError
-from .psparser import literal_name, LIT, KWD
 from .psexceptions import PSEOF
-from .utils import choplist, decode_text, nunpack, format_int_roman, format_int_alpha
+from .psparser import KWD, LIT, literal_name
+from .utils import choplist, decode_text, format_int_alpha, format_int_roman, nunpack
 
 log = logging.getLogger(__name__)
 
@@ -54,8 +54,6 @@ class PDFNoValidXRefWarning(SyntaxWarning):
 
     Not used anymore because warnings.warn is replaced by logger.Logger.warn.
     """
-
-    pass
 
 
 class PDFNoOutlines(PDFException):
@@ -84,16 +82,12 @@ class PDFEncryptionWarning(UserWarning):
     Not used anymore because warnings.warn is replaced by logger.Logger.warn.
     """
 
-    pass
-
 
 class PDFTextExtractionNotAllowedWarning(UserWarning):
     """Legacy warning for PDF that does not allow extraction.
 
     Not used anymore because warnings.warn is replaced by logger.Logger.warn.
     """
-
-    pass
 
 
 class PDFTextExtractionNotAllowed(PDFEncryptionError):
