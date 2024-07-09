@@ -14,8 +14,8 @@ env:
   default-python: "3.10"
 
 jobs:
-  check-code-style:
-    name: Format and check code style
+  check-coding-style:
+    name: Format and check coding style
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
