@@ -16,7 +16,7 @@ env:
 jobs:
 
   check-code-imports:
-    name: Check coding style
+    name: Format import coding style
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -34,7 +34,7 @@ jobs:
           nox --error-on-missing-interpreters --non-interactive --session format_isort
 
   check-code-autoflake:
-    name: Check coding style
+    name: Format coding style with autoflake
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -52,7 +52,7 @@ jobs:
           nox --error-on-missing-interpreters --non-interactive --session format_autoflake
 
   check-code-formatting:
-    name: Check coding style
+    name: Format coding style with black
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -70,7 +70,7 @@ jobs:
           nox --error-on-missing-interpreters --non-interactive --session format
 
   check-coding-style:
-    name: Check coding style
+    name: Lint coding style
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
