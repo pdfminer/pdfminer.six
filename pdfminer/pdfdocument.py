@@ -959,7 +959,7 @@ class PDFDocument:
                 log.debug("xref found: pos=%r", prev)
 
                 if not prev.isdigit():
-                    raise PDFNoValidXRef(f"Invalid xref position: {prev}")
+                    raise PDFNoValidXRef(f"Invalid xref position: {prev!r}")
 
                 start = int(prev)
 
