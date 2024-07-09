@@ -143,13 +143,11 @@ func/a/b{(c)do*}def
         tokens = self.get_tokens(self.TESTDATA)
         logger.info(tokens)
         assert tokens == self.TOKENS
-        return
 
     def test_2(self):
         objs = self.get_objects(self.TESTDATA)
         logger.info(objs)
         assert objs == self.OBJS
-        return
 
     def test_3(self):
         """Regression test for streams that end with a keyword.

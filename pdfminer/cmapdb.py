@@ -292,14 +292,12 @@ class CMapParser(PSStackParser[PSKeyword]):
         # some ToUnicode maps don't have "begincmap" keyword.
         self._in_cmap = True
         self._warnings: Set[str] = set()
-        return
 
     def run(self) -> None:
         try:
             self.nextobject()
         except PSEOF:
             pass
-        return
 
     KEYWORD_BEGINCMAP = KWD(b"begincmap")
     KEYWORD_ENDCMAP = KWD(b"endcmap")

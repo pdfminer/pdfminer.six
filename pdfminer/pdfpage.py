@@ -139,7 +139,6 @@ class PDFPage:
                             yield cls(document, objid, obj, next(page_labels))
                     except PDFObjectNotFound:
                         pass
-        return
 
     @classmethod
     def get_pages(
@@ -177,4 +176,3 @@ class PDFPage:
             yield page
             if maxpages and maxpages <= pageno + 1:
                 break
-        return

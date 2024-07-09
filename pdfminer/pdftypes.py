@@ -382,7 +382,6 @@ class PDFStream(PDFObject):
                     raise PDFNotImplementedError(error_msg)
         self.data = data
         self.rawdata = None
-        return
 
     def get_data(self) -> bytes:
         if self.data is None:

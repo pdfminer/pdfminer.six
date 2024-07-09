@@ -299,7 +299,6 @@ def uniq(objs: Iterable[_T]) -> Iterator[_T]:
             continue
         done.add(obj)
         yield obj
-    return
 
 
 def fsplit(pred: Callable[[_T], bool], objs: Iterable[_T]) -> Tuple[List[_T], List[_T]]:
@@ -351,7 +350,6 @@ def choplist(n: int, seq: Iterable[_T]) -> Iterator[Tuple[_T, ...]]:
         if len(r) == n:
             yield tuple(r)
             r = []
-    return
 
 
 def nunpack(s: bytes, default: int = 0) -> int:
