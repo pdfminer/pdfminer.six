@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import io
 
 # -*- coding: utf-8 -*-
 
@@ -260,7 +261,7 @@ class PSBaseParser:
 
         This is used to locate the trailers at the end of a file.
         """
-        self.fp.seek(0, 2)
+        self.fp.seek(0, io.SEEK_END)
         pos = self.fp.tell()
         buf = b""
         while 0 < pos:
