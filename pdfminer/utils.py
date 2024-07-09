@@ -238,6 +238,14 @@ PathSegment = Union[
 MATRIX_IDENTITY: Matrix = (1, 0, 0, 1, 0, 0)
 
 
+def parse_rect(o: Any) -> Rect:
+    try:
+        (x0, y0, x1, y1) = o
+        return float(x0), float(y0), float(x1), float(y1)
+    except ValueError:
+        raise PDFValueError("Could not parse rectangle")
+
+
 def mult_matrix(m1: Matrix, m0: Matrix) -> Matrix:
     (a1, b1, c1, d1, e1, f1) = m1
     (a0, b0, c0, d0, e0, f0) = m0
