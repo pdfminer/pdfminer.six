@@ -19,13 +19,13 @@ from pdfminer.pdffont import (
 )
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdftypes import (
+    LITERALS_ASCII85_DECODE,
     PDFObjRef,
     PDFStream,
     dict_value,
     list_value,
     resolve1,
     stream_value,
-    LITERALS_ASCII85_DECODE,
 )
 from pdfminer.psexceptions import PSEOF, PSTypeError
 from pdfminer.psparser import (

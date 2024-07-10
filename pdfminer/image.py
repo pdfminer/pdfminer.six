@@ -127,12 +127,16 @@ class ImageWriter:
         elif image.bits == 1:
             name = self._save_bmp(image, width, height, (width + 7) // 8, image.bits)
 
-        elif image.bits == 8 and (LITERAL_DEVICE_RGB in image.colorspace
-                                  or LITERAL_INLINE_DEVICE_RGB in image.colorspace):
+        elif image.bits == 8 and (
+            LITERAL_DEVICE_RGB in image.colorspace
+            or LITERAL_INLINE_DEVICE_RGB in image.colorspace
+        ):
             name = self._save_bmp(image, width, height, width * 3, image.bits * 3)
 
-        elif image.bits == 8 and (LITERAL_DEVICE_GRAY in image.colorspace
-                                  or LITERAL_INLINE_DEVICE_GRAY in image.colorspace):
+        elif image.bits == 8 and (
+            LITERAL_DEVICE_GRAY in image.colorspace
+            or LITERAL_INLINE_DEVICE_GRAY in image.colorspace
+        ):
             name = self._save_bmp(image, width, height, width, image.bits)
 
         elif len(filters) == 1 and filters[0][0] in LITERALS_FLATE_DECODE:
