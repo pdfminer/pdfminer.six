@@ -338,9 +338,8 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 if filter is not None:
                     if isinstance(filter, PSLiteral):
                         filter = [filter]
-                    for f in LITERALS_ASCII85_DECODE:
-                        if f in filter:
-                            eos = b"~>"
+                    if filter[0] in LITERALS_ASCII85_DECODE:
+                        eos = b"~>"
                 (pos, data) = self.get_inline_data(pos + len(b"ID "), target=eos)
                 if eos != b"EI":  # it may be necessary for decoding
                     data += eos
