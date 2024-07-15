@@ -17,6 +17,7 @@ from typing import (
 )
 
 from pdfminer import settings
+from pdfminer.casting import safe_float
 from pdfminer.cmapdb import (
     CMap,
     CMapBase,
@@ -852,7 +853,7 @@ LITERAL_TYPE1C = LIT("Type1C")
 
 # Font widths are maintained in a dict type that maps from *either* unicode
 # chars or integer character IDs.
-FontWidthDict = Union[Dict[int, float], Dict[str, float]]
+FontWidthDict = Union[Dict[Union[int, str], float]]
 
 
 class PDFFont:
@@ -925,14 +926,20 @@ class PDFFont:
     def char_width(self, cid: int) -> float:
         # Because character widths may be mapping either IDs or strings,
         # we try to lookup the character ID first, then its str equivalent.
+        cid_width = safe_float(self.widths.get(cid))
+        if cid_width is not None:
+            return cid_width * self.hscale
+
         try:
-            return cast(Dict[int, float], self.widths)[cid] * self.hscale
-        except KeyError:
-            str_widths = cast(Dict[str, float], self.widths)
-            try:
-                return str_widths[self.to_unichr(cid)] * self.hscale
-            except (KeyError, PDFUnicodeNotDefined):
-                return self.default_width * self.hscale
+            str_cid = self.to_unichr(cid)
+            cid_width = safe_float(self.widths.get(str_cid))
+            if cid_width is not None:
+                return cid_width * self.hscale
+
+        except PDFUnicodeNotDefined:
+            pass
+
+        return self.default_width * self.hscale
 
     def char_disp(self, cid: int) -> Union[float, Tuple[Optional[float], float]]:
         """Returns an integer for horizontal fonts, a tuple for vertical fonts."""
