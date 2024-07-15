@@ -184,3 +184,10 @@ class TestDumpImages:
         filepath = absolute_sample_path("contrib/issue_495_pdfobjref.pdf")
         image_files = self.extract_images(filepath)
         assert image_files[0].endswith("jpg")
+
+    def test_contrib_issue_1008_inline(self):
+        """Test for parsing and extracting inline images"""
+        filepath = absolute_sample_path("contrib/issue-1008-inline-ascii85.pdf")
+        image_files = self.extract_images(filepath)
+        assert len(image_files) == 23
+        assert all(x.endswith(".bmp") for x in image_files)

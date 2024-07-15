@@ -19,6 +19,7 @@ from pdfminer.pdffont import (
 )
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdftypes import (
+    LITERALS_ASCII85_DECODE,
     PDFObjRef,
     PDFStream,
     dict_value,
@@ -331,11 +332,21 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 if len(objs) % 2 != 0:
                     error_msg = f"Invalid dictionary construct: {objs!r}"
                     raise PSTypeError(error_msg)
-                d = {literal_name(k): v for (k, v) in choplist(2, objs)}
-                (pos, data) = self.get_inline_data(pos + len(b"ID "))
+                d = {literal_name(k): resolve1(v) for (k, v) in choplist(2, objs)}
+                eos = b"EI"
+                filter = d.get("F", None)
+                if filter is not None:
+                    if isinstance(filter, PSLiteral):
+                        filter = [filter]
+                    if filter[0] in LITERALS_ASCII85_DECODE:
+                        eos = b"~>"
+                (pos, data) = self.get_inline_data(pos + len(b"ID "), target=eos)
+                if eos != b"EI":  # it may be necessary for decoding
+                    data += eos
                 obj = PDFStream(d, data)
                 self.push((pos, obj))
-                self.push((pos, self.KEYWORD_EI))
+                if eos == b"EI":  # otherwise it is still in the stream
+                    self.push((pos, self.KEYWORD_EI))
             except PSTypeError:
                 if settings.STRICT:
                     raise
