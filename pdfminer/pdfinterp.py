@@ -213,7 +213,9 @@ class PDFClippingPath:
             ]
             pts = [apply_matrix_pt(ctm, pt) for pt in raw_pts]
             if shape in {"mlh", "ml"}:
-                # A single line segment which has no area. Make bbox empty.
+                # A single line segment which has no area. Make bbox
+                # empty (NOTE: points on this line are technically not
+                # clipped)
                 log.warning("Clipping with empty shape (line: %r)", pts[0:2])
                 self.bbox = (*pts[0], *pts[0])
             elif shape in {"mlllh", "mllll"}:
@@ -240,7 +242,6 @@ class PDFClippingPath:
                     )
                     log.debug("Clipped to: %r", self.bbox)
                 else:
-                    # Not a rectangle.  Make bbox empty.
                     log.warning("Path is not a rectangle, will not clip: %r", path)
 
     def contains(self, point: Point) -> bool:
