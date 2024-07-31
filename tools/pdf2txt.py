@@ -214,6 +214,14 @@ def create_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="If layout analysis should be performed on text in figures.",
     )
+    la_param_group.add_argument(
+        "--hidden-texts",
+        "-H",
+        default=la_params.hidden_texts,
+        action="store_true",
+        help="If layout analysis should be performed on hidden text outside "
+        "the clipping path.",
+    )
 
     output_params = parser.add_argument_group(
         "Output",
@@ -296,6 +304,7 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
             boxes_flow=parsed_args.boxes_flow,
             detect_vertical=parsed_args.detect_vertical,
             all_texts=parsed_args.all_texts,
+            hidden_texts=parsed_args.hidden_texts,
         )
 
     if parsed_args.page_numbers:
