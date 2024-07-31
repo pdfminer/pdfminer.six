@@ -1,0 +1,69 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pdfminer.six"
+dynamic = ["version"]
+description = "PDF parser and analyzer"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [
+    { name = "Yusuke Shinyama + Philippe Guglielmetti", email = "pdfminer@goulu.net" },
+]
+keywords = [
+    "layout analysis",
+    "pdf converter",
+    "pdf parser",
+    "text mining",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Text Processing",
+]
+dependencies = [
+    "charset-normalizer >= 2.0.0",
+    "cryptography >= 36.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "atheris; python_version >= '3.12'",
+    "black",
+    "mypy == 0.931",
+    "nox",
+    "pytest",
+]
+docs = [
+    "sphinx",
+    "sphinx-argparse",
+]
+image = [
+    "Pillow",
+]
+
+[project.scripts]
+"pdf2txt.py" = "tools.pdf2txt:main"
+"dumppdf.py" = "tools.dumppdf:main"
+
+[project.urls]
+Homepage = "https://github.com/pdfminer/pdfminer.six"
+
+[tool.hatch.version]
+source = "vcs"
+tag-pattern = '(\d\d\d\d\d\d\d\d)'
+
+[tool.hatch.build.targets.wheel]
+packages = ["pdfminer"]
