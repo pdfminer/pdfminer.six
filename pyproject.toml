@@ -40,7 +40,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "atheris; python_version >= '3.12'",
+    "atheris; python_version < '3.12'",
     "black",
     "mypy == 0.931",
     "nox",
