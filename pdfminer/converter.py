@@ -259,7 +259,11 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             graphicstate,
         )
         x0, y0, x1, y1 = item.bbox
-        if self.clippath.contains((x0, y0)) and self.clippath.contains((x1, y1)):
+        if (
+            self.clippath is None
+            or self.clippath.contains((x0, y0))
+            and self.clippath.contains((x1, y1))
+        ):
             self.cur_item.add(item)
         else:
             log.debug("Character %r outside clippath %r", item, self.clippath)

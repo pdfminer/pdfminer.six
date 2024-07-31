@@ -45,10 +45,10 @@ from pdfminer.utils import (
     PathSegment,
     Point,
     Rect,
-    choplist,
-    mult_matrix,
     apply_matrix_pt,
+    choplist,
     get_bound,
+    mult_matrix,
 )
 
 log = logging.getLogger(__name__)
@@ -181,6 +181,7 @@ class PDFGraphicState:
 
 class PDFClippingPath:
     """Rather approximate representation of a clipping path."""
+
     bbox: Rect
 
     def __init__(self, mediabox: Rect):
@@ -189,7 +190,7 @@ class PDFClippingPath:
     def copy(self) -> "PDFClippingPath":
         return PDFClippingPath(self.bbox)
 
-    def add(self, path: List[PathSegment], ctm: Matrix, evenodd: bool = False):
+    def add(self, path: List[PathSegment], ctm: Matrix, evenodd: bool = False) -> None:
         """Intersect with a path, applying evenodd rule if requested.
 
         NOTE: in practice, does no such thing at the moment, but
@@ -242,7 +243,7 @@ class PDFClippingPath:
                     # Not a rectangle.  Make bbox empty.
                     log.warning("Path is not a rectangle, will not clip: %r", path)
 
-    def contains(self, point: Point):
+    def contains(self, point: Point) -> bool:
         """Is the given point inside the clipping path?
 
         NOTE: Only very approximately supported for the moment."""
@@ -496,7 +497,9 @@ class PDFPageInterpreter:
     def init_state(self, ctm: Matrix, clippath: PDFClippingPath) -> None:
         """Initialize the text and graphic states for rendering a page."""
         # gstack: stack for graphical states.
-        self.gstack: List[Tuple[Matrix, PDFTextState, PDFGraphicState, PDFClippingPath]] = []
+        self.gstack: List[
+            Tuple[Matrix, PDFTextState, PDFGraphicState, PDFClippingPath]
+        ] = []
         self.ctm = ctm
         self.device.set_ctm(self.ctm)
         self.clippath = clippath
@@ -522,13 +525,19 @@ class PDFPageInterpreter:
         self.argstack = self.argstack[:-n]
         return x
 
-    def get_current_state(self) -> Tuple[Matrix, PDFTextState, PDFGraphicState]:
-        return (self.ctm, self.textstate.copy(), self.graphicstate.copy(),
-                self.clippath.copy())
+    def get_current_state(
+        self,
+    ) -> Tuple[Matrix, PDFTextState, PDFGraphicState, PDFClippingPath]:
+        return (
+            self.ctm,
+            self.textstate.copy(),
+            self.graphicstate.copy(),
+            self.clippath.copy(),
+        )
 
     def set_current_state(
         self,
-        state: Tuple[Matrix, PDFTextState, PDFGraphicState],
+        state: Tuple[Matrix, PDFTextState, PDFGraphicState, PDFClippingPath],
     ) -> None:
         (self.ctm, self.textstate, self.graphicstate, self.clippath) = state
         self.device.set_ctm(self.ctm)
@@ -1078,7 +1087,7 @@ class PDFPageInterpreter:
             resources,
             streams,
             ctm,
-            clippath
+            clippath,
         )
         self.init_resources(resources)
         self.init_state(ctm, clippath)

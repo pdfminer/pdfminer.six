@@ -19,11 +19,11 @@ from pdfminer.utils import Matrix, PathSegment, Point, Rect
 
 if TYPE_CHECKING:
     from pdfminer.pdfinterp import (
+        PDFClippingPath,
         PDFGraphicState,
         PDFResourceManager,
         PDFStackT,
         PDFTextState,
-        PDFClippingPath,
     )
 
 
