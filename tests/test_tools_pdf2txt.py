@@ -118,6 +118,10 @@ class TestPdf2Txt:
     def test_hocr_simple1(self):
         run("simple1.pdf", "-t hocr")
 
+    def test_contrib_issue_1004_mediabox(self):
+        """Verify that we do not crash with MediaBox is an object reference"""
+        run("contrib/issue-1004-indirect-mediabox.pdf")
+
 
 class TestDumpImages:
     @staticmethod
