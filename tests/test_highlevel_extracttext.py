@@ -146,6 +146,12 @@ class TestExtractText(unittest.TestCase):
         s = run_with_file(test_file)
         self.assertEqual(s.strip(), test_strings[test_file])
 
+    def test_issue_414_hidden_text(self):
+        test_file = "contrib/issue-414-hidden-text.pdf"
+        s = run_with_file(test_file)
+        # Hidden text should be hidden
+        self.assertFalse("VR-181 (11-03)" in s)
+
 
 class TestExtractPages(unittest.TestCase):
     def _get_test_file_path(self):

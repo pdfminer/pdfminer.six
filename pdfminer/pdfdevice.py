@@ -23,6 +23,7 @@ if TYPE_CHECKING:
         PDFResourceManager,
         PDFStackT,
         PDFTextState,
+        PDFClippingPath,
     )
 
 
@@ -35,6 +36,7 @@ class PDFDevice:
     def __init__(self, rsrcmgr: "PDFResourceManager") -> None:
         self.rsrcmgr = rsrcmgr
         self.ctm: Optional[Matrix] = None
+        self.clippath: Optional[PDFClippingPath] = None
 
     def __repr__(self) -> str:
         return "<PDFDevice>"
@@ -50,6 +52,9 @@ class PDFDevice:
 
     def set_ctm(self, ctm: Matrix) -> None:
         self.ctm = ctm
+
+    def set_clippath(self, clippath: "PDFClippingPath") -> None:
+        self.clippath = clippath
 
     def begin_tag(self, tag: PSLiteral, props: Optional["PDFStackT"] = None) -> None:
         pass

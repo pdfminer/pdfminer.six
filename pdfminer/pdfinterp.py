@@ -1,4 +1,5 @@
 import logging
+import math
 import re
 from io import BytesIO
 from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union, cast
@@ -46,6 +47,8 @@ from pdfminer.utils import (
     Rect,
     choplist,
     mult_matrix,
+    apply_matrix_pt,
+    get_bound,
 )
 
 log = logging.getLogger(__name__)
@@ -174,6 +177,84 @@ class PDFGraphicState:
                 self.ncolor,
             )
         )
+
+
+class PDFClippingPath:
+    """Rather approximate representation of a clipping path."""
+    bbox: Rect
+
+    def __init__(self, mediabox: Rect):
+        self.bbox = mediabox
+
+    def copy(self) -> "PDFClippingPath":
+        return PDFClippingPath(self.bbox)
+
+    def add(self, path: List[PathSegment], ctm: Matrix, evenodd: bool = False):
+        """Intersect with a path, applying evenodd rule if requested.
+
+        NOTE: in practice, does no such thing at the moment, but
+        simply intersects the bounding box with path if it's a
+        rectangle (it usually is).
+        """
+        # Find the BBox of the requested path (it's usually a
+        # rectangle) using similar method to
+        # PDFLayoutAnalyzer.paint_path (FIXME: ideally we would reuse
+        # that code)
+        shape = "".join(x[0] for x in path)
+        if shape[:1] != "m":
+            # invalid path, do nothing
+            log.warning("Invalid path for clipping: %r", path)
+        elif shape.count("m") > 1:
+            log.warning("Multiple subpaths for clipping, will not clip: %r", path)
+        else:
+            raw_pts = [
+                cast(Point, p[-2:] if p[0] != "h" else path[0][-2:]) for p in path
+            ]
+            pts = [apply_matrix_pt(ctm, pt) for pt in raw_pts]
+            if shape in {"mlh", "ml"}:
+                # A single line segment which has no area. Make bbox empty.
+                log.warning("Clipping with empty shape (line: %r)", pts[0:2])
+                self.bbox = (*pts[0], *pts[0])
+            elif shape in {"mlllh", "mllll"}:
+                (x0, y0), (x1, y1), (x2, y2), (x3, y3), _ = pts
+
+                is_closed_loop = pts[0] == pts[4]
+                has_square_coordinates = (
+                    x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0
+                ) or (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)
+                if is_closed_loop and has_square_coordinates:
+                    # A rectangle.  Intersect with bbox.
+                    log.debug("Clipping with rectangle: %r", pts[0:4])
+                    bbox = get_bound(pts[0:4])
+                    # FIXME: not at all supporting evenodd/winding
+                    # rules (impossible to do since we are just
+                    # tracking a bbox)
+                    ax0, ay0, ax1, ay1 = bbox
+                    bx0, by0, bx1, by1 = self.bbox
+                    self.bbox = (
+                        max(ax0, bx0),
+                        max(ay0, by0),
+                        min(ax1, bx1),
+                        min(ay1, by1),
+                    )
+                    log.debug("Clipped to: %r", self.bbox)
+                else:
+                    # Not a rectangle.  Make bbox empty.
+                    log.warning("Path is not a rectangle, will not clip: %r", path)
+
+    def contains(self, point: Point):
+        """Is the given point inside the clipping path?
+
+        NOTE: Only very approximately supported for the moment."""
+        x, y = point
+        bx0, by0, bx1, by1 = self.bbox
+        return x >= bx0 and x <= bx1 and y >= by0 and y <= by1
+
+    def __repr__(self) -> str:
+        return "<PDFClippingPath BBox=%r>" % (self.bbox,)
+
+
+CLIP_INFINITY = PDFClippingPath((0, 0, math.inf, math.inf))
 
 
 class PDFResourceManager:
@@ -412,12 +493,14 @@ class PDFPageInterpreter:
                 for xobjid, xobjstrm in dict_value(v).items():
                     self.xobjmap[xobjid] = xobjstrm
 
-    def init_state(self, ctm: Matrix) -> None:
+    def init_state(self, ctm: Matrix, clippath: PDFClippingPath) -> None:
         """Initialize the text and graphic states for rendering a page."""
         # gstack: stack for graphical states.
-        self.gstack: List[Tuple[Matrix, PDFTextState, PDFGraphicState]] = []
+        self.gstack: List[Tuple[Matrix, PDFTextState, PDFGraphicState, PDFClippingPath]] = []
         self.ctm = ctm
         self.device.set_ctm(self.ctm)
+        self.clippath = clippath
+        self.device.set_clippath(self.clippath)
         self.textstate = PDFTextState()
         self.graphicstate = PDFGraphicState()
         self.curpath: List[PathSegment] = []
@@ -440,14 +523,16 @@ class PDFPageInterpreter:
         return x
 
     def get_current_state(self) -> Tuple[Matrix, PDFTextState, PDFGraphicState]:
-        return (self.ctm, self.textstate.copy(), self.graphicstate.copy())
+        return (self.ctm, self.textstate.copy(), self.graphicstate.copy(),
+                self.clippath.copy())
 
     def set_current_state(
         self,
         state: Tuple[Matrix, PDFTextState, PDFGraphicState],
     ) -> None:
-        (self.ctm, self.textstate, self.graphicstate) = state
+        (self.ctm, self.textstate, self.graphicstate, self.clippath) = state
         self.device.set_ctm(self.ctm)
+        self.device.set_clippath(self.clippath)
 
     def do_q(self) -> None:
         """Save graphics state"""
@@ -610,9 +695,13 @@ class PDFPageInterpreter:
 
     def do_W(self) -> None:
         """Set clipping path using nonzero winding number rule"""
+        self.clippath.add(self.curpath, self.ctm, False)
+        self.device.set_clippath(self.clippath)
 
     def do_W_a(self) -> None:
         """Set clipping path using even-odd rule"""
+        self.clippath.add(self.curpath, self.ctm, True)
+        self.device.set_clippath(self.clippath)
 
     def do_CS(self, name: PDFStackT) -> None:
         """Set color space for stroking operations
@@ -946,6 +1035,7 @@ class PDFPageInterpreter:
                 resources,
                 [xobj],
                 ctm=mult_matrix(matrix, self.ctm),
+                clippath=self.clippath,
             )
             self.device.end_figure(xobjid)
         elif subtype is LITERAL_IMAGE and "Width" in xobj and "Height" in xobj:
@@ -968,7 +1058,8 @@ class PDFPageInterpreter:
         else:
             ctm = (1, 0, 0, 1, -x0, -y0)
         self.device.begin_page(page, ctm)
-        self.render_contents(page.resources, page.contents, ctm=ctm)
+        clippath = PDFClippingPath(page.mediabox)
+        self.render_contents(page.resources, page.contents, ctm=ctm, clippath=clippath)
         self.device.end_page(page)
 
     def render_contents(
@@ -976,19 +1067,21 @@ class PDFPageInterpreter:
         resources: Dict[object, object],
         streams: Sequence[object],
         ctm: Matrix = MATRIX_IDENTITY,
+        clippath: PDFClippingPath = CLIP_INFINITY,
     ) -> None:
         """Render the content streams.
 
         This method may be called recursively.
         """
         log.debug(
-            "render_contents: resources=%r, streams=%r, ctm=%r",
+            "render_contents: resources=%r, streams=%r, ctm=%r, clippath=%r",
             resources,
             streams,
             ctm,
+            clippath
         )
         self.init_resources(resources)
-        self.init_state(ctm)
+        self.init_state(ctm, clippath)
         self.execute(list_value(streams))
 
     def execute(self, streams: Sequence[object]) -> None:

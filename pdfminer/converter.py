@@ -258,7 +258,11 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             ncs,
             graphicstate,
         )
-        self.cur_item.add(item)
+        x0, y0, x1, y1 = item.bbox
+        if self.clippath.contains((x0, y0)) and self.clippath.contains((x1, y1)):
+            self.cur_item.add(item)
+        else:
+            log.debug("Character %r outside clippath %r", item, self.clippath)
         return item.adv
 
     def handle_undefined_char(self, font: PDFFont, cid: int) -> str:
