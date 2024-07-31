@@ -13,10 +13,12 @@ def run_with_string(sample_path, laparams=None):
     return s
 
 
-def run_with_file(sample_path):
+def run_with_file(sample_path, laparams=None):
+    if laparams is None:
+        laparams = {}
     absolute_path = absolute_sample_path(sample_path)
     with open(absolute_path, "rb") as in_file:
-        s = extract_text(in_file)
+        s = extract_text(in_file, laparams=LAParams(**laparams))
     return s
 
 
@@ -151,6 +153,9 @@ class TestExtractText(unittest.TestCase):
         s = run_with_file(test_file)
         # Hidden text should be hidden
         self.assertFalse("VR-181 (11-03)" in s)
+        # Unless we say it isn't
+        s = run_with_file(test_file, laparams={"hidden_texts": True})
+        self.assertTrue("VR-181 (11-03)" in s)
 
 
 class TestExtractPages(unittest.TestCase):

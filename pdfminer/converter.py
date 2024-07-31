@@ -260,7 +260,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         )
         x0, y0, x1, y1 = item.bbox
         if (
-            self.clippath is None
+            (self.laparams is not None and self.laparams.hidden_texts)
+            or self.clippath is None
             or self.clippath.contains((x0, y0))
             and self.clippath.contains((x1, y1))
         ):

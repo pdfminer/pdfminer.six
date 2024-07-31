@@ -78,6 +78,8 @@ class LAParams:
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
         figures.
+    :param hidden_texts: If layout analysis should be performed on hidden
+        text outside the clipping path.
     """
 
     def __init__(
@@ -89,6 +91,7 @@ class LAParams:
         boxes_flow: Optional[float] = 0.5,
         detect_vertical: bool = False,
         all_texts: bool = False,
+        hidden_texts: bool = False,
     ) -> None:
         self.line_overlap = line_overlap
         self.char_margin = char_margin
@@ -97,6 +100,7 @@ class LAParams:
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
+        self.hidden_texts = hidden_texts
 
         self._validate()
 
@@ -115,8 +119,14 @@ class LAParams:
     def __repr__(self) -> str:
         return (
             "<LAParams: char_margin=%.1f, line_margin=%.1f, "
-            "word_margin=%.1f all_texts=%r>"
-            % (self.char_margin, self.line_margin, self.word_margin, self.all_texts)
+            "word_margin=%.1f all_texts=%r hidden_texts=%r>"
+            % (
+                self.char_margin,
+                self.line_margin,
+                self.word_margin,
+                self.all_texts,
+                self.hidden_texts,
+            )
         )
 
 
