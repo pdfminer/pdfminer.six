@@ -67,35 +67,34 @@ class PDFPage:
         self.resources: Dict[object, object] = resolve1(
             self.attrs.get("Resources", dict()),
         )
-        mediabox_params: List[Any] = []
-        # NOTE: MediaBox will absolutely exist if PDFPage is created
-        # from create_pages since it is inherited from the /Pages, but
-        # there may be some circumstance where someone constructs a
-        # PDFPage directly, so be robust to that (even though you
-        # won't get far without a MediaBox!)
         if "MediaBox" in self.attrs:
-            mediabox_params.extend(
-                resolve1(mediabox_param)
-                for mediabox_param in resolve1(self.attrs["MediaBox"])
+            self.mediabox = parse_rect(
+                resolve1(val) for val in resolve1(self.attrs["MediaBox"])
             )
-        self.mediabox = parse_rect(mediabox_params)
+        else:
+            log.warning(
+                "MediaBox missing from /Page (and not inherited),"
+                " defaulting to US Letter (612x792)"
+            )
+            self.mediabox = (0, 0, 612, 792)
         self.cropbox = self.mediabox
         if "CropBox" in self.attrs:
             try:
-                self.cropbox = parse_rect(resolve1(self.attrs["CropBox"]))
+                self.cropbox = parse_rect(
+                    resolve1(val) for val in resolve1(self.attrs["CropBox"])
+                )
             except PDFValueError:
-                pass
+                log.warning("Invalid CropBox in /Page, defaulting to MediaBox")
 
         self.rotate = (int_value(self.attrs.get("Rotate", 0)) + 360) % 360
         self.annots = self.attrs.get("Annots")
         self.beads = self.attrs.get("B")
         if "Contents" in self.attrs:
-            contents = resolve1(self.attrs["Contents"])
+            self.contents: List[object] = resolve1(self.attrs["Contents"])
+            if not isinstance(self.contents, list):
+                self.contents = [self.contents]
         else:
-            contents = []
-        if not isinstance(contents, list):
-            contents = [contents]
-        self.contents: List[object] = contents
+            self.contents = []
 
     def __repr__(self) -> str:
         return f"<PDFPage: Resources={self.resources!r}, MediaBox={self.mediabox!r}>"
