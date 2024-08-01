@@ -68,12 +68,17 @@ class PDFPage:
             self.attrs.get("Resources", dict()),
         )
         mediabox_params: List[Any] = []
+        # NOTE: MediaBox will absolutely exist if PDFPage is created
+        # from create_pages since it is inherited from the /Pages, but
+        # there may be some circumstance where someone constructs a
+        # PDFPage directly, so be robust to that (even though you
+        # won't get far without a MediaBox!)
         if "MediaBox" in self.attrs:
             mediabox_params.extend(
                 resolve1(mediabox_param)
                 for mediabox_param in resolve1(self.attrs["MediaBox"])
             )
-        self.mediabox = parse_rect(resolve1(mediabox_params))
+        self.mediabox = parse_rect(mediabox_params)
         self.cropbox = self.mediabox
         if "CropBox" in self.attrs:
             try:
