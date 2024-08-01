@@ -3,7 +3,7 @@ import os
 import nox
 
 PYTHON_ALL_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12"]
-PYTHON_MODULES = ["fuzzing", "pdfminer", "tools", "tests", "noxfile.py", "setup.py"]
+PYTHON_MODULES = ["fuzzing", "pdfminer", "tools", "tests", "noxfile.py"]
 
 
 @nox.session
@@ -33,7 +33,6 @@ def types(session):
 @nox.session(python=PYTHON_ALL_VERSIONS)
 def tests(session):
     session.install("pip")
-    session.install("setuptools")
     session.install("-e", ".[dev]")
     session.run("pytest")
 
@@ -41,7 +40,6 @@ def tests(session):
 @nox.session
 def docs(session):
     session.install("pip")
-    session.install("setuptools")
     session.install("-e", ".[docs]")
     session.run(
         "python",
