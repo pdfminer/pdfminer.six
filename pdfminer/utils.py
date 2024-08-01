@@ -3,7 +3,6 @@
 import io
 import pathlib
 import string
-import struct
 from html import escape
 from typing import (
     TYPE_CHECKING,
