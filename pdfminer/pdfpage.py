@@ -67,27 +67,34 @@ class PDFPage:
         self.resources: Dict[object, object] = resolve1(
             self.attrs.get("Resources", dict()),
         )
-        mediabox_params: List[Any] = [
-            resolve1(mediabox_param) for mediabox_param in self.attrs["MediaBox"]
-        ]
-        self.mediabox = parse_rect(resolve1(mediabox_params))
+        if "MediaBox" in self.attrs:
+            self.mediabox = parse_rect(
+                resolve1(val) for val in resolve1(self.attrs["MediaBox"])
+            )
+        else:
+            log.warning(
+                "MediaBox missing from /Page (and not inherited),"
+                " defaulting to US Letter (612x792)"
+            )
+            self.mediabox = (0, 0, 612, 792)
         self.cropbox = self.mediabox
         if "CropBox" in self.attrs:
             try:
-                self.cropbox = parse_rect(resolve1(self.attrs["CropBox"]))
+                self.cropbox = parse_rect(
+                    resolve1(val) for val in resolve1(self.attrs["CropBox"])
+                )
             except PDFValueError:
-                pass
+                log.warning("Invalid CropBox in /Page, defaulting to MediaBox")
 
         self.rotate = (int_value(self.attrs.get("Rotate", 0)) + 360) % 360
         self.annots = self.attrs.get("Annots")
         self.beads = self.attrs.get("B")
         if "Contents" in self.attrs:
-            contents = resolve1(self.attrs["Contents"])
+            self.contents: List[object] = resolve1(self.attrs["Contents"])
+            if not isinstance(self.contents, list):
+                self.contents = [self.contents]
         else:
-            contents = []
-        if not isinstance(contents, list):
-            contents = [contents]
-        self.contents: List[object] = contents
+            self.contents = []
 
     def __repr__(self) -> str:
         return f"<PDFPage: Resources={self.resources!r}, MediaBox={self.mediabox!r}>"
