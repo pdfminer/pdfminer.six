@@ -511,11 +511,7 @@ class PSBaseParser:
             except PSEOF:
                 # If we hit EOF in the middle of a token, try to parse
                 # it by tacking on whitespace, and delay raising PSEOF
-                # until next time around (FIXME: we should let Python
-                # do the buffering for us and treat EOF as an
-                # acceptable end of token in the lexer, and also
-                # implement the iterator protocol, etc, like everyone
-                # else on Earth in 2024)
+                # until next time around
                 self.charpos = self._parse1(b"\n", 0)
                 self.eof = True
                 # Oh, so there wasn't actually a token there? OK.
