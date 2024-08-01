@@ -359,12 +359,12 @@ def choplist(n: int, seq: Iterable[_T]) -> Iterator[Tuple[_T, ...]]:
 
 
 def nunpack(s: bytes, default: int = 0) -> int:
-    """Unpacks variable-length integers (big endian)."""
+    """Unpacks variable-length unsigned integers (big endian)."""
     length = len(s)
     if not length:
         return default
     else:
-        return int.from_bytes(s, "big")
+        return int.from_bytes(s, byteorder="big", signed=False)
 
 
 PDFDocEncoding = "".join(
