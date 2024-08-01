@@ -67,3 +67,60 @@ tag-pattern = '(\d\d\d\d\d\d\d\d)'
 
 [tool.hatch.build.targets.wheel]
 packages = ["pdfminer"]
+
+[tool.ruff]
+namespace-packages = ["pdfminer"]
+
+[tool.ruff.lint]
+extend-select = [
+    "W",  # pycodestyle warnings
+    "I",  # isort
+    "TID"  # flake8 tidy imports
+]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.mypy]
+warn_unused_configs = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+no_implicit_reexport = true
+strict_equality = true
+
+# This seems impossible to turn on in a version-independent manner
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = "pdfminer.*"
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "cryptography.hazmat.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "setuptools.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pytest.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "nox.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "charset_normalizer.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "atheris.*"
+ignore_missing_imports = true
