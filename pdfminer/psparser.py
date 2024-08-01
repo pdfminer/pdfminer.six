@@ -169,6 +169,7 @@ class PSBaseParser:
 
     def __init__(self, fp: BinaryIO) -> None:
         self.fp = fp
+        self.eof = False
         self.seek(0)
 
     def __repr__(self) -> str:
@@ -204,6 +205,7 @@ class PSBaseParser:
         self._curtoken = b""
         self._curtokenpos = 0
         self._tokens: List[Tuple[int, PSBaseParserToken]] = []
+        self.eof = False
 
     def fillbuf(self) -> None:
         if self.charpos < len(self.buf):
@@ -398,11 +400,8 @@ class PSBaseParser:
             j = m.start(0)
             self._curtoken += s[i:j]
         else:
-            # Use the rest of the stream if no non-keyword character is found. This
-            # can happen if the keyword is the final bytes of the stream
-            # (https://github.com/pdfminer/pdfminer.six/issues/884).
-            j = len(s)
             self._curtoken += s[i:]
+            return len(s)
         if self._curtoken == b"true":
             token: Union[bool, PSKeyword] = True
         elif self._curtoken == b"false":
@@ -502,9 +501,26 @@ class PSBaseParser:
         return j
 
     def nexttoken(self) -> Tuple[int, PSBaseParserToken]:
+        if self.eof:
+            # It's not really unexpected, come on now...
+            raise PSEOF("Unexpected EOF")
         while not self._tokens:
-            self.fillbuf()
-            self.charpos = self._parse1(self.buf, self.charpos)
+            try:
+                self.fillbuf()
+                self.charpos = self._parse1(self.buf, self.charpos)
+            except PSEOF:
+                # If we hit EOF in the middle of a token, try to parse
+                # it by tacking on whitespace, and delay raising PSEOF
+                # until next time around (FIXME: we should let Python
+                # do the buffering for us and treat EOF as an
+                # acceptable end of token in the lexer, and also
+                # implement the iterator protocol, etc, like everyone
+                # else on Earth in 2024)
+                self.charpos = self._parse1(b"\n", 0)
+                self.eof = True
+                # Oh, so there wasn't actually a token there? OK.
+                if not self._tokens:
+                    raise
         token = self._tokens.pop(0)
         log.debug("nexttoken: %r", token)
         return token
