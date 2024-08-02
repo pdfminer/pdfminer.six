@@ -1,14 +1,10 @@
-"""Python implementation of ASCII85/ASCIIHex decoder (Adobe version).
-
-This code is in the public domain.
-
-"""
+"""Python implementation of ASCII85/ASCIIHex decoder (Adobe version)."""
 
 import re
-import struct
+from base64 import a85decode
+from binascii import unhexlify
 
 
-# ascii85decode(data)
 def ascii85decode(data: bytes) -> bytes:
     """In ASCII85 encoding, every four bytes are encoded with five ASCII
     letters, using 85 different types of characters (as 256**4 < 85**5).
@@ -19,31 +15,13 @@ def ascii85decode(data: bytes) -> bytes:
     its original in handling the last characters.
 
     """
-    n = b = 0
-    out = b""
-    for i in iter(data):
-        c = bytes((i,))
-        if c >= b"!" and c <= b"u":
-            n += 1
-            b = b * 85 + (ord(c) - 33)
-            if n == 5:
-                out += struct.pack(">L", b)
-                n = b = 0
-        elif c == b"z":
-            assert n == 0, str(n)
-            out += b"\0\0\0\0"
-        elif c == b"~":
-            if n:
-                for _ in range(5 - n):
-                    b = b * 85 + 84
-                out += struct.pack(">L", b)[: n - 1]
-            break
-    return out
+    try:
+        return a85decode(data, adobe=True)
+    except ValueError:
+        return a85decode(data)
 
 
-# asciihexdecode(data)
-hex_re = re.compile(rb"([a-f\d]{2})", re.IGNORECASE)
-trail_re = re.compile(rb"^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$", re.IGNORECASE)
+bws_re = re.compile(rb"\s")
 
 
 def asciihexdecode(data: bytes) -> bytes:
@@ -55,16 +33,10 @@ def asciihexdecode(data: bytes) -> bytes:
     the EOD marker after reading an odd number of hexadecimal digits, it
     will behave as if a 0 followed the last digit.
     """
-
-    def decode(x: bytes) -> bytes:
-        i = int(x, 16)
-        return bytes((i,))
-
-    out = b""
-    for x in hex_re.findall(data):
-        out += decode(x)
-
-    m = trail_re.search(data)
-    if m:
-        out += decode(m.group(1) + b"0")
-    return out
+    data = bws_re.sub(b"", data)
+    idx = data.find(b">")
+    if idx != -1:
+        data = data[:idx]
+        if idx % 2 == 1:
+            data += b"0"
+    return unhexlify(data)
