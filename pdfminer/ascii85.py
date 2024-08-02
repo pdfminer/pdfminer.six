@@ -15,7 +15,10 @@ def ascii85decode(data: bytes) -> bytes:
     its original in handling the last characters.
 
     """
-    return a85decode(data, adobe=True)
+    try:
+        return a85decode(data, adobe=True)
+    except ValueError:
+        return a85decode(data)
 
 
 bws_re = re.compile(rb"\s")
