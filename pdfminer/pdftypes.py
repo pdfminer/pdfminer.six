@@ -1,9 +1,6 @@
 import io
 import logging
-import re
 import zlib
-from base64 import a85decode
-from binascii import unhexlify
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -19,6 +16,7 @@ from typing import (
 from warnings import warn
 
 from pdfminer import pdfexceptions, settings
+from pdfminer.ascii85 import ascii85decode, asciihexdecode
 from pdfminer.ccitt import ccittfaxdecode
 from pdfminer.lzw import lzwdecode
 from pdfminer.psparser import LIT, PSObject
@@ -244,27 +242,6 @@ def decompress_corrupted(data: bytes) -> bytes:
     return result_str
 
 
-bws_re = re.compile(rb"\s")
-
-
-def asciihexdecode(data: bytes) -> bytes:
-    """ASCIIHexDecode filter: PDFReference v1.4 section 3.3.1
-    For each pair of ASCII hexadecimal digits (0-9 and A-F or a-f), the
-    ASCIIHexDecode filter produces one byte of binary data. All white-space
-    characters are ignored. A right angle bracket character (>) indicates
-    EOD. Any other characters will cause an error. If the filter encounters
-    the EOD marker after reading an odd number of hexadecimal digits, it
-    will behave as if a 0 followed the last digit.
-    """
-    data = bws_re.sub(b"", data)
-    idx = data.find(b">")
-    if idx != -1:
-        data = data[:idx]
-        if idx % 2 == 1:
-            data += b"0"
-    return unhexlify(data)
-
-
 class PDFStream(PDFObject):
     def __init__(
         self,
@@ -366,7 +343,7 @@ class PDFStream(PDFObject):
             elif f in LITERALS_LZW_DECODE:
                 data = lzwdecode(data)
             elif f in LITERALS_ASCII85_DECODE:
-                data = a85decode(data, adobe=True)
+                data = ascii85decode(data)
             elif f in LITERALS_ASCIIHEX_DECODE:
                 data = asciihexdecode(data)
             elif f in LITERALS_RUNLENGTH_DECODE:
