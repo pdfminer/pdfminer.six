@@ -115,8 +115,8 @@ class Type1FontHeaderParser(PSStackParser[int]):
     KEYWORD_READONLY = KWD(b"readonly")
     KEYWORD_FOR = KWD(b"for")
 
-    def __init__(self, data: BinaryIO) -> None:
-        PSStackParser.__init__(self, data)
+    def __init__(self, data: bytes) -> None:
+        super().__init__(data)
         self._cid2unicode: Dict[int, str] = {}
 
     def get_encoding(self) -> Dict[int, str]:
@@ -969,7 +969,7 @@ class PDFSimpleFont(PDFFont):
         if "ToUnicode" in spec:
             strm = stream_value(spec["ToUnicode"])
             self.unicode_map = FileUnicodeMap()
-            CMapParser(self.unicode_map, BytesIO(strm.get_data())).run()
+            CMapParser(self.unicode_map, strm.get_data()).run()
         PDFFont.__init__(self, descriptor, widths)
 
     def to_unichr(self, cid: int) -> str:
@@ -1009,7 +1009,7 @@ class PDFType1Font(PDFSimpleFont):
             self.fontfile = stream_value(descriptor.get("FontFile"))
             length1 = int_value(self.fontfile["Length1"])
             data = self.fontfile.get_data()[:length1]
-            parser = Type1FontHeaderParser(BytesIO(data))
+            parser = Type1FontHeaderParser(data)
             self.cid2unicode = parser.get_encoding()
 
     def __repr__(self) -> str:
@@ -1080,7 +1080,7 @@ class PDFCIDFont(PDFFont):
             if isinstance(spec["ToUnicode"], PDFStream):
                 strm = stream_value(spec["ToUnicode"])
                 self.unicode_map = FileUnicodeMap()
-                CMapParser(self.unicode_map, BytesIO(strm.get_data())).run()
+                CMapParser(self.unicode_map, strm.get_data()).run()
             else:
                 cmap_name = literal_name(spec["ToUnicode"])
                 encoding = literal_name(spec["Encoding"])

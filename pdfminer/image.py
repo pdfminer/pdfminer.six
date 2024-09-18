@@ -8,7 +8,7 @@ try:
     from typing import Literal
 except ImportError:
     # Literal was introduced in Python 3.8
-    from typing_extensions import Literal  # type: ignore[assignment]
+    from typing_extensions import Literal  # type: ignore
 
 from pdfminer.jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from pdfminer.layout import LTImage

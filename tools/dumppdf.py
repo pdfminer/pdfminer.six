@@ -203,7 +203,6 @@ def dumpoutline(
         outfp.write("</outlines>\n")
     except PDFNoOutlines:
         pass
-    parser.close()
     fp.close()
 
 

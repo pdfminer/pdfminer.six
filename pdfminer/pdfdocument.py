@@ -837,6 +837,7 @@ class PDFDocument:
         if objid in self._cached_objs:
             (obj, genno) = self._cached_objs[objid]
         else:
+            obj = None
             for xref in self.xrefs:
                 try:
                     (strmid, index, genno) = xref.get_pos(objid)
@@ -856,7 +857,7 @@ class PDFDocument:
                     break
                 except (PSEOF, PDFSyntaxError):
                     continue
-            else:
+            if obj is None:
                 raise PDFObjectNotFound(objid)
             log.debug("register: objid=%r: %r", objid, obj)
             if self.caching:
@@ -891,7 +892,9 @@ class PDFDocument:
         If the document includes page labels, generates strings, one per page.
         If not, raises PDFNoPageLabels.
 
-        The resulting iteration is unbounded.
+        The resulting iterator is unbounded, so it is recommended to
+        zip it with the iterator over actual pages returned by `get_pages`.
+
         """
         assert self.catalog is not None
 

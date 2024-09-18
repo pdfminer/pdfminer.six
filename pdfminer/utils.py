@@ -75,11 +75,10 @@ def make_compat_bytes(in_str: str) -> bytes:
 def make_compat_str(o: object) -> str:
     """Converts everything to string, if bytes guessing the encoding."""
     if isinstance(o, bytes):
-        enc = charset_normalizer.detect(o)
-        try:
-            return o.decode(enc["encoding"])
-        except UnicodeDecodeError:
+        result = charset_normalizer.from_bytes(o)
+        if result is None:
             return str(o)
+        return str(result.best())
     else:
         return str(o)
 
