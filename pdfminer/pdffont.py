@@ -899,8 +899,8 @@ class PDFFont:
     def is_multibyte(self) -> bool:
         return False
 
-    def decode(self, bytes: bytes) -> Iterable[int]:
-        return bytearray(bytes)  # map(ord, bytes)
+    def decode(self, data: bytes) -> Iterable[int]:
+        return data
 
     def get_ascent(self) -> float:
         """Ascent above the baseline, in text space units"""
@@ -1173,8 +1173,8 @@ class PDFCIDFont(PDFFont):
     def is_multibyte(self) -> bool:
         return True
 
-    def decode(self, bytes: bytes) -> Iterable[int]:
-        return self.cmap.decode(bytes)
+    def decode(self, data: bytes) -> Iterable[int]:
+        return self.cmap.decode(data)
 
     def char_disp(self, cid: int) -> Union[float, Tuple[Optional[float], float]]:
         """Returns an integer for horizontal fonts, a tuple for vertical fonts."""

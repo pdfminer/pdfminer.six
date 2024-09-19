@@ -168,6 +168,10 @@ class PDFTextDevice(PDFDevice):
                 x -= obj * dxscale
                 needcharspace = True
             else:
+                if isinstance(obj, str):
+                    obj = utils.make_compat_bytes(obj)
+                if not isinstance(obj, bytes):
+                    continue
                 for cid in font.decode(obj):
                     if needcharspace:
                         x += charspace
@@ -208,6 +212,10 @@ class PDFTextDevice(PDFDevice):
                 y -= obj * dxscale
                 needcharspace = True
             else:
+                if isinstance(obj, str):
+                    obj = utils.make_compat_bytes(obj)
+                if not isinstance(obj, bytes):
+                    continue
                 for cid in font.decode(obj):
                     if needcharspace:
                         y += charspace
