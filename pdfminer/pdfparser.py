@@ -146,7 +146,12 @@ class PDFStreamParser(PDFParser):
     def do_keyword(self, pos: int, token: PSKeyword) -> None:
         if token is self.KEYWORD_R:
             # reference to indirect object
-            (_, _object_id), _ = self.pop(2)
+            try:
+                (_, _object_id), _ = self.pop(2)
+            except ValueError:
+                raise PDFSyntaxError(
+                    "Expected generation and object id in indirect object reference"
+                )
             object_id = safe_int(_object_id)
             if object_id is not None:
                 obj = PDFObjRef(self.doc, object_id)

@@ -245,7 +245,7 @@ def parse_rect(o: Any) -> Rect:
     try:
         (x0, y0, x1, y1) = o
         return float(x0), float(y0), float(x1), float(y1)
-    except ValueError:
+    except (ValueError, TypeError):
         raise PDFValueError("Could not parse rectangle")
 
 
