@@ -399,15 +399,26 @@ class PSFileParser:
     def _parse_literal_hex(self) -> bytes:
         """State for escaped hex characters in literal names"""
         # Consume a hex digit only if we can ... consume a hex digit
+        if len(self.hex) >= 2:  # it actually can't exceed 2
+            self._curtoken += bytes((int(self.hex, 16),))
+            self._parse1 = self._parse_literal
+            return b"/"
         c = self.fp.read(1)
-        if c and c in HEX and len(self.hex) < 2:
+        if c and c in HEX:
             self.hex += c
         else:
-            if c:
+            if c:  # not EOF, but not hex either
+                log.warning("Invalid hex digit %r in literal", c)
                 self.fp.seek(-1, io.SEEK_CUR)
-            if self.hex:
-                self._curtoken += bytes((int(self.hex, 16),))
-            self._parse1 = self._parse_literal
+                # Add the intervening junk, just in case
+                try:
+                    tok = LIT(self._curtoken.decode("utf-8"))
+                except UnicodeDecodeError:
+                    tok = LIT(self._curtoken)
+                self._add_token(tok)
+                self._curtokenpos = self.tell() - 1 - len(self.hex)
+                self._add_token(KWD(b"#" + self.hex))
+            self._parse1 = self._parse_main
         return c
 
     def _parse_number(self) -> bytes:
@@ -597,7 +608,7 @@ LEXER = re.compile(
     | (?P<number> [-+]? (?: \d*\.\d+ | \d+ ) )
     | (?P<keyword> [A-Za-z] [^#/%\[\]()<>{}\s]*)
     | (?P<startstr> \([^()\\]*)
-    | (?P<hexstr> <[A-Fa-f\d\s]+>)
+    | (?P<hexstr> <[A-Fa-f\d\s]*>)
     | (?P<startdict> <<)
     | (?P<enddict> >>)
     | (?P<other> .)

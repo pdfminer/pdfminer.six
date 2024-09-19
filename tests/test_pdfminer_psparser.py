@@ -49,7 +49,9 @@ func/a/b{(c)do*}def
         (23, LIT("a")),
         (25, LIT("BCD")),
         (30, LIT("Some_Name")),
-        (41, LIT("foo_xbaa")),
+        (41, LIT("foo_")),
+        (48, KWD(b"#")),
+        (49, KWD(b"xbaa")),
         (54, 0),
         (56, 1),
         (59, -2),
@@ -91,7 +93,7 @@ func/a/b{(c)do*}def
         (23, LIT("a")),
         (25, LIT("BCD")),
         (30, LIT("Some_Name")),
-        (41, LIT("foo_xbaa")),
+        (41, LIT("foo_")),
         (54, 0),
         (56, 1),
         (59, -2),
@@ -136,7 +138,7 @@ func/a/b{(c)do*}def
             def flush(self):
                 self.add_results(*self.popall())
 
-        parser = MyParser(BytesIO(s))
+        parser = MyParser(s)
         r = []
         try:
             while True:
