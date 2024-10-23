@@ -5,6 +5,8 @@
 #  * public domain *
 #
 
+from typing import List
+
 
 def rldecode(data: bytes) -> bytes:
     """RunLength decoder (Adobe version) implementation based on PDF Reference
@@ -19,7 +21,7 @@ def rldecode(data: bytes) -> bytes:
         (2 to 128) times during decompression. A length value of 128
         denotes EOD.
     """
-    decoded_array = []
+    decoded_array: List[int] = []
     data_iter = iter(data)
 
     while True:
@@ -27,7 +29,7 @@ def rldecode(data: bytes) -> bytes:
         if length == 128:
             break
 
-        if length >= 0 and length < 128:
+        if 0 <= length < 128:
             decoded_array.extend((next(data_iter) for _ in range(length + 1)))
 
         if length > 128:
