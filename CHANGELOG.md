@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - The third argument (generation number) to `PDFObjRef` ([#972](https://github.com/pdfminer/pdfminer.six/pull/972))
 
+### Added
+
+- Implement TIFF Predictor 2 for 8 bit ([#1058](https://github.com/pdfminer/pdfminer.six/pull/1058))
+
 ### Fixed
 
 - `TypeError` when corrupt PDF object reference cannot be parsed as int ([#972](https://github.com/pdfminer/pdfminer.six/pull/972))])
