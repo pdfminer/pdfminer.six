@@ -21,7 +21,7 @@ from pdfminer.ccitt import ccittfaxdecode
 from pdfminer.lzw import lzwdecode
 from pdfminer.psparser import LIT, PSObject
 from pdfminer.runlength import rldecode
-from pdfminer.utils import apply_png_predictor
+from pdfminer.utils import apply_png_predictor, apply_tiff_predictor
 
 if TYPE_CHECKING:
     from pdfminer.pdfdocument import PDFDocument
@@ -368,6 +368,18 @@ class PDFStream(PDFObject):
                 if pred == 1:
                     # no predictor
                     pass
+                elif pred == 2:
+                    # TIFF predictor 2
+                    colors = int_value(params.get("Colors", 1))
+                    columns = int_value(params.get("Columns", 1))
+                    raw_bits_per_component = params.get("BitsPerComponent", 8)
+                    bitspercomponent = int_value(raw_bits_per_component)
+                    data = apply_tiff_predictor(
+                        colors,
+                        columns,
+                        bitspercomponent,
+                        data,
+                    )
                 elif pred >= 10:
                     # PNG predictor
                     colors = int_value(params.get("Colors", 1))

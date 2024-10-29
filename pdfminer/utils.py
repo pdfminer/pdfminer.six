@@ -35,7 +35,6 @@ import charset_normalizer  # For str encoding detection
 # still uses 32 bits ints
 INF = (1 << 31) - 1
 
-
 FileOrName = Union[pathlib.PurePath, str, io.IOBase]
 AnyIO = Union[TextIO, BinaryIO]
 
@@ -125,6 +124,32 @@ def paeth_predictor(left: int, above: int, upper_left: int) -> int:
         return above
     else:
         return upper_left
+
+
+def apply_tiff_predictor(
+    colors: int, columns: int, bitspercomponent: int, data: bytes
+) -> bytes:
+    """Reverse the effect of the TIFF predictor 2
+
+    Documentation: https://www.itu.int/itudoc/itu-t/com16/tiff-fx/docs/tiff6.pdf (Section 14, page 64)
+    """
+    if bitspercomponent != 8:
+        error_msg = f"Unsupported `bitspercomponent': {bitspercomponent}"
+        raise ValueError(error_msg)
+    bpp = colors * (bitspercomponent // 8)
+    nbytes = columns * bpp
+    buf: list[int] = []
+    for scanline_i in range(0, len(data), nbytes + 1):
+        raw: list[int] = []
+        for i in range(nbytes):
+            new_value = data[scanline_i + i]
+            if i >= bpp:
+                new_value += raw[i - bpp]
+                new_value %= 256
+            raw.append(new_value)
+        buf.extend(raw)
+
+    return bytes(buf)
 
 
 def apply_png_predictor(
