@@ -139,7 +139,7 @@ def apply_tiff_predictor(
     bpp = colors * (bitspercomponent // 8)
     nbytes = columns * bpp
     buf: list[int] = []
-    for scanline_i in range(0, len(data), nbytes + 1):
+    for scanline_i in range(0, len(data), nbytes):
         raw: list[int] = []
         for i in range(nbytes):
             new_value = data[scanline_i + i]
