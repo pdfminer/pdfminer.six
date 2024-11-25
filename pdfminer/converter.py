@@ -162,6 +162,11 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                 for o, p in zip(operators, transformed_points)
             ]
 
+            # Drop redundant final "h" on an already closed path
+            if len(shape) > 3 and shape[-1] == "h" and pts[-2] == pts[0]:
+                shape = shape[:-1]
+                pts.pop()
+
             if shape in {"mlh", "ml"}:
                 # single line segment
                 #
