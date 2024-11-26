@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Using absolute instead of relative imports ([[#995](https://github.com/pdfminer/pdfminer.six/pull/995)])
-- Remove redundant 'h' to be able to recognize rectangles ([#1066](https://github.com/pdfminer/pdfminer.six/pull/1066))
+- Remove redundant line to be able to recognize rectangles ([#1066](https://github.com/pdfminer/pdfminer.six/pull/1066))
 
 ### Deprecated
 
