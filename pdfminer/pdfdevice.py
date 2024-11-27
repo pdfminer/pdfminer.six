@@ -167,7 +167,7 @@ class PDFTextDevice(PDFDevice):
             if isinstance(obj, (int, float)):
                 x -= obj * dxscale
                 needcharspace = True
-            else:
+            elif isinstance(obj, bytes):
                 for cid in font.decode(obj):
                     if needcharspace:
                         x += charspace
@@ -207,7 +207,7 @@ class PDFTextDevice(PDFDevice):
             if isinstance(obj, (int, float)):
                 y -= obj * dxscale
                 needcharspace = True
-            else:
+            elif isinstance(obj, bytes):
                 for cid in font.decode(obj):
                     if needcharspace:
                         y += charspace
