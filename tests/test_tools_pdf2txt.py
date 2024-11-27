@@ -68,6 +68,21 @@ class TestPdf2Txt:
         """
         run("contrib/issue-00352-asw-oct96-p41.pdf")
 
+    def test_contrib_issue_1056(self):
+        """Test fix to pdf2txt.py mentioned in
+        https://github.com/pdfminer/pdfminer.six/issues/1056"""
+        with TemporaryFilePath() as output_file_name:
+            pdf2txt.main(
+                [
+                    "--ignore-unmapped",
+                    f"-o{output_file_name}",
+                    absolute_sample_path("contrib/issue-1056-cid.pdf"),
+                ]
+            )
+            with open(output_file_name) as infh:
+                for spam in infh:
+                    assert "(cid:" not in spam
+
     def test_scancode_patchelf(self):
         """Regression test for https://github.com/euske/pdfminer/issues/96"""
         run("scancode/patchelf.pdf")
