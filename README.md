@@ -43,6 +43,11 @@ How to use
 * Install pdfminer.six.
   ```bash
   pip install pdfminer.six
+  ```
+  Alternatively, using conda:
+  ```bash
+  conda install pdfminer-six
+  ```
 
 * (Optionally) install extra dependencies for extracting images.
 
