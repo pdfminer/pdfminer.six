@@ -378,6 +378,157 @@ class TextConverter(PDFConverter[AnyIO]):
     ) -> None:
         pass
 
+from typing import Any, BinaryIO, Container, Iterator, Optional, Dict, List, Tuple, Set
+from pdfminer.converter import TextConverter
+from pdfminer.layout import LAParams, LTPage, LTTextBox, LTTextLine, LTChar, LTText
+from pdfminer.utils import open_filename
+import re
+
+
+class MultilingualTextConverter(TextConverter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.current_word = []
+        self.current_line = []
+        self.arabic_punctuation = set(['.', '،', '؛', '؟', '!'])
+        self.in_english_word = False
+        self.english_buffer = []
+        self._init_arabic_chars()
+
+    def _init_arabic_chars(self):
+        """Initialize Arabic character sets"""
+        self.arabic_chars = set()
+        # Basic Arabic
+        self.arabic_chars.update(range(0x0600, 0x06FF + 1))
+        # Arabic Supplement
+        self.arabic_chars.update(range(0x0750, 0x077F + 1))
+        # Arabic Extended-A
+        self.arabic_chars.update(range(0x08A0, 0x08FF + 1))
+        # Arabic Presentation Forms-A
+        self.arabic_chars.update(range(0xFB50, 0xFDFF + 1))
+        # Arabic Presentation Forms-B
+        self.arabic_chars.update(range(0xFE70, 0xFEFF + 1))
+
+    def is_arabic(self, text: str) -> bool:
+        """Check if text contains Arabic characters"""
+        return any(ord(char) in self.arabic_chars for char in text)
+
+    def is_arabic_punctuation(self, text: str) -> bool:
+        """Check if text is Arabic punctuation"""
+        return text in self.arabic_punctuation
+
+    def _flush_english_word(self) -> None:
+        """Process and add a complete English word"""
+        if self.english_buffer:
+            word = ''.join(self.english_buffer)
+            if word.strip():
+                self.current_line.append(word)
+            self.english_buffer = []
+        self.in_english_word = False
+
+    def write_text(self, text: str) -> None:
+        """Handle text writing with proper bilingual support"""
+        if not text:
+            return
+
+        # Handle pure whitespace
+        if text.isspace():
+            if self.in_english_word:
+                self._flush_english_word()
+            if self.current_word:
+                self._flush_word()
+            return
+
+        # Check if it's Arabic
+        is_arabic_text = self.is_arabic(text)
+
+        if is_arabic_text:
+            # If we were building an English word, flush it first
+            if self.in_english_word:
+                self._flush_english_word()
+            self.current_word.append(text)
+        else:
+            # Handle punctuation
+            if text in '.,!?:;':
+                if self.in_english_word:
+                    self._flush_english_word()
+                if self.current_word:
+                    self._flush_word()
+                self.current_line.append(text)
+                return
+
+            # Handle English text
+            if self.current_word:
+                self._flush_word()
+
+            if text.isalnum() or text in "-'\"":
+                self.in_english_word = True
+                self.english_buffer.append(text)
+            else:
+                if self.in_english_word:
+                    self._flush_english_word()
+                if not text.isspace():
+                    self.current_line.append(text)
+
+    def _flush_word(self) -> None:
+        """Process and add a complete Arabic word"""
+        if not self.current_word:
+            return
+
+        # Join characters to form the word, maintaining connections
+        word = ''.join(reversed(self.current_word))
+        if word.strip():
+            self.current_line.append(word)
+        self.current_word = []
+
+    def end_line(self) -> None:
+        """Handle end of line processing"""
+        # Flush any pending words
+        if self.in_english_word:
+            self._flush_english_word()
+        if self.current_word:
+            self._flush_word()
+
+        if self.current_line:
+            # Only reverse the line if it contains Arabic text
+            has_arabic = any(self.is_arabic(word) for word in self.current_line)
+            if has_arabic:
+                line = ' '.join(reversed(self.current_line))
+            else:
+                line = ' '.join(self.current_line)
+
+            super().write_text(line)
+            self.current_line = []
+
+        super().write_text('\n')
+
+    def receive_layout(self, ltpage: LTPage) -> None:
+        """Process the layout of the PDF page"""
+
+        def render(item):
+            if isinstance(item, LTTextBox):
+                for child in item:
+                    render(child)
+                self.end_line()
+            elif isinstance(item, LTTextLine):
+                for char in item:
+                    if isinstance(char, LTChar):
+                        self.write_text(char.get_text())
+                self.end_line()
+
+        for item in ltpage:
+            render(item)
+
+    def close(self) -> None:
+        """Ensure all buffered text is written before closing"""
+        if self.in_english_word:
+            self._flush_english_word()
+        if self.current_word:
+            self._flush_word()
+        if self.current_line:
+            self.end_line()
+        super().close()
+
 
 class HTMLConverter(PDFConverter[AnyIO]):
     RECT_COLORS = {
