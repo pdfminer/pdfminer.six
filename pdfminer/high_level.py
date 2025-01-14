@@ -11,6 +11,7 @@ from pdfminer.converter import (
     PDFPageAggregator,
     TextConverter,
     XMLConverter,
+    MultilingualTextConverter
 )
 from pdfminer.image import ImageWriter
 from pdfminer.layout import LAParams, LTPage
@@ -82,7 +83,7 @@ def extract_text_to_fp(
         outfp = sys.stdout.buffer
 
     if output_type == "text":
-        device = TextConverter(
+        device = MultilingualTextConverter(
             rsrcmgr,
             outfp,
             codec=codec,
@@ -142,37 +143,37 @@ def extract_text_to_fp(
 
     device.close()
 
-
 def extract_text(
     pdf_file: FileOrName,
     password: str = "",
     page_numbers: Optional[Container[int]] = None,
     maxpages: int = 0,
     caching: bool = True,
-    codec: str = "utf-8",
+    codec: str = 'utf-8',
     laparams: Optional[LAParams] = None,
 ) -> str:
-    """Parse and return the text contained in a PDF file.
-
-    :param pdf_file: Either a file path or a file-like object for the PDF file
-        to be worked on.
-    :param password: For encrypted PDFs, the password to decrypt.
-    :param page_numbers: List of zero-indexed page numbers to extract.
-    :param maxpages: The maximum number of pages to parse
-    :param caching: If resources should be cached
-    :param codec: Text decoding codec
-    :param laparams: An LAParams object from pdfminer.layout. If None, uses
-        some default settings that often work well.
-    :return: a string containing all of the text extracted.
-    """
+    """Parse and return the text contained in a PDF file."""
     if laparams is None:
-        laparams = LAParams()
+        laparams = LAParams(
+            all_texts=True,
+            detect_vertical=True,
+            word_margin=0.1,
+            char_margin=2.0,
+            line_margin=0.5,
+            boxes_flow=0.5,
+        )
 
     with open_filename(pdf_file, "rb") as fp, StringIO() as output_string:
-        fp = cast(BinaryIO, fp)  # we opened in binary mode
-        rsrcmgr = PDFResourceManager(caching=caching)
-        device = TextConverter(rsrcmgr, output_string, codec=codec, laparams=laparams)
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
+        fp = cast(BinaryIO, fp)
+        resource_mgr = PDFResourceManager(caching=caching)
+        # Change TextConverter to MultilingualTextConverter
+        device = MultilingualTextConverter(
+            resource_mgr,
+            output_string,
+            codec=codec,
+            laparams=laparams
+        )
+        interpreter = PDFPageInterpreter(resource_mgr, device)
 
         for page in PDFPage.get_pages(
             fp,
@@ -184,7 +185,6 @@ def extract_text(
             interpreter.process_page(page)
 
         return output_string.getvalue()
-
 
 def extract_pages(
     pdf_file: FileOrName,
