@@ -10,7 +10,7 @@ from pdfminer.pdfdocument import (
 )
 from pdfminer.pdfexceptions import PDFObjectNotFound, PDFValueError
 from pdfminer.pdfparser import PDFParser
-from pdfminer.pdftypes import dict_value, int_value, list_value, resolve1
+from pdfminer.pdftypes import PDFObjRef, dict_value, int_value, list_value, resolve1
 from pdfminer.psparser import LIT
 from pdfminer.utils import parse_rect
 
@@ -67,9 +67,13 @@ class PDFPage:
         self.resources: Dict[object, object] = resolve1(
             self.attrs.get("Resources", dict()),
         )
-        mediabox_params: List[Any] = [
-            resolve1(mediabox_param) for mediabox_param in self.attrs["MediaBox"]
-        ]
+        mediabox_params: List[Any] = []
+        if isinstance(self.attrs["MediaBox"], PDFObjRef):
+            mediabox_params = resolve1(self.attrs["MediaBox"])
+        else:
+            mediabox_params = [
+                resolve1(mediabox_param) for mediabox_param in self.attrs["MediaBox"]
+            ]
         self.mediabox = parse_rect(resolve1(mediabox_params))
         self.cropbox = self.mediabox
         if "CropBox" in self.attrs:
