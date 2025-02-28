@@ -42,7 +42,7 @@ class TestPdfDocument:
                 "1",
             ]
 
-    def test_no_page_lajbels(self):
+    def test_no_page_labels(self):
         path = absolute_sample_path("simple1.pdf")
         with open(path, "rb") as fp:
             parser = PDFParser(fp)
