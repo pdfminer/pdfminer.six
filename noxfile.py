@@ -20,7 +20,7 @@ def format(session):
 
 @nox.session
 def types(session):
-    session.install("mypy<1")
+    session.install("mypy<1", "pytest-mypy")
     session.run(
         "mypy",
         "--install-types",
