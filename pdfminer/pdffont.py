@@ -57,7 +57,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-def get_widths(seq: Iterable[object]) -> Dict[int, float]:
+def get_widths(seq: Iterable[object]) -> Dict[Union[str, int], float]:
     """Build a mapping of character widths for horizontal writing."""
     widths: Dict[int, float] = {}
     r: List[float] = []
@@ -75,7 +75,7 @@ def get_widths(seq: Iterable[object]) -> Dict[int, float]:
                 for i in range(cast(int, char1), cast(int, char2) + 1):
                     widths[i] = w
                 r = []
-    return widths
+    return cast(Dict[Union[str, int], float], widths)
 
 
 def get_widths2(seq: Iterable[object]) -> Dict[int, Tuple[float, Point]]:
@@ -853,7 +853,7 @@ LITERAL_TYPE1C = LIT("Type1C")
 
 # Font widths are maintained in a dict type that maps from *either* unicode
 # chars or integer character IDs.
-FontWidthDict = Union[Dict[Union[int, str], float]]
+FontWidthDict = Dict[Union[int, str], float]
 
 
 class PDFFont:
@@ -1003,7 +1003,9 @@ class PDFType1Font(PDFSimpleFont):
         widths: FontWidthDict
         try:
             (descriptor, int_widths) = FontMetricsDB.get_metrics(self.basefont)
-            widths = cast(Dict[str, float], int_widths)  # implicit int->float
+            widths = cast(
+                Dict[Union[str, int], float], int_widths
+            )  # implicit int->float
         except KeyError:
             descriptor = dict_value(spec.get("FontDescriptor", {}))
             firstchar = int_value(spec.get("FirstChar", 0))
@@ -1033,7 +1035,9 @@ class PDFType3Font(PDFSimpleFont):
         firstchar = int_value(spec.get("FirstChar", 0))
         # lastchar = int_value(spec.get('LastChar', 0))
         width_list = list_value(spec.get("Widths", [0] * 256))
-        widths = {i + firstchar: w for (i, w) in enumerate(width_list)}
+        widths: Dict[Union[str, int], float] = {
+            i + firstchar: w for (i, w) in enumerate(width_list)
+        }
         if "FontDescriptor" in spec:
             descriptor = dict_value(spec["FontDescriptor"])
         else:
@@ -1119,7 +1123,9 @@ class PDFCIDFont(PDFFont):
             self.disps = {cid: (vx, vy) for (cid, (_, (vx, vy))) in widths2.items()}
             (vy, w) = resolve1(spec.get("DW2", [880, -1000]))
             self.default_disp = (None, vy)
-            widths = {cid: w for (cid, (w, _)) in widths2.items()}
+            widths: Dict[Union[str, int], float] = {
+                cid: w for (cid, (w, _)) in widths2.items()
+            }
             default_width = w
         else:
             # writing mode: horizontal
