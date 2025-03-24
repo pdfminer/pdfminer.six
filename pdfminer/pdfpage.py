@@ -91,7 +91,7 @@ class PDFPage:
         self.annots = self.attrs.get("Annots")
         self.beads = self.attrs.get("B")
         if "Contents" in self.attrs:
-            self.contents: List[object] = resolve1(self.attrs["Contents"])
+            self.contents: List[Any] = resolve1(self.attrs["Contents"])
             if not isinstance(self.contents, list):
                 self.contents = [self.contents]
         else:
