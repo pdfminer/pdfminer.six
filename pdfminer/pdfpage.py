@@ -70,16 +70,11 @@ class PDFPage:
 
         self.mediabox = self._parse_mediabox(self.attrs.get("MediaBox"))
         self.cropbox = self._parse_cropbox(self.attrs.get("CropBox"), self.mediabox)
+        self.contents = self._parse_contents(self.attrs.get("Contents"))
 
         self.rotate = (int_value(self.attrs.get("Rotate", 0)) + 360) % 360
         self.annots = self.attrs.get("Annots")
         self.beads = self.attrs.get("B")
-        if "Contents" in self.attrs:
-            self.contents: List[Any] = resolve1(self.attrs["Contents"])
-            if not isinstance(self.contents, list):
-                self.contents = [self.contents]
-        else:
-            self.contents = []
 
     def __repr__(self) -> str:
         return f"<PDFPage: Resources={self.resources!r}, MediaBox={self.mediabox!r}>"
@@ -213,3 +208,11 @@ class PDFPage:
         except PDFValueError:
             log.warning("Invalid CropBox in /Page, defaulting to MediaBox")
             return mediabox
+
+    def _parse_contents(self, contents_value: Any) -> List[Any]:
+        contents: List[Any] = []
+        if contents_value is not None:
+            contents = resolve1(contents_value)
+            if not isinstance(contents, list):
+                contents = [contents]
+        return contents
