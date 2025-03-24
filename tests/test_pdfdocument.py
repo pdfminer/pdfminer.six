@@ -52,7 +52,7 @@ class TestPdfDocument:
                 doc.get_page_labels()
 
     def test_annotations(self):
-        path = absolute_sample_path("annotations.pdf")
+        path = absolute_sample_path("contrib/issue-1082-annotations.pdf")
         with open(path, "rb") as fp:
             parser = PDFParser(fp)
             doc = PDFDocument(parser)
