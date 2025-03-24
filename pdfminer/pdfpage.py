@@ -86,6 +86,8 @@ class PDFPage:
                 )
             except PDFValueError:
                 log.warning("Invalid CropBox in /Page, defaulting to MediaBox")
+        else:
+            log.warning("CropBox missing from /Page, defaulting to MediaBox")
 
         self.rotate = (int_value(self.attrs.get("Rotate", 0)) + 360) % 360
         self.annots = self.attrs.get("Annots")
