@@ -67,16 +67,20 @@ class PDFPage:
         self.resources: Dict[object, object] = resolve1(
             self.attrs.get("Resources", dict()),
         )
+
+        self.mediabox = (0.0, 0.0, 612.0, 792.0)
         if "MediaBox" in self.attrs:
-            self.mediabox = parse_rect(
-                resolve1(val) for val in resolve1(self.attrs["MediaBox"])
-            )
+            try:
+                self.mediabox = parse_rect(
+                    resolve1(val) for val in resolve1(self.attrs["MediaBox"])
+                )
+            except PDFValueError:
+                log.warning("Invalid MediaBox in /Page, defaulting to US Letter")
         else:
             log.warning(
                 "MediaBox missing from /Page (and not inherited), "
-                "defaulting to US Letter (612x792)"
+                "defaulting to US Letter"
             )
-            self.mediabox = (0, 0, 612, 792)
 
         self.cropbox = self.mediabox
         if "CropBox" in self.attrs:
