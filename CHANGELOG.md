@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- `TypeError` when MediaBox is an indirect object reference ([#1004](https://github.com/pdfminer/pdfminer.six/issues/1004))
+- `TypeError` when CropBox is an indirect object reference ([#1004](https://github.com/pdfminer/pdfminer.six/issues/1004))
 
 ## [20250324]
 
