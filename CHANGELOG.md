@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `TypeError` when CID character widths are not parseable as floats ([#1001](https://github.com/pdfminer/pdfminer.six/pull/1001))
+- `TypeError` raised by extract_text method with compressed PDF file ([#1029](https://github.com/pdfminer/pdfminer.six/pull/1029))
+- `PSBaseParser` can't handle tokens split across end of buffer ([#1030](https://github.com/pdfminer/pdfminer.six/pull/1030))
+
+## [20250324]
+
 ### Changed
 
 - Using absolute instead of relative imports ([[#995](https://github.com/pdfminer/pdfminer.six/pull/995)])
@@ -23,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `RecursionError` when corrupt PDF specifies a recursive /Pages object ([#998](https://github.com/pdfminer/pdfminer.six/pull/998))
 - `TypeError` when corrupt PDF specifies text-positioning operators with invalid values ([#1000](https://github.com/pdfminer/pdfminer.six/pull/1000))
 - inline image parsing fails when stream data contains "EI\n" ([#1008](https://github.com/pdfminer/pdfminer.six/issues/1008))
+- `TypeError` when parsing object reference as mediabox ([#1082](https://github.com/pdfminer/pdfminer.six/issues/1082))
 
 ### Removed
 
