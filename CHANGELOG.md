@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `TypeError` when MediaBox is an indirect object reference ([#1004](https://github.com/pdfminer/pdfminer.six/issues/1004))
+
+## [20250324]
+
 ### Changed
 
 - Using absolute instead of relative imports ([[#995](https://github.com/pdfminer/pdfminer.six/pull/995)])
@@ -22,7 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `RecursionError` when corrupt PDF specifies a recursive /Pages object ([#998](https://github.com/pdfminer/pdfminer.six/pull/998))
 - `TypeError` when corrupt PDF specifies text-positioning operators with invalid values ([#1000](https://github.com/pdfminer/pdfminer.six/pull/1000))
 - inline image parsing fails when stream data contains "EI\n" ([#1008](https://github.com/pdfminer/pdfminer.six/issues/1008))
-- `TypeError` when MediaBox is an indirect object reference ([#1004](https://github.com/pdfminer/pdfminer.six/issues/1004))
+- `TypeError` when parsing object reference as mediabox ([#1082](https://github.com/pdfminer/pdfminer.six/issues/1082))
 
 ### Removed
 

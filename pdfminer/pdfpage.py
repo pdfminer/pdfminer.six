@@ -73,10 +73,11 @@ class PDFPage:
             )
         else:
             log.warning(
-                "MediaBox missing from /Page (and not inherited),"
-                " defaulting to US Letter (612x792)"
+                "MediaBox missing from /Page (and not inherited), "
+                "defaulting to US Letter (612x792)"
             )
             self.mediabox = (0, 0, 612, 792)
+
         self.cropbox = self.mediabox
         if "CropBox" in self.attrs:
             try:
