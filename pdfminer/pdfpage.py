@@ -180,10 +180,10 @@ class PDFPage:
             if maxpages and maxpages <= pageno + 1:
                 break
 
-    def _parse_mediabox(self, attr: Any) -> Rect:
+    def _parse_mediabox(self, value: Any) -> Rect:
         us_letter = (0.0, 0.0, 612.0, 792.0)
 
-        if attr is None:
+        if value is None:
             log.warning(
                 "MediaBox missing from /Page (and not inherited), "
                 "defaulting to US Letter"
@@ -191,28 +191,28 @@ class PDFPage:
             return us_letter
 
         try:
-            return parse_rect(resolve1(val) for val in resolve1(attr))
+            return parse_rect(resolve1(val) for val in resolve1(value))
 
         except PDFValueError:
             log.warning("Invalid MediaBox in /Page, defaulting to US Letter")
             return us_letter
 
-    def _parse_cropbox(self, cropbox_values: Any, mediabox: Rect) -> Rect:
-        if cropbox_values is None:
+    def _parse_cropbox(self, value: Any, mediabox: Rect) -> Rect:
+        if value is None:
             log.warning("CropBox missing from /Page, defaulting to MediaBox")
             return mediabox
 
         try:
-            return parse_rect(resolve1(val) for val in resolve1(cropbox_values))
+            return parse_rect(resolve1(val) for val in resolve1(value))
 
         except PDFValueError:
             log.warning("Invalid CropBox in /Page, defaulting to MediaBox")
             return mediabox
 
-    def _parse_contents(self, contents_value: Any) -> List[Any]:
+    def _parse_contents(self, value: Any) -> List[Any]:
         contents: List[Any] = []
-        if contents_value is not None:
-            contents = resolve1(contents_value)
+        if value is not None:
+            contents = resolve1(value)
             if not isinstance(contents, list):
                 contents = [contents]
         return contents
