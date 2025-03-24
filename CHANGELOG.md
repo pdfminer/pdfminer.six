@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Using absolute instead of relative imports ([[#995](https://github.com/pdfminer/pdfminer.six/pull/995)])
+- Using standard library functions for ascii85 and asciihex ([#1031](https://github.com/pdfminer/pdfminer.six/pull/1031))
 
 ### Deprecated
 
