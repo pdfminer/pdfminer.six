@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## Changed
+
+- Reduce memory overhead on runlength encoding by using lists ([#1055](https://github.com/pdfminer/pdfminer.six/pull/1055))
+
 ### Fixed
 
 - `TypeError` when CID character widths are not parseable as floats ([#1001](https://github.com/pdfminer/pdfminer.six/pull/1001))
@@ -30,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `ValueError` when corrupt PDF specifies an invalid mediabox ([#987](https://github.com/pdfminer/pdfminer.six/pull/987))
 - `RecursionError` when corrupt PDF specifies a recursive /Pages object ([#998](https://github.com/pdfminer/pdfminer.six/pull/998))
 - `TypeError` when corrupt PDF specifies text-positioning operators with invalid values ([#1000](https://github.com/pdfminer/pdfminer.six/pull/1000))
-- inline image parsing fails when stream data contains "EI\n" ([#1008](https://github.com/pdfminer/pdfminer.six/issues/1008))
+- inline image parsing fails when stream data contains "EI\n" ([#1008](https://github.com/pdfminer/pdfminer.six/issues/1008
 - `TypeError` when parsing object reference as mediabox ([#1082](https://github.com/pdfminer/pdfminer.six/issues/1082))
 
 ### Removed
