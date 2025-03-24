@@ -12,7 +12,7 @@ from pdfminer.pdfexceptions import PDFObjectNotFound, PDFValueError
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import dict_value, int_value, list_value, resolve1
 from pdfminer.psparser import LIT
-from pdfminer.utils import parse_rect
+from pdfminer.utils import Rect, parse_rect
 
 log = logging.getLogger(__name__)
 
@@ -68,30 +68,8 @@ class PDFPage:
             self.attrs.get("Resources", dict()),
         )
 
-        self.mediabox = (0.0, 0.0, 612.0, 792.0)
-        if "MediaBox" in self.attrs:
-            try:
-                self.mediabox = parse_rect(
-                    resolve1(val) for val in resolve1(self.attrs["MediaBox"])
-                )
-            except PDFValueError:
-                log.warning("Invalid MediaBox in /Page, defaulting to US Letter")
-        else:
-            log.warning(
-                "MediaBox missing from /Page (and not inherited), "
-                "defaulting to US Letter"
-            )
-
-        self.cropbox = self.mediabox
-        if "CropBox" in self.attrs:
-            try:
-                self.cropbox = parse_rect(
-                    resolve1(val) for val in resolve1(self.attrs["CropBox"])
-                )
-            except PDFValueError:
-                log.warning("Invalid CropBox in /Page, defaulting to MediaBox")
-        else:
-            log.warning("CropBox missing from /Page, defaulting to MediaBox")
+        self.mediabox = self._parse_mediabox(self.attrs.get("MediaBox"))
+        self.cropbox = self._parse_cropbox(self.attrs.get("CropBox"), self.mediabox)
 
         self.rotate = (int_value(self.attrs.get("Rotate", 0)) + 360) % 360
         self.annots = self.attrs.get("Annots")
@@ -206,3 +184,32 @@ class PDFPage:
             yield page
             if maxpages and maxpages <= pageno + 1:
                 break
+
+    def _parse_mediabox(self, attr: Any) -> Rect:
+        us_letter = (0.0, 0.0, 612.0, 792.0)
+
+        if attr is None:
+            log.warning(
+                "MediaBox missing from /Page (and not inherited), "
+                "defaulting to US Letter"
+            )
+            return us_letter
+
+        try:
+            return parse_rect(resolve1(val) for val in resolve1(attr))
+
+        except PDFValueError:
+            log.warning("Invalid MediaBox in /Page, defaulting to US Letter")
+            return us_letter
+
+    def _parse_cropbox(self, cropbox_values: Any, mediabox: Rect) -> Rect:
+        if cropbox_values is None:
+            log.warning("CropBox missing from /Page, defaulting to MediaBox")
+            return mediabox
+
+        try:
+            return parse_rect(resolve1(val) for val in resolve1(cropbox_values))
+
+        except PDFValueError:
+            log.warning("Invalid CropBox in /Page, defaulting to MediaBox")
+            return mediabox
