@@ -9,6 +9,7 @@ import sys
 from typing import Any, Container, Iterable, List, Optional
 
 import pdfminer.high_level
+from pdfminer.converter import PDFLayoutAnalyzer
 from pdfminer.layout import LAParams
 from pdfminer.pdfexceptions import PDFValueError
 from pdfminer.utils import AnyIO
@@ -277,6 +278,13 @@ def create_parser() -> argparse.ArgumentParser:
         help="Remove control statement from text. "
         "Only used when output_type is xml.",
     )
+    output_params.add_argument(
+        "--ignore-unmapped",
+        "-I",
+        default=False,
+        action="store_true",
+        help="Ignore unmapped characters rather than outputting" "(cid:N) in the text",
+    )
 
     return parser
 
@@ -308,6 +316,9 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
         for override, alttype in OUTPUT_TYPES:
             if parsed_args.outfile.endswith(override):
                 parsed_args.output_type = alttype
+
+    if parsed_args.ignore_unmapped:
+        PDFLayoutAnalyzer.handle_undefined_char = lambda *args: ""  # type: ignore
 
     return parsed_args
 
