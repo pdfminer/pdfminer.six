@@ -110,10 +110,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install Hatch
-        uses: pypa/hatch@install
-      - name: Build package
-        run: hatch build
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install pypa/build
+        run: >-
+          python3 -m pip install build --user
+      - name: Build a binary wheel and a source tarball
+        run: python3 -m build
       - name: Generate changelog
         run: sed '1,/## \[/d;/## \[/Q' CHANGELOG.md > ${{ github.workspace }}-CHANGELOG.md
       - name: Publish package to PyPi

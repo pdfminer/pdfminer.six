@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
+requires = ["setuptools >= 61.0", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "pdfminer.six"
@@ -23,7 +23,7 @@ classifiers = [
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
+    "License-Expression :: MIT",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.8",
@@ -31,6 +31,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Text Processing",
 ]
 dependencies = [
@@ -54,22 +55,18 @@ image = [
     "Pillow",
 ]
 
-[project.scripts]
-"pdf2txt.py" = "tools.pdf2txt:main"
-"dumppdf.py" = "tools.dumppdf:main"
 
 [project.urls]
 Homepage = "https://github.com/pdfminer/pdfminer.six"
 
-[tool.hatch.version]
-source = "vcs"
-tag-pattern = '(\d\d\d\d\d\d\d\d)'
-
-[tool.hatch.build.targets.wheel]
+[tool.setuptools]
 packages = ["pdfminer"]
+script-files = [
+    "tools/pdf2txt.py",
+    "tools/dumppdf.py",
+]
 
-[tool.ruff]
-namespace-packages = ["pdfminer"]
+[tool.setuptools_scm]
 
 [tool.ruff.lint]
 extend-select = [
