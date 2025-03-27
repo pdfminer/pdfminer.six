@@ -7,18 +7,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Changed
 
+- Reduce memory overhead on runlength encoding by using lists ([#1055](https://github.com/pdfminer/pdfminer.six/pull/1055))
 - Using `pyproject.toml` instead of `setup.py` ([#1028](https://github.com/pdfminer/pdfminer.six/pull/1028))
 
 ### Fixed
 
 - `TypeError` when CID character widths are not parseable as floats ([#1001](https://github.com/pdfminer/pdfminer.six/pull/1001))
 - `TypeError` raised by extract_text method with compressed PDF file ([#1029](https://github.com/pdfminer/pdfminer.six/pull/1029))
+- `PSBaseParser` can't handle tokens split across end of buffer ([#1030](https://github.com/pdfminer/pdfminer.six/pull/1030))
+- `TypeError` when CropBox is an indirect object reference ([#1004](https://github.com/pdfminer/pdfminer.six/issues/1004))
 
 ## [20250324]
 
 ### Changed
 
 - Using absolute instead of relative imports ([[#995](https://github.com/pdfminer/pdfminer.six/pull/995)])
+- Using standard library functions for ascii85 and asciihex ([#1031](https://github.com/pdfminer/pdfminer.six/pull/1031))
 
 ### Deprecated
 
@@ -32,7 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `ValueError` when corrupt PDF specifies an invalid mediabox ([#987](https://github.com/pdfminer/pdfminer.six/pull/987))
 - `RecursionError` when corrupt PDF specifies a recursive /Pages object ([#998](https://github.com/pdfminer/pdfminer.six/pull/998))
 - `TypeError` when corrupt PDF specifies text-positioning operators with invalid values ([#1000](https://github.com/pdfminer/pdfminer.six/pull/1000))
-- inline image parsing fails when stream data contains "EI\n" ([#1008](https://github.com/pdfminer/pdfminer.six/issues/1008))
+- inline image parsing fails when stream data contains "EI\n" ([#1008](https://github.com/pdfminer/pdfminer.six/issues/1008
 - `TypeError` when parsing object reference as mediabox ([#1082](https://github.com/pdfminer/pdfminer.six/issues/1082))
 
 ### Removed
