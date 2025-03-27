@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Changed
 
 - Reduce memory overhead on runlength encoding by using lists ([#1055](https://github.com/pdfminer/pdfminer.six/pull/1055))
+- Using `pyproject.toml` instead of `setup.py` ([#1028](https://github.com/pdfminer/pdfminer.six/pull/1028))
 
 ### Fixed
 

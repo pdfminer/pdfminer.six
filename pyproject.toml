@@ -1,0 +1,125 @@
+[build-system]
+requires = ["setuptools >= 61.0", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdfminer.six"
+dynamic = ["version"]
+description = "PDF parser and analyzer"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [
+    { name = "Yusuke Shinyama" },
+    { name = "Philippe Guglielmetti", email = "pdfminer@goulu.net" },
+    { name = "Pieter Marsman" },
+]
+keywords = [
+    "layout analysis",
+    "pdf converter",
+    "pdf parser",
+    "text mining",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License-Expression :: MIT",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Text Processing",
+]
+dependencies = [
+    "charset-normalizer >= 2.0.0",
+    "cryptography >= 36.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "atheris; python_version < '3.12'",
+    "black",
+    "mypy == 0.931",
+    "nox",
+    "pytest",
+]
+docs = [
+    "sphinx",
+    "sphinx-argparse",
+]
+image = [
+    "Pillow",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/pdfminer/pdfminer.six"
+
+[tool.setuptools]
+packages = ["pdfminer"]
+script-files = [
+    "tools/pdf2txt.py",
+    "tools/dumppdf.py",
+]
+
+[tool.setuptools_scm]
+
+[tool.ruff.lint]
+extend-select = [
+    "W",  # pycodestyle warnings
+    "I",  # isort
+    "TID"  # flake8 tidy imports
+]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.mypy]
+warn_unused_configs = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+no_implicit_reexport = true
+strict_equality = true
+
+# This seems impossible to turn on in a version-independent manner
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = "pdfminer.*"
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "cryptography.hazmat.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "setuptools.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pytest.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "nox.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "charset_normalizer.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "atheris.*"
+ignore_missing_imports = true
