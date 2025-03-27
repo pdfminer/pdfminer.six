@@ -81,6 +81,18 @@ class TestPaintPath:
             ],
         ) == [LTRect]
 
+        # Same but mllllh variation
+        assert get_types(
+            [
+                ("m", 10, 90),
+                ("l", 90, 90),
+                ("l", 90, 10),
+                ("l", 10, 10),
+                ("l", 10, 90),
+                ("h",),
+            ],
+        ) == [LTRect]
+
         # Bowtie shape
         assert get_types(
             [

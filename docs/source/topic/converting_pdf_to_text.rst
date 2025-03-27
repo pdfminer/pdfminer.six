@@ -56,7 +56,7 @@ one line. How close they should be is determined by the `char_margin`
 (M in the figure) and the `line_overlap` (not in figure) parameter. The horizontal
 *distance* between the bounding boxes of two characters should be smaller than
 the `char_margin` and the vertical *overlap* between the bounding boxes should
-be smaller than the `line_overlap`.
+be larger than the `line_overlap`.
 
 .. raw:: html
     :file: ../_static/layout_analysis.html
