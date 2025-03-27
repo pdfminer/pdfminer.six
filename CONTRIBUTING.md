@@ -77,5 +77,5 @@ Any contribution is appreciated! You might want to:
    Or only the tests on a single Python version:
    
    ```sh
-    nox -e tests-3.12
+    nox -e tests-3.13
     ```
