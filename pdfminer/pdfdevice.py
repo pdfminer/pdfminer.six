@@ -1,3 +1,4 @@
+import logging
 from typing import (
     TYPE_CHECKING,
     BinaryIO,
@@ -27,6 +28,8 @@ if TYPE_CHECKING:
 
 
 PDFTextSeq = Iterable[Union[int, float, bytes]]
+
+logger = logging.getLogger(__name__)
 
 
 class PDFDevice:
@@ -167,7 +170,7 @@ class PDFTextDevice(PDFDevice):
             if isinstance(obj, (int, float)):
                 x -= obj * dxscale
                 needcharspace = True
-            else:
+            elif isinstance(obj, bytes):
                 for cid in font.decode(obj):
                     if needcharspace:
                         x += charspace
@@ -184,6 +187,10 @@ class PDFTextDevice(PDFDevice):
                     if cid == 32 and wordspace:
                         x += wordspace
                     needcharspace = True
+            else:
+                logger.warning(
+                    f"Invalid string type. Must by int, float or bytes but is {type(obj)}."
+                )
         return (x, y)
 
     def render_string_vertical(
@@ -207,7 +214,7 @@ class PDFTextDevice(PDFDevice):
             if isinstance(obj, (int, float)):
                 y -= obj * dxscale
                 needcharspace = True
-            else:
+            elif isinstance(obj, bytes):
                 for cid in font.decode(obj):
                     if needcharspace:
                         y += charspace
@@ -224,6 +231,10 @@ class PDFTextDevice(PDFDevice):
                     if cid == 32 and wordspace:
                         y += wordspace
                     needcharspace = True
+            else:
+                logger.warning(
+                    f"Invalid string type. Must by int, float or bytes but is {type(obj)}."
+                )
         return (x, y)
 
     def render_char(

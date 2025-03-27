@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `TypeError` when CropBox is an indirect object reference ([#1004](https://github.com/pdfminer/pdfminer.six/issues/1004))
 - Remove redundant line to be able to recognize rectangles ([#1066](https://github.com/pdfminer/pdfminer.six/pull/1066))
 - Support indirect objects for filters ([#1062](https://github.com/pdfminer/pdfminer.six/pull/1068))
+- Make sure `bytes` is `bytes` where it counts ([#1069](https://github.com/pdfminer/pdfminer.six/pull/1069))
 
 ### Removed
 
