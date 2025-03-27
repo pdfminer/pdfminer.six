@@ -42,6 +42,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    # Atheris is supports up to Python 3.11.
     "atheris; python_version < '3.12'",
     "black",
     "mypy == 0.931",
