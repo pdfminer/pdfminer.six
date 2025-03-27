@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `PSBaseParser` can't handle tokens split across end of buffer ([#1030](https://github.com/pdfminer/pdfminer.six/pull/1030))
 - `TypeError` when CropBox is an indirect object reference ([#1004](https://github.com/pdfminer/pdfminer.six/issues/1004))
 
+## Removed
+
+- Support for Python 3.8 ([#1091](https://github.com/pdfminer/pdfminer.six/pull/1091))
+
 ## [20250324]
 
 ### Changed
