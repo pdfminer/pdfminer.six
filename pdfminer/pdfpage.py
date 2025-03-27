@@ -12,7 +12,7 @@ from pdfminer.pdfexceptions import PDFObjectNotFound, PDFValueError
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import dict_value, int_value, list_value, resolve1
 from pdfminer.psparser import LIT
-from pdfminer.utils import parse_rect
+from pdfminer.utils import Rect, parse_rect
 
 log = logging.getLogger(__name__)
 
@@ -67,27 +67,14 @@ class PDFPage:
         self.resources: Dict[object, object] = resolve1(
             self.attrs.get("Resources", dict()),
         )
-        mediabox_params: List[Any] = [
-            resolve1(mediabox_param) for mediabox_param in self.attrs["MediaBox"]
-        ]
-        self.mediabox = parse_rect(resolve1(mediabox_params))
-        self.cropbox = self.mediabox
-        if "CropBox" in self.attrs:
-            try:
-                self.cropbox = parse_rect(resolve1(self.attrs["CropBox"]))
-            except PDFValueError:
-                pass
+
+        self.mediabox = self._parse_mediabox(self.attrs.get("MediaBox"))
+        self.cropbox = self._parse_cropbox(self.attrs.get("CropBox"), self.mediabox)
+        self.contents = self._parse_contents(self.attrs.get("Contents"))
 
         self.rotate = (int_value(self.attrs.get("Rotate", 0)) + 360) % 360
         self.annots = self.attrs.get("Annots")
         self.beads = self.attrs.get("B")
-        if "Contents" in self.attrs:
-            contents = resolve1(self.attrs["Contents"])
-        else:
-            contents = []
-        if not isinstance(contents, list):
-            contents = [contents]
-        self.contents: List[object] = contents
 
     def __repr__(self) -> str:
         return f"<PDFPage: Resources={self.resources!r}, MediaBox={self.mediabox!r}>"
@@ -192,3 +179,40 @@ class PDFPage:
             yield page
             if maxpages and maxpages <= pageno + 1:
                 break
+
+    def _parse_mediabox(self, value: Any) -> Rect:
+        us_letter = (0.0, 0.0, 612.0, 792.0)
+
+        if value is None:
+            log.warning(
+                "MediaBox missing from /Page (and not inherited), "
+                "defaulting to US Letter"
+            )
+            return us_letter
+
+        try:
+            return parse_rect(resolve1(val) for val in resolve1(value))
+
+        except PDFValueError:
+            log.warning("Invalid MediaBox in /Page, defaulting to US Letter")
+            return us_letter
+
+    def _parse_cropbox(self, value: Any, mediabox: Rect) -> Rect:
+        if value is None:
+            log.warning("CropBox missing from /Page, defaulting to MediaBox")
+            return mediabox
+
+        try:
+            return parse_rect(resolve1(val) for val in resolve1(value))
+
+        except PDFValueError:
+            log.warning("Invalid CropBox in /Page, defaulting to MediaBox")
+            return mediabox
+
+    def _parse_contents(self, value: Any) -> List[Any]:
+        contents: List[Any] = []
+        if value is not None:
+            contents = resolve1(value)
+            if not isinstance(contents, list):
+                contents = [contents]
+        return contents
