@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## Changed
+### Added
+
+- Support for Python 3.13 ([#1092](https://github.com/pdfminer/pdfminer.six/pull/1092))
+- 
+### Changed
 
 - Reduce memory overhead on runlength encoding by using lists ([#1055](https://github.com/pdfminer/pdfminer.six/pull/1055))
 - Using `pyproject.toml` instead of `setup.py` ([#1028](https://github.com/pdfminer/pdfminer.six/pull/1028))
@@ -17,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `PSBaseParser` can't handle tokens split across end of buffer ([#1030](https://github.com/pdfminer/pdfminer.six/pull/1030))
 - `TypeError` when CropBox is an indirect object reference ([#1004](https://github.com/pdfminer/pdfminer.six/issues/1004))
 
-## Removed
+### Removed
 
 - Support for Python 3.8 ([#1091](https://github.com/pdfminer/pdfminer.six/pull/1091))
 
