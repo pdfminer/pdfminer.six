@@ -2,9 +2,7 @@ import os
 import os.path
 import struct
 from io import BytesIO
-from typing import BinaryIO, Tuple
-
-from typing import Literal
+from typing import BinaryIO, Literal, Tuple
 
 from pdfminer.jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from pdfminer.layout import LTImage
