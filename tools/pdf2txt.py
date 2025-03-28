@@ -279,7 +279,7 @@ def create_parser() -> argparse.ArgumentParser:
         "Only used when output_type is xml.",
     )
     output_params.add_argument(
-        "--ignore-unmapped",
+        "--ignore-unmapped-characters",
         "-I",
         default=False,
         action="store_true",
