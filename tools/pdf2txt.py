@@ -283,7 +283,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-I",
         default=False,
         action="store_true",
-        help="Ignore unmapped characters rather than outputting" "(cid:N) in the text",
+        help="Ignore unmapped characters rather than outputting (cid:N) in the text",
     )
 
     return parser
