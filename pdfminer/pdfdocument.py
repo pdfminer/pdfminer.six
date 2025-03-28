@@ -24,6 +24,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from pdfminer import settings
 from pdfminer.arcfour import Arcfour
+from pdfminer.casting import safe_int
 from pdfminer.data_structures import NumberTree
 from pdfminer.pdfexceptions import (
     PDFException,
@@ -170,7 +171,17 @@ class PDFXRef(PDFBaseXRef):
                 (pos_b, genno_b, use_b) = f
                 if use_b != b"n":
                     continue
-                self.offsets[objid] = (None, int(pos_b), int(genno_b))
+
+                pos_i = safe_int(pos_b)
+                genno_i = safe_int(genno_b)
+                if pos_i is not None and genno_i is not None:
+                    self.offsets[objid] = (None, pos_i, genno_i)
+                else:
+                    log.warning(
+                        f"Not adding object {objid} to xref because position {pos_b!r} "
+                        f"or generation number {genno_b!r} cannot be parsed as an int"
+                    )
+
         log.debug("xref objects: %r", self.offsets)
         self.load_trailer(parser)
 

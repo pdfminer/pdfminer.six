@@ -7,7 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Fix: `TypeError` when parsing font width with indirect object references ([#1098](https://github.com/pdfminer/pdfminer.six/pull/1098))
+- `TypeError` when parsing font width with indirect object references ([#1098](https://github.com/pdfminer/pdfminer.six/pull/1098))
+- `ValueError` when loading xref with invalid position or generation numbers that cannot be parsed as int ([#1099](https://github.com/pdfminer/pdfminer.six/pull/1099))
 
 ## [20250327]
 
