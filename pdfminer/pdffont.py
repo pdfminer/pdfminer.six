@@ -62,6 +62,7 @@ def get_widths(seq: Iterable[object]) -> Dict[Union[str, int], float]:
     widths: Dict[int, float] = {}
     r: List[float] = []
     for v in seq:
+        v = resolve1(v)
         if isinstance(v, list):
             if r:
                 char1 = r[-1]
@@ -72,9 +73,18 @@ def get_widths(seq: Iterable[object]) -> Dict[Union[str, int], float]:
             r.append(v)
             if len(r) == 3:
                 (char1, char2, w) = r
-                for i in range(cast(int, char1), cast(int, char2) + 1):
-                    widths[i] = w
+                if isinstance(char1, int) and isinstance(char2, int):
+                    for i in range(cast(int, char1), cast(int, char2) + 1):
+                        widths[i] = w
+                else:
+                    log.warning(
+                        f"Skipping invalid font width specification for {char1} to {char2} because either of them is not an int"
+                    )
                 r = []
+        else:
+            log.warning(
+                f"Skipping invalid font width specification for {v} because it is not a number or a list"
+            )
     return cast(Dict[Union[str, int], float], widths)
 
 
