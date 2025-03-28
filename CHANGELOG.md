@@ -3,12 +3,18 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- Fix: `TypeError` when parsing font width with indirect object references ([#1098](https://github.com/pdfminer/pdfminer.six/pull/1098))
+
 ## [20250327]
 
 ### Added
 
 - Support for Python 3.13 ([#1092](https://github.com/pdfminer/pdfminer.six/pull/1092))
-- 
+
 ### Changed
 
 - Reduce memory overhead on runlength encoding by using lists ([#1055](https://github.com/pdfminer/pdfminer.six/pull/1055))
