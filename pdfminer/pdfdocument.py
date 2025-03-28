@@ -172,13 +172,15 @@ class PDFXRef(PDFBaseXRef):
                 if use_b != b"n":
                     continue
 
-                pos = safe_int(pos_b)
-                genno = safe_int(genno_b)
-
-                if pos is not None and genno is not None:
-                    self.offsets[objid] = (None, pos, genno)
+                pos_i = safe_int(pos_b)
+                genno_i = safe_int(genno_b)
+                if pos_i is not None and genno_i is not None:
+                    self.offsets[objid] = (None, pos_i, genno_i)
                 else:
-                    log.warning(f"Not adding object {objid} to xref because position {pos_b} or genneration number {genno_b} cannot be parsed as an int")
+                    log.warning(
+                        f"Not adding object {objid} to xref because position {pos_b!r} "
+                        f"or generation number {genno_b!r} cannot be parsed as an int"
+                    )
 
         log.debug("xref objects: %r", self.offsets)
         self.load_trailer(parser)
