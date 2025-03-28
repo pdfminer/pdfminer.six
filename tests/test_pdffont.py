@@ -1,9 +1,10 @@
-from typing import Dict, Union
+from typing import Any, Dict, Union
 
 import pytest
 
-from pdfminer.pdffont import PDFCIDFont, PDFFont
+from pdfminer.pdffont import PDFCIDFont, PDFFont, get_widths
 from pdfminer.pdfinterp import PDFResourceManager
+from pdfminer.pdftypes import PDFObjRef
 from pdfminer.psparser import PSLiteral
 
 
@@ -44,3 +45,19 @@ def test_pdffont_char_width_defaults(
     pdffont = MockPdfFont(descriptor=dict(), widths=widths, default_width=100.0)
 
     assert pdffont.char_width(0) == expected, msg
+
+
+def test_pdffont_get_widths():
+    assert get_widths([0, [1, 2, 3, 4]]) == {0: 1, 1: 2, 2: 3, 3: 4}
+    assert get_widths([0, 4, 3]) == {0: 3, 1: 3, 2: 3, 3: 3, 4: 3}
+
+
+def test_pdffont_get_widths_object_ref():
+    """Regression test for https://github.com/pdfminer/pdfminer.six/issues/629"""
+
+    class MockDoc:
+        def getobj(self, objid: int) -> Any:
+            return [1, 2, 3, 4]
+
+    obj = PDFObjRef(doc=MockDoc(), objid=121)
+    assert get_widths([0, obj]) == {0: 1, 1: 2, 2: 3, 3: 4}
