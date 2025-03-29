@@ -189,7 +189,7 @@ class PDFTextDevice(PDFDevice):
                     needcharspace = True
             else:
                 logger.warning(
-                    f"Invalid string type. Must by int, float or bytes but is {type(obj)}."
+                    f"Cannot render horizontal string because {obj!r} is not a valid int, float or bytes."
                 )
         return (x, y)
 
@@ -233,7 +233,7 @@ class PDFTextDevice(PDFDevice):
                     needcharspace = True
             else:
                 logger.warning(
-                    f"Invalid string type. Must by int, float or bytes but is {type(obj)}."
+                    f"Cannot render vertical string because {obj!r} is not a valid int, float or bytes."
                 )
         return (x, y)
 

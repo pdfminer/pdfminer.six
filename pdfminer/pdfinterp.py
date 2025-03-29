@@ -4,7 +4,7 @@ from io import BytesIO
 from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union, cast
 
 from pdfminer import settings
-from pdfminer.casting import safe_float
+from pdfminer.casting import safe_cmyk, safe_float, safe_int, safe_matrix, safe_rgb
 from pdfminer.cmapdb import CMap, CMapBase, CMapDB
 from pdfminer.pdfcolor import PREDEFINED_COLORSPACE, PDFColorSpace
 from pdfminer.pdfdevice import PDFDevice, PDFTextSeq
@@ -468,12 +468,25 @@ class PDFPageInterpreter:
         f1: PDFStackT,
     ) -> None:
         """Concatenate matrix to current transformation matrix"""
-        self.ctm = mult_matrix(cast(Matrix, (a1, b1, c1, d1, e1, f1)), self.ctm)
-        self.device.set_ctm(self.ctm)
+        matrix = safe_matrix(a1, b1, c1, d1, e1, f1)
+
+        if matrix is None:
+            log.warning(
+                f"Cannot concatenate matrix to current transformation matrix because not all values in {(a1, b1, c1, d1, e1, f1)!r} can be parsed as floats"
+            )
+        else:
+            self.ctm = mult_matrix(matrix, self.ctm)
+            self.device.set_ctm(self.ctm)
 
     def do_w(self, linewidth: PDFStackT) -> None:
         """Set line width"""
-        self.graphicstate.linewidth = cast(float, linewidth)
+        linewidth_f = safe_float(linewidth)
+        if linewidth_f is None:
+            log.warning(
+                f"Cannot set line width because {linewidth!r} is an invalid float value"
+            )
+        else:
+            self.graphicstate.linewidth = linewidth_f
 
     def do_J(self, linecap: PDFStackT) -> None:
         """Set line cap style"""
@@ -505,11 +518,30 @@ class PDFPageInterpreter:
 
     def do_m(self, x: PDFStackT, y: PDFStackT) -> None:
         """Begin new subpath"""
-        self.curpath.append(("m", cast(float, x), cast(float, y)))
+        x_f = safe_float(x)
+        y_f = safe_float(y)
+
+        if x_f is None or y_f is None:
+            point = ("m", x, y)
+            log.warning(
+                f"Cannot start new subpath because not all values in {point!r} can be parsed as floats"
+            )
+        else:
+            point = ("m", x_f, y_f)
+            self.curpath.append(point)
 
     def do_l(self, x: PDFStackT, y: PDFStackT) -> None:
         """Append straight line segment to path"""
-        self.curpath.append(("l", cast(float, x), cast(float, y)))
+        x_f = safe_float(x)
+        y_f = safe_float(y)
+        if x_f is None or y_f is None:
+            point = ("l", x, y)
+            log.warning(
+                f"Cannot append straight line segment to path because not all values in {point!r} can be parsed as floats"
+            )
+        else:
+            point = ("l", x_f, y_f)
+            self.curpath.append(point)
 
     def do_c(
         self,
@@ -521,29 +553,57 @@ class PDFPageInterpreter:
         y3: PDFStackT,
     ) -> None:
         """Append curved segment to path (three control points)"""
-        self.curpath.append(
-            (
-                "c",
-                cast(float, x1),
-                cast(float, y1),
-                cast(float, x2),
-                cast(float, y2),
-                cast(float, x3),
-                cast(float, y3),
-            ),
-        )
+        x1_f = safe_float(x1)
+        y1_f = safe_float(y1)
+        x2_f = safe_float(x2)
+        y2_f = safe_float(y2)
+        x3_f = safe_float(x3)
+        y3_f = safe_float(y3)
+        if (
+            x1_f is None
+            or y1_f is None
+            or x2_f is None
+            or y2_f is None
+            or x3_f is None
+            or y3_f is None
+        ):
+            point = ("c", x1, y1, x2, y2, x3, y3)
+            log.warning(
+                f"Cannot append curved segment to path because not all values in {point!r} can be parsed as floats"
+            )
+        else:
+            point = ("c", x1_f, y1_f, x2_f, y2_f, x3_f, y3_f)
+            self.curpath.append(point)
 
     def do_v(self, x2: PDFStackT, y2: PDFStackT, x3: PDFStackT, y3: PDFStackT) -> None:
         """Append curved segment to path (initial point replicated)"""
-        self.curpath.append(
-            ("v", cast(float, x2), cast(float, y2), cast(float, x3), cast(float, y3)),
-        )
+        x2_f = safe_float(x2)
+        y2_f = safe_float(y2)
+        x3_f = safe_float(x3)
+        y3_f = safe_float(y3)
+        if x2_f is None or y2_f is None or x3_f is None or y3_f is None:
+            point = ("v", x2, y2, x3, y3)
+            log.warning(
+                f"Cannot append curved segment to path because not all values in {point!r} can be parsed as floats"
+            )
+        else:
+            point = ("v", x2_f, y2_f, x3_f, y3_f)
+            self.curpath.append(point)
 
     def do_y(self, x1: PDFStackT, y1: PDFStackT, x3: PDFStackT, y3: PDFStackT) -> None:
         """Append curved segment to path (final point replicated)"""
-        self.curpath.append(
-            ("y", cast(float, x1), cast(float, y1), cast(float, x3), cast(float, y3)),
-        )
+        x1_f = safe_float(x1)
+        y1_f = safe_float(y1)
+        x3_f = safe_float(x3)
+        y3_f = safe_float(y3)
+        if x1_f is None or y1_f is None or x3_f is None or y3_f is None:
+            point = ("y", x1, y1, x3, y3)
+            log.warning(
+                f"Cannot append curved segment to path because not all values in {point!r} can be parsed as floats"
+            )
+        else:
+            point = ("y", x1_f, y1_f, x3_f, y3_f)
+            self.curpath.append(point)
 
     def do_h(self) -> None:
         """Close subpath"""
@@ -551,15 +611,22 @@ class PDFPageInterpreter:
 
     def do_re(self, x: PDFStackT, y: PDFStackT, w: PDFStackT, h: PDFStackT) -> None:
         """Append rectangle to path"""
-        x = cast(float, x)
-        y = cast(float, y)
-        w = cast(float, w)
-        h = cast(float, h)
-        self.curpath.append(("m", x, y))
-        self.curpath.append(("l", x + w, y))
-        self.curpath.append(("l", x + w, y + h))
-        self.curpath.append(("l", x, y + h))
-        self.curpath.append(("h",))
+        x_f = safe_float(x)
+        y_f = safe_float(y)
+        w_f = safe_float(w)
+        h_f = safe_float(h)
+
+        if x_f is None or y_f is None or w_f is None or h_f is None:
+            values = (x, y, w, h)
+            log.warning(
+                f"Cannot append rectangle to path because not all values in {values!r} can be parsed as floats"
+            )
+        else:
+            self.curpath.append(("m", x_f, y_f))
+            self.curpath.append(("l", x_f + w_f, y_f))
+            self.curpath.append(("l", x_f + w_f, y_f + h_f))
+            self.curpath.append(("l", x_f, y_f + h_f))
+            self.curpath.append(("h",))
 
     def do_S(self) -> None:
         """Stroke path"""
@@ -635,43 +702,75 @@ class PDFPageInterpreter:
 
     def do_G(self, gray: PDFStackT) -> None:
         """Set gray level for stroking operations"""
-        self.graphicstate.scolor = cast(float, gray)
-        self.scs = self.csmap["DeviceGray"]
+        gray_f = safe_float(gray)
+
+        if gray_f is None:
+            log.warning(
+                f"Cannot set gray level because {gray!r} is an invalid float value"
+            )
+        else:
+            self.graphicstate.scolor = gray_f
+            self.scs = self.csmap["DeviceGray"]
 
     def do_g(self, gray: PDFStackT) -> None:
         """Set gray level for nonstroking operations"""
-        self.graphicstate.ncolor = cast(float, gray)
-        self.ncs = self.csmap["DeviceGray"]
+        gray_f = safe_float(gray)
+
+        if gray_f is None:
+            log.warning(
+                f"Cannot set gray level because {gray!r} is an invalid float value"
+            )
+        else:
+            self.graphicstate.ncolor = gray_f
+            self.ncs = self.csmap["DeviceGray"]
 
     def do_RG(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for stroking operations"""
-        self.graphicstate.scolor = (cast(float, r), cast(float, g), cast(float, b))
-        self.scs = self.csmap["DeviceRGB"]
+        rgb = safe_rgb(r, g, b)
+
+        if rgb is None:
+            log.warning(
+                f"Cannot set RGB stroke color because not all values in {(r, g, b)!r} can be parsed as floats"
+            )
+        else:
+            self.graphicstate.scolor = rgb
+            self.scs = self.csmap["DeviceRGB"]
 
     def do_rg(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for nonstroking operations"""
-        self.graphicstate.ncolor = (cast(float, r), cast(float, g), cast(float, b))
-        self.ncs = self.csmap["DeviceRGB"]
+        rgb = safe_rgb(r, g, b)
+
+        if rgb is None:
+            log.warning(
+                f"Cannot set RGB non-stroke color because not all values in {(r, g, b)!r} can be parsed as floats"
+            )
+        else:
+            self.graphicstate.ncolor = rgb
+            self.ncs = self.csmap["DeviceRGB"]
 
     def do_K(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
         """Set CMYK color for stroking operations"""
-        self.graphicstate.scolor = (
-            cast(float, c),
-            cast(float, m),
-            cast(float, y),
-            cast(float, k),
-        )
-        self.scs = self.csmap["DeviceCMYK"]
+        cmyk = safe_cmyk(c, m, y, k)
+
+        if cmyk is None:
+            log.warning(
+                f"Cannot set CMYK stroke color because not all values in {(c, m, y, k)!r} can be parsed as floats"
+            )
+        else:
+            self.graphicstate.scolor = cmyk
+            self.scs = self.csmap["DeviceCMYK"]
 
     def do_k(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
         """Set CMYK color for nonstroking operations"""
-        self.graphicstate.ncolor = (
-            cast(float, c),
-            cast(float, m),
-            cast(float, y),
-            cast(float, k),
-        )
-        self.ncs = self.csmap["DeviceCMYK"]
+        cmyk = safe_cmyk(c, m, y, k)
+
+        if cmyk is None:
+            log.warning(
+                f"Cannot set CMYK non-stroke color because not all values in {(c, m, y, k)!r} can be parsed as floats"
+            )
+        else:
+            self.graphicstate.ncolor = cmyk
+            self.ncs = self.csmap["DeviceCMYK"]
 
     def do_SCN(self) -> None:
         """Set color for stroking operations."""
@@ -681,7 +780,42 @@ class PDFPageInterpreter:
             if settings.STRICT:
                 raise PDFInterpreterError("No colorspace specified!")
             n = 1
-        self.graphicstate.scolor = cast(Color, self.pop(n))
+
+        if n == 1:
+            gray = self.pop(1)[0]
+            gray_f = safe_float(gray)
+            if gray_f is None:
+                log.warning(
+                    f"Cannot set gray stroke color because {gray!r} is an invalid float value"
+                )
+            else:
+                self.graphicstate.scolor = gray_f
+
+        elif n == 3:
+            values = self.pop(3)
+            rgb = safe_rgb(*values)
+            if rgb is None:
+                log.warning(
+                    f"Cannot set RGB stroke color because not all values in {values!r} can be parsed as floats"
+                )
+            else:
+                self.graphicstate.scolor = rgb
+
+        elif n == 4:
+            values = self.pop(4)
+            cmyk = safe_cmyk(*values)
+
+            if cmyk is None:
+                log.warning(
+                    f"Cannot set CMYK stroke color because not all values in {values!r} can be parsed as floats"
+                )
+            else:
+                self.graphicstate.scolor = cmyk
+
+        else:
+            log.warning(
+                f"Cannot set stroke color because {n} components are specified but only 1 (grayscale), 3 (rgb) and 4 (cmyk) are supported"
+            )
 
     def do_scn(self) -> None:
         """Set color for nonstroking operations"""
@@ -691,7 +825,43 @@ class PDFPageInterpreter:
             if settings.STRICT:
                 raise PDFInterpreterError("No colorspace specified!")
             n = 1
-        self.graphicstate.ncolor = cast(Color, self.pop(n))
+
+        if n == 1:
+            gray = self.pop(1)[0]
+            gray_f = safe_float(gray)
+            if gray_f is None:
+                log.warning(
+                    f"Cannot set gray non-stroke color because {gray!r} is an invalid float value"
+                )
+            else:
+                self.graphicstate.ncolor = gray_f
+
+        elif n == 3:
+            values = self.pop(3)
+            rgb = safe_rgb(*values)
+
+            if rgb is None:
+                log.warning(
+                    f"Cannot set RGB non-stroke color because not all values in {values!r} can be parsed as floats"
+                )
+            else:
+                self.graphicstate.ncolor = rgb
+
+        elif n == 4:
+            values = self.pop(4)
+            cmyk = safe_cmyk(*values)
+
+            if cmyk is None:
+                log.warning(
+                    f"Cannot set CMYK non-stroke color because not all values in {values!r} can be parsed as floats"
+                )
+            else:
+                self.graphicstate.ncolor = cmyk
+
+        else:
+            log.warning(
+                f"Cannot set non-stroke color because {n} components are specified but only 1 (grayscale), 3 (rgb) and 4 (cmyk) are supported"
+            )
 
     def do_SC(self) -> None:
         """Set color for stroking operations"""
@@ -724,19 +894,39 @@ class PDFPageInterpreter:
 
     def do_MP(self, tag: PDFStackT) -> None:
         """Define marked-content point"""
-        self.device.do_tag(cast(PSLiteral, tag))
+        if isinstance(tag, PSLiteral):
+            self.device.do_tag(tag)
+        else:
+            log.warning(
+                f"Cannot define marked-content point because {tag!r} is not a PSLiteral"
+            )
 
     def do_DP(self, tag: PDFStackT, props: PDFStackT) -> None:
         """Define marked-content point with property list"""
-        self.device.do_tag(cast(PSLiteral, tag), props)
+        if isinstance(tag, PSLiteral):
+            self.device.do_tag(tag, props)
+        else:
+            log.warning(
+                f"Cannot define marked-content point with property list because {tag!r} is not a PSLiteral"
+            )
 
     def do_BMC(self, tag: PDFStackT) -> None:
         """Begin marked-content sequence"""
-        self.device.begin_tag(cast(PSLiteral, tag))
+        if isinstance(tag, PSLiteral):
+            self.device.begin_tag(tag)
+        else:
+            log.warning(
+                f"Cannot begin marked-content sequence because {tag!r} is not a PSLiteral"
+            )
 
     def do_BDC(self, tag: PDFStackT, props: PDFStackT) -> None:
         """Begin marked-content sequence with property list"""
-        self.device.begin_tag(cast(PSLiteral, tag), props)
+        if isinstance(tag, PSLiteral):
+            self.device.begin_tag(tag, props)
+        else:
+            log.warning(
+                f"Cannot begin marked-content sequence with property list because {tag!r} is not a PSLiteral"
+            )
 
     def do_EMC(self) -> None:
         """End marked-content sequence"""
@@ -749,7 +939,13 @@ class PDFPageInterpreter:
 
         :param space: a number expressed in unscaled text space units.
         """
-        self.textstate.charspace = cast(float, space)
+        charspace = safe_float(space)
+        if charspace is None:
+            log.warning(
+                f"Could not set character spacing because {space!r} is an invalid float value"
+            )
+        else:
+            self.textstate.charspace = charspace
 
     def do_Tw(self, space: PDFStackT) -> None:
         """Set the word spacing.
@@ -758,14 +954,27 @@ class PDFPageInterpreter:
 
         :param space: a number expressed in unscaled text space units
         """
-        self.textstate.wordspace = cast(float, space)
+        wordspace = safe_float(space)
+        if wordspace is None:
+            log.warning(
+                f"Could not set word spacing becuase {space!r} is an invalid float value"
+            )
+        else:
+            self.textstate.wordspace = wordspace
 
     def do_Tz(self, scale: PDFStackT) -> None:
         """Set the horizontal scaling.
 
         :param scale: is a number specifying the percentage of the normal width
         """
-        self.textstate.scaling = cast(float, scale)
+        scale_f = safe_float(scale)
+
+        if scale_f is None:
+            log.warning(
+                f"Could not set horizontal scaling because {scale!r} is an invalid float value"
+            )
+        else:
+            self.textstate.scaling = scale_f
 
     def do_TL(self, leading: PDFStackT) -> None:
         """Set the text leading.
@@ -774,7 +983,13 @@ class PDFPageInterpreter:
 
         :param leading: a number expressed in unscaled text space units
         """
-        self.textstate.leading = -cast(float, leading)
+        leading_f = safe_float(leading)
+        if leading_f is None:
+            log.warning(
+                f"Could not set text leading because {leading!r} is an invalid float value"
+            )
+        else:
+            self.textstate.leading = -leading_f
 
     def do_Tf(self, fontid: PDFStackT, fontsize: PDFStackT) -> None:
         """Set the text font
@@ -789,18 +1004,39 @@ class PDFPageInterpreter:
             if settings.STRICT:
                 raise PDFInterpreterError("Undefined Font id: %r" % fontid)
             self.textstate.font = self.rsrcmgr.get_font(None, {})
-        self.textstate.fontsize = cast(float, fontsize)
+
+        fontsize_f = safe_float(fontsize)
+        if fontsize_f is None:
+            log.warning(
+                f"Could not set text font because {fontsize!r} is an invalid float value"
+            )
+        else:
+            self.textstate.fontsize = fontsize_f
 
     def do_Tr(self, render: PDFStackT) -> None:
         """Set the text rendering mode"""
-        self.textstate.render = cast(int, render)
+        render_i = safe_int(render)
+
+        if render_i is None:
+            log.warning(
+                f"Could not set text rendering mode because {render!r} is an invalid int value"
+            )
+        else:
+            self.textstate.render = render_i
 
     def do_Ts(self, rise: PDFStackT) -> None:
         """Set the text rise
 
         :param rise: a number expressed in unscaled text space units
         """
-        self.textstate.rise = cast(float, rise)
+        rise_f = safe_float(rise)
+
+        if rise_f is None:
+            log.warning(
+                f"Could not set text rise because {rise!r} is an invalid float value"
+            )
+        else:
+            self.textstate.rise = rise_f
 
     def do_Td(self, tx: PDFStackT, ty: PDFStackT) -> None:
         """Move to the start of the next line
@@ -853,8 +1089,16 @@ class PDFPageInterpreter:
         f: PDFStackT,
     ) -> None:
         """Set text matrix and text line matrix"""
-        self.textstate.matrix = cast(Matrix, (a, b, c, d, e, f))
-        self.textstate.linematrix = (0, 0)
+        values = (a, b, c, d, e, f)
+        matrix = safe_matrix(*values)
+
+        if matrix is None:
+            log.warning(
+                f"Could not set text matrix because not all values in {values!r} can be parsed as floats"
+            )
+        else:
+            self.textstate.matrix = matrix
+            self.textstate.linematrix = (0, 0)
 
     def do_T_a(self) -> None:
         """Move to start of next text line"""
