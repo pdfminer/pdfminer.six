@@ -4,7 +4,7 @@ from io import BytesIO
 from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union, cast
 
 from pdfminer import settings
-from pdfminer.casting import safe_float, safe_int
+from pdfminer.casting import safe_cmyk, safe_float, safe_int, safe_matrix, safe_rgb
 from pdfminer.cmapdb import CMap, CMapBase, CMapDB
 from pdfminer.pdfcolor import PREDEFINED_COLORSPACE, PDFColorSpace
 from pdfminer.pdfdevice import PDFDevice, PDFTextSeq
@@ -468,28 +468,14 @@ class PDFPageInterpreter:
         f1: PDFStackT,
     ) -> None:
         """Concatenate matrix to current transformation matrix"""
-        a1_f = safe_float(a1)
-        b1_f = safe_float(b1)
-        c1_f = safe_float(c1)
-        d1_f = safe_float(d1)
-        e1_f = safe_float(e1)
-        f1_f = safe_float(f1)
+        matrix = safe_matrix(a1, b1, c1, d1, e1, f1)
 
-        if (
-            a1_f is None
-            or b1_f is None
-            or c1_f is None
-            or d1_f is None
-            or e1_f is None
-            or f1_f is None
-        ):
-            values = (a1, b1, c1, d1, e1, f1)
+        if matrix is None:
             log.warning(
-                f"Cannot concatenate matrix to current transformation matrix because not all values in {values!r} can be parsed as floats"
+                f"Cannot concatenate matrix to current transformation matrix because not all values in {(a1, b1, c1, d1, e1, f1)!r} can be parsed as floats"
             )
         else:
-            values = (a1_f, b1_f, c1_f, d1_f, e1_f, f1_f)
-            self.ctm = mult_matrix(values, self.ctm)
+            self.ctm = mult_matrix(matrix, self.ctm)
             self.device.set_ctm(self.ctm)
 
     def do_w(self, linewidth: PDFStackT) -> None:
@@ -740,64 +726,50 @@ class PDFPageInterpreter:
 
     def do_RG(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for stroking operations"""
-        r_f = safe_float(r)
-        g_f = safe_float(g)
-        b_f = safe_float(b)
+        rgb = safe_rgb(r, g, b)
 
-        if r_f is None or g_f is None or b_f is None:
-            values = (r, g, b)
+        if rgb is None:
             log.warning(
-                f"Cannot set RGB stroke color because not all values in {values!r} can be parsed as floats"
+                f"Cannot set RGB stroke color because not all values in {(r, g, b)!r} can be parsed as floats"
             )
         else:
-            self.graphicstate.scolor = (r_f, g_f, b_f)
+            self.graphicstate.scolor = rgb
             self.scs = self.csmap["DeviceRGB"]
 
     def do_rg(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for nonstroking operations"""
-        r_f = safe_float(r)
-        g_f = safe_float(g)
-        b_f = safe_float(b)
+        rgb = safe_rgb(r, g, b)
 
-        if r_f is None or g_f is None or b_f is None:
-            values = (r, g, b)
+        if rgb is None:
             log.warning(
-                f"Cannot set RGB non-stroke color because not all values in {values!r} can be parsed as floats"
+                f"Cannot set RGB non-stroke color because not all values in {(r, g, b)!r} can be parsed as floats"
             )
         else:
-            self.graphicstate.ncolor = (r_f, g_f, b_f)
+            self.graphicstate.ncolor = rgb
             self.ncs = self.csmap["DeviceRGB"]
 
     def do_K(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
         """Set CMYK color for stroking operations"""
-        c_f = safe_float(c)
-        m_f = safe_float(m)
-        y_f = safe_float(y)
-        k_f = safe_float(k)
+        cmyk = safe_cmyk(c, m, y, k)
 
-        if c_f is None or m_f is None or y_f is None or k_f is None:
-            values = (c, m, y, k)
+        if cmyk is None:
             log.warning(
-                f"Cannot set CMYK stroke color because not all values in {values!r} can be parsed as floats"
+                f"Cannot set CMYK stroke color because not all values in {(c, m, y, k)!r} can be parsed as floats"
             )
         else:
-            self.graphicstate.scolor = (c_f, m_f, y_f, k_f)
+            self.graphicstate.scolor = cmyk
             self.scs = self.csmap["DeviceCMYK"]
 
     def do_k(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
         """Set CMYK color for nonstroking operations"""
-        c_f = safe_float(c)
-        m_f = safe_float(m)
-        y_f = safe_float(y)
-        k_f = safe_float(k)
+        cmyk = safe_cmyk(c, m, y, k)
 
-        if c_f is None or m_f is None or y_f is None or k_f is None:
-            values = (c, m, y, k)
+        if cmyk is None:
             log.warning(
-                f"Cannot set CMYK non-stroke color because not all values in {values!r} can be parsed as floats"
+                f"Cannot set CMYK non-stroke color because not all values in {(c, m, y, k)!r} can be parsed as floats"
             )
         else:
-            self.graphicstate.ncolor = (c_f, m_f, y_f, k_f)
+            self.graphicstate.ncolor = cmyk
             self.ncs = self.csmap["DeviceCMYK"]
 
     def do_SCN(self) -> None:
@@ -820,40 +792,25 @@ class PDFPageInterpreter:
                 self.graphicstate.scolor = gray_f
 
         elif n == 3:
-            r = self.pop(1)[0]
-            g = self.pop(1)[0]
-            b = self.pop(1)[0]
-            r_f = safe_float(r)
-            g_f = safe_float(g)
-            b_f = safe_float(b)
-            if r_f is None or g_f is None or b_f is None:
-                rgb = (r, g, b)
+            values = self.pop(3)
+            rgb = safe_rgb(*values)
+            if rgb is None:
                 log.warning(
-                    f"Cannot set RGB stroke color because not all values in {rgb!r} can be parsed as floats"
+                    f"Cannot set RGB stroke color because not all values in {values!r} can be parsed as floats"
                 )
             else:
-                rgb_f = (r_f, g_f, b_f)
-                self.graphicstate.scolor = rgb_f
+                self.graphicstate.scolor = rgb
 
         elif n == 4:
-            c = self.pop(1)[0]
-            m = self.pop(1)[0]
-            y = self.pop(1)[0]
-            k = self.pop(1)[0]
+            values = self.pop(4)
+            cmyk = safe_cmyk(*values)
 
-            c_f = safe_float(c)
-            m_f = safe_float(m)
-            y_f = safe_float(y)
-            k_f = safe_float(k)
-
-            if c_f is None or m_f is None or y_f is None or k_f is None:
-                cmyk = (c, m, y, k)
+            if cmyk is None:
                 log.warning(
-                    f"Cannot set CMYK stroke color because not all values in {cmyk!r} can be parsed as floats"
+                    f"Cannot set CMYK stroke color because not all values in {values!r} can be parsed as floats"
                 )
             else:
-                cmyk_f = (c_f, m_f, y_f, k_f)
-                self.graphicstate.scolor = cmyk_f
+                self.graphicstate.scolor = cmyk
 
         else:
             log.warning(
@@ -880,40 +837,26 @@ class PDFPageInterpreter:
                 self.graphicstate.ncolor = gray_f
 
         elif n == 3:
-            r = self.pop(1)[0]
-            g = self.pop(1)[0]
-            b = self.pop(1)[0]
-            r_f = safe_float(r)
-            g_f = safe_float(g)
-            b_f = safe_float(b)
-            if r_f is None or g_f is None or b_f is None:
-                rgb = (r, g, b)
+            values = self.pop(3)
+            rgb = safe_rgb(*values)
+
+            if rgb is None:
                 log.warning(
-                    f"Cannot set RGB non-stroke color because not all values in {rgb!r} can be parsed as floats"
+                    f"Cannot set RGB non-stroke color because not all values in {values!r} can be parsed as floats"
                 )
             else:
-                rgb_f = (r_f, g_f, b_f)
-                self.graphicstate.ncolor = rgb_f
+                self.graphicstate.ncolor = rgb
 
         elif n == 4:
-            c = self.pop(1)[0]
-            m = self.pop(1)[0]
-            y = self.pop(1)[0]
-            k = self.pop(1)[0]
+            values = self.pop(4)
+            cmyk = safe_cmyk(*values)
 
-            c_f = safe_float(c)
-            m_f = safe_float(m)
-            y_f = safe_float(y)
-            k_f = safe_float(k)
-
-            if c_f is None or m_f is None or y_f is None or k_f is None:
-                cmyk = (c, m, y, k)
+            if cmyk is None:
                 log.warning(
-                    f"Cannot set CMYK non-stroke color because not all values in {cmyk!r} can be parsed as floats"
+                    f"Cannot set CMYK non-stroke color because not all values in {values!r} can be parsed as floats"
                 )
             else:
-                cmyk_f = (c_f, m_f, y_f, k_f)
-                self.graphicstate.ncolor = cmyk_f
+                self.graphicstate.ncolor = cmyk
 
         else:
             log.warning(
@@ -1146,27 +1089,15 @@ class PDFPageInterpreter:
         f: PDFStackT,
     ) -> None:
         """Set text matrix and text line matrix"""
-        a_f = safe_float(a)
-        b_f = safe_float(b)
-        c_f = safe_float(c)
-        d_f = safe_float(d)
-        e_f = safe_float(e)
-        f_f = safe_float(f)
+        values = (a, b, c, d, e, f)
+        matrix = safe_matrix(*values)
 
-        if (
-            a_f is None
-            or b_f is None
-            or c_f is None
-            or d_f is None
-            or e_f is None
-            or f_f is None
-        ):
-            values = (a, b, c, d, e, f)
+        if matrix is None:
             log.warning(
                 f"Could not set text matrix because not all values in {values!r} can be parsed as floats"
             )
         else:
-            self.textstate.matrix = (a_f, b_f, c_f, d_f, e_f, f_f)
+            self.textstate.matrix = matrix
             self.textstate.linematrix = (0, 0)
 
     def do_T_a(self) -> None:
