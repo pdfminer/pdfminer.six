@@ -17,7 +17,7 @@ from typing import (
 )
 
 from pdfminer import settings
-from pdfminer.casting import safe_float
+from pdfminer.casting import safe_float, safe_rect_list
 from pdfminer.cmapdb import (
     CMap,
     CMapBase,
@@ -888,10 +888,7 @@ class PDFFont:
             self.default_width = default_width
         self.default_width = resolve1(self.default_width)
         self.leading = num_value(descriptor.get("Leading", 0))
-        self.bbox = cast(
-            Rect,
-            list_value(resolve_all(descriptor.get("FontBBox", (0, 0, 0, 0)))),
-        )
+        self.bbox = self._parse_bbox(descriptor)
         self.hscale = self.vscale = 0.001
 
         # PDF RM 9.8.1 specifies /Descent should always be a negative number.
@@ -960,6 +957,15 @@ class PDFFont:
 
     def to_unichr(self, cid: int) -> str:
         raise NotImplementedError
+
+    @staticmethod
+    def _parse_bbox(descriptor: Mapping[str, Any]) -> Rect:
+        font_bbox = resolve_all(descriptor.get("FontBBox"))
+        bbox = safe_rect_list(font_bbox)
+        if bbox is None:
+            log.warning(f"Could get FontBBox from font descriptor because {font_bbox!r} cannot be parsed as 4 floats")
+            return 0.0, 0.0, 0.0, 0.0
+        return bbox
 
 
 class PDFSimpleFont(PDFFont):
