@@ -960,6 +960,7 @@ class PDFFont:
 
     @staticmethod
     def _parse_bbox(descriptor: Mapping[str, Any]) -> Rect:
+        """Parse FontBBox from the fonts descriptor"""
         font_bbox = resolve_all(descriptor.get("FontBBox"))
         bbox = safe_rect_list(font_bbox)
         if bbox is None:
