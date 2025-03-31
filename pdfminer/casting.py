@@ -1,10 +1,10 @@
 import itertools
-from typing import Any, Optional, Tuple, TypeAlias
+from typing import Any, Optional, Tuple
 
 from pdfminer.utils import Matrix, Rect
 
-_FloatTriple: TypeAlias = Tuple[float, float, float]
-_FloatQuadruple: TypeAlias = Tuple[float, float, float, float]
+_FloatTriple = Tuple[float, float, float]
+_FloatQuadruple = Tuple[float, float, float, float]
 
 
 def safe_int(o: Any) -> Optional[int]:
