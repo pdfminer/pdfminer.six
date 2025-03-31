@@ -963,7 +963,9 @@ class PDFFont:
         font_bbox = resolve_all(descriptor.get("FontBBox"))
         bbox = safe_rect_list(font_bbox)
         if bbox is None:
-            log.warning(f"Could get FontBBox from font descriptor because {font_bbox!r} cannot be parsed as 4 floats")
+            log.warning(
+                f"Could get FontBBox from font descriptor because {font_bbox!r} cannot be parsed as 4 floats"
+            )
             return 0.0, 0.0, 0.0, 0.0
         return bbox
 
