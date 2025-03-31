@@ -70,7 +70,7 @@ jobs:
       - name: Determine pip cache directory
         id: pip-cache
         run: |
-          echo "::set-output name=dir::$(pip cache dir)"
+          echo "{dir}={pip cache dir}" >> $GITHUB_OUTPUT
       - name: Cache pip cache
         uses: actions/cache@v4
         with:
