@@ -9,6 +9,9 @@ on:
   pull_request: # run on pr's against master
     branches:
       - master
+  merge_group:
+    types:
+      - checks_requested
 
 env:
   default-python: "3.10"
