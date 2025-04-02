@@ -199,7 +199,7 @@ class PDFPage:
 
     def _parse_cropbox(self, value: Any, mediabox: Rect) -> Rect:
         if value is None:
-            # CropBox is optional, and MediaBox is used if not specified. 
+            # CropBox is optional, and MediaBox is used if not specified.
             return mediabox
 
         try:
