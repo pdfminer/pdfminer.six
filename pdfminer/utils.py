@@ -264,7 +264,7 @@ def mult_matrix(m1: Matrix, m0: Matrix) -> Matrix:
 
 
 def translate_matrix(m: Matrix, v: Point) -> Matrix:
-    """Translates a matrix by (x, y)."""
+    """Translates a matrix by (x, y) within the projection."""
     (a, b, c, d, e, f) = m
     (x, y) = v
     return a, b, c, d, x * a + y * c + e, x * b + y * d + f
