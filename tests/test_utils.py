@@ -8,7 +8,8 @@ from pdfminer.utils import (
     format_int_alpha,
     format_int_roman,
     open_filename,
-    shorten_str,
+    shorten_str, apply_matrix_rect, mult_matrix, translate_matrix, apply_matrix_pt,
+    Matrix, Point,
 )
 from tests.helpers import absolute_sample_path
 
@@ -113,3 +114,44 @@ class TestFunctions:
         assert format_int_roman(90) == "xc"
         assert format_int_roman(91) == "xci"
         assert format_int_roman(100) == "c"
+
+
+@pytest.mark.parametrize(
+    ("m0", "m1", "expected"),
+    [
+        ((1, 0, 0, 1, 0, 0), (1, 0, 0, 1, 0, 0), (1, 0, 0, 1, 0, 0)),
+        ((1, 2, 3, 2, -4, 1), (1, 0, 0, 1, 0, 0), (1, 2, 3, 2, -4, 1)),
+        ((1, 2, 3, 2, -4, 1), (3, 4, 1, 2, -2, 1), (5, 8, 11, 16, -13, -13)),
+        ((1, -1, 1, -1, 1, -1), (1, 1, 1, 1, 1, 1), (0, 0, 0, 0, 1, 1))
+    ]
+)
+def test_mult_matrix(m0: Matrix, m1: Matrix, expected: Matrix) -> None:
+    assert mult_matrix(m0, m1) == expected
+
+
+@pytest.mark.parametrize(
+    ("m0", "p0", "expected"),
+    [
+        ((1, 2, 3, 2, -4, 1), (0, 0), (1, 2, 3, 2, -4, 1)),
+        ((1, 2, 3, 2, -4, 1), (1, 0), (1, 2, 3, 2, -3, 1)),
+         ((1, 2, 3, 2, -4, 1), (0, 1), (1, 2, 3, 2, -4, 2)),
+        ((1, 2, 3, 2, -4, 1), (-1, 0), (1, 2, 3, 2, -5, 1)),
+        ((1, 2, 3, 2, -4, 1), (0, -1), (1, 2, 3, 2, -4, 0)),
+        ((1, 2, 3, 2, -4, 1), (2, -3), (1, 2, 3, 2, -2, -2)),
+    ]
+)
+def test_translate_matrix(m0: Matrix, p0: Point, expected: Matrix) -> None:
+    assert translate_matrix(m0, p0) == expected
+
+
+@pytest.mark.parametrize(
+    ("m0", "p0", "expected"),
+    [
+        ((1, 0, 0, 1, 0, 0), (0, 0), (0, 0)),
+        ((1, 0, 0, 1, 0, 0), (33, 21), (33, 21)),
+        ((1, 2, 3, 2, -4, 1), (0, 0), (-4, 1)),
+    ]
+)
+def test_apply_matrix_pt(m0: Matrix, p0: Point, expected: Point) -> None:
+    assert apply_matrix_pt(m0, p0) == expected
+
