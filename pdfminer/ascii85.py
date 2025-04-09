@@ -11,14 +11,14 @@ def ascii85decode(data: bytes) -> bytes:
     When the length of the original bytes is not a multiple of 4, a special
     rule is used for round up.
 
-    The Adobe's ASCII85 implementation is slightly different from
-    its original in handling the last characters.
+    The Adobe's ASCII85 implementation is slightly different from its
+    original in handling the last characters.  We simply strip out the
+    delimiters and any whitespace (sometimes there's extraneous
+    whitespace even inside the delimiters themselves!) as they are not
+    ASCII85 digits in any case.
 
     """
-    try:
-        return a85decode(data, adobe=True)
-    except ValueError:
-        return a85decode(data)
+    return a85decode(data.strip(b"<~> \t\r\n"))
 
 
 bws_re = re.compile(rb"\s")
