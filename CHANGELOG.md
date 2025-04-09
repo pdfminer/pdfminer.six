@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `ValueError` when loading xref with invalid position or generation numbers that cannot be parsed as int ([#1099](https://github.com/pdfminer/pdfminer.six/pull/1099))
 - Safely converting PDF stack objects to float or int in PDFInterpreter ([#1100](https://github.com/pdfminer/pdfminer.six/pull/1100))
 - `TypeError` when parsing font bbox with incorrect values ([#1103](https://github.com/pdfminer/pdfminer.six/pull/1103))
-- `ValueError` on incorrect stream lengths for ASCII85 data
+- `ValueError` on incorrect stream lengths for ASCII85 data ([#1112](https://github.com/pdfminer/pdfminer.six/pull/1112))
 
 ## [20250327]
 
