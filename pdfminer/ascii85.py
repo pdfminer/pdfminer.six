@@ -17,8 +17,7 @@ def ascii85decode(data: bytes) -> bytes:
     The Adobe's ASCII85 implementation is slightly different from its
     original in handling the last characters.  We simply strip out the
     delimiters and any whitespace (sometimes there's extraneous
-    whitespace even inside the delimiters themselves!) as they are not
-    ASCII85 digits in any case.
+    whitespace even inside the delimiters themselves!).
 
     """
     data = start_re.sub(b"", data)
