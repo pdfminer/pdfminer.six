@@ -25,6 +25,10 @@ class TestAscii85:
         """
         assert ascii85decode(b"9jqo^BlbD-BleB1DJ+*+F(f,q") == b"Man is distinguished"
         assert ascii85decode(b"E,9)oF*2M7/c~>") == b"pleasure."
+        # And some bogus cases you may encounter
+        assert ascii85decode(b"E,9)oF*2M7/c~") == b"pleasure."
+        assert ascii85decode(b"<~E,9)oF*2M7/c~") == b"pleasure."
+        assert ascii85decode(b"<~E,9)oF*2M7/c~\n>") == b"pleasure."
 
     def test_asciihexdecode(self):
         assert asciihexdecode(b"61 62 2e6364   65") == b"ab.cde"
