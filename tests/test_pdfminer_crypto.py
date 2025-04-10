@@ -25,6 +25,24 @@ class TestAscii85:
         """
         assert ascii85decode(b"9jqo^BlbD-BleB1DJ+*+F(f,q") == b"Man is distinguished"
         assert ascii85decode(b"E,9)oF*2M7/c~>") == b"pleasure."
+        assert ascii85decode(b"zE,9)oF*2M7/c~>") == b"\0\0\0\0pleasure."
+        # And some bogus cases you may encounter
+        assert ascii85decode(b"E,9)oF*2M7/c") == b"pleasure."
+        assert ascii85decode(b"E,9)oF*2M7/c~") == b"pleasure."
+        assert ascii85decode(b"<~E,9)oF*2M7/c~") == b"pleasure."
+        assert ascii85decode(b"<~E,9)oF*2M7/c~\n>") == b"pleasure."
+        # Ensure that we don't miss actual ASCII85 digits
+        assert (
+            ascii85decode(b"<^BVT:K:=9<E)pd;BS_1:/aSV;ag~>")
+            == b"VARIOUS UTTER NONSENSE"
+        )
+        assert (
+            ascii85decode(b"<~<^BVT:K:=9<E)pd;BS_1:/aSV;ag~>")
+            == b"VARIOUS UTTER NONSENSE"
+        )
+        assert (
+            ascii85decode(b"<^BVT:K:=9<E)pd;BS_1:/aSV;ag~") == b"VARIOUS UTTER NONSENSE"
+        )
 
     def test_asciihexdecode(self):
         assert asciihexdecode(b"61 62 2e6364   65") == b"ab.cde"
