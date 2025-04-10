@@ -14,11 +14,13 @@ def ascii85decode(data: bytes) -> bytes:
     When the length of the original bytes is not a multiple of 4, a special
     rule is used for round up.
 
-    The Adobe's ASCII85 implementation is slightly different from its
-    original in handling the last characters.  We simply strip out the
-    delimiters and any whitespace (sometimes there's extraneous
-    whitespace even inside the delimiters themselves!).
-
+    Adobe's ASCII85 implementation expects the input to be surrounded
+    by `b"<~"` and `b"~>"`.  We can't reliably expect this to be the
+    case, and often there are off-by-one errors in xref tables or
+    stream lengths which mean we only see `~`.  Worse yet, `<` and `>`
+    are ASCII85 digits (yes, another genius move on Adobe's part), so
+    we can't just strip them out too.  We settle on a compromise where
+    we strip leading `<~` or `~` and trailing `~` or `~>`.
     """
     data = start_re.sub(b"", data)
     data = end_re.sub(b"", data)

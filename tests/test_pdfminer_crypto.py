@@ -25,6 +25,7 @@ class TestAscii85:
         """
         assert ascii85decode(b"9jqo^BlbD-BleB1DJ+*+F(f,q") == b"Man is distinguished"
         assert ascii85decode(b"E,9)oF*2M7/c~>") == b"pleasure."
+        assert ascii85decode(b"zE,9)oF*2M7/c~>") == b"\0\0\0\0pleasure."
         # And some bogus cases you may encounter
         assert ascii85decode(b"E,9)oF*2M7/c~") == b"pleasure."
         assert ascii85decode(b"<~E,9)oF*2M7/c~") == b"pleasure."
