@@ -4,8 +4,8 @@ import re
 from base64 import a85decode
 from binascii import unhexlify
 
-start_re = re.compile(rb"^\s*<\s*~\s*")
-end_re = re.compile(rb"\s*~\s*>\s*$")
+start_re = re.compile(rb"^\s*<?\s*~\s*")
+end_re = re.compile(rb"\s*~\s*>?\s*$")
 
 
 def ascii85decode(data: bytes) -> bytes:
@@ -22,7 +22,7 @@ def ascii85decode(data: bytes) -> bytes:
     """
     data = start_re.sub(b"", data)
     data = end_re.sub(b"", data)
-    return a85decode(data.strip(b"~"))
+    return a85decode(data)
 
 
 bws_re = re.compile(rb"\s")
