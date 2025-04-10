@@ -14,13 +14,13 @@ def ascii85decode(data: bytes) -> bytes:
     When the length of the original bytes is not a multiple of 4, a special
     rule is used for round up.
 
-    Adobe's ASCII85 implementation expects the input to be surrounded
-    by `b"<~"` and `b"~>"`.  We can't reliably expect this to be the
-    case, and often there are off-by-one errors in xref tables or
-    stream lengths which mean we only see `~`.  Worse yet, `<` and `>`
-    are ASCII85 digits (yes, another genius move on Adobe's part), so
-    we can't just strip them out too.  We settle on a compromise where
-    we strip leading `<~` or `~` and trailing `~` or `~>`.
+    Adobe's ASCII85 implementation expects the input to be terminated
+    by `b"~>"`, and (though this is absent from the PDF spec) it can
+    also begin with `b"<~"`.  We can't reliably expect this to be the
+    case, and there can be off-by-one errors in stream lengths which
+    mean we only see `~` at the end.  Worse yet, `<` and `>` are
+    ASCII85 digits, so we can't strip them.  We settle on a compromise
+    where we strip leading `<~` or `~` and trailing `~` or `~>`.
     """
     data = start_re.sub(b"", data)
     data = end_re.sub(b"", data)
