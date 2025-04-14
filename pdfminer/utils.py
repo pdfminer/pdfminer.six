@@ -281,6 +281,36 @@ def apply_matrix_pt(m: Matrix, v: Point) -> Point:
     return a * x + c * y + e, b * x + d * y + f
 
 
+def apply_matrix_rect(m: Matrix, rect: Rect) -> Rect:
+    """Applies a matrix to a rectangle.
+
+    Note that the result is not a rotated rectangle, but a rectangle with the same
+    orientation that tightly fits the outside of the rotated content.
+
+    :param m: The rotation matrix.
+    :param rect: The rectangle coordinates (x0, y0, x1, y1), where x0 < x1 and y0 < y1.
+    :returns a rectangle with the same orientation, but that would fit the rotated
+        content.
+    """
+    (x0, y0, x1, y1) = rect
+    left_bottom = (x0, y0)
+    right_bottom = (x1, y0)
+    right_top = (x1, y1)
+    left_top = (x0, y1)
+
+    (left1, bottom1) = apply_matrix_pt(m, left_bottom)
+    (right1, bottom2) = apply_matrix_pt(m, right_bottom)
+    (right2, top1) = apply_matrix_pt(m, right_top)
+    (left2, top2) = apply_matrix_pt(m, left_top)
+
+    return (
+        min(left1, left2, right1, right2),
+        min(bottom1, bottom2, top1, top2),
+        max(left1, left2, right1, right2),
+        max(bottom1, bottom2, top1, top2),
+    )
+
+
 def apply_matrix_norm(m: Matrix, v: Point) -> Point:
     """Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))"""
     (a, b, c, d, e, f) = m
