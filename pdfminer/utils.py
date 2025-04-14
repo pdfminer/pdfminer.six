@@ -263,17 +263,21 @@ def mult_matrix(m1: Matrix, m0: Matrix) -> Matrix:
     )
 
 
-def translate_matrix(m: Matrix, v: Point) -> Matrix:
-    """Translates a matrix by (x, y) within the projection."""
+def translate_matrix_inside(m: Matrix, v: Point) -> Matrix:
+    """Translates a matrix by (x, y) inside the projection.
+
+    The matrix is changed so that its origin is at the specified point in its own
+    coordinate system. Note that this is different from translating it within the
+    original coordinate system."""
     (a, b, c, d, e, f) = m
     (x, y) = v
     return a, b, c, d, x * a + y * c + e, x * b + y * d + f
 
 
 def apply_matrix_pt(m: Matrix, v: Point) -> Point:
+    """Applies a matrix to a point."""
     (a, b, c, d, e, f) = m
     (x, y) = v
-    """Applies a matrix to a point."""
     return a * x + c * y + e, b * x + d * y + f
 
 
