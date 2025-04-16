@@ -16,7 +16,7 @@ from pdfminer.utils import (
     mult_matrix,
     open_filename,
     shorten_str,
-    translate_matrix_inside,
+    translate_matrix,
 )
 from tests.helpers import absolute_sample_path
 
@@ -148,7 +148,7 @@ def test_mult_matrix(m0: Matrix, m1: Matrix, expected: Matrix) -> None:
     ],
 )
 def test_translate_matrix(m0: Matrix, p0: Point, expected: Matrix) -> None:
-    assert translate_matrix_inside(m0, p0) == expected
+    assert translate_matrix(m0, p0) == expected
 
 
 @pytest.mark.parametrize(

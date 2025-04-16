@@ -263,7 +263,7 @@ def mult_matrix(m1: Matrix, m0: Matrix) -> Matrix:
     )
 
 
-def translate_matrix_inside(m: Matrix, v: Point) -> Matrix:
+def translate_matrix(m: Matrix, v: Point) -> Matrix:
     """Translates a matrix by (x, y) inside the projection.
 
     The matrix is changed so that its origin is at the specified point in its own
