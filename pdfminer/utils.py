@@ -135,7 +135,7 @@ def apply_tiff_predictor(
     """
     if bitspercomponent != 8:
         error_msg = f"Unsupported `bitspercomponent': {bitspercomponent}"
-        raise ValueError(error_msg)
+        raise PDFValueError(error_msg)
     bpp = colors * (bitspercomponent // 8)
     nbytes = columns * bpp
     buf: list[int] = []
