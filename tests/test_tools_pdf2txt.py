@@ -191,3 +191,10 @@ class TestDumpImages:
         image_files = self.extract_images(filepath)
         assert len(image_files) == 23
         assert all(x.endswith(".bmp") for x in image_files)
+
+    def test_contrib_issue_1057_tiff_predictor(self) -> None:
+        """Test for extracting tiff image"""
+        filepath = absolute_sample_path("contrib/issue-1057-tiff-predictor.pdf")
+        image_files = self.extract_images(filepath)
+        assert len(image_files) == 1
+        assert image_files[0].endswith(".bmp")
