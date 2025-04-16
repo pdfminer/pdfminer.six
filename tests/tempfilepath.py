@@ -2,6 +2,7 @@
 
 import os
 import tempfile
+from typing import Optional
 
 
 class TemporaryFilePath:
@@ -30,7 +31,13 @@ class TemporaryFilePath:
 
     """
 
-    def __init__(self, suffix=None, prefix=None, dir=None, delete=True):
+    def __init__(
+        self,
+        suffix: Optional[str] = None,
+        prefix: Optional[str] = None,
+        dir: Optional[str] = None,
+        delete: bool = True,
+    ):
         self.suffix = suffix
         self.prefix = prefix
         self.dir = dir

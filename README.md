@@ -24,11 +24,11 @@ Features
 * Written entirely in Python.
 * Parse, analyze, and convert PDF documents.
 * Extract content as text, images, html or [hOCR](https://en.wikipedia.org/wiki/HOCR).
-* PDF-1.7 specification support. (well, almost).
-* CJK languages and vertical writing scripts support.
-* Various font types (Type1, TrueType, Type3, and CID) support.
-* Support for extracting images (JPG, JBIG2, Bitmaps).
-* Support for various compressions (ASCIIHexDecode, ASCII85Decode, LZWDecode, FlateDecode, RunLengthDecode,
+* Support for PDF-1.7 specification (well, almost).
+* Support for CJK languages and vertical writing.
+* Support for various font types (Type1, TrueType, Type3, and CID) support.
+* Support for extracting embedded images (JPG, PNG, TIFF, JBIG2, bitmaps).
+* Support for decoding various compressions (ASCIIHexDecode, ASCII85Decode, LZWDecode, FlateDecode, RunLengthDecode,
   CCITTFaxDecode)
 * Support for RC4 and AES encryption.
 * Support for AcroForm interactive form extraction.

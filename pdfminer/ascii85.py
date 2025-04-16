@@ -4,6 +4,9 @@ import re
 from base64 import a85decode
 from binascii import unhexlify
 
+start_re = re.compile(rb"^\s*<?\s*~\s*")
+end_re = re.compile(rb"\s*~\s*>?\s*$")
+
 
 def ascii85decode(data: bytes) -> bytes:
     """In ASCII85 encoding, every four bytes are encoded with five ASCII
@@ -11,14 +14,17 @@ def ascii85decode(data: bytes) -> bytes:
     When the length of the original bytes is not a multiple of 4, a special
     rule is used for round up.
 
-    The Adobe's ASCII85 implementation is slightly different from
-    its original in handling the last characters.
-
+    Adobe's ASCII85 implementation expects the input to be terminated
+    by `b"~>"`, and (though this is absent from the PDF spec) it can
+    also begin with `b"<~"`.  We can't reliably expect this to be the
+    case, and there can be off-by-one errors in stream lengths which
+    mean we only see `~` at the end.  Worse yet, `<` and `>` are
+    ASCII85 digits, so we can't strip them.  We settle on a compromise
+    where we strip leading `<~` or `~` and trailing `~` or `~>`.
     """
-    try:
-        return a85decode(data, adobe=True)
-    except ValueError:
-        return a85decode(data)
+    data = start_re.sub(b"", data)
+    data = end_re.sub(b"", data)
+    return a85decode(data)
 
 
 bws_re = re.compile(rb"\s")

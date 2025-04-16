@@ -5,13 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## Added
+
+- Support for extracting images with TIFF predictor ([#1058](https://github.com/pdfminer/pdfminer.six/pull/1058))
+
+## Fixed
+
+- Correct tightest fitting bounding boxes for rotated content ([#1114](https://github.com/pdfminer/pdfminer.six/pull/1114))
+ 
+## [20250416]
+
 ### Fixed
 
 - `TypeError` when parsing font width with indirect object references ([#1098](https://github.com/pdfminer/pdfminer.six/pull/1098))
 - `ValueError` when loading xref with invalid position or generation numbers that cannot be parsed as int ([#1099](https://github.com/pdfminer/pdfminer.six/pull/1099))
 - Safely converting PDF stack objects to float or int in PDFInterpreter ([#1100](https://github.com/pdfminer/pdfminer.six/pull/1100))
 - `TypeError` when parsing font bbox with incorrect values ([#1103](https://github.com/pdfminer/pdfminer.six/pull/1103))
-- Correct tightest fitting bounding boxes for rotated content ([#1114](https://github.com/pdfminer/pdfminer.six/pull/1114))
+- `ValueError` on incorrect stream lengths for ASCII85 data ([#1112](https://github.com/pdfminer/pdfminer.six/pull/1112))
 
 ## [20250327]
 
