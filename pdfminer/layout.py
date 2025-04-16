@@ -28,7 +28,7 @@ from pdfminer.utils import (
     Plane,
     Point,
     Rect,
-    apply_matrix_pt,
+    apply_matrix_rect,
     bbox2str,
     fsplit,
     get_bound,
@@ -382,17 +382,14 @@ class LTChar(LTComponent, LTText):
             else:
                 vx = vx * fontsize * 0.001
             vy = (1000 - vy) * fontsize * 0.001
-            bbox_lower_left = (-vx, vy + rise + self.adv)
-            bbox_upper_right = (-vx + fontsize, vy + rise)
+            bbox = (-vx, vy + rise + self.adv, -vx + fontsize, vy + rise)
         else:
             # horizontal
             descent = font.get_descent() * fontsize
-            bbox_lower_left = (0, descent + rise)
-            bbox_upper_right = (self.adv, descent + rise + fontsize)
+            bbox = (0, descent + rise, self.adv, descent + rise + fontsize)
         (a, b, c, d, e, f) = self.matrix
         self.upright = a * d * scaling > 0 and b * c <= 0
-        (x0, y0) = apply_matrix_pt(self.matrix, bbox_lower_left)
-        (x1, y1) = apply_matrix_pt(self.matrix, bbox_upper_right)
+        (x0, y0, x1, y1) = apply_matrix_rect(self.matrix, bbox)
         if x1 < x0:
             (x0, x1) = (x1, x0)
         if y1 < y0:
@@ -956,8 +953,8 @@ class LTFigure(LTLayoutContainer):
         self.name = name
         self.matrix = matrix
         (x, y, w, h) = bbox
-        bounds = ((x, y), (x + w, y), (x, y + h), (x + w, y + h))
-        bbox = get_bound(apply_matrix_pt(matrix, (p, q)) for (p, q) in bounds)
+        rect = (x, y, x + w, y + h)
+        bbox = apply_matrix_rect(matrix, rect)
         LTLayoutContainer.__init__(self, bbox)
 
     def __repr__(self) -> str:

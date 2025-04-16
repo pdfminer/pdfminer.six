@@ -52,6 +52,7 @@ from pdfminer.utils import (
     Point,
     Rect,
     apply_matrix_pt,
+    apply_matrix_rect,
     bbox2str,
     enc,
     make_compat_str,
@@ -77,9 +78,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         self._stack: List[LTLayoutContainer] = []
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
-        (x0, y0, x1, y1) = page.mediabox
-        (x0, y0) = apply_matrix_pt(ctm, (x0, y0))
-        (x1, y1) = apply_matrix_pt(ctm, (x1, y1))
+        (x0, y0, x1, y1) = apply_matrix_rect(ctm, page.mediabox)
         mediabox = (0, 0, abs(x0 - x1), abs(y0 - y1))
         self.cur_item = LTPage(self.pageno, mediabox)
 

@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Support for extracting images with TIFF predictor ([#1058](https://github.com/pdfminer/pdfminer.six/pull/1058))
 
+## Fixed
+
+- Correct tightest fitting bounding boxes for rotated content ([#1114](https://github.com/pdfminer/pdfminer.six/pull/1114))
+ 
 ## [20250416]
 
 ### Fixed

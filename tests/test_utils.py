@@ -1,14 +1,22 @@
+import math
 import pathlib
 
 import pytest
 
 from pdfminer.layout import LTComponent
 from pdfminer.utils import (
+    Matrix,
     Plane,
+    Point,
+    Rect,
+    apply_matrix_pt,
+    apply_matrix_rect,
     format_int_alpha,
     format_int_roman,
+    mult_matrix,
     open_filename,
     shorten_str,
+    translate_matrix,
 )
 from tests.helpers import absolute_sample_path
 
@@ -113,3 +121,128 @@ class TestFunctions:
         assert format_int_roman(90) == "xc"
         assert format_int_roman(91) == "xci"
         assert format_int_roman(100) == "c"
+
+
+@pytest.mark.parametrize(
+    ("m0", "m1", "expected"),
+    [
+        ((1, 0, 0, 1, 0, 0), (1, 0, 0, 1, 0, 0), (1, 0, 0, 1, 0, 0)),
+        ((1, 2, 3, 2, -4, 1), (1, 0, 0, 1, 0, 0), (1, 2, 3, 2, -4, 1)),
+        ((1, 2, 3, 2, -4, 1), (3, 4, 1, 2, -2, 1), (5, 8, 11, 16, -13, -13)),
+        ((1, -1, 1, -1, 1, -1), (1, 1, 1, 1, 1, 1), (0, 0, 0, 0, 1, 1)),
+    ],
+)
+def test_mult_matrix(m0: Matrix, m1: Matrix, expected: Matrix) -> None:
+    assert mult_matrix(m0, m1) == expected
+
+
+@pytest.mark.parametrize(
+    ("m0", "p0", "expected"),
+    [
+        ((1, 2, 3, 2, -4, 1), (0, 0), (1, 2, 3, 2, -4, 1)),
+        ((1, 0, 0, 1, 0, 0), (12, -32), (1, 0, 0, 1, 12, -32)),
+        ((1, 0, 0, 1, 3, -3), (12, -32), (1, 0, 0, 1, 15, -35)),
+        ((2, 0, 0, 2, 0, 0), (1, -1), (2, 0, 0, 2, 2, -2)),
+        ((0, 1, -1, 0, 0, 0), (1, 0), (0, 1, -1, 0, 0, 1)),
+        ((0, 1, -1, 0, 0, 0), (0, 1), (0, 1, -1, 0, -1, 0)),
+    ],
+)
+def test_translate_matrix(m0: Matrix, p0: Point, expected: Matrix) -> None:
+    assert translate_matrix(m0, p0) == expected
+
+
+@pytest.mark.parametrize(
+    ("m0", "p0", "expected"),
+    [
+        ((1, 0, 0, 1, 0, 0), (0, 0), (0, 0)),
+        ((1, 0, 0, 1, 0, 0), (33, 21), (33, 21)),
+        ((1, 2, 3, 2, -4, 1), (0, 0), (-4, 1)),
+    ],
+)
+def test_apply_matrix_pt(m0: Matrix, p0: Point, expected: Point) -> None:
+    assert apply_matrix_pt(m0, p0) == expected
+
+
+@pytest.mark.parametrize(
+    ("m0", "r0", "expected"),
+    [
+        # Identity
+        ((1, 0, 0, 1, 0, 0), (0, 0, 100, 200), (0, 0, 100, 200)),
+        # Identity
+        ((1, 0, 0, 1, 0, 0), (20, 30, 40, 50), (20, 30, 40, 50)),
+        # Translate x
+        ((1, 0, 0, 1, 5, 0), (0, 1, 2, 3), (5, 1, 7, 3)),
+        # Translate y
+        ((1, 0, 0, 1, 0, 7), (0, 2, 4, 6), (0, 9, 4, 13)),
+        # Scale x
+        ((2, 0, 0, 1, 0, 0), (0, 1, 2, 3), (0, 1, 4, 3)),
+        # Scale y
+        ((1, 0, 0, 2, 0, 0), (0, 1, 2, 3), (0, 2, 2, 6)),
+        # Rotate 90 degrees
+        ((0, 1, 1, 0, 0, 0), (3, 4, 7, 6), (4, 3, 6, 7)),
+        # Rotate 180 degrees, and swap min and max
+        ((-1, 0, 0, -1, 0, 0), (3, 4, 7, 6), (-7, -6, -3, -4)),
+        # Rotate 270 degrees, and swap min and max y-axis
+        ((0, -1, 1, 0, 0, 0), (3, 4, 7, 6), (4, -7, 6, -3)),
+        # Rotate 10 degrees
+        # (3, 4) -> (2.25983055,4.46017555)
+        # (7, 4) -> (6.19906156,5.15476826)
+        # (7, 6) -> (5.85176521,7.12438376)
+        # (3, 6) -> (1.91253419,6.42979105)
+        # Fitting outside:
+        # (1.91, 4.46, 6.19, 7.12)
+        (
+            (
+                math.cos(math.radians(10)),
+                math.sin(math.radians(10)),
+                -math.sin(math.radians(10)),
+                math.cos(math.radians(10)),
+                0,
+                0,
+            ),
+            (3, 4, 7, 6),  # (3, 4) -> (7, 4) -> (7, 6), (3, 6)
+            (
+                pytest.approx(1.91253419),
+                pytest.approx(4.46017555),
+                pytest.approx(6.19906156),
+                pytest.approx(7.12438376),
+            ),
+        ),
+        # Skew x-axis by 5 degrees counter clockwise, and y-axis by 7 degrees clockwise
+        # x0 = x0 + tan(7°) * y0 = 3 + 0.12 * 4 = 3.49
+        # y0 = tan(5°) * x0 + y0 = 0.08 * 3 + 4 = 4.26
+        # x1 = x1 + tan(7°) * y1 = 7 + 0.12 * 6 = 7.74
+        # y1 = tan(5°) * x1 + y1 = 0.08 * 7 + 6 = 6.61
+        (
+            (1, math.tan(math.radians(5)), math.tan(math.radians(7)), 1, 0, 0),
+            (3, 4, 7, 6),
+            (
+                pytest.approx(3.4911382436116183),
+                pytest.approx(4.262465990577772),
+                pytest.approx(7.736707365417428),
+                pytest.approx(6.612420644681468),
+            ),
+        ),
+        # Skew x-axis by 11 degrees clockwise, and y-axis by 9 degrees counter clockwise
+        # The left side is determined by the projection of the left-top (lt) corner. The
+        # right side by the right-bottom (rb) corner. The bottom by the right-bottom.
+        # And the top by the left-top.
+        # x0 = lt_x + tan(-9°) * lt_y = 2.05
+        # y0 = tan(-11°) * rb_x + rb_y = 2.64
+        # x1 = rb_x + tan(-9°) * rb_y = 6.37
+        # y1 = tan(-11°) * lt_x + lt_y = 5.42
+        (
+            (1, math.tan(math.radians(-11)), math.tan(math.radians(-9)), 1, 0, 0),
+            (3, 4, 7, 6),
+            (
+                pytest.approx(2.0496933580527825),
+                pytest.approx(2.6393378360359705),
+                pytest.approx(6.366462238701855),
+                pytest.approx(5.416859072586845),
+            ),
+        ),
+    ],
+)
+def test_apply_matrix_rect_outside(m0: Matrix, r0: Rect, expected: Rect) -> None:
+    """Test rotation examples based on PDF reference 4.2.2 Common Transformations"""
+    assert apply_matrix_rect(m0, r0) == expected
