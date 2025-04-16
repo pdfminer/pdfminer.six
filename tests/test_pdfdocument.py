@@ -4,6 +4,7 @@ import pytest
 
 from pdfminer.pdfdocument import PDFDocument, PDFNoPageLabels
 from pdfminer.pdfexceptions import PDFObjectNotFound
+from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import dict_value, int_value
 from tests.helpers import absolute_sample_path
@@ -49,3 +50,11 @@ class TestPdfDocument:
 
             with pytest.raises(PDFNoPageLabels):
                 doc.get_page_labels()
+
+    def test_annotations(self):
+        path = absolute_sample_path("contrib/issue-1082-annotations.pdf")
+        with open(path, "rb") as fp:
+            parser = PDFParser(fp)
+            doc = PDFDocument(parser)
+            for i, page in enumerate(PDFPage.create_pages(doc)):
+                print(page)

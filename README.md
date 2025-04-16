@@ -39,7 +39,7 @@ Features
 How to use
 ----------
 
-* Install Python 3.8 or newer.
+* Install Python 3.9 or newer.
 * Install pdfminer.six.
   ```bash
   pip install pdfminer.six

@@ -17,6 +17,7 @@ from typing import (
 )
 
 from pdfminer import settings
+from pdfminer.casting import safe_float, safe_rect_list
 from pdfminer.cmapdb import (
     CMap,
     CMapBase,
@@ -56,11 +57,12 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-def get_widths(seq: Iterable[object]) -> Dict[int, float]:
+def get_widths(seq: Iterable[object]) -> Dict[Union[str, int], float]:
     """Build a mapping of character widths for horizontal writing."""
     widths: Dict[int, float] = {}
     r: List[float] = []
     for v in seq:
+        v = resolve1(v)
         if isinstance(v, list):
             if r:
                 char1 = r[-1]
@@ -71,10 +73,19 @@ def get_widths(seq: Iterable[object]) -> Dict[int, float]:
             r.append(v)
             if len(r) == 3:
                 (char1, char2, w) = r
-                for i in range(cast(int, char1), cast(int, char2) + 1):
-                    widths[i] = w
+                if isinstance(char1, int) and isinstance(char2, int):
+                    for i in range(cast(int, char1), cast(int, char2) + 1):
+                        widths[i] = w
+                else:
+                    log.warning(
+                        f"Skipping invalid font width specification for {char1} to {char2} because either of them is not an int"
+                    )
                 r = []
-    return widths
+        else:
+            log.warning(
+                f"Skipping invalid font width specification for {v} because it is not a number or a list"
+            )
+    return cast(Dict[Union[str, int], float], widths)
 
 
 def get_widths2(seq: Iterable[object]) -> Dict[int, Tuple[float, Point]]:
@@ -852,7 +863,7 @@ LITERAL_TYPE1C = LIT("Type1C")
 
 # Font widths are maintained in a dict type that maps from *either* unicode
 # chars or integer character IDs.
-FontWidthDict = Union[Dict[int, float], Dict[str, float]]
+FontWidthDict = Dict[Union[int, str], float]
 
 
 class PDFFont:
@@ -877,10 +888,7 @@ class PDFFont:
             self.default_width = default_width
         self.default_width = resolve1(self.default_width)
         self.leading = num_value(descriptor.get("Leading", 0))
-        self.bbox = cast(
-            Rect,
-            list_value(resolve_all(descriptor.get("FontBBox", (0, 0, 0, 0)))),
-        )
+        self.bbox = self._parse_bbox(descriptor)
         self.hscale = self.vscale = 0.001
 
         # PDF RM 9.8.1 specifies /Descent should always be a negative number.
@@ -925,14 +933,20 @@ class PDFFont:
     def char_width(self, cid: int) -> float:
         # Because character widths may be mapping either IDs or strings,
         # we try to lookup the character ID first, then its str equivalent.
+        cid_width = safe_float(self.widths.get(cid))
+        if cid_width is not None:
+            return cid_width * self.hscale
+
         try:
-            return cast(Dict[int, float], self.widths)[cid] * self.hscale
-        except KeyError:
-            str_widths = cast(Dict[str, float], self.widths)
-            try:
-                return str_widths[self.to_unichr(cid)] * self.hscale
-            except (KeyError, PDFUnicodeNotDefined):
-                return self.default_width * self.hscale
+            str_cid = self.to_unichr(cid)
+            cid_width = safe_float(self.widths.get(str_cid))
+            if cid_width is not None:
+                return cid_width * self.hscale
+
+        except PDFUnicodeNotDefined:
+            pass
+
+        return self.default_width * self.hscale
 
     def char_disp(self, cid: int) -> Union[float, Tuple[Optional[float], float]]:
         """Returns an integer for horizontal fonts, a tuple for vertical fonts."""
@@ -943,6 +957,18 @@ class PDFFont:
 
     def to_unichr(self, cid: int) -> str:
         raise NotImplementedError
+
+    @staticmethod
+    def _parse_bbox(descriptor: Mapping[str, Any]) -> Rect:
+        """Parse FontBBox from the fonts descriptor"""
+        font_bbox = resolve_all(descriptor.get("FontBBox"))
+        bbox = safe_rect_list(font_bbox)
+        if bbox is None:
+            log.warning(
+                f"Could get FontBBox from font descriptor because {font_bbox!r} cannot be parsed as 4 floats"
+            )
+            return 0.0, 0.0, 0.0, 0.0
+        return bbox
 
 
 class PDFSimpleFont(PDFFont):
@@ -996,7 +1022,9 @@ class PDFType1Font(PDFSimpleFont):
         widths: FontWidthDict
         try:
             (descriptor, int_widths) = FontMetricsDB.get_metrics(self.basefont)
-            widths = cast(Dict[str, float], int_widths)  # implicit int->float
+            widths = cast(
+                Dict[Union[str, int], float], int_widths
+            )  # implicit int->float
         except KeyError:
             descriptor = dict_value(spec.get("FontDescriptor", {}))
             firstchar = int_value(spec.get("FirstChar", 0))
@@ -1026,7 +1054,9 @@ class PDFType3Font(PDFSimpleFont):
         firstchar = int_value(spec.get("FirstChar", 0))
         # lastchar = int_value(spec.get('LastChar', 0))
         width_list = list_value(spec.get("Widths", [0] * 256))
-        widths = {i + firstchar: w for (i, w) in enumerate(width_list)}
+        widths: Dict[Union[str, int], float] = {
+            i + firstchar: w for (i, w) in enumerate(width_list)
+        }
         if "FontDescriptor" in spec:
             descriptor = dict_value(spec["FontDescriptor"])
         else:
@@ -1112,7 +1142,9 @@ class PDFCIDFont(PDFFont):
             self.disps = {cid: (vx, vy) for (cid, (_, (vx, vy))) in widths2.items()}
             (vy, w) = resolve1(spec.get("DW2", [880, -1000]))
             self.default_disp = (None, vy)
-            widths = {cid: w for (cid, (w, _)) in widths2.items()}
+            widths: Dict[Union[str, int], float] = {
+                cid: w for (cid, (w, _)) in widths2.items()
+            }
             default_width = w
         else:
             # writing mode: horizontal

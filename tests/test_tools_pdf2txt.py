@@ -68,6 +68,17 @@ class TestPdf2Txt:
         """
         run("contrib/issue-00352-asw-oct96-p41.pdf")
 
+    def test_contrib_issue_1059_textseq(self):
+        """Ensure that CMaps are robust to non-strings in text
+        sequences
+        (https://github.com/pdfminer/pdfminer.six/issues/1059)."""
+        run("contrib/issue-1059-cmap-decode.pdf")
+
+    def test_contrib_issue_1062_inline(self):
+        """Ensure that filters are accepted as indirect objects
+        (https://github.com/pdfminer/pdfminer.six/issues/1062)"""
+        run("contrib/issue-1062-filters.pdf")
+
     def test_scancode_patchelf(self):
         """Regression test for https://github.com/euske/pdfminer/issues/96"""
         run("scancode/patchelf.pdf")

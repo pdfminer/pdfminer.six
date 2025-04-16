@@ -293,8 +293,8 @@ class PDFStream(PDFObject):
         return default
 
     def get_filters(self) -> List[Tuple[Any, Any]]:
-        filters = self.get_any(("F", "Filter"))
-        params = self.get_any(("DP", "DecodeParms", "FDecodeParms"), {})
+        filters = resolve1(self.get_any(("F", "Filter"), []))
+        params = resolve1(self.get_any(("DP", "DecodeParms", "FDecodeParms"), {}))
         if not filters:
             return []
         if not isinstance(filters, list):

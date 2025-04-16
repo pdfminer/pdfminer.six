@@ -3,11 +3,47 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [20250416]
+
+### Fixed
+
+- `TypeError` when parsing font width with indirect object references ([#1098](https://github.com/pdfminer/pdfminer.six/pull/1098))
+- `ValueError` when loading xref with invalid position or generation numbers that cannot be parsed as int ([#1099](https://github.com/pdfminer/pdfminer.six/pull/1099))
+- Safely converting PDF stack objects to float or int in PDFInterpreter ([#1100](https://github.com/pdfminer/pdfminer.six/pull/1100))
+- `TypeError` when parsing font bbox with incorrect values ([#1103](https://github.com/pdfminer/pdfminer.six/pull/1103))
+- `ValueError` on incorrect stream lengths for ASCII85 data ([#1112](https://github.com/pdfminer/pdfminer.six/pull/1112))
+
+## [20250327]
+
+### Added
+
+- Support for Python 3.13 ([#1092](https://github.com/pdfminer/pdfminer.six/pull/1092))
+
+### Changed
+
+- Reduce memory overhead on runlength encoding by using lists ([#1055](https://github.com/pdfminer/pdfminer.six/pull/1055))
+- Using `pyproject.toml` instead of `setup.py` ([#1028](https://github.com/pdfminer/pdfminer.six/pull/1028))
+
+### Fixed
+
+- `TypeError` when CID character widths are not parseable as floats ([#1001](https://github.com/pdfminer/pdfminer.six/pull/1001))
+- `TypeError` raised by extract_text method with compressed PDF file ([#1029](https://github.com/pdfminer/pdfminer.six/pull/1029))
+- `PSBaseParser` can't handle tokens split across end of buffer ([#1030](https://github.com/pdfminer/pdfminer.six/pull/1030))
+- `TypeError` when CropBox is an indirect object reference ([#1004](https://github.com/pdfminer/pdfminer.six/issues/1004))
+- Remove redundant line to be able to recognize rectangles ([#1066](https://github.com/pdfminer/pdfminer.six/pull/1066))
+- Support indirect objects for filters ([#1062](https://github.com/pdfminer/pdfminer.six/pull/1068))
+- Make sure `bytes` is `bytes` where it counts ([#1069](https://github.com/pdfminer/pdfminer.six/pull/1069))
+
+### Removed
+
+- Support for Python 3.8 ([#1091](https://github.com/pdfminer/pdfminer.six/pull/1091))
+
+## [20250324]
 
 ### Changed
 
 - Using absolute instead of relative imports ([[#995](https://github.com/pdfminer/pdfminer.six/pull/995)])
+- Using standard library functions for ascii85 and asciihex ([#1031](https://github.com/pdfminer/pdfminer.six/pull/1031))
 
 ### Deprecated
 
@@ -25,7 +61,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `ValueError` when corrupt PDF specifies an invalid mediabox ([#987](https://github.com/pdfminer/pdfminer.six/pull/987))
 - `RecursionError` when corrupt PDF specifies a recursive /Pages object ([#998](https://github.com/pdfminer/pdfminer.six/pull/998))
 - `TypeError` when corrupt PDF specifies text-positioning operators with invalid values ([#1000](https://github.com/pdfminer/pdfminer.six/pull/1000))
-- inline image parsing fails when stream data contains "EI\n" ([#1008](https://github.com/pdfminer/pdfminer.six/issues/1008))
+- inline image parsing fails when stream data contains "EI\n" ([#1008](https://github.com/pdfminer/pdfminer.six/issues/1008
+- `TypeError` when parsing object reference as mediabox ([#1082](https://github.com/pdfminer/pdfminer.six/issues/1082))
 
 ### Removed
 

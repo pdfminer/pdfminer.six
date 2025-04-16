@@ -26,3 +26,4 @@ Pipfile.lock
 .vscode/
 poetry.lock
 .eggs
+.venv
