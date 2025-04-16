@@ -52,10 +52,11 @@ from pdfminer.utils import (
     Point,
     Rect,
     apply_matrix_pt,
+    apply_matrix_rect,
     bbox2str,
     enc,
     make_compat_str,
-    mult_matrix, apply_matrix_rect,
+    mult_matrix,
 )
 
 log = logging.getLogger(__name__)

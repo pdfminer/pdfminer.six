@@ -28,11 +28,12 @@ from pdfminer.utils import (
     Plane,
     Point,
     Rect,
+    apply_matrix_rect,
     bbox2str,
     fsplit,
     get_bound,
     matrix2str,
-    uniq, apply_matrix_rect,
+    uniq,
 )
 
 logger = logging.getLogger(__name__)
@@ -952,7 +953,7 @@ class LTFigure(LTLayoutContainer):
         self.name = name
         self.matrix = matrix
         (x, y, w, h) = bbox
-        rect = (x, y, x+w, y+h)
+        rect = (x, y, x + w, y + h)
         bbox = apply_matrix_rect(matrix, rect)
         LTLayoutContainer.__init__(self, bbox)
 
