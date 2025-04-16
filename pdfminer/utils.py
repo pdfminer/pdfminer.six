@@ -138,9 +138,9 @@ def apply_tiff_predictor(
         raise PDFValueError(error_msg)
     bpp = colors * (bitspercomponent // 8)
     nbytes = columns * bpp
-    buf: list[int] = []
+    buf: List[int] = []
     for scanline_i in range(0, len(data), nbytes):
-        raw: list[int] = []
+        raw: List[int] = []
         for i in range(nbytes):
             new_value = data[scanline_i + i]
             if i >= bpp:
