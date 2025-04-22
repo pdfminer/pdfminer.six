@@ -5,8 +5,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-- Save colour spaces on the graphics stack ([#1119](https://github.com/pdfminer/pdfminer.six/pull/1119))
-
 ## Added
 
 - Support for extracting images with TIFF predictor ([#1058](https://github.com/pdfminer/pdfminer.six/pull/1058))
@@ -14,7 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Fixed
 
 - Correct tightest fitting bounding boxes for rotated content ([#1114](https://github.com/pdfminer/pdfminer.six/pull/1114))
- 
+- Save colour spaces on the graphics stack ([#1119](https://github.com/pdfminer/pdfminer.six/pull/1119))
+
 ## [20250416]
 
 ### Fixed
