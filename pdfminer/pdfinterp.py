@@ -1106,7 +1106,6 @@ class PDFPageInterpreter:
             if settings.STRICT:
                 raise PDFInterpreterError("No font specified!")
             return
-        assert self.graphicstate.ncs is not None
         self.device.render_string(
             self.textstate,
             cast(PDFTextSeq, seq),
