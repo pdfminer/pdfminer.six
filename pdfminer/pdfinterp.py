@@ -793,10 +793,13 @@ class PDFPageInterpreter:
 
         elif n == 3:
             values = self.pop(3)
-            rgb = safe_rgb(*values)
+            rgb = None
+            if len(values) == 3:
+                rgb = safe_rgb(*values)
+
             if rgb is None:
                 log.warning(
-                    f"Cannot set RGB stroke color because not all values in {values!r} can be parsed as floats"
+                    f"Cannot set RGB stroke color because values {values!r} cannot be parsed as RGB"
                 )
             else:
                 self.graphicstate.scolor = rgb
@@ -838,11 +841,13 @@ class PDFPageInterpreter:
 
         elif n == 3:
             values = self.pop(3)
-            rgb = safe_rgb(*values)
+            rgb = None
+            if len(values) == 3:
+                rgb = safe_rgb(*values)
 
             if rgb is None:
                 log.warning(
-                    f"Cannot set RGB non-stroke color because not all values in {values!r} can be parsed as floats"
+                    f"Cannot set RGB non-stroke color because values {values!r} cannot be parsed as RGB"
                 )
             else:
                 self.graphicstate.ncolor = rgb
