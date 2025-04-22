@@ -806,11 +806,13 @@ class PDFPageInterpreter:
 
         elif n == 4:
             values = self.pop(4)
-            cmyk = safe_cmyk(*values)
+            cmyk = None
+            if len(values) == 4:
+                cmyk = safe_cmyk(*values)
 
             if cmyk is None:
                 log.warning(
-                    f"Cannot set CMYK stroke color because not all values in {values!r} can be parsed as floats"
+                    f"Cannot set CMYK stroke color because values {values!r} cannot be parsed as CMYK"
                 )
             else:
                 self.graphicstate.scolor = cmyk
@@ -854,11 +856,13 @@ class PDFPageInterpreter:
 
         elif n == 4:
             values = self.pop(4)
-            cmyk = safe_cmyk(*values)
+            cmyk = None
+            if len(values) == 4:
+                cmyk = safe_cmyk(*values)
 
             if cmyk is None:
                 log.warning(
-                    f"Cannot set CMYK non-stroke color because not all values in {values!r} can be parsed as floats"
+                    f"Cannot set CMYK non-stroke color because values {values!r} cannot be parsed as CMYK"
                 )
             else:
                 self.graphicstate.ncolor = cmyk
