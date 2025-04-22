@@ -807,7 +807,7 @@ class PDFPageInterpreter:
             else:
                 self.graphicstate.scolor = rgb
 
-        elif n == 4:
+        elif len(components) == 4:
             cmyk = safe_cmyk(*components)
 
             if cmyk is None:
@@ -819,7 +819,7 @@ class PDFPageInterpreter:
 
         else:
             log.warning(
-                f"Cannot set stroke color because {n} components are specified but only 1 (grayscale), 3 (rgb) and 4 (cmyk) are supported"
+                f"Cannot set stroke color because {len(components)} components are specified but only 1 (grayscale), 3 (rgb) and 4 (cmyk) are supported"
             )
 
     def do_scn(self) -> None:
@@ -869,7 +869,7 @@ class PDFPageInterpreter:
 
         else:
             log.warning(
-                f"Cannot set non-stroke color because {n} components are specified but only 1 (grayscale), 3 (rgb) and 4 (cmyk) are supported"
+                f"Cannot set non-stroke color because {len(components)} components are specified but only 1 (grayscale), 3 (rgb) and 4 (cmyk) are supported"
             )
 
     def do_SC(self) -> None:
