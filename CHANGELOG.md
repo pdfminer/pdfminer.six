@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Save colour spaces on the graphics stack ([#1119](https://github.com/pdfminer/pdfminer.six/pull/1119))
+
 ## Added
 
 - Support for extracting images with TIFF predictor ([#1058](https://github.com/pdfminer/pdfminer.six/pull/1058))
