@@ -75,6 +75,11 @@ class TestPdf2Txt:
         (https://github.com/pdfminer/pdfminer.six/issues/1059)."""
         run("contrib/issue-1059-cmap-decode.pdf")
 
+    def test_contrib_issue_1061_inline(self):
+        """Ensure that colour spaces are saved on the graphics stack
+        (https://github.com/pdfminer/pdfminer.six/issues/1061)"""
+        run("contrib/issue-1061-colour-space-stack.pdf")
+
     def test_contrib_issue_1062_inline(self):
         """Ensure that filters are accepted as indirect objects
         (https://github.com/pdfminer/pdfminer.six/issues/1062)"""

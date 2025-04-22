@@ -139,10 +139,12 @@ class PDFGraphicState:
         self.flatness: Optional[object] = None
 
         # stroking color
-        self.scolor: Optional[Color] = None
+        self.scolor: Color = 0
+        self.scs: PDFColorSpace = PREDEFINED_COLORSPACE["DeviceGray"]
 
         # non stroking color
-        self.ncolor: Optional[Color] = None
+        self.ncolor: Color = 0
+        self.ncs: PDFColorSpace = PREDEFINED_COLORSPACE["DeviceGray"]
 
     def copy(self) -> "PDFGraphicState":
         obj = PDFGraphicState()
@@ -423,11 +425,6 @@ class PDFPageInterpreter:
         self.curpath: List[PathSegment] = []
         # argstack: stack for command arguments.
         self.argstack: List[PDFStackT] = []
-        # set some global states.
-        self.scs: Optional[PDFColorSpace] = None
-        self.ncs: Optional[PDFColorSpace] = None
-        if self.csmap:
-            self.scs = self.ncs = next(iter(self.csmap.values()))
 
     def push(self, obj: PDFStackT) -> None:
         self.argstack.append(obj)
@@ -687,7 +684,7 @@ class PDFPageInterpreter:
         Introduced in PDF 1.1
         """
         try:
-            self.scs = self.csmap[literal_name(name)]
+            self.graphicstate.scs = self.csmap[literal_name(name)]
         except KeyError:
             if settings.STRICT:
                 raise PDFInterpreterError("Undefined ColorSpace: %r" % name)
@@ -695,7 +692,7 @@ class PDFPageInterpreter:
     def do_cs(self, name: PDFStackT) -> None:
         """Set color space for nonstroking operations"""
         try:
-            self.ncs = self.csmap[literal_name(name)]
+            self.graphicstate.ncs = self.csmap[literal_name(name)]
         except KeyError:
             if settings.STRICT:
                 raise PDFInterpreterError("Undefined ColorSpace: %r" % name)
@@ -710,7 +707,7 @@ class PDFPageInterpreter:
             )
         else:
             self.graphicstate.scolor = gray_f
-            self.scs = self.csmap["DeviceGray"]
+            self.graphicstate.scs = self.csmap["DeviceGray"]
 
     def do_g(self, gray: PDFStackT) -> None:
         """Set gray level for nonstroking operations"""
@@ -722,7 +719,7 @@ class PDFPageInterpreter:
             )
         else:
             self.graphicstate.ncolor = gray_f
-            self.ncs = self.csmap["DeviceGray"]
+            self.graphicstate.ncs = self.csmap["DeviceGray"]
 
     def do_RG(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for stroking operations"""
@@ -734,7 +731,7 @@ class PDFPageInterpreter:
             )
         else:
             self.graphicstate.scolor = rgb
-            self.scs = self.csmap["DeviceRGB"]
+            self.graphicstate.scs = self.csmap["DeviceRGB"]
 
     def do_rg(self, r: PDFStackT, g: PDFStackT, b: PDFStackT) -> None:
         """Set RGB color for nonstroking operations"""
@@ -746,7 +743,7 @@ class PDFPageInterpreter:
             )
         else:
             self.graphicstate.ncolor = rgb
-            self.ncs = self.csmap["DeviceRGB"]
+            self.graphicstate.ncs = self.csmap["DeviceRGB"]
 
     def do_K(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
         """Set CMYK color for stroking operations"""
@@ -758,7 +755,7 @@ class PDFPageInterpreter:
             )
         else:
             self.graphicstate.scolor = cmyk
-            self.scs = self.csmap["DeviceCMYK"]
+            self.graphicstate.scs = self.csmap["DeviceCMYK"]
 
     def do_k(self, c: PDFStackT, m: PDFStackT, y: PDFStackT, k: PDFStackT) -> None:
         """Set CMYK color for nonstroking operations"""
@@ -770,16 +767,11 @@ class PDFPageInterpreter:
             )
         else:
             self.graphicstate.ncolor = cmyk
-            self.ncs = self.csmap["DeviceCMYK"]
+            self.graphicstate.ncs = self.csmap["DeviceCMYK"]
 
     def do_SCN(self) -> None:
         """Set color for stroking operations."""
-        if self.scs:
-            n = self.scs.ncomponents
-        else:
-            if settings.STRICT:
-                raise PDFInterpreterError("No colorspace specified!")
-            n = 1
+        n = self.graphicstate.scs.ncomponents
 
         if n == 1:
             gray = self.pop(1)[0]
@@ -819,12 +811,7 @@ class PDFPageInterpreter:
 
     def do_scn(self) -> None:
         """Set color for nonstroking operations"""
-        if self.ncs:
-            n = self.ncs.ncomponents
-        else:
-            if settings.STRICT:
-                raise PDFInterpreterError("No colorspace specified!")
-            n = 1
+        n = self.graphicstate.ncs.ncomponents
 
         if n == 1:
             gray = self.pop(1)[0]
@@ -1119,11 +1106,11 @@ class PDFPageInterpreter:
             if settings.STRICT:
                 raise PDFInterpreterError("No font specified!")
             return
-        assert self.ncs is not None
+        assert self.graphicstate.ncs is not None
         self.device.render_string(
             self.textstate,
             cast(PDFTextSeq, seq),
-            self.ncs,
+            self.graphicstate.ncs,
             self.graphicstate.copy(),
         )
 
