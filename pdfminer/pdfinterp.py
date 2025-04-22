@@ -781,8 +781,14 @@ class PDFPageInterpreter:
                 raise PDFInterpreterError("No colorspace specified!")
             n = 1
 
-        if n == 1:
-            gray = self.pop(1)[0]
+        components = self.pop(n)
+        if len(components) != n:
+            log.warning(
+                f"Cannot set stroke color because expected {n} components but got {components:!r}"
+            )
+
+        elif len(components) == 1:
+            gray = components[0]
             gray_f = safe_float(gray)
             if gray_f is None:
                 log.warning(
@@ -791,28 +797,22 @@ class PDFPageInterpreter:
             else:
                 self.graphicstate.scolor = gray_f
 
-        elif n == 3:
-            values = self.pop(3)
-            rgb = None
-            if len(values) == 3:
-                rgb = safe_rgb(*values)
+        elif len(components) == 3:
+            rgb = safe_rgb(*components)
 
             if rgb is None:
                 log.warning(
-                    f"Cannot set RGB stroke color because values {values!r} cannot be parsed as RGB"
+                    f"Cannot set RGB stroke color because components {components!r} cannot be parsed as RGB"
                 )
             else:
                 self.graphicstate.scolor = rgb
 
         elif n == 4:
-            values = self.pop(4)
-            cmyk = None
-            if len(values) == 4:
-                cmyk = safe_cmyk(*values)
+            cmyk = safe_cmyk(*components)
 
             if cmyk is None:
                 log.warning(
-                    f"Cannot set CMYK stroke color because values {values!r} cannot be parsed as CMYK"
+                    f"Cannot set CMYK stroke color because components {components!r} cannot be parsed as CMYK"
                 )
             else:
                 self.graphicstate.scolor = cmyk
@@ -831,8 +831,14 @@ class PDFPageInterpreter:
                 raise PDFInterpreterError("No colorspace specified!")
             n = 1
 
-        if n == 1:
-            gray = self.pop(1)[0]
+        components = self.pop(n)
+        if len(components) != n:
+            log.warning(
+                f"Cannot set non-stroke color because expected {n} components but got {components:!r}"
+            )
+
+        elif len(components) == 1:
+            gray = components[0]
             gray_f = safe_float(gray)
             if gray_f is None:
                 log.warning(
@@ -841,28 +847,22 @@ class PDFPageInterpreter:
             else:
                 self.graphicstate.ncolor = gray_f
 
-        elif n == 3:
-            values = self.pop(3)
-            rgb = None
-            if len(values) == 3:
-                rgb = safe_rgb(*values)
+        elif len(components) == 3:
+            rgb = safe_rgb(*components)
 
             if rgb is None:
                 log.warning(
-                    f"Cannot set RGB non-stroke color because values {values!r} cannot be parsed as RGB"
+                    f"Cannot set RGB non-stroke color because components {components!r} cannot be parsed as RGB"
                 )
             else:
                 self.graphicstate.ncolor = rgb
 
-        elif n == 4:
-            values = self.pop(4)
-            cmyk = None
-            if len(values) == 4:
-                cmyk = safe_cmyk(*values)
+        elif len(components) == 4:
+            cmyk = safe_cmyk(*components)
 
             if cmyk is None:
                 log.warning(
-                    f"Cannot set CMYK non-stroke color because values {values!r} cannot be parsed as CMYK"
+                    f"Cannot set CMYK non-stroke color because components {components!r} cannot be parsed as CMYK"
                 )
             else:
                 self.graphicstate.ncolor = cmyk
