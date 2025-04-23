@@ -17,7 +17,7 @@ def safe_int(o: Any) -> Optional[int]:
 def safe_float(o: Any) -> Optional[float]:
     try:
         return float(o)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
 
 
