@@ -52,6 +52,7 @@ from pdfminer.utils import (
     format_int_alpha,
     format_int_roman,
     nunpack,
+    unpad_aes,
 )
 
 log = logging.getLogger(__name__)
@@ -545,7 +546,8 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
             modes.CBC(initialization_vector),
             backend=default_backend(),
         )  # type: ignore
-        return cipher.decryptor().update(ciphertext)  # type: ignore
+        plaintext = cipher.decryptor().update(ciphertext)  # type: ignore
+        return unpad_aes(plaintext)
 
 
 class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
@@ -669,7 +671,8 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
             modes.CBC(initialization_vector),
             backend=default_backend(),
         )  # type: ignore
-        return cipher.decryptor().update(ciphertext)  # type: ignore
+        plaintext = cipher.decryptor().update(ciphertext)  # type: ignore
+        return unpad_aes(plaintext)
 
 
 class PDFDocument:

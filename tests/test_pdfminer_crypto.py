@@ -6,6 +6,7 @@ from pdfminer.arcfour import Arcfour
 from pdfminer.ascii85 import ascii85decode, asciihexdecode
 from pdfminer.lzw import lzwdecode
 from pdfminer.runlength import rldecode
+from pdfminer.utils import unpad_aes
 
 
 def hex(b):
@@ -71,3 +72,15 @@ class TestLzw:
 class TestRunlength:
     def test_rldecode(self):
         assert rldecode(b"\x05123456\xfa7\x04abcde\x80junk") == b"1234567777777abcde"
+
+
+class TestAES:
+    def test_unpad_aes(self):
+        assert unpad_aes(b"\x10" * 16) == b""
+        assert unpad_aes(b"0123456789abcdef" + b"\x10" * 16) == b"0123456789abcdef"
+        assert unpad_aes(b"0123456789abc\x03\x03\x03") == b"0123456789abc"
+        # NOTE: As per the spec these sorts of things should be padded
+        # with b"\x10" * 16, but it seems reasonable to be robust to the
+        # possibility of false padding bytes as well
+        assert unpad_aes(b"0123456789abc\x02\x03\x04") == b"0123456789abc\x02\x03\x04"
+        assert unpad_aes(b"0123456789abc\x05\x05\x05") == b"0123456789abc\x05\x05\x05"
