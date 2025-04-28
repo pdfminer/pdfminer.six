@@ -875,10 +875,10 @@ def unpad_aes(padded: bytes) -> bytes:
     if len(padded) == 0:
         return padded
     # Check for a potential padding byte (bytes are unsigned)
-    if padded[-1] > 16:
+    padding = padded[-1]
+    if padding > 16:
         return padded
     # A valid padding byte is the length of the padding
-    padding = padded[-1]
     if padding > len(padded):  # Obviously invalid
         return padded
     # Every byte of padding is equal to the length of padding
