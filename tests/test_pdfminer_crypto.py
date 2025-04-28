@@ -79,7 +79,13 @@ class TestAES:
         assert unpad_aes(b"\x10" * 16) == b""
         assert unpad_aes(b"0123456789abcdef" + b"\x10" * 16) == b"0123456789abcdef"
         assert unpad_aes(b"0123456789abc\x03\x03\x03") == b"0123456789abc"
-        # NOTE: As per the spec these sorts of things should be padded
+        assert (
+            unpad_aes(b"0123456789abcdef0123456789abc\x03\x03\x03")
+            == b"0123456789abcdef0123456789abc"
+        )
+        assert unpad_aes(b"foo\x01bar\x01bazquux\01") == b"foo\x01bar\x01bazquux"
+
+        # NOTE: As per the spec the following strings should be padded
         # with b"\x10" * 16, but it seems reasonable to be robust to the
         # possibility of false padding bytes as well
         assert unpad_aes(b"0123456789abc\x02\x03\x04") == b"0123456789abc\x02\x03\x04"
