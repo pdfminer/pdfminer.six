@@ -862,3 +862,26 @@ def format_int_alpha(value: int) -> str:
 
     result.reverse()
     return "".join(result)
+
+
+def unpad_aes(padded: bytes) -> bytes:
+    """Remove block padding as described in PDF 1.7 section 7.6.2:
+
+    > For an original message length of M, the pad shall consist of 16 -
+    (M mod 16) bytes whose value shall also be 16 - (M mod 16).
+    > Note that the pad is present when M is evenly divisible by 16;
+    it contains 16 bytes of 0x10.
+    """
+    if len(padded) == 0:
+        return padded
+    # Check for a potential padding byte (bytes are unsigned)
+    padding = padded[-1]
+    if padding > 16:
+        return padded
+    # A valid padding byte is the length of the padding
+    if padding > len(padded):  # Obviously invalid
+        return padded
+    # Every byte of padding is equal to the length of padding
+    if all(x == padding for x in padded[-padding:]):
+        return padded[:-padding]
+    return padded
