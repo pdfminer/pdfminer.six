@@ -33,7 +33,7 @@ def types(session):
 @nox.session(python=PYTHON_ALL_VERSIONS)
 def tests(session):
     session.install("pip")
-    session.install("-e", ".[dev]")
+    session.install("-e", ".[dev,image]")
     session.run("pytest")
 
 
