@@ -748,8 +748,8 @@ class PDFDocument:
                 # Every PDF file must have exactly one /Root dictionary.
                 self.catalog = dict_value(trailer["Root"])
                 break
-        else:
-            raise PDFSyntaxError("No /Root object! - Is this really a PDF?")
+            else:
+                raise PDFSyntaxError("No /Root object! - Is this really a PDF?")
         if self.catalog.get("Type") is not LITERAL_CATALOG:
             if settings.STRICT:
                 raise PDFSyntaxError("Catalog not found!")
