@@ -1,5 +1,6 @@
 import os
 import os.path
+from itertools import islice, chain
 from io import BytesIO
 from typing import Literal, Tuple
 
@@ -20,6 +21,30 @@ PIL_ERROR_MESSAGE = (
     "installed by default. You need it to to save JPEG2000 and BMP images to a file. Install it "
     "with `pip install 'pdfminer.six[image]'`"
 )
+
+
+# PDF 2.0, sec 8.9.3
+# Sample data shall be represented as a stream of bytes, interpreted as 8-bit unsigned integers in the
+# range 0 to 255. The bytes constitute a continuous bit stream, with the high-order bit of each byte first.
+# This bit stream, in turn, is divided into units of n bits each, where n is the number of bits per component.
+# Each unit encodes a colour component value, given with high-order bit first; units of 16 bits shall be
+# given with the most significant byte first. Byte boundaries shall be ignored, except that each row of
+# sample data shall begin on a byte boundary. If the number of data bits per row is not a multiple of 8, the
+# end of the row is padded with extra bits to fill out the last byte. A PDF processor shall ignore these
+# padding bits.
+def unpack_bytes(s: bytes, bpc: int, width: int, height: int) -> bytes:
+    if bpc not in (1, 2, 4):
+        return s
+    if bpc == 4:
+        unpack_f = lambda x: (x >> 4, x & 15)
+    elif bpc == 2:
+        unpack_f = lambda x: (x >> 6, x >> 4 & 3, x >> 2 & 3, x & 3)
+    else:  # bpc == 1
+        unpack_f = lambda x: (x >> i & 1 for i in reversed(range(8)))
+    rowsize = (width * bpc + 7) // 8
+    rows = (s[i * rowsize : (i + 1) * rowsize] for i in range(height))
+    rows = (islice(chain.from_iterable(map(unpack_f, row)), width) for row in rows)
+    return bytes(chain.from_iterable(rows))
 
 
 class ImageWriter:
@@ -116,27 +141,32 @@ class ImageWriter:
     def _save_bytes(self, image: LTImage) -> str:
         """Save an image without encoding, just bytes"""
         img_stream = image.stream.get_data()
+        width, height = image.srcsize
         if image.colorspace[0] is LITERAL_INDEXED:
+            bpc = 8
             hival = int_value(image.colorspace[2])
             lookup = image.colorspace[3]
             if not isinstance(lookup, bytes):
                 lookup = stream_value(lookup).get_data()
             channels = len(lookup) // (hival + 1)
             img_stream = bytes(
-                b for i in img_stream for b in lookup[channels * i : channels * (i + 1)]
+                b
+                for i in unpack_bytes(img_stream, image.bits, width, height)
+                for b in lookup[channels * i : channels * (i + 1)]
             )
         else:
-            width, height = image.srcsize
-            channels = len(img_stream) * 8 // (width * height * image.bits)
+            bpc = image.bits
+            rowsize = (width * bpc + 7) // 8
+            channels = len(img_stream) // (rowsize * height)
 
         mode: Literal["1", "L", "RGB", "CMYK"]
-        if image.bits == 1:
+        if bpc == 1:
             mode = "1"
-        elif image.bits == 8 and channels == 1:
+        elif bpc == 8 and channels == 1:
             mode = "L"
-        elif image.bits == 8 and channels == 3:
+        elif bpc == 8 and channels == 3:
             mode = "RGB"
-        elif image.bits == 8 and channels == 4:
+        elif bpc == 8 and channels == 4:
             mode = "CMYK"
         else:
             return self._save_raw(image)
