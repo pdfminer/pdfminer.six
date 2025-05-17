@@ -119,7 +119,7 @@ class ImageWriter:
         if image.colorspace[0] is LITERAL_INDEXED:
             hival = int_value(image.colorspace[2])
             lookup = image.colorspace[3]
-            if not isinstance(lookup, bytes)
+            if not isinstance(lookup, bytes):
                 lookup = stream_value(lookup).get_data()
             channels = len(lookup) // (hival + 1)
             img_stream = bytes(
