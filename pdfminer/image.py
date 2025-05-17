@@ -1,7 +1,7 @@
 import os
 import os.path
 from io import BytesIO
-from itertools import islice, chain
+from itertools import chain, islice
 from typing import Literal, Tuple
 
 from pdfminer.jbig2 import JBIG2StreamReader, JBIG2StreamWriter
