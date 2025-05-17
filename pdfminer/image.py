@@ -1,95 +1,59 @@
 import os
 import os.path
-import struct
 from io import BytesIO
-from typing import BinaryIO, Literal, Tuple
+from itertools import chain, islice
+from typing import Literal, Tuple
 
 from pdfminer.jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from pdfminer.layout import LTImage
-from pdfminer.pdfcolor import (
-    LITERAL_DEVICE_CMYK,
-    LITERAL_DEVICE_GRAY,
-    LITERAL_DEVICE_RGB,
-    LITERAL_INLINE_DEVICE_GRAY,
-    LITERAL_INLINE_DEVICE_RGB,
-)
+from pdfminer.pdfcolor import LITERAL_INDEXED
 from pdfminer.pdfexceptions import PDFValueError
 from pdfminer.pdftypes import (
     LITERALS_DCT_DECODE,
-    LITERALS_FLATE_DECODE,
     LITERALS_JBIG2_DECODE,
     LITERALS_JPX_DECODE,
+    int_value,
+    stream_value,
 )
 
 PIL_ERROR_MESSAGE = (
     "Could not import Pillow. This dependency of pdfminer.six is not "
-    "installed by default. You need it to to save jpg images to a file. Install it "
+    "installed by default. You need it to to save JPEG2000 and BMP images to a file. Install it "
     "with `pip install 'pdfminer.six[image]'`"
 )
 
 
-def align32(x: int) -> int:
-    return ((x + 3) // 4) * 4
+# PDF 2.0, sec 8.9.3
+# Sample data shall be represented as a stream of bytes, interpreted as 8-bit unsigned integers in the
+# range 0 to 255. The bytes constitute a continuous bit stream, with the high-order bit of each byte first.
+# This bit stream, in turn, is divided into units of n bits each, where n is the number of bits per component.
+# Each unit encodes a colour component value, given with high-order bit first; units of 16 bits shall be
+# given with the most significant byte first. Byte boundaries shall be ignored, except that each row of
+# sample data shall begin on a byte boundary. If the number of data bits per row is not a multiple of 8, the
+# end of the row is padded with extra bits to fill out the last byte. A PDF processor shall ignore these
+# padding bits.
+def unpack_bytes(s: bytes, bpc: int, width: int, height: int) -> bytes:
+    if bpc not in (1, 2, 4):
+        return s
+    if bpc == 4:
 
+        def unpack_f(x: int) -> Tuple[int, ...]:
+            return (x >> 4, x & 15)
+    elif bpc == 2:
 
-class BMPWriter:
-    def __init__(self, fp: BinaryIO, bits: int, width: int, height: int) -> None:
-        self.fp = fp
-        self.bits = bits
-        self.width = width
-        self.height = height
-        if bits == 1:
-            ncols = 2
-        elif bits == 8:
-            ncols = 256
-        elif bits == 24:
-            ncols = 0
-        else:
-            raise PDFValueError(bits)
-        self.linesize = align32((self.width * self.bits + 7) // 8)
-        self.datasize = self.linesize * self.height
-        headersize = 14 + 40 + ncols * 4
-        info = struct.pack(
-            "<IiiHHIIIIII",
-            40,
-            self.width,
-            self.height,
-            1,
-            self.bits,
-            0,
-            self.datasize,
-            0,
-            0,
-            ncols,
-            0,
-        )
-        assert len(info) == 40, str(len(info))
-        header = struct.pack(
-            "<ccIHHI",
-            b"B",
-            b"M",
-            headersize + self.datasize,
-            0,
-            0,
-            headersize,
-        )
-        assert len(header) == 14, str(len(header))
-        self.fp.write(header)
-        self.fp.write(info)
-        if ncols == 2:
-            # B&W color table
-            for i in (0, 255):
-                self.fp.write(struct.pack("BBBx", i, i, i))
-        elif ncols == 256:
-            # grayscale color table
-            for i in range(256):
-                self.fp.write(struct.pack("BBBx", i, i, i))
-        self.pos0 = self.fp.tell()
-        self.pos1 = self.pos0 + self.datasize
+        def unpack_f(x: int) -> Tuple[int, ...]:
+            return (x >> 6, x >> 4 & 3, x >> 2 & 3, x & 3)
+    else:  # bpc == 1
 
-    def write_line(self, y: int, data: bytes) -> None:
-        self.fp.seek(self.pos1 - (y + 1) * self.linesize)
-        self.fp.write(data)
+        def unpack_f(x: int) -> Tuple[int, ...]:
+            return tuple(x >> i & 1 for i in reversed(range(8)))
+
+    rowsize = (width * bpc + 7) // 8
+    rows = (s[i * rowsize : (i + 1) * rowsize] for i in range(height))
+    unpacked_rows = (
+        islice(chain.from_iterable(map(unpack_f, row)), width) for row in rows
+    )
+    return bytes(chain.from_iterable(unpacked_rows))
 
 
 class ImageWriter:
@@ -105,11 +69,12 @@ class ImageWriter:
 
     def export_image(self, image: LTImage) -> str:
         """Save an LTImage to disk"""
-        (width, height) = image.srcsize
-
         filters = image.stream.get_filters()
 
-        if filters[-1][0] in LITERALS_DCT_DECODE:
+        if not filters:
+            name = self._save_bytes(image)
+
+        elif filters[-1][0] in LITERALS_DCT_DECODE:
             name = self._save_jpeg(image)
 
         elif filters[-1][0] in LITERALS_JPX_DECODE:
@@ -118,26 +83,8 @@ class ImageWriter:
         elif self._is_jbig2_iamge(image):
             name = self._save_jbig2(image)
 
-        elif image.bits == 1:
-            name = self._save_bmp(image, width, height, (width + 7) // 8, image.bits)
-
-        elif image.bits == 8 and (
-            LITERAL_DEVICE_RGB in image.colorspace
-            or LITERAL_INLINE_DEVICE_RGB in image.colorspace
-        ):
-            name = self._save_bmp(image, width, height, width * 3, image.bits * 3)
-
-        elif image.bits == 8 and (
-            LITERAL_DEVICE_GRAY in image.colorspace
-            or LITERAL_INLINE_DEVICE_GRAY in image.colorspace
-        ):
-            name = self._save_bmp(image, width, height, width, image.bits)
-
-        elif len(filters) == 1 and filters[0][0] in LITERALS_FLATE_DECODE:
-            name = self._save_bytes(image)
-
         else:
-            name = self._save_raw(image)
+            name = self._save_bytes(image)
 
         return name
 
@@ -147,19 +94,7 @@ class ImageWriter:
 
         name, path = self._create_unique_image_name(image, ".jpg")
         with open(path, "wb") as fp:
-            if LITERAL_DEVICE_CMYK in image.colorspace:
-                try:
-                    from PIL import Image, ImageChops  # type: ignore[import]
-                except ImportError:
-                    raise ImportError(PIL_ERROR_MESSAGE)
-
-                ifp = BytesIO(data)
-                i = Image.open(ifp)
-                i = ImageChops.invert(i)
-                i = i.convert("RGB")
-                i.save(fp, "JPEG")
-            else:
-                fp.write(data)
+            fp.write(data)
 
         return name
 
@@ -212,53 +147,47 @@ class ImageWriter:
             writer.write_file(segments)
         return name
 
-    def _save_bmp(
-        self,
-        image: LTImage,
-        width: int,
-        height: int,
-        bytes_per_line: int,
-        bits: int,
-    ) -> str:
-        """Save a BMP encoded image"""
-        name, path = self._create_unique_image_name(image, ".bmp")
-        with open(path, "wb") as fp:
-            bmp = BMPWriter(fp, bits, width, height)
-            data = image.stream.get_data()
-            i = 0
-            for y in range(height):
-                bmp.write_line(y, data[i : i + bytes_per_line])
-                i += bytes_per_line
-        return name
-
     def _save_bytes(self, image: LTImage) -> str:
         """Save an image without encoding, just bytes"""
-        name, path = self._create_unique_image_name(image, ".jpg")
+        img_stream = image.stream.get_data()
         width, height = image.srcsize
-        channels = len(image.stream.get_data()) / width / height / (image.bits / 8)
+        if image.colorspace[0] is LITERAL_INDEXED:
+            bpc = 8
+            hival = int_value(image.colorspace[2])
+            lookup = image.colorspace[3]
+            if not isinstance(lookup, bytes):
+                lookup = stream_value(lookup).get_data()
+            channels = len(lookup) // (hival + 1)
+            img_stream = bytes(
+                b
+                for i in unpack_bytes(img_stream, image.bits, width, height)
+                for b in lookup[channels * i : channels * (i + 1)]
+            )
+        else:
+            bpc = image.bits
+            rowsize = (width * bpc + 7) // 8
+            channels = len(img_stream) // (rowsize * height)
+
+        mode: Literal["1", "L", "RGB", "CMYK"]
+        if bpc == 1:
+            mode = "1"
+        elif bpc == 8 and channels == 1:
+            mode = "L"
+        elif bpc == 8 and channels == 3:
+            mode = "RGB"
+        elif bpc == 8 and channels == 4:
+            mode = "CMYK"
+        else:
+            return self._save_raw(image)
+
+        ext = ".tiff" if mode == "CMYK" else ".bmp"
+        name, path = self._create_unique_image_name(image, ext)
         with open(path, "wb") as fp:
             try:
-                from PIL import (
-                    Image,  # type: ignore[import]
-                    ImageOps,
-                )
+                from PIL import Image  # type: ignore[import]
             except ImportError:
                 raise ImportError(PIL_ERROR_MESSAGE)
-
-            mode: Literal["1", "L", "RGB", "CMYK"]
-            if image.bits == 1:
-                mode = "1"
-            elif image.bits == 8 and channels == 1:
-                mode = "L"
-            elif image.bits == 8 and channels == 3:
-                mode = "RGB"
-            elif image.bits == 8 and channels == 4:
-                mode = "CMYK"
-
-            img = Image.frombytes(mode, image.srcsize, image.stream.get_data(), "raw")
-            if mode == "L":
-                img = ImageOps.invert(img)
-
+            img = Image.frombytes(mode, image.srcsize, img_stream, "raw")
             img.save(fp)
 
         return name

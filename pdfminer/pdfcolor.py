@@ -6,6 +6,7 @@ from pdfminer.psparser import LIT
 LITERAL_DEVICE_GRAY = LIT("DeviceGray")
 LITERAL_DEVICE_RGB = LIT("DeviceRGB")
 LITERAL_DEVICE_CMYK = LIT("DeviceCMYK")
+LITERAL_INDEXED = LIT("Indexed")
 # Abbreviations for inline images
 LITERAL_INLINE_DEVICE_GRAY = LIT("G")
 LITERAL_INLINE_DEVICE_RGB = LIT("RGB")

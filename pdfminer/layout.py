@@ -19,7 +19,7 @@ from pdfminer.pdfcolor import PDFColorSpace
 from pdfminer.pdfexceptions import PDFTypeError, PDFValueError
 from pdfminer.pdffont import PDFFont
 from pdfminer.pdfinterp import Color, PDFGraphicState
-from pdfminer.pdftypes import PDFStream
+from pdfminer.pdftypes import PDFStream, resolve1
 from pdfminer.utils import (
     INF,
     LTComponentT,
@@ -326,7 +326,7 @@ class LTImage(LTComponent):
         self.srcsize = (stream.get_any(("W", "Width")), stream.get_any(("H", "Height")))
         self.imagemask = stream.get_any(("IM", "ImageMask"))
         self.bits = stream.get_any(("BPC", "BitsPerComponent"), 1)
-        self.colorspace = stream.get_any(("CS", "ColorSpace"))
+        self.colorspace = resolve1(stream.get_any(("CS", "ColorSpace")))
         if not isinstance(self.colorspace, list):
             self.colorspace = [self.colorspace]
 

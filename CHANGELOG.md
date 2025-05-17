@@ -3,6 +3,17 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [20250516]
+
+### Fixed
+
+- Remove `BMPWriter` and write BMP images with PIL
+- Remove extraneous invert of greyscale images introduced in ([#827](https://github.com/pdfminer/pdfminer.six/pull/827))
+- Extract images with Indexed colorspace correctly
+- Save CMYK JPEG images as CMYK
+- Save other CMYK images in .tiff format
+- Don't throw when saving image with no filters
+
 ## [20250506]
 
 ## Added
