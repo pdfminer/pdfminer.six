@@ -5,11 +5,14 @@ from typing import Literal, Tuple
 
 from pdfminer.jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from pdfminer.layout import LTImage
+from pdfminer.pdfcolor import LITERAL_INDEXED
 from pdfminer.pdfexceptions import PDFValueError
 from pdfminer.pdftypes import (
     LITERALS_DCT_DECODE,
     LITERALS_JBIG2_DECODE,
     LITERALS_JPX_DECODE,
+    int_value,
+    stream_value,
 )
 
 PIL_ERROR_MESSAGE = (
@@ -109,8 +112,18 @@ class ImageWriter:
 
     def _save_bytes(self, image: LTImage) -> str:
         """Save an image without encoding, just bytes"""
-        width, height = image.srcsize
-        channels = len(image.stream.get_data()) * 8 // (width * height * image.bits)
+        img_stream = image.stream.get_data()
+        if image.colorspace[0] is LITERAL_INDEXED:
+            hival = int_value(image.colorspace[2])
+            lookup = stream_value(image.colorspace[3]).get_data()
+            channels = len(lookup) // (hival + 1)
+            img_stream = bytes(
+                b for i in img_stream for b in lookup[channels * i : channels * (i + 1)]
+            )
+        else:
+            width, height = image.srcsize
+            channels = len(img_stream) * 8 // (width * height * image.bits)
+
         mode: Literal["1", "L", "RGB", "CMYK"]
         if image.bits == 1:
             mode = "1"
@@ -123,13 +136,14 @@ class ImageWriter:
         else:
             return self._save_raw(image)
 
-        name, path = self._create_unique_image_name(image, ".bmp")
+        ext = ".tiff" if mode == "CMYK" else ".bmp"
+        name, path = self._create_unique_image_name(image, ext)
         with open(path, "wb") as fp:
             try:
                 from PIL import Image  # type: ignore[import]
             except ImportError:
                 raise ImportError(PIL_ERROR_MESSAGE)
-            img = Image.frombytes(mode, image.srcsize, image.stream.get_data(), "raw")
+            img = Image.frombytes(mode, image.srcsize, img_stream, "raw")
             img.save(fp)
 
         return name
