@@ -36,17 +36,23 @@ def unpack_bytes(s: bytes, bpc: int, width: int, height: int) -> bytes:
     if bpc not in (1, 2, 4):
         return s
     if bpc == 4:
+
         def unpack_f(x: int) -> Tuple[int, ...]:
             return (x >> 4, x & 15)
     elif bpc == 2:
+
         def unpack_f(x: int) -> Tuple[int, ...]:
             return (x >> 6, x >> 4 & 3, x >> 2 & 3, x & 3)
     else:  # bpc == 1
+
         def unpack_f(x: int) -> Tuple[int, ...]:
             return tuple(x >> i & 1 for i in reversed(range(8)))
+
     rowsize = (width * bpc + 7) // 8
     rows = (s[i * rowsize : (i + 1) * rowsize] for i in range(height))
-    unpacked_rows = (islice(chain.from_iterable(map(unpack_f, row)), width) for row in rows)
+    unpacked_rows = (
+        islice(chain.from_iterable(map(unpack_f, row)), width) for row in rows
+    )
     return bytes(chain.from_iterable(unpacked_rows))
 
 
