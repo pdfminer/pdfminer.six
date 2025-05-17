@@ -46,8 +46,8 @@ def unpack_bytes(s: bytes, bpc: int, width: int, height: int) -> bytes:
             return tuple(x >> i & 1 for i in reversed(range(8)))
     rowsize = (width * bpc + 7) // 8
     rows = (s[i * rowsize : (i + 1) * rowsize] for i in range(height))
-    rows = (islice(chain.from_iterable(map(unpack_f, row)), width) for row in rows)
-    return bytes(chain.from_iterable(rows))
+    unpacked_rows = (islice(chain.from_iterable(map(unpack_f, row)), width) for row in rows)
+    return bytes(chain.from_iterable(unpacked_rows))
 
 
 class ImageWriter:
