@@ -109,7 +109,10 @@ class ImageWriter:
 
         filters = image.stream.get_filters()
 
-        if filters[-1][0] in LITERALS_DCT_DECODE:
+        if not filters:
+            name = self._save_bytes(image)
+
+        elif filters[-1][0] in LITERALS_DCT_DECODE:
             name = self._save_jpeg(image)
 
         elif filters[-1][0] in LITERALS_JPX_DECODE:
