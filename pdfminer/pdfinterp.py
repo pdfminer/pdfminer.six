@@ -156,11 +156,9 @@ class PDFGraphicState:
         obj.intent = self.intent
         obj.flatness = self.flatness
         obj.scolor = self.scolor
-        obj.scs.name = self.scs.name
-        obj.scs.ncomponents = self.scs.ncomponents
+        obj.scs = self.scs
         obj.ncolor = self.ncolor
-        obj.ncs.name = self.ncs.name
-        obj.ncs.ncomponents = self.ncs.ncomponents
+        obj.ncs = self.ncs
         return obj
 
     def __repr__(self) -> str:
