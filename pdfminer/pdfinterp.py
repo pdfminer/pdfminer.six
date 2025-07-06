@@ -776,7 +776,7 @@ class PDFPageInterpreter:
         components = self.pop(n)
         if len(components) != n:
             log.warning(
-                f"Cannot set stroke color because expected {n} components but got {components:!r}"
+                f"Cannot set stroke color because expected {n} components but got {repr(components)}"
             )
 
         elif len(components) == 1:
@@ -821,7 +821,7 @@ class PDFPageInterpreter:
         components = self.pop(n)
         if len(components) != n:
             log.warning(
-                f"Cannot set non-stroke color because expected {n} components but got {components:!r}"
+                f"Cannot set non-stroke color because expected {n} components but got {repr(components)}"
             )
 
         elif len(components) == 1:
