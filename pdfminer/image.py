@@ -109,10 +109,10 @@ class ImageWriter:
 
         filters = image.stream.get_filters()
 
-        if filters[-1][0] in LITERALS_DCT_DECODE:
+        if filters and filters[-1][0] in LITERALS_DCT_DECODE:
             name = self._save_jpeg(image)
 
-        elif filters[-1][0] in LITERALS_JPX_DECODE:
+        elif filters and filters[-1][0] in LITERALS_JPX_DECODE:
             name = self._save_jpeg2000(image)
 
         elif self._is_jbig2_iamge(image):
