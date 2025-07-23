@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## Added
+## Fixed
 
 - Fix image export when it has no filters ([#1152](https://github.com/pdfminer/pdfminer.six/pull/1152))
 
