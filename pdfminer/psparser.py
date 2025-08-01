@@ -510,7 +510,7 @@ class PSBaseParser:
                 changed_stream = self.fillbuf()
                 if changed_stream and self._curtoken:
                     # if we change stream in the middle of a token, try to parse it by tacking on whitespace.
-                    self.charpos = self._parse1(b"\n", 0)
+                    self._parse1(b"\n", 0)
                 else:
                     self.charpos = self._parse1(self.buf, self.charpos)
             except PSEOF:
