@@ -272,9 +272,9 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
         self.fillfp()
         PSStackParser.seek(self, pos)
 
-    def fillbuf(self) -> None:
+    def fillbuf(self) -> bool:
         if self.charpos < len(self.buf):
-            return
+            return False
         while 1:
             self.fillfp()
             self.bufpos = self.fp.tell()
@@ -283,6 +283,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 break
             self.fp = None  # type: ignore[assignment]
         self.charpos = 0
+        return True
 
     def get_inline_data(self, pos: int, target: bytes = b"EI") -> Tuple[int, bytes]:
         self.seek(pos)

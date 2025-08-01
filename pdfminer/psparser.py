@@ -207,15 +207,16 @@ class PSBaseParser:
         self._tokens: List[Tuple[int, PSBaseParserToken]] = []
         self.eof = False
 
-    def fillbuf(self) -> None:
+    def fillbuf(self) -> bool:
         if self.charpos < len(self.buf):
-            return
+            return False
         # fetch next chunk.
         self.bufpos = self.fp.tell()
         self.buf = self.fp.read(self.BUFSIZ)
         if not self.buf:
             raise PSEOF("Unexpected EOF")
         self.charpos = 0
+        return False
 
     def nextline(self) -> Tuple[int, bytes]:
         """Fetches a next line that ends either with \\r or \\n."""
@@ -506,8 +507,12 @@ class PSBaseParser:
             raise PSEOF("Unexpected EOF")
         while not self._tokens:
             try:
-                self.fillbuf()
-                self.charpos = self._parse1(self.buf, self.charpos)
+                changed_stream = self.fillbuf()
+                if changed_stream and self._curtoken:
+                    # if we change stream in the middle of a token, try to parse it by tacking on whitespace.
+                    self.charpos = self._parse1(b"\n", 0)
+                else:
+                    self.charpos = self._parse1(self.buf, self.charpos)
             except PSEOF:
                 # If we hit EOF in the middle of a token, try to parse
                 # it by tacking on whitespace, and delay raising PSEOF
