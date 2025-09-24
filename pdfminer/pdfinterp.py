@@ -483,7 +483,8 @@ class PDFPageInterpreter:
                 f"Cannot set line width because {linewidth!r} is an invalid float value"
             )
         else:
-            self.graphicstate.linewidth = linewidth_f
+            scale = (self.ctm[0] ** 2 + self.ctm[1] ** 2) ** 0.5
+            self.graphicstate.linewidth = linewidth_f * scale
 
     def do_J(self, linecap: PDFStackT) -> None:
         """Set line cap style"""
