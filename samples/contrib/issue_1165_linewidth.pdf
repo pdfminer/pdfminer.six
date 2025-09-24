@@ -1,0 +1,116 @@
+%PDF-1.5
+%����
+%QDF-1.0
+
+%% Original object ID: 11 0
+1 0 obj
+<<
+  /Pages 3 0 R
+  /Type /Catalog
+>>
+endobj
+
+%% Original object ID: 10 0
+2 0 obj
+<<
+  /CreationDate (D:20250923101750+02'00)
+  /Creator (Inkscape 1.2.2 \(https://inkscape.org\))
+  /Producer (cairo 1.18.0 \(https://cairographics.org\))
+>>
+endobj
+
+%% Original object ID: 1 0
+3 0 obj
+<<
+  /Count 1
+  /Kids [
+    4 0 R
+  ]
+  /Type /Pages
+>>
+endobj
+
+%% Page 1
+%% Original object ID: 2 0
+4 0 obj
+<<
+  /Contents 5 0 R
+  /Group <<
+    /CS /DeviceRGB
+    /I true
+    /S /Transparency
+    /Type /Group
+  >>
+  /MediaBox [
+    0
+    0
+    595.275601
+    841.889705
+  ]
+  /Parent 3 0 R
+  /Resources 7 0 R
+  /StructParents 0
+  /Type /Page
+>>
+endobj
+
+%% Contents for page 1
+%% Original object ID: 4 0
+5 0 obj
+<<
+  /Length 6 0 R
+>>
+stream
+1 0 0 1 0 0 cm
+q
+2.83465 w
+0 J
+0 j
+0.5 G
+91.508 258.289 m 169.402 161.66 l S
+2 0 0 2 0 0 cm
+q
+2.83465 w
+0 J
+0 j
+0 G
+91.508 258.289 m 169.402 161.66 l S Q
+Q
+endstream
+endobj
+
+6 0 obj
+131
+endobj
+
+%% Original object ID: 3 0
+7 0 obj
+<<
+  /ExtGState <<
+    /a0 <<
+      /CA 1
+      /ca 1
+    >>
+  >>
+>>
+endobj
+
+xref
+0 8
+0000000000 65535 f 
+0000000053 00000 n 
+0000000135 00000 n 
+0000000335 00000 n 
+0000000444 00000 n 
+0000000748 00000 n 
+0000000934 00000 n 
+0000000981 00000 n 
+trailer <<
+  /Info 2 0 R
+  /Root 1 0 R
+  /Size 8
+  /ID [<97b1ec2d2e8bea3bc37e4e9d365ca38c><97b1ec2d2e8bea3bc37e4e9d365ca38c>]
+>>
+startxref
+1066
+%%EOF
