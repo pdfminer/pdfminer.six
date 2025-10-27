@@ -3,6 +3,13 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- Fix `struct.error` in `IdentityCMap.decode()` and `IdentityCMapByte.decode()` when processing PDFs with odd-length font encoding buffers ([#668](https://github.com/pdfminer/pdfminer.six/issues/668), [#785](https://github.com/pdfminer/pdfminer.six/issues/785), [#193](https://github.com/pdfminer/pdfminer.six/issues/193)). The methods now correctly slice the buffer to the expected size before unpacking.
+
+
 ## [20250506]
 
 ## Added
