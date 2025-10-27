@@ -17,7 +17,7 @@ def test_identity_cmap_odd_length_buffer():
 
     # Test with odd-length buffer (21 bytes)
     # This would previously raise: struct.error: unpack requires a buffer of 20 bytes
-    odd_buffer = struct.pack(">10H", *range(10)) + b'\x00'
+    odd_buffer = struct.pack(">10H", *range(10)) + b"\x00"
     assert len(odd_buffer) == 21
 
     result = cmap.decode(odd_buffer)
@@ -46,7 +46,7 @@ def test_identity_cmap_empty_buffer():
     """Test that IdentityCMap.decode() handles empty buffers."""
     cmap = IdentityCMap()
 
-    empty_buffer = b''
+    empty_buffer = b""
     result = cmap.decode(empty_buffer)
     assert result == ()
 
@@ -59,7 +59,7 @@ def test_identity_cmap_single_byte_buffer():
     """
     cmap = IdentityCMap()
 
-    single_byte = b'\x00'
+    single_byte = b"\x00"
     result = cmap.decode(single_byte)
     assert result == ()
 
@@ -89,7 +89,7 @@ def test_identity_cmap_various_odd_lengths():
         buffer_size = num_shorts * 2 + 1  # Add 1 to make it odd
 
         # Create buffer with num_shorts shorts + 1 extra byte
-        buffer = struct.pack(f">{num_shorts}H", *range(num_shorts)) + b'\x00'
+        buffer = struct.pack(f">{num_shorts}H", *range(num_shorts)) + b"\x00"
         assert len(buffer) == buffer_size
 
         result = cmap.decode(buffer)
