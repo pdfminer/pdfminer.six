@@ -3,6 +3,12 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- Warnings when processing PDFs with Pattern color spaces ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
+
 ## [20250506]
 
 ## Added
