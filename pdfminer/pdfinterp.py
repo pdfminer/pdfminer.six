@@ -780,7 +780,7 @@ class PDFPageInterpreter:
                 f"Cannot set stroke color because expected {n} components but got {components:!r}"
             )
 
-        elif len(components) == 1 and self.graphicstate.scs.name == 'Pattern':
+        elif len(components) == 1 and self.graphicstate.scs.name == "Pattern":
             # Pattern color space: store the pattern name as a string
             # Pattern names are PSLiteral objects, extract the name
             pattern_name = literal_name(components[0])
@@ -832,7 +832,7 @@ class PDFPageInterpreter:
                 f"Cannot set non-stroke color because expected {n} components but got {components:!r}"
             )
 
-        elif len(components) == 1 and self.graphicstate.ncs.name == 'Pattern':
+        elif len(components) == 1 and self.graphicstate.ncs.name == "Pattern":
             # Pattern color space: store the pattern name as a string
             # Pattern names are PSLiteral objects, extract the name
             pattern_name = literal_name(components[0])
