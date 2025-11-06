@@ -307,14 +307,13 @@ class TestColorSpace:
 
     def test_pattern_colors(self):
         """Test that Pattern color spaces are properly handled.
-        
+
         Pattern colors use pattern names (like 'P1444') instead of numeric values.
         The SCN/scn operators should store these as strings, not try to convert
         them to floats.
         """
         path = absolute_sample_path("test_pattern_colors.pdf")
-        found_pattern = False
-        
+
         for page in extract_pages(path):
             # Check for any objects with pattern colors
             for item in page:
@@ -324,15 +323,9 @@ class TestColorSpace:
                         # Pattern colors are stored as strings
                         if isinstance(item.stroking_color, str):
                             assert item.stroking_color.startswith("P")
-                            found_pattern = True
                     if item.non_stroking_color is not None:
                         if isinstance(item.non_stroking_color, str):
                             assert item.non_stroking_color.startswith("P")
-                            found_pattern = True
-        
-        # The test PDF should contain at least one pattern color
-        # (This is a weak assertion since not all pages may have patterns)
-        # If no patterns found, test still passes (PDF might not trigger pattern code path)
 
 
 class TestBinaryDetector:
