@@ -1,13 +1,10 @@
 import io
 from tempfile import TemporaryFile
-from typing import List, Tuple
 
 from pdfminer.converter import PDFConverter, PDFLayoutAnalyzer
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTChar, LTContainer, LTCurve, LTLine, LTRect
-from pdfminer.pdfcolor import PREDEFINED_COLORSPACE, PDFColorSpace
-from pdfminer.pdfinterp import PDFGraphicState, PDFPageInterpreter, PDFResourceManager
-from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfinterp import PDFGraphicState
 from tests.helpers import absolute_sample_path
 
 
