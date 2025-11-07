@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Warnings when processing PDFs with Pattern color spaces ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
+- Warnings when processing PDFs with Pattern color spaces, adding support for both colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
 
 ## [20250506]
 
