@@ -240,8 +240,14 @@ class CMapDB:
         )
         for directory in cmap_paths:
             path = os.path.join(directory, filename)
-            if os.path.exists(path):
-                gzfile = gzip.open(path)
+            # Resolve paths to prevent directory traversal
+            resolved_path = os.path.realpath(path)
+            resolved_directory = os.path.realpath(directory)
+            # Check if resolved path is within the intended directory
+            if not resolved_path.startswith(resolved_directory + os.sep):
+                continue
+            if os.path.exists(resolved_path):
+                gzfile = gzip.open(resolved_path)
                 try:
                     return type(str(name), (), pickle.loads(gzfile.read()))
                 finally:
