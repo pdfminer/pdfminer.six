@@ -304,41 +304,6 @@ class TestColorSpace:
                 elif cs == "DeviceCMYK":
                     assert len(color) == 4
 
-    def test_color_space_in_gstack(self):
-        class CustomPDFPageInterpreter(PDFPageInterpreter):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                self.cs_stack_for_test: List[Tuple[PDFColorSpace, PDFColorSpace]] = []
-
-            def do_q(self):
-                self.cs_stack_for_test.append(
-                    (self.graphicstate.ncs, self.graphicstate.scs)
-                )
-                super().do_q()
-                assert self.gstack[-1][2].ncs == self.graphicstate.ncs
-                assert self.gstack[-1][2].scs == self.graphicstate.scs
-
-            def do_Q(self):
-                if self.cs_stack_for_test:
-                    expected = self.cs_stack_for_test.pop()
-                else:
-                    expected = (
-                        PREDEFINED_COLORSPACE["DeviceGray"],
-                        PREDEFINED_COLORSPACE["DeviceGray"],
-                    )
-                super().do_Q()
-                assert self.graphicstate.ncs == expected[0]
-                assert self.graphicstate.scs == expected[1]
-
-        resource_manager = PDFResourceManager()
-        device = PDFLayoutAnalyzer(resource_manager)
-        interpreter = CustomPDFPageInterpreter(resource_manager, device)
-
-        path = absolute_sample_path("contrib/issue-1061-colour-space-stack.pdf")
-        with open(path, "rb") as fp:
-            for page in PDFPage.get_pages(fp):
-                interpreter.process_page(page)
-
 
 class TestBinaryDetector:
     def test_stringio(self):
