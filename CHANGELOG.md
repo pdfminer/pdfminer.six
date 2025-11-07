@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - `IndexError` when saving image with no filters`` ([#1117](https://github.com/pdfminer/pdfminer.six/pull/1135))
+- Copying color space scs and ncs ([#1140](https://github.com/pdfminer/pdfminer.six/pull/1140))
 
 ## [20251107]
 
