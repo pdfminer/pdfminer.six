@@ -991,6 +991,13 @@ class PDFSimpleFont(PDFFont):
             self.cid2unicode = EncodingDB.get_encoding(name, diff)
         else:
             self.cid2unicode = EncodingDB.get_encoding(literal_name(encoding))
+        if (
+            "Encoding" not in spec
+            and literal_name(spec.get("Subtype", LIT("Type1"))) == "TrueType"
+        ):
+            # Use WinAnsi (Windows-1252) character set when encoding is missing
+            for code, char in EncodingDB.win2unicode.items():
+                self.cid2unicode[code] = char
         self.unicode_map: Optional[UnicodeMap] = None
         if "ToUnicode" in spec:
             strm = stream_value(spec["ToUnicode"])
