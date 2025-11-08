@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - Warnings when processing PDFs with Pattern color spaces, adding support for both colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
+- `IndexError` when saving image with no filters`` ([#1117](https://github.com/pdfminer/pdfminer.six/pull/1135))
+- Copying color space scs and ncs ([#1140](https://github.com/pdfminer/pdfminer.six/pull/1140))
+
+## [20251107]
+
+### Fixed
+
+- Arbitrary code execution when loading pickle cmaps ([issue](https://github.com/pdfminer/pdfminer.six/security/advisories/GHSA-wf5f-4jwr-ppcp))
 
 ## [20250506]
 
