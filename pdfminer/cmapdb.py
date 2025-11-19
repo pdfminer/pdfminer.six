@@ -10,12 +10,14 @@ More information is available on:
 """
 
 import gzip
+import json
 import logging
 import os
 import os.path
 import pickle as pickle
 import struct
 import sys
+import warnings
 from typing import (
     Any,
     BinaryIO,
@@ -229,29 +231,84 @@ class CMapDB:
     class CMapNotFound(CMapError):
         pass
 
+    @staticmethod
+    def _convert_code2cid_keys(d: Any) -> Any:
+        """Recursively convert string keys to integers in CODE2CID dictionaries."""
+        if not isinstance(d, dict):
+            return d
+        result = {}
+        for k, v in d.items():
+            # Convert string keys to integers
+            try:
+                new_key = int(k)
+            except (ValueError, TypeError):
+                new_key = k
+            # Recursively convert nested dictionaries
+            if isinstance(v, dict):
+                result[new_key] = CMapDB._convert_code2cid_keys(v)
+            else:
+                result[new_key] = v
+        return result
+
     @classmethod
     def _load_data(cls, name: str) -> Any:
         name = name.replace("\0", "")
-        filename = "%s.pickle.gz" % name
         log.debug("loading: %r", name)
         cmap_paths = (
             os.environ.get("CMAP_PATH", "/usr/share/pdfminer/"),
             os.path.join(os.path.dirname(__file__), "cmap"),
         )
+
         for directory in cmap_paths:
-            path = os.path.join(directory, filename)
-            # Resolve paths to prevent directory traversal
-            resolved_path = os.path.realpath(path)
+            # Try JSON format first (secure)
+            json_filename = "%s.json.gz" % name
+            json_path = os.path.join(directory, json_filename)
+            resolved_json_path = os.path.realpath(json_path)
             resolved_directory = os.path.realpath(directory)
+
             # Check if resolved path is within the intended directory
-            if not resolved_path.startswith(resolved_directory + os.sep):
-                continue
-            if os.path.exists(resolved_path):
-                gzfile = gzip.open(resolved_path)
-                try:
-                    return type(str(name), (), pickle.loads(gzfile.read()))
-                finally:
-                    gzfile.close()
+            if resolved_json_path.startswith(resolved_directory + os.sep):
+                if os.path.exists(resolved_json_path):
+                    log.debug("loading JSON: %r", json_path)
+                    with gzip.open(
+                        resolved_json_path, "rt", encoding="utf-8"
+                    ) as gzfile:
+                        data = json.load(gzfile)
+                        # Convert string keys to integers for CID mappings
+                        if "CID2UNICHR_H" in data:
+                            data["CID2UNICHR_H"] = {
+                                int(k): v for k, v in data["CID2UNICHR_H"].items()
+                            }
+                        if "CID2UNICHR_V" in data:
+                            data["CID2UNICHR_V"] = {
+                                int(k): v for k, v in data["CID2UNICHR_V"].items()
+                            }
+                        # CODE2CID may also have numeric keys that need conversion
+                        if "CODE2CID" in data and data["CODE2CID"]:
+                            data["CODE2CID"] = cls._convert_code2cid_keys(
+                                data["CODE2CID"]
+                            )
+                        return type(str(name), (), data)
+
+            # Fall back to pickle format (deprecated, insecure)
+            pickle_filename = "%s.pickle.gz" % name
+            pickle_path = os.path.join(directory, pickle_filename)
+            resolved_pickle_path = os.path.realpath(pickle_path)
+
+            # Check if resolved path is within the intended directory
+            if resolved_pickle_path.startswith(resolved_directory + os.sep):
+                if os.path.exists(resolved_pickle_path):
+                    warnings.warn(
+                        f"Loading CMap '{name}' from insecure pickle format. "
+                        "Please convert to JSON format using convert_pickle_to_json(). "
+                        "Pickle support will be removed in a future version.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
+                    log.debug("loading pickle (deprecated): %r", pickle_path)
+                    with gzip.open(resolved_pickle_path, "rb") as gzfile:
+                        return type(str(name), (), pickle.loads(gzfile.read()))
+
         raise CMapDB.CMapNotFound(name)
 
     @classmethod
@@ -281,6 +338,38 @@ class CMapDB:
         data = cls._load_data("to-unicode-%s" % name)
         cls._umap_cache[name] = [PyUnicodeMap(name, data, v) for v in (False, True)]
         return cls._umap_cache[name][vertical]
+
+    @staticmethod
+    def convert_pickle_to_json(pickle_path: str, json_path: str) -> None:
+        """Convert a pickle.gz CMap file to json.gz format.
+
+        Args:
+            pickle_path: Path to the input .pickle.gz file
+            json_path: Path to the output .json.gz file
+
+        Raises:
+            FileNotFoundError: If pickle_path doesn't exist
+            ValueError: If the pickle file contains non-serializable data
+        """
+        if not os.path.exists(pickle_path):
+            raise FileNotFoundError(f"Pickle file not found: {pickle_path}")
+
+        # Load pickle data (it's already a dictionary)
+        with gzip.open(pickle_path, "rb") as gzfile:
+            data = pickle.load(gzfile)
+
+        # The pickle data is already a dictionary with CODE2CID, IS_VERTICAL, etc.
+        # We can serialize it directly to JSON
+        if not isinstance(data, dict):
+            raise ValueError(f"Expected dict from pickle, got {type(data)}")
+
+        # Write JSON data
+        with gzip.open(json_path, "wt", encoding="utf-8") as gzfile:
+            json.dump(
+                data, gzfile, ensure_ascii=False, indent=None, separators=(",", ":")
+            )
+
+        log.info(f"Converted {pickle_path} -> {json_path}")
 
 
 class CMapParser(PSStackParser[PSKeyword]):

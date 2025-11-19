@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import codecs
+import json
 import pickle as pickle
 import sys
 
@@ -133,12 +134,28 @@ class CMapConverter:
         )
         fp.write(pickle.dumps(data, 2))
 
+    def dump_cmap_json(self, fp, enc):
+        """Dump CMap data as JSON (secure alternative to pickle)."""
+        data = dict(
+            IS_VERTICAL=self.is_vertical.get(enc, False),
+            CODE2CID=self.code2cid.get(enc),
+        )
+        json.dump(data, fp, ensure_ascii=False, separators=(",", ":"))
+
     def dump_unicodemap(self, fp):
         data = dict(
             CID2UNICHR_H=self.cid2unichr_h,
             CID2UNICHR_V=self.cid2unichr_v,
         )
         fp.write(pickle.dumps(data, 2))
+
+    def dump_unicodemap_json(self, fp):
+        """Dump Unicode map data as JSON (secure alternative to pickle)."""
+        data = dict(
+            CID2UNICHR_H=self.cid2unichr_h,
+            CID2UNICHR_V=self.cid2unichr_v,
+        )
+        json.dump(data, fp, ensure_ascii=False, separators=(",", ":"))
 
 
 def main(argv):
@@ -176,16 +193,34 @@ def main(argv):
         fp.close()
 
     for enc in converter.get_encs():
-        fname = "%s.pickle.gz" % enc
+        # Write JSON format (secure)
+        fname = "%s.json.gz" % enc
         path = os.path.join(outdir, fname)
         print("writing: %r..." % path)
+        fp = gzip.open(path, "wt", encoding="utf-8")
+        converter.dump_cmap_json(fp, enc)
+        fp.close()
+
+        # Also write pickle format for backward compatibility (deprecated)
+        fname = "%s.pickle.gz" % enc
+        path = os.path.join(outdir, fname)
+        print("writing (deprecated pickle): %r..." % path)
         fp = gzip.open(path, "wb")
         converter.dump_cmap(fp, enc)
         fp.close()
 
-    fname = "to-unicode-%s.pickle.gz" % regname
+    # Write JSON format (secure)
+    fname = "to-unicode-%s.json.gz" % regname
     path = os.path.join(outdir, fname)
     print("writing: %r..." % path)
+    fp = gzip.open(path, "wt", encoding="utf-8")
+    converter.dump_unicodemap_json(fp)
+    fp.close()
+
+    # Also write pickle format for backward compatibility (deprecated)
+    fname = "to-unicode-%s.pickle.gz" % regname
+    path = os.path.join(outdir, fname)
+    print("writing (deprecated pickle): %r..." % path)
     fp = gzip.open(path, "wb")
     converter.dump_unicodemap(fp)
     fp.close()
