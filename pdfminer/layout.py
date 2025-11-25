@@ -61,6 +61,11 @@ class LAParams:
     :param char_margin: If two characters are closer together than this
         margin they are considered part of the same line. The margin is
         specified relative to the width of the character.
+    :param char_margin_left: If two characters are closer together than this
+        margin AND the second character is to the left of the first, they are
+        considered part of the same line. This is useful to prevent line wrapping
+        when processing left-to-right text. If not specified, defaults to char_margin.
+        The margin is specified relative to the width of the character.
     :param word_margin: If two characters on the same line are further apart
         than this margin then they are considered to be two separate words, and
         an intermediate space will be added for readability. The margin is
@@ -89,9 +94,11 @@ class LAParams:
         boxes_flow: Optional[float] = 0.5,
         detect_vertical: bool = False,
         all_texts: bool = False,
+        char_margin_left: Optional[float] = None,
     ) -> None:
         self.line_overlap = line_overlap
         self.char_margin = char_margin
+        self.char_margin_left = char_margin_left if char_margin_left is not None else char_margin
         self.line_margin = line_margin
         self.word_margin = word_margin
         self.boxes_flow = boxes_flow
@@ -708,6 +715,14 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         line = None
         for obj1 in objs:
             if obj0 is not None:
+                # Determine which char_margin to use based on horizontal direction
+                # Use char_margin_left when moving leftward (potential line wrap)
+                # Use char_margin when moving rightward (normal text flow)
+                if obj1.x0 < obj0.x0:
+                    char_margin = laparams.char_margin_left
+                else:
+                    char_margin = laparams.char_margin
+                
                 # halign: obj0 and obj1 is horizontally aligned.
                 #
                 #   +------+ - - -
@@ -717,13 +732,13 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 #          - - - +------+
                 #
                 #          |<--->|
-                #        (char_margin)
+                #        (char_margin or char_margin_left)
                 halign = (
                     obj0.is_voverlap(obj1)
                     and min(obj0.height, obj1.height) * laparams.line_overlap
                     < obj0.voverlap(obj1)
                     and obj0.hdistance(obj1)
-                    < max(obj0.width, obj1.width) * laparams.char_margin
+                    < max(obj0.width, obj1.width) * char_margin
                 )
 
                 # valign: obj0 and obj1 is vertically aligned.
@@ -732,7 +747,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 #   | obj0 |
                 #   |      |
                 #   +------+ - - -
-                #     |    |     | (char_margin)
+                #     |    |     | (char_margin or char_margin_left)
                 #     +------+ - -
                 #     | obj1 |
                 #     |      |
@@ -746,7 +761,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                     and min(obj0.width, obj1.width) * laparams.line_overlap
                     < obj0.hoverlap(obj1)
                     and obj0.vdistance(obj1)
-                    < max(obj0.height, obj1.height) * laparams.char_margin
+                    < max(obj0.height, obj1.height) * char_margin
                 )
 
                 if (halign and isinstance(line, LTTextLineHorizontal)) or (
