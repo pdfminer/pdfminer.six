@@ -98,7 +98,9 @@ class LAParams:
     ) -> None:
         self.line_overlap = line_overlap
         self.char_margin = char_margin
-        self.char_margin_left = char_margin_left if char_margin_left is not None else char_margin
+        self.char_margin_left = (
+            char_margin_left if char_margin_left is not None else char_margin
+        )
         self.line_margin = line_margin
         self.word_margin = word_margin
         self.boxes_flow = boxes_flow
@@ -722,7 +724,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                     char_margin = laparams.char_margin_left
                 else:
                     char_margin = laparams.char_margin
-                
+
                 # halign: obj0 and obj1 is horizontally aligned.
                 #
                 #   +------+ - - -
@@ -737,8 +739,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                     obj0.is_voverlap(obj1)
                     and min(obj0.height, obj1.height) * laparams.line_overlap
                     < obj0.voverlap(obj1)
-                    and obj0.hdistance(obj1)
-                    < max(obj0.width, obj1.width) * char_margin
+                    and obj0.hdistance(obj1) < max(obj0.width, obj1.width) * char_margin
                 )
 
                 # valign: obj0 and obj1 is vertically aligned.

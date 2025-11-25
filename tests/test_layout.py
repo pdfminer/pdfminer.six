@@ -150,41 +150,42 @@ def test_pdf_with_empty_characters_vertical():
 class TestCharMarginLeft(unittest.TestCase):
     def test_char_margin_left_prevents_line_wrapping(self):
         """Test that char_margin_left prevents incorrect line merging.
-        
+
         When processing characters sequentially, a character at the far right
         of one line (X=100) followed by a character at the far left of the next
         line (X=10) should not be grouped together when char_margin_left is small,
         even if char_margin is large.
         """
-        from pdfminer.layout import LTChar
         from unittest.mock import Mock
-        
+
+        from pdfminer.layout import LTChar
+
         # Create LAParams with different margins for left vs right
         laparams = LAParams(
-            char_margin=1000,      # Very generous for normal text
-            char_margin_left=2,    # Strict for leftward jumps
+            char_margin=1000,  # Very generous for normal text
+            char_margin_left=2,  # Strict for leftward jumps
             line_overlap=0.5,
         )
-        
+
         layout = LTLayoutContainer((0, 0, 200, 50))
-        
+
         # Create a mock font
         mock_font = Mock()
         mock_font.fontname = "TestFont"
         mock_font.is_vertical.return_value = False
         mock_font.get_descent.return_value = -0.2
         mock_font.get_height.return_value = 1.0
-        
+
         # Create characters simulating a line wrap scenario
         # Line 1: characters at X=10, 20, 30, ..., 90 (moving right)
         # Line 2: characters at X=10, 20, 30 (moving right, but starts far left)
-        
+
         chars = []
-        
+
         # First line at Y=30
         for i in range(9):
             char = LTChar(
-                matrix=(1, 0, 0, 1, 10 + i*10, 30),
+                matrix=(1, 0, 0, 1, 10 + i * 10, 30),
                 font=mock_font,
                 fontsize=10,
                 scaling=1,
@@ -196,11 +197,11 @@ class TestCharMarginLeft(unittest.TestCase):
                 graphicstate=None,
             )
             chars.append(char)
-        
+
         # Second line at Y=10 (below first line)
         for i in range(3):
             char = LTChar(
-                matrix=(1, 0, 0, 1, 10 + i*10, 10),
+                matrix=(1, 0, 0, 1, 10 + i * 10, 10),
                 font=mock_font,
                 fontsize=10,
                 scaling=1,
@@ -212,21 +213,22 @@ class TestCharMarginLeft(unittest.TestCase):
                 graphicstate=None,
             )
             chars.append(char)
-        
+
         # Group the characters into lines
         lines = list(layout.group_objects(laparams, chars))
-        
+
         # With char_margin_left=2, the large leftward jump from X=90 to X=10
         # should create separate lines
         # Expected: 2 lines (one for each Y level)
-        self.assertGreaterEqual(len(lines), 2, 
-            "char_margin_left should prevent line wrapping")
-    
+        self.assertGreaterEqual(
+            len(lines), 2, "char_margin_left should prevent line wrapping"
+        )
+
     def test_char_margin_left_defaults_to_char_margin(self):
         """Test that char_margin_left defaults to char_margin for backward compatibility."""
         laparams = LAParams(char_margin=100)
         self.assertEqual(laparams.char_margin_left, 100)
-        
+
     def test_char_margin_left_can_be_set_explicitly(self):
         """Test that char_margin_left can be set to a different value."""
         laparams = LAParams(char_margin=1000, char_margin_left=2)
