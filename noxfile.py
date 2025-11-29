@@ -1,25 +1,32 @@
-import os
+"""
+Nox configuration for formatting, type checking, testing, and docs building.
+"""
 
+import os
 import nox
 
 PYTHON_ALL_VERSIONS = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 PYTHON_MODULES = ["fuzzing", "pdfminer", "tools", "tests", "noxfile.py"]
 
 
-@nox.session
+@nox.session(reuse_venv=True)
 def format(session):
+    """Run Ruff for linting & formatting."""
     session.install("ruff==0.5.1")
-    # Format files locally with black, but only check in cicd
-    if "CI" in os.environ:
+
+    if os.getenv("CI"):
+        # CI: check only, no auto-fix
         session.run("ruff", "check")
         session.run("ruff", "format", "--check")
     else:
+        # Local development: apply fixes
         session.run("ruff", "check", "--fix")
         session.run("ruff", "format")
 
 
-@nox.session
+@nox.session(reuse_venv=True)
 def types(session):
+    """Run static type checking."""
     session.install("mypy<1", "pytest-mypy")
     session.run(
         "mypy",
@@ -32,30 +39,26 @@ def types(session):
 
 @nox.session(python=PYTHON_ALL_VERSIONS)
 def tests(session):
-    session.install("pip")
+    """Run the test suite across multiple Python versions."""
+    session.install("pip>=21")
     session.install("-e", ".[dev]")
     session.run("pytest")
 
 
-@nox.session
+@nox.session(reuse_venv=True)
 def docs(session):
-    session.install("pip")
+    """Build documentation and doctests."""
+    session.install("pip>=21")
     session.install("-e", ".[docs]")
+
+    # HTML build
     session.run(
-        "python",
-        "-m",
-        "sphinx",
-        "-b",
-        "html",
-        "docs/source",
-        "docs/build/html",
+        "python", "-m", "sphinx", "-b", "html",
+        "docs/source", "docs/build/html",
     )
+
+    # Doctest build
     session.run(
-        "python",
-        "-m",
-        "sphinx",
-        "-b",
-        "doctest",
-        "docs/source",
-        "docs/build/doctest",
+        "python", "-m", "sphinx", "-b", "doctest",
+        "docs/source", "docs/build/doctest",
     )
