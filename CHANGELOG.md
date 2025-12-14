@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Refuse to execute circular references to content streams (including Form XObjects)
+- Refuse to execute circular references to content streams (including Form XObjects) ([#1143](https://github.com/pdfminer/pdfminer.six/pull/1143))
 - `IndexError` when saving image with no filters`` ([#1117](https://github.com/pdfminer/pdfminer.six/pull/1135))
 - Copying color space scs and ncs ([#1140](https://github.com/pdfminer/pdfminer.six/pull/1140))
 

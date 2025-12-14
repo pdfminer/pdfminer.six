@@ -371,14 +371,22 @@ class PDFPageInterpreter:
     def __init__(self, rsrcmgr: PDFResourceManager, device: PDFDevice) -> None:
         self.rsrcmgr = rsrcmgr
         self.device = device
+        # Track stream IDs currently being executed to detect circular references
         self.stream_ids: Set[int] = set()
+        # Track stream IDs from parent interpreters in the call stack
         self.parent_stream_ids: Set[int] = set()
 
     def dup(self) -> "PDFPageInterpreter":
         return self.__class__(self.rsrcmgr, self.device)
 
     def subinterp(self) -> "PDFPageInterpreter":
-        """Create a sub-interpreter"""
+        """Create a sub-interpreter for processing nested content streams.
+
+        This is used when invoking Form XObjects to prevent circular references.
+        Unlike dup(), this method propagates the stream ID tracking from the
+        parent interpreter, allowing detection of circular references across
+        nested XObject invocations.
+        """
         interp = self.dup()
         interp.parent_stream_ids.update(self.parent_stream_ids)
         interp.parent_stream_ids.update(self.stream_ids)
@@ -1242,13 +1250,16 @@ class PDFPageInterpreter:
         self.execute(list_value(streams))
 
     def execute(self, streams: Sequence[object]) -> None:
-        # Expand streams now so we can record their stream IDs (and
-        # avoid recursively instantiating XObjects)
+        # Detect and prevent circular references in content streams (including Form XObjects).
+        # We track stream IDs being executed in the current interpreter and all parent
+        # interpreters. If a stream is already being processed in the call stack, we skip
+        # it to prevent infinite recursion (CWE-835 vulnerability).
         valid_streams: List[PDFStream] = []
         self.stream_ids.clear()
         for obj in streams:
             stream = stream_value(obj)
             if stream.objid is None:
+                # Inline streams without object IDs can't be tracked for circular refs
                 continue
             if stream.objid in self.parent_stream_ids:
                 log.warning(
