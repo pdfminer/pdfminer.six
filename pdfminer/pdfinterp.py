@@ -1260,6 +1260,9 @@ class PDFPageInterpreter:
             stream = stream_value(obj)
             if stream.objid is None:
                 # Inline streams without object IDs can't be tracked for circular refs
+                log.warning(
+                    "Execute called on non-indirect object (inline image?) %r", stream
+                )
                 continue
             if stream.objid in self.parent_stream_ids:
                 log.warning(
