@@ -232,7 +232,7 @@ class CMapDB:
 
     @staticmethod
     def _convert_code2cid_keys(
-        d: Union[Dict[str, object], int]
+        d: Union[Dict[str, object], int],
     ) -> Union[Dict[int, object], int]:
         """Recursively convert string keys to integers in CODE2CID dictionaries."""
         if not isinstance(d, dict):
