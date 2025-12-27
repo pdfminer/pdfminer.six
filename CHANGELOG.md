@@ -7,11 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Security
 
-- **CRITICAL**: Eliminated arbitrary code execution vulnerability (CVE-2025-64512) by replacing pickle with JSON for CMap storage ([GHSA-wf5f-4jwr-ppcp](https://github.com/pdfminer/pdfminer.six/security/advisories/GHSA-wf5f-4jwr-ppcp))
-  - CMap files now use secure JSON format (`.json.gz`) instead of pickle
-  - Pickle format deprecated with warnings, will be removed in future release
-  - All 148 bundled CMap files converted to JSON format
-  - Backward compatibility maintained with automatic fallback to pickle files
+- **CRITICAL**: Eliminated arbitrary code execution vulnerability (CVE-2025-64512) by completely removing pickle support for CMap storage - users with custom pickle CMaps can use `tools/convert_cmaps_to_json.py` to convert to JSON format ([GHSA-wf5f-4jwr-ppcp](https://github.com/pdfminer/pdfminer.six/security/advisories/GHSA-wf5f-4jwr-ppcp))
 
 ### Fixed
 
