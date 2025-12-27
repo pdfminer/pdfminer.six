@@ -28,6 +28,7 @@ from typing import (
     Set,
     TextIO,
     Tuple,
+    Type,
     Union,
     cast,
 )
@@ -230,17 +231,19 @@ class CMapDB:
         pass
 
     @staticmethod
-    def _convert_code2cid_keys(d: Any) -> Any:
+    def _convert_code2cid_keys(
+        d: Union[Dict[str, object], int]
+    ) -> Union[Dict[int, object], int]:
         """Recursively convert string keys to integers in CODE2CID dictionaries."""
         if not isinstance(d, dict):
             return d
-        result = {}
+        result: Dict[int, object] = {}
         for k, v in d.items():
             # Convert string keys to integers
             try:
                 new_key = int(k)
             except (ValueError, TypeError):
-                new_key = k
+                new_key = k  # type: ignore[assignment]
             # Recursively convert nested dictionaries
             if isinstance(v, dict):
                 result[new_key] = CMapDB._convert_code2cid_keys(v)
@@ -249,7 +252,7 @@ class CMapDB:
         return result
 
     @classmethod
-    def _load_data(cls, name: str) -> Any:
+    def _load_data(cls, name: str) -> Type[Any]:
         name = name.replace("\0", "")
         log.debug("loading: %r", name)
         cmap_paths = (
@@ -271,7 +274,7 @@ class CMapDB:
                     with gzip.open(
                         resolved_json_path, "rt", encoding="utf-8"
                     ) as gzfile:
-                        data = json.load(gzfile)
+                        data: Dict[str, Any] = json.load(gzfile)
                         # Convert string keys to integers for CID mappings
                         if "CID2UNICHR_H" in data:
                             data["CID2UNICHR_H"] = {

@@ -126,7 +126,7 @@ class CMapConverter:
             if unimap_v or unimap_h:
                 self.cid2unichr_v[cid] = pick(unimap_v or unimap_h)
 
-    def dump_cmap_json(self, fp, enc):
+    def dump_cmap(self, fp, enc):
         """Dump CMap data as JSON."""
         data = dict(
             IS_VERTICAL=self.is_vertical.get(enc, False),
@@ -134,7 +134,7 @@ class CMapConverter:
         )
         json.dump(data, fp, ensure_ascii=False, separators=(",", ":"))
 
-    def dump_unicodemap_json(self, fp):
+    def dump_unicodemap(self, fp):
         """Dump Unicode map data as JSON."""
         data = dict(
             CID2UNICHR_H=self.cid2unichr_h,
@@ -183,7 +183,7 @@ def main(argv):
         path = os.path.join(outdir, fname)
         print("writing: %r..." % path)
         fp = gzip.open(path, "wt", encoding="utf-8")
-        converter.dump_cmap_json(fp, enc)
+        converter.dump_cmap(fp, enc)
         fp.close()
 
     # Write JSON format
@@ -191,7 +191,7 @@ def main(argv):
     path = os.path.join(outdir, fname)
     print("writing: %r..." % path)
     fp = gzip.open(path, "wt", encoding="utf-8")
-    converter.dump_unicodemap_json(fp)
+    converter.dump_unicodemap(fp)
     fp.close()
 
 
