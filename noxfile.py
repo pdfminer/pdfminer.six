@@ -2,7 +2,7 @@ import os
 
 import nox
 
-PYTHON_ALL_VERSIONS = ["3.10", "3.11", "3.12", "3.13"]
+PYTHON_ALL_VERSIONS = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 PYTHON_MODULES = ["fuzzing", "pdfminer", "tools", "tests", "noxfile.py"]
 
 
