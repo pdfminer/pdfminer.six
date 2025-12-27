@@ -30,7 +30,7 @@ Any contribution is appreciated! You might want to:
 * Pull requests should be merged to master.
 * Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case
   of features, this will show that your code works correctly.
-* Code should work for Python 3.9+.
+* Code should work for Python 3.10+.
 * Test your code by using nox (see below). 
 * New features should be well documented using docstrings.
 * Check if the [README.md](../README.md) or [readthedocs](../docs/source) documentation needs to be updated. 
