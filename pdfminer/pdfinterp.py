@@ -1,7 +1,7 @@
 import logging
 import re
 from io import BytesIO
-from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union, cast
+from typing import Dict, List, Mapping, Optional, Sequence, Set, Tuple, Union, cast
 
 from pdfminer import settings
 from pdfminer.casting import safe_cmyk, safe_float, safe_int, safe_matrix, safe_rgb
@@ -371,9 +371,26 @@ class PDFPageInterpreter:
     def __init__(self, rsrcmgr: PDFResourceManager, device: PDFDevice) -> None:
         self.rsrcmgr = rsrcmgr
         self.device = device
+        # Track stream IDs currently being executed to detect circular references
+        self.stream_ids: Set[int] = set()
+        # Track stream IDs from parent interpreters in the call stack
+        self.parent_stream_ids: Set[int] = set()
 
     def dup(self) -> "PDFPageInterpreter":
         return self.__class__(self.rsrcmgr, self.device)
+
+    def subinterp(self) -> "PDFPageInterpreter":
+        """Create a sub-interpreter for processing nested content streams.
+
+        This is used when invoking Form XObjects to prevent circular references.
+        Unlike dup(), this method propagates the stream ID tracking from the
+        parent interpreter, allowing detection of circular references across
+        nested XObject invocations.
+        """
+        interp = self.dup()
+        interp.parent_stream_ids.update(self.parent_stream_ids)
+        interp.parent_stream_ids.update(self.stream_ids)
+        return interp
 
     def init_resources(self, resources: Dict[object, object]) -> None:
         """Prepare the fonts and XObjects listed in the Resource attribute."""
@@ -1171,7 +1188,7 @@ class PDFPageInterpreter:
         log.debug("Processing xobj: %r", xobj)
         subtype = xobj.get("Subtype")
         if subtype is LITERAL_FORM and "BBox" in xobj:
-            interpreter = self.dup()
+            interpreter = self.subinterp()
             bbox = cast(Rect, list_value(xobj["BBox"]))
             matrix = cast(Matrix, list_value(xobj.get("Matrix", MATRIX_IDENTITY)))
             # According to PDF reference 1.7 section 4.9.1, XObjects in
@@ -1233,8 +1250,30 @@ class PDFPageInterpreter:
         self.execute(list_value(streams))
 
     def execute(self, streams: Sequence[object]) -> None:
+        # Detect and prevent circular references in content streams (including Form XObjects).
+        # We track stream IDs being executed in the current interpreter and all parent
+        # interpreters. If a stream is already being processed in the call stack, we skip
+        # it to prevent infinite recursion (CWE-835 vulnerability).
+        valid_streams: List[PDFStream] = []
+        self.stream_ids.clear()
+        for obj in streams:
+            stream = stream_value(obj)
+            if stream.objid is None:
+                # Inline streams without object IDs can't be tracked for circular refs
+                log.warning(
+                    "Execute called on non-indirect object (inline image?) %r", stream
+                )
+                continue
+            if stream.objid in self.parent_stream_ids:
+                log.warning(
+                    "Refusing to execute circular reference to content stream %d",
+                    stream.objid,
+                )
+            else:
+                valid_streams.append(stream)
+                self.stream_ids.add(stream.objid)
         try:
-            parser = PDFContentParser(streams)
+            parser = PDFContentParser(valid_streams)
         except PSEOF:
             # empty page
             return
