@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Support for Python 3.14 ([#1209](https://github.com/pdfminer/pdfminer.six/pull/1209))
+
 ### Changed
 
 - Refuse to execute circular references to content streams (including Form XObjects) ([#1143](https://github.com/pdfminer/pdfminer.six/pull/1143))
