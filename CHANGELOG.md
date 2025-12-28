@@ -5,11 +5,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Support for colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
+
 ### Fixed
 
-- Warnings when processing PDFs with Pattern color spaces, adding support for both colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
+- Fix `struct.error` when processing PDFs with odd-length font encoding buffers ([#1169](https://github.com/pdfminer/pdfminer.six/pull/1169))
+- `PSBaseParser` combines tokens split across streams ([#1158](https://github.com/pdfminer/pdfminer.six/pull/1158))
+
+## [20251227]
+
+### Added
+
+- Support for Python 3.14 ([#1209](https://github.com/pdfminer/pdfminer.six/pull/1209))
+
+### Changed
+
+- Refuse to execute circular references to content streams (including Form XObjects) ([#1143](https://github.com/pdfminer/pdfminer.six/pull/1143))
+
+### Fixed
+
 - `IndexError` when saving image with no filters`` ([#1117](https://github.com/pdfminer/pdfminer.six/pull/1135))
 - Copying color space scs and ncs ([#1140](https://github.com/pdfminer/pdfminer.six/pull/1140))
+- Correct linewidth calculation in `PDFPageInterpreter.do_w` ([#1165](https://github.com/pdfminer/pdfminer.six/issues/1165))
+
+### Removed
+
+- Support for Python 3.9 ([#1208](https://github.com/pdfminer/pdfminer.six/pull/1208))
 
 ## [20251107]
 

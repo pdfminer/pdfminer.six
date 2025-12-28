@@ -276,6 +276,17 @@ class TestPaintPath:
             analyzer.paint_path(gs, False, False, False, path)
         assert len(analyzer.cur_item._objs) == 0
 
+    def test_linewidth(self):
+        ml_pdf = extract_pages("samples/contrib/issue_1165_linewidth.pdf")
+        ml_pdf_page = list(ml_pdf)[0]
+        lines = sorted(
+            [item for item in ml_pdf_page if type(item) is LTLine],
+            key=lambda line: line.linewidth,
+        )
+        assert len(lines) == 2
+        assert lines[0].linewidth == 2.83465
+        assert lines[1].linewidth == 2 * 2.83465
+
 
 def get_chars(el):
     if isinstance(el, LTContainer):
