@@ -1006,16 +1006,23 @@ class PDFSimpleFont(PDFFont):
         # Font encoding is specified either by a name of
         # built-in encoding or a dictionary that describes
         # the differences.
+
+        default_encoding = LITERAL_STANDARD_ENCODING
+        if literal_name(spec.get("Subtype")) == "TrueType":
+            # PDF spec: TrueType fonts without Encoding default to WinAnsiEncoding
+            default_encoding = LIT("WinAnsiEncoding")
+
+        encoding = default_encoding
         if "Encoding" in spec:
             encoding = resolve1(spec["Encoding"])
-        else:
-            encoding = LITERAL_STANDARD_ENCODING
+
         if isinstance(encoding, dict):
-            name = literal_name(encoding.get("BaseEncoding", LITERAL_STANDARD_ENCODING))
+            name = literal_name(encoding.get("BaseEncoding", default_encoding))
             diff = list_value(encoding.get("Differences", []))
             self.cid2unicode = EncodingDB.get_encoding(name, diff)
         else:
             self.cid2unicode = EncodingDB.get_encoding(literal_name(encoding))
+
         self.unicode_map: Optional[UnicodeMap] = None
         if "ToUnicode" in spec:
             strm = stream_value(spec["ToUnicode"])
