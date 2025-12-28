@@ -7,8 +7,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Fix `struct.error` in `IdentityCMap.decode()` and `IdentityCMapByte.decode()` when processing PDFs with odd-length font encoding buffers ([#668](https://github.com/pdfminer/pdfminer.six/issues/668), [#785](https://github.com/pdfminer/pdfminer.six/issues/785), [#193](https://github.com/pdfminer/pdfminer.six/issues/193)). The methods now correctly slice the buffer to the expected size before unpacking.
+- Fix `struct.error` when processing PDFs with odd-length font encoding buffers ([#1169](https://github.com/pdfminer/pdfminer.six/pull/1169))
+- `PSBaseParser` combines tokens split across streams ([#1158](https://github.com/pdfminer/pdfminer.six/pull/1158))
 
+## [20251227]
+
+### Added
+
+- Support for Python 3.14 ([#1209](https://github.com/pdfminer/pdfminer.six/pull/1209))
+
+### Changed
+
+- Refuse to execute circular references to content streams (including Form XObjects) ([#1143](https://github.com/pdfminer/pdfminer.six/pull/1143))
+
+### Fixed
+
+- `IndexError` when saving image with no filters`` ([#1117](https://github.com/pdfminer/pdfminer.six/pull/1135))
+- Copying color space scs and ncs ([#1140](https://github.com/pdfminer/pdfminer.six/pull/1140))
+- Correct linewidth calculation in `PDFPageInterpreter.do_w` ([#1165](https://github.com/pdfminer/pdfminer.six/issues/1165))
+
+### Removed
+
+- Support for Python 3.9 ([#1208](https://github.com/pdfminer/pdfminer.six/pull/1208))
+
+## [20251107]
+
+### Fixed
+
+- Arbitrary code execution when loading pickle cmaps ([issue](https://github.com/pdfminer/pdfminer.six/security/advisories/GHSA-wf5f-4jwr-ppcp))
 
 ## [20250506]
 
