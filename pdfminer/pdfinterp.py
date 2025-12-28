@@ -261,7 +261,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
         # calling self.fillfp().
         PSStackParser.__init__(self, None)  # type: ignore[arg-type]
 
-    def fillfp(self) -> None:
+    def fillfp(self) -> bool:
         if not self.fp:
             if self.istream < len(self.streams):
                 strm = stream_value(self.streams[self.istream])
@@ -269,22 +269,26 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             else:
                 raise PSEOF("Unexpected EOF, file truncated?")
             self.fp = BytesIO(strm.get_data())
+            return True
+        return False
 
     def seek(self, pos: int) -> None:
         self.fillfp()
         PSStackParser.seek(self, pos)
 
-    def fillbuf(self) -> None:
+    def fillbuf(self) -> bool:
         if self.charpos < len(self.buf):
-            return
+            return False
+        new_stream = False
         while 1:
-            self.fillfp()
+            new_stream = self.fillfp()
             self.bufpos = self.fp.tell()
             self.buf = self.fp.read(self.BUFSIZ)
             if self.buf:
                 break
             self.fp = None  # type: ignore[assignment]
         self.charpos = 0
+        return new_stream
 
     def get_inline_data(self, pos: int, target: bytes = b"EI") -> Tuple[int, bytes]:
         self.seek(pos)
