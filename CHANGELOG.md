@@ -53,6 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `OverflowError` in `safe_float` when input is too large ([#1121](https://github.com/pdfminer/pdfminer.six/pull/1121))
 - Saving colour spaces on the graphics stack ([#1119](https://github.com/pdfminer/pdfminer.six/pull/1119))
 - Remove padding from AES-encrypted strings([#1123](https://github.com/pdfminer/pdfminer.six/pull/1123))
+- TrueType fonts without encoding now correctly default to WinAnsiEncoding ([#1164](https://github.com/pdfminer/pdfminer.six/pull/1164))
 
 ## [20250416]
 
