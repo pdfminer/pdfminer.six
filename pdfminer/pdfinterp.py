@@ -840,7 +840,13 @@ class PDFPageInterpreter:
                 f"Cannot set stroke color because expected {n} components but got {components!r}"
             )
 
-        elif len(components) >= 1 and self.graphicstate.scs.name == "Pattern":
+        elif self.graphicstate.scs.name != "Pattern":
+            # Standard colors (gray, RGB, CMYK) - common case
+            color = self._parse_color_components(components, "stroke")
+            if color is not None:
+                self.graphicstate.scolor = color
+
+        elif len(components) >= 1:
             # Pattern color space (ISO 32000 8.7.3.2-3)
             # Last component is always the pattern name
             pattern_component = components[-1]
@@ -878,12 +884,6 @@ class PDFPageInterpreter:
                     f"Set stroke pattern (uncolored): {base_color} + {pattern_name}"
                 )
 
-        else:
-            # Standard colors (gray, RGB, CMYK)
-            color = self._parse_color_components(components, "stroke")
-            if color is not None:
-                self.graphicstate.scolor = color
-
     def do_scn(self) -> None:
         """Set color for nonstroking operations.
 
@@ -900,7 +900,13 @@ class PDFPageInterpreter:
                 f"Cannot set non-stroke color because expected {n} components but got {components!r}"
             )
 
-        elif len(components) >= 1 and self.graphicstate.ncs.name == "Pattern":
+        elif self.graphicstate.ncs.name != "Pattern":
+            # Standard colors (gray, RGB, CMYK) - common case
+            color = self._parse_color_components(components, "non-stroke")
+            if color is not None:
+                self.graphicstate.ncolor = color
+
+        elif len(components) >= 1:
             # Pattern color space (ISO 32000 8.7.3.2-3)
             # Last component is always the pattern name
             pattern_component = components[-1]
@@ -937,12 +943,6 @@ class PDFPageInterpreter:
                 log.debug(
                     f"Set non-stroke pattern (uncolored): {base_color} + {pattern_name}"
                 )
-
-        else:
-            # Standard colors (gray, RGB, CMYK)
-            color = self._parse_color_components(components, "non-stroke")
-            if color is not None:
-                self.graphicstate.ncolor = color
 
     def do_SC(self) -> None:
         """Set color for stroking operations"""
