@@ -215,3 +215,7 @@ class TestDumpImages:
         image_files = self.extract_images(filepath)
         assert len(image_files) == 1
         assert image_files[0].endswith(".bmp")
+
+    def test_contrib_issue_1113_evil_xobjects(self):
+        """Test for circular form xobjects"""
+        run(absolute_sample_path("contrib/issue-1113-evil-xobjects.pdf"))
