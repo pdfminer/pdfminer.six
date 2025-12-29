@@ -1,0 +1,58 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  # Basic pre-commit hooks for file hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-docstring-first
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: check-toml
+      - id: check-ast  # Validate Python syntax
+      - id: debug-statements  # Check for debugger imports
+
+  # Spell checking
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        args: ["--ignore-words-list", "cmap,cmaps"]
+        exclude: |
+          (?x)^(
+              .*\.pickle\.gz|
+              .*\.pdf|
+              samples/.*|
+              cmaprsrc/.*|
+              pdfminer/cmap/.*
+          )$
+
+  # Ruff linting and formatting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.1  # Match version in noxfile.py
+    hooks:
+      # Linter - run first with --fix to auto-correct issues
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      # Formatter - run after linter
+      - id: ruff-format
+
+  # Black formatting for compatibility
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+
+  # Type checking with mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.931
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - pytest
+        args: [--install-types, --non-interactive, --show-error-codes]
+        # Only check main modules, not tests initially
+        files: ^(pdfminer|tools|fuzzing)/.*\.py$
