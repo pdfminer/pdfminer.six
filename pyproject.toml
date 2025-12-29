@@ -40,9 +40,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+image = [
+    "Pillow",
+]
+
+[dependency-groups]
 dev = [
-    # Atheris is supports up to Python 3.11.
-    "atheris; python_version < '3.12'",
     "ruff",
     "mypy",
     "pytest",
@@ -53,8 +56,9 @@ docs = [
     "sphinx",
     "sphinx-argparse",
 ]
-image = [
-    "Pillow",
+fuzz = [
+    # Atheris supports up to Python 3.11
+    "atheris; python_version < '3.12'",
 ]
 
 
