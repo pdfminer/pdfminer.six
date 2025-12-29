@@ -77,6 +77,7 @@ target-version = "py310"
 extend-select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
+    "F",  # Pyflakes
     "I",  # isort
     "TID",  # flake8 tidy imports
     "UP",  # pyupgrade
