@@ -3,13 +3,17 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [20251229]
 
 ### Added
 
-- Pre-commit hooks for automated code quality checks ([#1214](https://github.com/pdfminer/pdfminer.six/issues/1214))
 - Support for colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
+- Pre-commit hooks for automated code quality checks ([#1214](https://github.com/pdfminer/pdfminer.six/issues/1214))
 - Ruff rules for for modernized Python syntax ([#1216](https://github.com/pdfminer/pdfminer.six/issues/1216), [#1218](https://github.com/pdfminer/pdfminer.six/issues/1218))
+
+### Changed
+
+- Using makefile instead of nox for local development ([#1222](https://github.com/pdfminer/pdfminer.six/pull/1222))
 
 ### Fixed
 
