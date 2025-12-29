@@ -157,10 +157,10 @@ class ImageWriter:
                     raise ImportError(PIL_ERROR_MESSAGE) from err
 
                 ifp = BytesIO(data)
-                i = Image.open(ifp)
-                i = ImageChops.invert(i)
-                i = i.convert("RGB")
-                i.save(fp, "JPEG")
+                img = Image.open(ifp)
+                inverted = ImageChops.invert(img)
+                rgb_img = inverted.convert("RGB")
+                rgb_img.save(fp, "JPEG")
             else:
                 fp.write(data)
 
