@@ -81,15 +81,15 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
             if not self.fallback:
                 try:
                     objlen = int_value(dic["Length"])
-                except KeyError:
+                except KeyError as err:
                     if settings.STRICT:
-                        raise PDFSyntaxError("/Length is undefined: %r" % dic)
+                        raise PDFSyntaxError(f"/Length is undefined: {dic!r}") from err
             self.seek(pos)
             try:
                 (_, line) = self.nextline()  # 'stream'
-            except PSEOF:
+            except PSEOF as err:
                 if settings.STRICT:
-                    raise PDFSyntaxError("Unexpected EOF")
+                    raise PDFSyntaxError("Unexpected EOF") from err
                 return
             pos += len(line)
             self.fp.seek(pos)
@@ -97,10 +97,10 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
             self.seek(pos + objlen)
             while 1:
                 try:
-                    (linepos, line) = self.nextline()
-                except PSEOF:
+                    (_linepos, line) = self.nextline()
+                except PSEOF as err:
                     if settings.STRICT:
-                        raise PDFSyntaxError("Unexpected EOF")
+                        raise PDFSyntaxError("Unexpected EOF") from err
                     break
                 if b"endstream" in line:
                     i = line.index(b"endstream")

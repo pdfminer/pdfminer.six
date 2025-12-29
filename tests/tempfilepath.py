@@ -1,5 +1,6 @@
 """Helper module, which provides a TemporaryFilePath() context manager"""
 
+import contextlib
 import os
 import tempfile
 
@@ -59,10 +60,7 @@ class TemporaryFilePath:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.delete:
-            try:
-                os.remove(self.temp_file_name)
-
             # Exception 'FileNotFoundError' is acceptable as user may have not
             # created the file to start with or has deleted it himself
-            except FileNotFoundError:
-                pass
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(self.temp_file_name)

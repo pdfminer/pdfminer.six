@@ -76,7 +76,7 @@ def convert_glyphlist(path: str) -> None:
             (name, x) = line.split(";")
             codes = x.split(" ")
             print(
-                " {!r}: u'{}',".format(name, "".join("\\u%s" % code for code in codes)),
+                " {!r}: u'{}',".format(name, "".join(f"\\u{code}" for code in codes)),
             )
 
 

@@ -98,18 +98,17 @@ class LAParams:
             boxes_flow_err_msg = (
                 "LAParam boxes_flow should be None, or a number between -1 and +1"
             )
-            if not (
-                isinstance(self.boxes_flow, int) or isinstance(self.boxes_flow, float)
-            ):
+            if not (isinstance(self.boxes_flow, (int, float))):
                 raise PDFTypeError(boxes_flow_err_msg)
             if not -1 <= self.boxes_flow <= 1:
                 raise PDFValueError(boxes_flow_err_msg)
 
     def __repr__(self) -> str:
         return (
-            "<LAParams: char_margin=%.1f, line_margin=%.1f, "
-            "word_margin=%.1f all_texts=%r>"
-            % (self.char_margin, self.line_margin, self.word_margin, self.all_texts)
+            f"<LAParams: char_margin={self.char_margin:.1f}, "
+            f"line_margin={self.line_margin:.1f}, "
+            f"word_margin={self.word_margin:.1f} "
+            f"all_texts={self.all_texts!r}>"
         )
 
 
@@ -237,7 +236,7 @@ class LTCurve(LTComponent):
         self.dashing_style = dashing_style
 
     def get_pts(self) -> str:
-        return ",".join("%.3f,%.3f" % p for p in self.pts)
+        return ",".join("{:.3f},{:.3f}".format(*p) for p in self.pts)
 
 
 class LTLine(LTCurve):
@@ -324,7 +323,10 @@ class LTImage(LTComponent):
             self.colorspace = [self.colorspace]
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.name}) {bbox2str(self.bbox)} {self.srcsize!r}>"
+        return (
+            f"<{self.__class__.__name__}({self.name}) "
+            f"{bbox2str(self.bbox)} {self.srcsize!r}>"
+        )
 
 
 class LTAnno(LTItem, LTText):
@@ -370,17 +372,14 @@ class LTChar(LTComponent, LTText):
             # vertical
             assert isinstance(textdisp, tuple)
             (vx, vy) = textdisp
-            if vx is None:
-                vx = fontsize * 0.5
-            else:
-                vx = vx * fontsize * 0.001
+            vx = fontsize * 0.5 if vx is None else vx * fontsize * 0.001
             vy = (1000 - vy) * fontsize * 0.001
             bbox = (-vx, vy + rise + self.adv, -vx + fontsize, vy + rise)
         else:
             # horizontal
             descent = font.get_descent() * fontsize
             bbox = (0, descent + rise, self.adv, descent + rise + fontsize)
-        (a, b, c, d, e, f) = self.matrix
+        (a, b, c, d, _e, _f) = self.matrix
         self.upright = a * d * scaling > 0 and b * c <= 0
         (x0, y0, x1, y1) = apply_matrix_rect(self.matrix, bbox)
         if x1 < x0:
@@ -394,7 +393,13 @@ class LTChar(LTComponent, LTText):
             self.size = self.height
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} {bbox2str(self.bbox)} matrix={matrix2str(self.matrix)} font={self.fontname!r} adv={self.adv} text={self.get_text()!r}>"
+        return (
+            f"<{self.__class__.__name__} {bbox2str(self.bbox)} "
+            f"matrix={matrix2str(self.matrix)} "
+            f"font={self.fontname!r} "
+            f"adv={self.adv} "
+            f"text={self.get_text()!r}>"
+        )
 
     def get_text(self) -> str:
         return self._text
@@ -629,7 +634,10 @@ class LTTextBox(LTTextContainer[LTTextLine]):
         self.index: int = -1
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.index}) {bbox2str(self.bbox)} {self.get_text()!r}>"
+        return (
+            f"<{self.__class__.__name__}({self.index}) "
+            f"{bbox2str(self.bbox)} {self.get_text()!r}>"
+        )
 
     def get_writing_mode(self) -> str:
         raise NotImplementedError
@@ -894,7 +902,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                     )
                 plane.add(group)
         # By now only groups are in the plane
-        return list(cast(LTTextGroup, g) for g in plane)
+        return [cast(LTTextGroup, g) for g in plane]
 
     def analyze(self, laparams: LAParams) -> None:
         # textobjs is a list of LTChar objects, i.e.
@@ -951,7 +959,11 @@ class LTFigure(LTLayoutContainer):
         LTLayoutContainer.__init__(self, bbox)
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.name}) {bbox2str(self.bbox)} matrix={matrix2str(self.matrix)}>"
+        return (
+            f"<{self.__class__.__name__}({self.name}) "
+            f"{bbox2str(self.bbox)} "
+            f"matrix={matrix2str(self.matrix)}>"
+        )
 
     def analyze(self, laparams: LAParams) -> None:
         if not laparams.all_texts:
@@ -972,4 +984,8 @@ class LTPage(LTLayoutContainer):
         self.rotate = rotate
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.pageid!r}) {bbox2str(self.bbox)} rotate={self.rotate!r}>"
+        return (
+            f"<{self.__class__.__name__}({self.pageid!r}) "
+            f"{bbox2str(self.bbox)} "
+            f"rotate={self.rotate!r}>"
+        )

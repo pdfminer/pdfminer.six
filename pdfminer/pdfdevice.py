@@ -186,7 +186,8 @@ class PDFTextDevice(PDFDevice):
                     needcharspace = True
             else:
                 logger.warning(
-                    f"Cannot render horizontal string because {obj!r} is not a valid int, float or bytes."
+                    f"Cannot render horizontal string because "
+                    f"{obj!r} is not a valid int, float or bytes."
                 )
         return (x, y)
 
@@ -230,7 +231,8 @@ class PDFTextDevice(PDFDevice):
                     needcharspace = True
             else:
                 logger.warning(
-                    f"Cannot render vertical string because {obj!r} is not a valid int, float or bytes."
+                    f"Cannot render vertical string because {obj!r} is not a valid "
+                    f"int, float or bytes."
                 )
         return (x, y)
 
@@ -286,10 +288,9 @@ class TagExtractor(PDFDevice):
         self._write(utils.enc(text))
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
-        output = '<page id="%s" bbox="%s" rotate="%d">' % (
-            self.pageno,
-            utils.bbox2str(page.mediabox),
-            page.rotate,
+        output = (
+            f'<page id="{self.pageno}" bbox="{utils.bbox2str(page.mediabox)}" '
+            f'rotate="{page.rotate}">'
         )
         self._write(output)
 
@@ -313,7 +314,7 @@ class TagExtractor(PDFDevice):
     def end_tag(self) -> None:
         assert self._stack, str(self.pageno)
         tag = self._stack.pop(-1)
-        out_s = "</%s>" % utils.enc(cast(str, tag.name))
+        out_s = f"</{utils.enc(cast(str, tag.name))}>"
         self._write(out_s)
 
     def do_tag(self, tag: PSLiteral, props: Optional["PDFStackT"] = None) -> None:

@@ -21,6 +21,8 @@ from pdfminer.pdfexceptions import PDFTypeError, PDFValueError
 if TYPE_CHECKING:
     from pdfminer.layout import LTComponent
 
+import contextlib
+
 import charset_normalizer  # For str encoding detection
 
 # from sys import maxint as INF doesn't work anymore under Python3, but PDF
@@ -41,13 +43,13 @@ class open_filename:
         if isinstance(filename, pathlib.PurePath):
             filename = str(filename)
         if isinstance(filename, str):
-            self.file_handler: AnyIO = open(filename, *args, **kwargs)
+            self.file_handler: AnyIO = open(filename, *args, **kwargs)  # noqa: SIM115
             self.closing = True
         elif isinstance(filename, io.IOBase):
             self.file_handler = cast(AnyIO, filename)
             self.closing = False
         else:
-            raise PDFTypeError("Unsupported input type: %s" % type(filename))
+            raise PDFTypeError(f"Unsupported input type: {type(filename)}")
 
     def __enter__(self) -> AnyIO:
         return self.file_handler
@@ -123,7 +125,9 @@ def apply_tiff_predictor(
 ) -> bytes:
     """Reverse the effect of the TIFF predictor 2
 
-    Documentation: https://www.itu.int/itudoc/itu-t/com16/tiff-fx/docs/tiff6.pdf (Section 14, page 64)
+    Documentation:
+    https://www.itu.int/itudoc/itu-t/com16/tiff-fx/docs/tiff6.pdf
+    (Section 14, page 64)
     """
     if bitspercomponent != 8:
         error_msg = f"Unsupported `bitspercomponent': {bitspercomponent}"
@@ -156,7 +160,7 @@ def apply_png_predictor(
     Documentation: http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
     """
     if bitspercomponent not in [8, 1]:
-        msg = "Unsupported `bitspercomponent': %d" % bitspercomponent
+        msg = f"Unsupported `bitspercomponent': {bitspercomponent}"
         raise PDFValueError(msg)
 
     nbytes = colors * columns * bitspercomponent // 8
@@ -180,10 +184,7 @@ def apply_png_predictor(
             # (computed mod 256), where Raw() refers to the bytes already
             #  decoded.
             for j, sub_x in enumerate(line_encoded):
-                if j - bpp < 0:
-                    raw_x_bpp = 0
-                else:
-                    raw_x_bpp = int(raw[j - bpp])
+                raw_x_bpp = 0 if j - bpp < 0 else int(raw[j - bpp])
                 raw_x = (sub_x + raw_x_bpp) & 255
                 raw.append(raw_x)
 
@@ -194,7 +195,7 @@ def apply_png_predictor(
             #   Raw(x) = Up(x) + Prior(x)
             # (computed mod 256), where Prior() refers to the decoded bytes of
             # the prior scanline.
-            for up_x, prior_x in zip(line_encoded, line_above):
+            for up_x, prior_x in zip(line_encoded, line_above, strict=False):
                 raw_x = (up_x + prior_x) & 255
                 raw.append(raw_x)
 
@@ -208,10 +209,7 @@ def apply_png_predictor(
             # bytes already decoded, and Prior() refers to the decoded bytes of
             # the prior scanline.
             for j, average_x in enumerate(line_encoded):
-                if j - bpp < 0:
-                    raw_x_bpp = 0
-                else:
-                    raw_x_bpp = int(raw[j - bpp])
+                raw_x_bpp = 0 if j - bpp < 0 else int(raw[j - bpp])
                 prior_x = int(line_above[j])
                 raw_x = (average_x + (raw_x_bpp + prior_x) // 2) & 255
                 raw.append(raw_x)
@@ -238,7 +236,7 @@ def apply_png_predictor(
                 raw.append(raw_x)
 
         else:
-            raise PDFValueError("Unsupported predictor value: %d" % filter_type)
+            raise PDFValueError(f"Unsupported predictor value: {filter_type}")
 
         buf.extend(raw)
         line_above = raw
@@ -263,8 +261,8 @@ def parse_rect(o: Any) -> Rect:
     try:
         (x0, y0, x1, y1) = o
         return float(x0), float(y0), float(x1), float(y1)
-    except ValueError:
-        raise PDFValueError("Could not parse rectangle")
+    except ValueError as err:
+        raise PDFValueError("Could not parse rectangle") from err
 
 
 def mult_matrix(m1: Matrix, m0: Matrix) -> Matrix:
@@ -331,7 +329,7 @@ def apply_matrix_rect(m: Matrix, rect: Rect) -> Rect:
 
 def apply_matrix_norm(m: Matrix, v: Point) -> Point:
     """Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))"""
-    (a, b, c, d, e, f) = m
+    (a, b, c, d, _e, _f) = m
     (p, q) = v
     return a * p + c * q, b * p + d * q
 
@@ -751,7 +749,7 @@ class Plane(Generic[LTComponentT]):
         (self.x0, self.y0, self.x1, self.y1) = bbox
 
     def __repr__(self) -> str:
-        return "<Plane objs=%r>" % list(self)
+        return f"<Plane objs={list(self)!r}>"
 
     def __iter__(self) -> Iterator[LTComponentT]:
         return (obj for obj in self._seq if obj in self._objs)
@@ -793,10 +791,8 @@ class Plane(Generic[LTComponentT]):
     def remove(self, obj: LTComponentT) -> None:
         """Displace an object."""
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 self._grid[k].remove(obj)
-            except (KeyError, ValueError):
-                pass
         self._objs.remove(obj)
 
     def find(self, bbox: Rect) -> Iterator[LTComponentT]:

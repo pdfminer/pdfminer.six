@@ -1,3 +1,4 @@
+import contextlib
 import logging
 import struct
 from collections.abc import Iterable, Iterator, Mapping
@@ -71,12 +72,14 @@ def get_widths(seq: Iterable[object]) -> dict[str | int, float]:
                         widths[i] = w
                 else:
                     log.warning(
-                        f"Skipping invalid font width specification for {char1} to {char2} because either of them is not an int"
+                        f"Skipping invalid font width specification for {char1} to "
+                        f"{char2} because either of them is not an int"
                     )
                 r = []
         else:
             log.warning(
-                f"Skipping invalid font width specification for {v} because it is not a number or a list"
+                f"Skipping invalid font width specification for {v} "
+                f"because it is not a number or a list"
             )
     return cast(dict[str | int, float], widths)
 
@@ -611,13 +614,13 @@ class CFFFont:
             self.fp = fp
             self.offsets: list[int] = []
             (count, offsize) = struct.unpack(">HB", self.fp.read(3))
-            for i in range(count + 1):
+            for _i in range(count + 1):
                 self.offsets.append(nunpack(self.fp.read(offsize)))
             self.base = self.fp.tell() - 1
             self.fp.seek(self.base + self.offsets[-1])
 
         def __repr__(self) -> str:
-            return "<INDEX: size=%d>" % len(self)
+            return f"<INDEX: size={len(self)}>"
 
         def __len__(self) -> int:
             return len(self.offsets) - 1
@@ -633,7 +636,7 @@ class CFFFont:
         self.name = name
         self.fp = fp
         # Header
-        (_major, _minor, hdrsize, offsize) = struct.unpack("BBBB", self.fp.read(4))
+        (_major, _minor, hdrsize, _offsize) = struct.unpack("BBBB", self.fp.read(4))
         self.fp.read(hdrsize - 4)
         # Name INDEX
         self.name_index = self.INDEX(self.fp)
@@ -667,14 +670,14 @@ class CFFFont:
             # Format 1
             (n,) = struct.unpack("B", self.fp.read(1))
             code = 0
-            for i in range(n):
+            for _i in range(n):
                 (first, nleft) = struct.unpack("BB", self.fp.read(2))
                 for gid in range(first, first + nleft + 1):
                     self.code2gid[code] = gid
                     self.gid2code[gid] = code
                     code += 1
         else:
-            raise PDFValueError("unsupported encoding format: %r" % format)
+            raise PDFValueError(f"unsupported encoding format: {format!r}")
         # Charsets
         self.name2gid = {}
         self.gid2name = {}
@@ -696,7 +699,7 @@ class CFFFont:
             # Format 1
             (n,) = struct.unpack("B", self.fp.read(1))
             sid = 0
-            for i in range(n):
+            for _i in range(n):
                 (first, nleft) = struct.unpack("BB", self.fp.read(2))
                 for gid in range(first, first + nleft + 1):
                     sidname = self.getstr(sid)
@@ -705,9 +708,9 @@ class CFFFont:
                     sid += 1
         elif format == b"\x02":
             # Format 2
-            assert False, str(("Unhandled", format))
+            raise AssertionError(str(("Unhandled", format)))
         else:
-            raise PDFValueError("unsupported charset format: %r" % format)
+            raise PDFValueError(f"unsupported charset format: {format!r}")
 
     def getstr(self, sid: int) -> str | bytes:
         # This returns str for one of the STANDARD_STRINGS but bytes otherwise,
@@ -732,7 +735,7 @@ class TrueTypeFont:
                 struct.unpack(">HHHH", fp.read(8)),
             )
             for _ in range(ntables):
-                (name_bytes, tsum, offset, length) = cast(
+                (name_bytes, _tsum, offset, length) = cast(
                     tuple[bytes, int, int, int],
                     struct.unpack(">4sLLL", fp.read(16)),
                 )
@@ -746,12 +749,12 @@ class TrueTypeFont:
     def create_unicode_map(self) -> FileUnicodeMap:
         if b"cmap" not in self.tables:
             raise TrueTypeFont.CMapNotFound
-        (base_offset, length) = self.tables[b"cmap"]
+        (base_offset, _length) = self.tables[b"cmap"]
         fp = self.fp
         fp.seek(base_offset)
-        (version, nsubtables) = cast(tuple[int, int], struct.unpack(">HH", fp.read(4)))
+        (_version, nsubtables) = cast(tuple[int, int], struct.unpack(">HH", fp.read(4)))
         subtables: list[tuple[int, int, int]] = []
-        for i in range(nsubtables):
+        for _i in range(nsubtables):
             subtables.append(
                 cast(tuple[int, int, int], struct.unpack(">HHL", fp.read(8))),
             )
@@ -763,7 +766,7 @@ class TrueTypeFont:
             if not (platform_id == 0 or (platform_id == 3 and encoding_id in [1, 10])):
                 continue
             fp.seek(base_offset + st_offset)
-            (fmttype, fmtlen, fmtlang) = cast(
+            (fmttype, _fmtlen, _fmtlang) = cast(
                 tuple[int, int, int],
                 struct.unpack(">HHH", fp.read(6)),
             )
@@ -807,23 +810,23 @@ class TrueTypeFont:
                 segcount //= 2
                 ecs = cast(
                     tuple[int, ...],
-                    struct.unpack(">%dH" % segcount, fp.read(2 * segcount)),
+                    struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
                 )
                 fp.read(2)
                 scs = cast(
                     tuple[int, ...],
-                    struct.unpack(">%dH" % segcount, fp.read(2 * segcount)),
+                    struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
                 )
                 idds = cast(
                     tuple[int, ...],
-                    struct.unpack(">%dh" % segcount, fp.read(2 * segcount)),
+                    struct.unpack(f">{segcount}h", fp.read(2 * segcount)),
                 )
                 pos = fp.tell()
                 idrs = cast(
                     tuple[int, ...],
-                    struct.unpack(">%dH" % segcount, fp.read(2 * segcount)),
+                    struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
                 )
-                for ec, sc, idd, idr in zip(ecs, scs, idds, idrs):
+                for ec, sc, idd, idr in zip(ecs, scs, idds, idrs, strict=False):
                     if idr:
                         fp.seek(pos + idr)
                         for c in range(sc, ec + 1):
@@ -833,7 +836,7 @@ class TrueTypeFont:
                         for c in range(sc, ec + 1):
                             char2gid[c] = (c + idd) & 0xFFFF
             else:
-                assert False, str(("Unhandled", fmttype))
+                raise AssertionError(str(("Unhandled", fmttype)))
         if not char2gid:
             raise TrueTypeFont.CMapNotFound
         # create unicode map
@@ -958,7 +961,8 @@ class PDFFont:
         bbox = safe_rect_list(font_bbox)
         if bbox is None:
             log.warning(
-                f"Could not get FontBBox from font descriptor because {font_bbox!r} cannot be parsed as 4 floats"
+                f"Could not get FontBBox from font descriptor because "
+                f"{font_bbox!r} cannot be parsed as 4 floats"
             )
             return 0.0, 0.0, 0.0, 0.0
         return bbox
@@ -1006,8 +1010,8 @@ class PDFSimpleFont(PDFFont):
                 pass
         try:
             return self.cid2unicode[cid]
-        except KeyError:
-            raise PDFUnicodeNotDefined(None, cid)
+        except KeyError as err:
+            raise PDFUnicodeNotDefined(None, cid) from err
 
 
 class PDFType1Font(PDFSimpleFont):
@@ -1016,7 +1020,7 @@ class PDFType1Font(PDFSimpleFont):
             self.basefont = literal_name(spec["BaseFont"])
         except KeyError:
             if settings.STRICT:
-                raise PDFFontError("BaseFont is missing")
+                raise PDFFontError("BaseFont is missing") from None
             self.basefont = "unknown"
 
         widths: FontWidthDict
@@ -1039,12 +1043,12 @@ class PDFType1Font(PDFSimpleFont):
             self.cid2unicode = parser.get_encoding()
 
     def __repr__(self) -> str:
-        return "<PDFType1Font: basefont=%r>" % self.basefont
+        return f"<PDFType1Font: basefont={self.basefont!r}>"
 
 
 class PDFTrueTypeFont(PDFType1Font):
     def __repr__(self) -> str:
-        return "<PDFTrueTypeFont: basefont=%r>" % self.basefont
+        return f"<PDFTrueTypeFont: basefont={self.basefont!r}>"
 
 
 class PDFType3Font(PDFSimpleFont):
@@ -1081,7 +1085,7 @@ class PDFCIDFont(PDFFont):
             self.basefont = literal_name(spec["BaseFont"])
         except KeyError:
             if strict:
-                raise PDFFontError("BaseFont is missing")
+                raise PDFFontError("BaseFont is missing") from None
             self.basefont = "unknown"
         self.cidsysteminfo = dict_value(spec.get("CIDSystemInfo", {}))
         cid_registry = resolve1(self.cidsysteminfo.get("Registry", b"unknown")).decode(
@@ -1097,7 +1101,7 @@ class PDFCIDFont(PDFFont):
             descriptor = dict_value(spec["FontDescriptor"])
         except KeyError:
             if strict:
-                raise PDFFontError("FontDescriptor is missing")
+                raise PDFFontError("FontDescriptor is missing") from None
             descriptor = {}
         ttf = None
         if "FontFile2" in descriptor:
@@ -1120,18 +1124,14 @@ class PDFCIDFont(PDFFont):
                     self.unicode_map = IdentityUnicodeMap()
         elif self.cidcoding in ("Adobe-Identity", "Adobe-UCS"):
             if ttf:
-                try:
+                with contextlib.suppress(TrueTypeFont.CMapNotFound):
                     self.unicode_map = ttf.create_unicode_map()
-                except TrueTypeFont.CMapNotFound:
-                    pass
         else:
-            try:
+            with contextlib.suppress(CMapDB.CMapNotFound):
                 self.unicode_map = CMapDB.get_unicode_map(
                     self.cidcoding,
                     self.cmap.is_vertical(),
                 )
-            except CMapDB.CMapNotFound:
-                pass
 
         self.vertical = self.cmap.is_vertical()
         if self.vertical:
@@ -1167,7 +1167,7 @@ class PDFCIDFont(PDFFont):
             return CMapDB.get_cmap(cmap_name)
         except CMapDB.CMapNotFound as e:
             if strict:
-                raise PDFFontError(e)
+                raise PDFFontError(e) from e
             return CMap()
 
     @staticmethod
@@ -1183,7 +1183,7 @@ class PDFCIDFont(PDFFont):
                 cmap_name = literal_name(spec_encoding["CMapName"])
         except KeyError:
             if strict:
-                raise PDFFontError("Encoding is unspecified")
+                raise PDFFontError("Encoding is unspecified") from None
 
         if type(cmap_name) is PDFStream:  # type: ignore[comparison-overlap]
             cmap_name_stream: PDFStream = cast(PDFStream, cmap_name)
@@ -1215,5 +1215,5 @@ class PDFCIDFont(PDFFont):
             if not self.unicode_map:
                 raise PDFKeyError(cid)
             return self.unicode_map.get_unichr(cid)
-        except KeyError:
-            raise PDFUnicodeNotDefined(self.cidcoding, cid)
+        except KeyError as err:
+            raise PDFUnicodeNotDefined(self.cidcoding, cid) from err

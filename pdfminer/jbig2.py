@@ -2,7 +2,7 @@ import math
 import os
 from collections.abc import Iterable
 from struct import calcsize, pack, unpack
-from typing import BinaryIO, cast
+from typing import BinaryIO, ClassVar, cast
 
 from pdfminer.pdfexceptions import PDFValueError
 
@@ -92,7 +92,7 @@ class JBIG2StreamReader:
                     segment["_error"] = True
                     break
                 value = unpack_int(field_format, field)
-                parser = getattr(self, "parse_%s" % name, None)
+                parser = getattr(self, f"parse_{name}", None)
                 if callable(parser):
                     value = parser(segment, value, field)
                 segment[name] = value
@@ -137,8 +137,8 @@ class JBIG2StreamReader:
             field += self.stream.read(3)
             ref_count = unpack_int(">L", field)
             ref_count = masked_value(REF_COUNT_LONG_MASK, ref_count)
-            ret_bytes_count = int(math.ceil((ref_count + 1) / 8))
-            for ret_byte_index in range(ret_bytes_count):
+            ret_bytes_count = math.ceil((ref_count + 1) / 8)
+            for _ret_byte_index in range(ret_bytes_count):
                 ret_byte = unpack_int(">B", self.stream.read(1))
                 for bit_pos in range(7):
                     retain_segments.append(bit_set(bit_pos, ret_byte))
@@ -154,7 +154,7 @@ class JBIG2StreamReader:
 
         ref_size = calcsize(ref_format)
 
-        for ref_index in range(ref_count):
+        for _ref_index in range(ref_count):
             ref_data = self.stream.read(ref_size)
             ref = unpack_int(ref_format, ref_data)
             ref_segments.append(ref)
@@ -194,7 +194,7 @@ class JBIG2StreamReader:
 class JBIG2StreamWriter:
     """Write JBIG2 segments to a file in JBIG2 format"""
 
-    EMPTY_RETENTION_FLAGS: JBIG2RetentionFlags = {
+    EMPTY_RETENTION_FLAGS: ClassVar[JBIG2RetentionFlags] = {
         "ref_count": 0,
         "ref_segments": cast(list[int], []),
         "retain_segments": cast(list[bool], []),
@@ -259,10 +259,7 @@ class JBIG2StreamWriter:
         for segment in segments:
             seg_num = cast(int, segment["number"])
 
-        if fix_last_page:
-            seg_num_offset = 2
-        else:
-            seg_num_offset = 1
+        seg_num_offset = 2 if fix_last_page else 1
         eof_segment = self.get_eof_segment(seg_num + seg_num_offset)
         data = self.encode_segment(eof_segment)
 
@@ -275,7 +272,7 @@ class JBIG2StreamWriter:
         data = b""
         for field_format, name in SEG_STRUCT:
             value = segment.get(name)
-            encoder = getattr(self, "encode_%s" % name, None)
+            encoder = getattr(self, f"encode_{name}", None)
             if callable(encoder):
                 field = encoder(value, segment)
             else:

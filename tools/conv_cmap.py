@@ -6,7 +6,9 @@ import sys
 
 
 class CMapConverter:
-    def __init__(self, enc2codec={}):
+    def __init__(self, enc2codec=None):
+        if enc2codec is None:
+            enc2codec = {}
         self.enc2codec = enc2codec
         self.code2cid = {}  # {'cmapname': ...}
         self.is_vertical = {}
@@ -84,7 +86,7 @@ class CMapConverter:
             cid = int(values[0])
             unimap_h = {}
             unimap_v = {}
-            for enc, value in zip(encs, values):
+            for enc, value in zip(encs, values, strict=False):
                 if enc == "CID":
                     continue
                 if value == "*":
@@ -127,17 +129,17 @@ class CMapConverter:
                 self.cid2unichr_v[cid] = pick(unimap_v or unimap_h)
 
     def dump_cmap(self, fp, enc):
-        data = dict(
-            IS_VERTICAL=self.is_vertical.get(enc, False),
-            CODE2CID=self.code2cid.get(enc),
-        )
+        data = {
+            "IS_VERTICAL": self.is_vertical.get(enc, False),
+            "CODE2CID": self.code2cid.get(enc),
+        }
         fp.write(pickle.dumps(data, 2))
 
     def dump_unicodemap(self, fp):
-        data = dict(
-            CID2UNICHR_H=self.cid2unichr_h,
-            CID2UNICHR_V=self.cid2unichr_v,
-        )
+        data = {
+            "CID2UNICHR_H": self.cid2unichr_h,
+            "CID2UNICHR_V": self.cid2unichr_v,
+        }
         fp.write(pickle.dumps(data, 2))
 
 
@@ -148,7 +150,7 @@ def main(argv):
 
     def usage():
         print(
-            "usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]" % argv[0],
+            f"usage: {argv[0]} [-c enc=codec] output_dir regname [cid2code.txt ...]",
         )
         return 100
 
@@ -170,25 +172,22 @@ def main(argv):
 
     converter = CMapConverter(enc2codec)
     for path in args:
-        print("reading: %r..." % path)
-        fp = open(path)
-        converter.load(fp)
-        fp.close()
+        print(f"reading: {path!r}...")
+        with open(path) as fp:
+            converter.load(fp)
 
     for enc in converter.get_encs():
-        fname = "%s.pickle.gz" % enc
+        fname = f"{enc}.pickle.gz"
         path = os.path.join(outdir, fname)
-        print("writing: %r..." % path)
-        fp = gzip.open(path, "wb")
-        converter.dump_cmap(fp, enc)
-        fp.close()
+        print(f"writing: {path!r}...")
+        with gzip.open(path, "wb") as fp:
+            converter.dump_cmap(fp, enc)
 
-    fname = "to-unicode-%s.pickle.gz" % regname
+    fname = f"to-unicode-{regname}.pickle.gz"
     path = os.path.join(outdir, fname)
-    print("writing: %r..." % path)
-    fp = gzip.open(path, "wb")
-    converter.dump_unicodemap(fp)
-    fp.close()
+    print(f"writing: {path!r}...")
+    with gzip.open(path, "wb") as fp:
+        converter.dump_unicodemap(fp)
 
 
 if __name__ == "__main__":

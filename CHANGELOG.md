@@ -9,11 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Pre-commit hooks for automated code quality checks ([#1214](https://github.com/pdfminer/pdfminer.six/issues/1214))
 - Support for colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
+- Ruff pyupgrade (UP) rules for modernized Python syntax ([#1216](https://github.com/pdfminer/pdfminer.six/issues/1216))
 
 ### Fixed
 
 - Fix `struct.error` when processing PDFs with odd-length font encoding buffers ([#1169](https://github.com/pdfminer/pdfminer.six/pull/1169))
 - `PSBaseParser` combines tokens split across streams ([#1158](https://github.com/pdfminer/pdfminer.six/pull/1158))
+- Improve exception handling in `PDFDocument` with more precise error propagation ([#1220](https://github.com/pdfminer/pdfminer.six/pull/1220))
 
 ## [20251227]
 

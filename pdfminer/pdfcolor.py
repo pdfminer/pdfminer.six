@@ -17,7 +17,7 @@ class PDFColorSpace:
         self.ncomponents = ncomponents
 
     def __repr__(self) -> str:
-        return "<PDFColorSpace: %s, ncomponents=%d>" % (self.name, self.ncomponents)
+        return f"<PDFColorSpace: {self.name}, ncomponents={self.ncomponents}>"
 
 
 PREDEFINED_COLORSPACE: dict[str, PDFColorSpace] = collections.OrderedDict()

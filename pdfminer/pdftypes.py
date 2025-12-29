@@ -83,17 +83,17 @@ class PDFObjRef(PDFObject):
                 "The third argument of PDFObjRef is unused and will be removed after "
                 "2024",
                 DeprecationWarning,
+                stacklevel=2,
             )
 
-        if objid == 0:
-            if settings.STRICT:
-                raise PDFValueError("PDF object id cannot be 0.")
+        if objid == 0 and settings.STRICT:
+            raise PDFValueError("PDF object id cannot be 0.")
 
         self.doc = doc
         self.objid = objid
 
     def __repr__(self) -> str:
-        return "<PDFObjRef:%d>" % (self.objid)
+        return f"<PDFObjRef:{self.objid}>"
 
     def resolve(self, default: object = None) -> Any:
         assert self.doc is not None
@@ -148,7 +148,7 @@ def int_value(x: object) -> int:
     x = resolve1(x)
     if not isinstance(x, int):
         if settings.STRICT:
-            raise PDFTypeError("Integer required: %r" % x)
+            raise PDFTypeError(f"Integer required: {x!r}")
         return 0
     return x
 
@@ -157,7 +157,7 @@ def float_value(x: object) -> float:
     x = resolve1(x)
     if not isinstance(x, float):
         if settings.STRICT:
-            raise PDFTypeError("Float required: %r" % x)
+            raise PDFTypeError(f"Float required: {x!r}")
         return 0.0
     return x
 
@@ -166,7 +166,7 @@ def num_value(x: object) -> float:
     x = resolve1(x)
     if not isinstance(x, (int, float)):  # == utils.isnumber(x)
         if settings.STRICT:
-            raise PDFTypeError("Int or Float required: %r" % x)
+            raise PDFTypeError(f"Int or Float required: {x!r}")
         return 0
     return x
 
@@ -184,7 +184,7 @@ def str_value(x: object) -> bytes:
     x = resolve1(x)
     if not isinstance(x, bytes):
         if settings.STRICT:
-            raise PDFTypeError("String required: %r" % x)
+            raise PDFTypeError(f"String required: {x!r}")
         return b""
     return x
 
@@ -193,7 +193,7 @@ def list_value(x: object) -> list[Any] | tuple[Any, ...]:
     x = resolve1(x)
     if not isinstance(x, (list, tuple)):
         if settings.STRICT:
-            raise PDFTypeError("List required: %r" % x)
+            raise PDFTypeError(f"List required: {x!r}")
         return []
     return x
 
@@ -203,7 +203,7 @@ def dict_value(x: object) -> dict[Any, Any]:
     if not isinstance(x, dict):
         if settings.STRICT:
             logger.error("PDFTypeError : Dict required: %r", x)
-            raise PDFTypeError("Dict required: %r" % x)
+            raise PDFTypeError(f"Dict required: {x!r}")
         return {}
     return x
 
@@ -212,7 +212,7 @@ def stream_value(x: object) -> "PDFStream":
     x = resolve1(x)
     if not isinstance(x, PDFStream):
         if settings.STRICT:
-            raise PDFTypeError("PDFStream required: %r" % x)
+            raise PDFTypeError(f"PDFStream required: {x!r}")
         return PDFStream({}, b"")
     return x
 
@@ -232,9 +232,10 @@ def decompress_corrupted(data: bytes) -> bytes:
             buffer = f.read(1)
             i += 1
     except zlib.error:
-        # Let the error propagates if we're not yet in the CRC checksum
+        # Let the error propagate if we're not yet in the CRC checksum
         if i < len(data) - 3:
-            logger.warning("Data-loss while decompressing corrupted data")
+            raise
+        logger.warning("Data-loss while decompressing corrupted data")
     return result_str
 
 
@@ -260,18 +261,12 @@ class PDFStream(PDFObject):
     def __repr__(self) -> str:
         if self.data is None:
             assert self.rawdata is not None
-            return "<PDFStream(%r): raw=%d, %r>" % (
-                self.objid,
-                len(self.rawdata),
-                self.attrs,
+            return (
+                f"<PDFStream({self.objid!r}): raw={len(self.rawdata)}, {self.attrs!r}>"
             )
         else:
             assert self.data is not None
-            return "<PDFStream(%r): len=%d, %r>" % (
-                self.objid,
-                len(self.data),
-                self.attrs,
-            )
+            return f"<PDFStream({self.objid!r}): len={len(self.data)}, {self.attrs!r}>"
 
     def __contains__(self, name: object) -> bool:
         return name in self.attrs
@@ -303,7 +298,7 @@ class PDFStream(PDFObject):
 
         resolved_filters = [resolve1(f) for f in filters]
         resolved_params = [resolve1(param) for param in params]
-        return list(zip(resolved_filters, resolved_params))
+        return list(zip(resolved_filters, resolved_params, strict=False))
 
     def decode(self) -> None:
         assert self.data is None and self.rawdata is not None, str(
@@ -329,7 +324,7 @@ class PDFStream(PDFObject):
                 except zlib.error as e:
                     if settings.STRICT:
                         error_msg = f"Invalid zlib bytes: {e!r}, {data!r}"
-                        raise PDFException(error_msg)
+                        raise PDFException(error_msg) from e
 
                     try:
                         data = decompress_corrupted(data)
@@ -357,7 +352,7 @@ class PDFStream(PDFObject):
                 # not yet..
                 raise PDFNotImplementedError("/Crypt filter is unsupported")
             else:
-                raise PDFNotImplementedError("Unsupported filter: %r" % f)
+                raise PDFNotImplementedError(f"Unsupported filter: {f!r}")
             # apply predictors
             if params and "Predictor" in params:
                 pred = int_value(params["Predictor"])
@@ -390,7 +385,7 @@ class PDFStream(PDFObject):
                         data,
                     )
                 else:
-                    error_msg = "Unsupported predictor: %r" % pred
+                    error_msg = f"Unsupported predictor: {pred!r}"
                     raise PDFNotImplementedError(error_msg)
         self.data = data
         self.rawdata = None

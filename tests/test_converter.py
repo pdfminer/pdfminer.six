@@ -184,7 +184,7 @@ class TestPaintPath:
         # There are six lines in this one-page PDF;
         # they all have shape 'ml' not 'mlh'
         ml_pdf = extract_pages("samples/contrib/pr-00530-ml-lines.pdf")
-        ml_pdf_page = list(ml_pdf)[0]
+        ml_pdf_page = next(iter(ml_pdf))
         assert sum(type(item) is LTLine for item in ml_pdf_page) == 6
 
     def _get_analyzer(self):
@@ -278,7 +278,7 @@ class TestPaintPath:
 
     def test_linewidth(self):
         ml_pdf = extract_pages("samples/contrib/issue_1165_linewidth.pdf")
-        ml_pdf_page = list(ml_pdf)[0]
+        ml_pdf_page = next(iter(ml_pdf))
         lines = sorted(
             [item for item in ml_pdf_page if type(item) is LTLine],
             key=lambda line: line.linewidth,
@@ -339,7 +339,7 @@ class TestColorSpace:
                             isinstance(item.stroking_color, tuple)
                             and len(item.stroking_color) == 2
                         ):
-                            base_color, pattern_name = item.stroking_color
+                            _base_color, pattern_name = item.stroking_color
                             assert isinstance(pattern_name, str)
                             assert pattern_name.startswith("P")
                     if item.non_stroking_color is not None:
@@ -351,7 +351,7 @@ class TestColorSpace:
                             isinstance(item.non_stroking_color, tuple)
                             and len(item.non_stroking_color) == 2
                         ):
-                            base_color, pattern_name = item.non_stroking_color
+                            _base_color, pattern_name = item.non_stroking_color
                             assert isinstance(pattern_name, str)
                             assert pattern_name.startswith("P")
 

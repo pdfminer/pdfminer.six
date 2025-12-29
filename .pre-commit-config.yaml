@@ -15,6 +15,14 @@ repos:
       - id: check-ast  # Validate Python syntax
       - id: debug-statements  # Check for debugger imports
 
+  # Python linting and formatting with ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.10
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
   # Spell checking
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1

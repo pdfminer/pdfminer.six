@@ -1,21 +1,7 @@
-import os
-
 import nox
 
 PYTHON_ALL_VERSIONS = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 PYTHON_MODULES = ["fuzzing", "pdfminer", "tools", "tests", "noxfile.py"]
-
-
-@nox.session
-def format(session):
-    session.install("ruff==0.5.1")
-    # Format files locally with black, but only check in cicd
-    if "CI" in os.environ:
-        session.run("ruff", "check")
-        session.run("ruff", "format", "--check")
-    else:
-        session.run("ruff", "check", "--fix")
-        session.run("ruff", "format")
 
 
 @nox.session

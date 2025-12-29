@@ -1,3 +1,4 @@
+import itertools
 from collections.abc import Iterable
 from typing import Any
 
@@ -45,7 +46,7 @@ class NumberTree:
         values = self._parse()
 
         if settings.STRICT:
-            if not all(a[0] <= b[0] for a, b in zip(values, values[1:])):
+            if not all(a[0] <= b[0] for a, b in itertools.pairwise(values)):
                 raise PDFSyntaxError("Number tree elements are out of order")
         else:
             values.sort(key=lambda t: t[0])
