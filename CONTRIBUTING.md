@@ -66,7 +66,24 @@ Any contribution is appreciated! You might want to:
     pip install -e ".[dev]"
     ```
 
-3. Run all formatting, linting and tests
+3. Install pre-commit hooks (recommended)
+
+    ```sh
+    pre-commit install
+    ```
+
+    This will automatically run formatting and linting checks before each commit.
+    You can also run pre-commit manually:
+
+    ```sh
+    # Run on all files
+    pre-commit run --all-files
+
+    # Run on staged files only
+    pre-commit run
+    ```
+
+4. Run all formatting, linting and tests
 
     On all Python versions:
 

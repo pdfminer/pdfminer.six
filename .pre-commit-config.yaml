@@ -3,7 +3,7 @@
 repos:
   # Basic pre-commit hooks for file hygiene
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
@@ -32,7 +32,7 @@ repos:
 
   # Ruff linting and formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.1  # Match version in noxfile.py
+    rev: v0.5.1  # Keep at v0.5.1 to match noxfile.py
     hooks:
       # Linter - run first with --fix to auto-correct issues
       - id: ruff
@@ -42,13 +42,13 @@ repos:
 
   # Black formatting for compatibility
   - repo: https://github.com/psf/black
-    rev: 24.10.0
+    rev: 25.12.0
     hooks:
       - id: black
 
   # Type checking with mypy
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.931
+    rev: v0.931  # Keep at v0.931 to match pyproject.toml
     hooks:
       - id: mypy
         additional_dependencies:
