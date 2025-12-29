@@ -54,7 +54,7 @@ How to use
   ```bash
   pdf2txt.py example.pdf
 
-* Or use it with Python. 
+* Or use it with Python.
   ```python
   from pdfminer.high_level import extract_text
 
@@ -65,7 +65,7 @@ How to use
 Contributing
 ------------
 
-Be sure to read the [contribution guidelines](https://github.com/pdfminer/pdfminer.six/blob/master/CONTRIBUTING.md). 
+Be sure to read the [contribution guidelines](https://github.com/pdfminer/pdfminer.six/blob/master/CONTRIBUTING.md).
 
 Acknowledgement
 ---------------

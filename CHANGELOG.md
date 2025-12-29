@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Pre-commit hooks for automated code quality checks ([#1214](https://github.com/pdfminer/pdfminer.six/issues/1214))
 - Support for colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
 
 ### Fixed
@@ -217,7 +218,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Hande decompression error due to CRC checksum error ([#637](https://github.com/pdfminer/pdfminer.six/pull/637))
+- Handle decompression error due to CRC checksum error ([#637](https://github.com/pdfminer/pdfminer.six/pull/637))
 - Regression (since 20191107) in `LTLayoutContainer.group_textboxes` that returned some text lines out of order ([#659](https://github.com/pdfminer/pdfminer.six/pull/659))
 - Add handling of JPXDecode filter to enable extraction of images for some pdfs ([#645](https://github.com/pdfminer/pdfminer.six/pull/645))
 - Fix extraction of jbig2 files, which was producing invalid files ([#652](https://github.com/pdfminer/pdfminer.six/pull/653))
@@ -241,7 +242,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - `KeyError` when `'Encrypt'` but not `'ID'` present in `trailer` ([#594](https://github.com/pdfminer/pdfminer.six/pull/594))
-- Fix issue of ValueError and KeyError rasied in PDFdocument and PDFparser ([#573](https://github.com/pdfminer/pdfminer.six/pull/574))
+- Fix issue of ValueError and KeyError raised in PDFdocument and PDFparser ([#573](https://github.com/pdfminer/pdfminer.six/pull/574))
 - Fix issue of TypeError: cannot unpack non-iterable PDFObjRef object, when unpacking the value of 'DW2' ([#529](https://github.com/pdfminer/pdfminer.six/pull/529))
 - Fix `PermissionError` when creating temporary filepaths on windows when running tests ([#484](https://github.com/pdfminer/pdfminer.six/pull/484))
 - Fix `AttributeError` when dumping a TOC with bytes destinations ([#600](https://github.com/pdfminer/pdfminer.six/pull/600))
@@ -352,18 +353,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Deprecated
 - The argument `_py2_no_more_posargs` because Python2 is removed on January
-, 2020 ([#328](https://github.com/pdfminer/pdfminer.six/pull/328) and 
+, 2020 ([#328](https://github.com/pdfminer/pdfminer.six/pull/328) and
 [#307](https://github.com/pdfminer/pdfminer.six/pull/307))
 
 ### Added
 - Simple wrapper to easily extract text from a PDF file [#330](https://github.com/pdfminer/pdfminer.six/pull/330)
 - Support for extracting JBIG2 encoded images ([#311](https://github.com/pdfminer/pdfminer.six/pull/311) and [#46](https://github.com/pdfminer/pdfminer.six/pull/46))
-- Sphinx documentation that is published on 
+- Sphinx documentation that is published on
   [Read the Docs](https://pdfminersix.readthedocs.io/)
   ([#329](https://github.com/pdfminer/pdfminer.six/pull/329))
 
 ### Fixed
-- Unhandled AssertionError when dumping pdf containing reference to object id 0 
+- Unhandled AssertionError when dumping pdf containing reference to object id 0
  ([#318](https://github.com/pdfminer/pdfminer.six/pull/318))
 - Debug flag actually changes logging level to debug for pdf2txt.py and
  dumppdf.py ([#325](https://github.com/pdfminer/pdfminer.six/pull/325))
@@ -391,7 +392,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Resolve indirect objects for width and bounding boxes for fonts ([#273](https://github.com/pdfminer/pdfminer.six/pull/273))
 - Actually updating stroke color in graphic state ([#298](https://github.com/pdfminer/pdfminer.six/pull/298))
 - Interpret (invalid) negative font descent as a positive descent ([#203](https://github.com/pdfminer/pdfminer.six/pull/203))
-- Correct colorspace comparision for images ([#132](https://github.com/pdfminer/pdfminer.six/pull/132))
+- Correct colorspace comparison for images ([#132](https://github.com/pdfminer/pdfminer.six/pull/132))
 - Allow for bounding boxes with zero height or width by removing assertion ([#246](https://github.com/pdfminer/pdfminer.six/pull/246))
 
 ### Changed

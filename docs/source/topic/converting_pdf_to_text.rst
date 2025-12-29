@@ -48,7 +48,7 @@ Grouping characters into words and lines
 
 The first step in going from characters to text is to group characters in a
 meaningful way. Each character has an x-coordinate and a y-coordinate for its
-bottom-left corner and upper-right corner, i.e. its bounding box. Pdfminer.six 
+bottom-left corner and upper-right corner, i.e. its bounding box. Pdfminer.six
 uses these bounding boxes to decide which characters belong together.
 
 Characters that are both horizontally and vertically close are grouped onto

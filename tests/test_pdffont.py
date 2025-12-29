@@ -1,4 +1,4 @@
-from typing import Any, Dict, Union
+from typing import Any
 
 import pytest
 
@@ -40,7 +40,7 @@ class MockPdfFont(PDFFont):
     ],
 )
 def test_pdffont_char_width_defaults(
-    msg: str, widths: Dict[Union[str, int], float], expected: float
+    msg: str, widths: dict[str | int, float], expected: float
 ) -> None:
     pdffont = MockPdfFont(descriptor=dict(), widths=widths, default_width=100.0)
 

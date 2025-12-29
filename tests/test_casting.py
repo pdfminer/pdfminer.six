@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 import pytest
 
@@ -20,7 +20,7 @@ from pdfminer.utils import Rect
         (object(), None),
     ],
 )
-def test_safe_rect_list(arg: Any, expected: Optional[Rect]) -> None:
+def test_safe_rect_list(arg: Any, expected: Rect | None) -> None:
     assert safe_rect_list(arg) == expected
 
 
@@ -36,5 +36,5 @@ def test_safe_rect_list(arg: Any, expected: Optional[Rect]) -> None:
         (2**1024, None),  # Integer too large to convert to float
     ],
 )
-def test_safe_float(arg: Any, expected: Optional[float]) -> None:
+def test_safe_float(arg: Any, expected: float | None) -> None:
     assert safe_float(arg) == expected

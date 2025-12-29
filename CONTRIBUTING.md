@@ -12,9 +12,9 @@ Any contribution is appreciated! You might want to:
 
 * Use [issues](https://github.com/pdfminer/pdfminer.six/issues) to report bugs and features
     - If you report a bug in the results for a particular pdf, include that pdf. This allows others to replicate the
-     issue. 
+     issue.
 * Fix issues by [creating pull requests](https://help.github.com/en/articles/creating-a-pull-request).
-* Help others by sharing your thoughs in comments on issues and pull requests.
+* Help others by sharing your thoughts in comments on issues and pull requests.
 * Join the chat on [gitter](https://gitter.im/pdfminer-six/Lobby)
 
 ## Guideline for creating issues
@@ -22,20 +22,20 @@ Any contribution is appreciated! You might want to:
 * Search previous issues, as yours might be a duplicate.
 * When creating a new issue for a bug, include a minimal reproducible example.
 * When creating a new issue for a feature, be sure to describe the context of the problem you are trying to solve. This
-  will help others to see the importance of your feature request. 
+  will help others to see the importance of your feature request.
 
 ## Guideline for creating pull request
 
-* A pull request should close an existing issue. For example, use "Fix #123" to indicate that your PR fixes issue 123. 
+* A pull request should close an existing issue. For example, use "Fix #123" to indicate that your PR fixes issue 123.
 * Pull requests should be merged to master.
 * Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case
   of features, this will show that your code works correctly.
 * Code should work for Python 3.10+.
-* Test your code by using nox (see below). 
+* Test your code by using nox (see below).
 * New features should be well documented using docstrings.
-* Check if the [README.md](../README.md) or [readthedocs](../docs/source) documentation needs to be updated. 
+* Check if the [README.md](../README.md) or [readthedocs](../docs/source) documentation needs to be updated.
 * Check spelling and grammar.
-* Don't forget to update the [CHANGELOG.md](CHANGELOG.md#[Unreleased]). 
+* Don't forget to update the [CHANGELOG.md](CHANGELOG.md#[Unreleased]).
 
 ## Guideline for posting comments
 
@@ -43,7 +43,7 @@ Any contribution is appreciated! You might want to:
 
 ## Guidelines for publishing
 
-* Publishing is automated. Add a YYYYMMDD version tag and GitHub workflows will do the rest. 
+* Publishing is automated. Add a YYYYMMDD version tag and GitHub workflows will do the rest.
 
 ## Guideline for dependencies
 
@@ -66,16 +66,33 @@ Any contribution is appreciated! You might want to:
     pip install -e ".[dev]"
     ```
 
-3. Run all formatting, linting and tests
+3. Install pre-commit hooks (recommended)
+
+    ```sh
+    pre-commit install
+    ```
+
+    This will automatically run formatting and linting checks before each commit.
+    You can also run pre-commit manually:
+
+    ```sh
+    # Run on all files
+    pre-commit run --all-files
+
+    # Run on staged files only
+    pre-commit run
+    ```
+
+4. Run all formatting, linting and tests
 
     On all Python versions:
 
     ```sh
     nox
    ```
-   
+
    Or only the tests on a single Python version:
-   
+
    ```sh
     nox -e tests-3.13
     ```

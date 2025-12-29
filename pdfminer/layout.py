@@ -1,15 +1,8 @@
 import heapq
 import logging
+from collections.abc import Iterable, Iterator, Sequence
 from typing import (
-    Dict,
     Generic,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -86,7 +79,7 @@ class LAParams:
         char_margin: float = 2.0,
         line_margin: float = 0.5,
         word_margin: float = 0.1,
-        boxes_flow: Optional[float] = 0.5,
+        boxes_flow: float | None = 0.5,
         detect_vertical: bool = False,
         all_texts: bool = False,
     ) -> None:
@@ -223,14 +216,14 @@ class LTCurve(LTComponent):
     def __init__(
         self,
         linewidth: float,
-        pts: List[Point],
+        pts: list[Point],
         stroke: bool = False,
         fill: bool = False,
         evenodd: bool = False,
-        stroking_color: Optional[Color] = None,
-        non_stroking_color: Optional[Color] = None,
-        original_path: Optional[List[PathSegment]] = None,
-        dashing_style: Optional[Tuple[object, object]] = None,
+        stroking_color: Color | None = None,
+        non_stroking_color: Color | None = None,
+        original_path: list[PathSegment] | None = None,
+        dashing_style: tuple[object, object] | None = None,
     ) -> None:
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
@@ -261,10 +254,10 @@ class LTLine(LTCurve):
         stroke: bool = False,
         fill: bool = False,
         evenodd: bool = False,
-        stroking_color: Optional[Color] = None,
-        non_stroking_color: Optional[Color] = None,
-        original_path: Optional[List[PathSegment]] = None,
-        dashing_style: Optional[Tuple[object, object]] = None,
+        stroking_color: Color | None = None,
+        non_stroking_color: Color | None = None,
+        original_path: list[PathSegment] | None = None,
+        dashing_style: tuple[object, object] | None = None,
     ) -> None:
         LTCurve.__init__(
             self,
@@ -293,10 +286,10 @@ class LTRect(LTCurve):
         stroke: bool = False,
         fill: bool = False,
         evenodd: bool = False,
-        stroking_color: Optional[Color] = None,
-        non_stroking_color: Optional[Color] = None,
-        original_path: Optional[List[PathSegment]] = None,
-        dashing_style: Optional[Tuple[object, object]] = None,
+        stroking_color: Color | None = None,
+        non_stroking_color: Color | None = None,
+        original_path: list[PathSegment] | None = None,
+        dashing_style: tuple[object, object] | None = None,
     ) -> None:
         (x0, y0, x1, y1) = bbox
         LTCurve.__init__(
@@ -361,7 +354,7 @@ class LTChar(LTComponent, LTText):
         rise: float,
         text: str,
         textwidth: float,
-        textdisp: Union[float, Tuple[Optional[float], float]],
+        textdisp: float | tuple[float | None, float],
         ncs: PDFColorSpace,
         graphicstate: PDFGraphicState,
     ) -> None:
@@ -415,7 +408,7 @@ class LTContainer(LTComponent, Generic[LTItemT]):
 
     def __init__(self, bbox: Rect) -> None:
         LTComponent.__init__(self, bbox)
-        self._objs: List[LTItemT] = []
+        self._objs: list[LTItemT] = []
 
     def __iter__(self) -> Iterator[LTItemT]:
         return iter(self._objs)
@@ -490,7 +483,7 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         self,
         plane: Plane[LTComponentT],
         ratio: float,
-    ) -> List["LTTextLine"]:
+    ) -> list["LTTextLine"]:
         raise NotImplementedError
 
     def is_empty(self) -> bool:
@@ -516,7 +509,7 @@ class LTTextLineHorizontal(LTTextLine):
         self,
         plane: Plane[LTComponentT],
         ratio: float,
-    ) -> List[LTTextLine]:
+    ) -> list[LTTextLine]:
         """Finds neighboring LTTextLineHorizontals in the plane.
 
         Returns a list of other LTTestLineHorizontals in the plane which are
@@ -579,7 +572,7 @@ class LTTextLineVertical(LTTextLine):
         self,
         plane: Plane[LTComponentT],
         ratio: float,
-    ) -> List[LTTextLine]:
+    ) -> list[LTTextLine]:
         """Finds neighboring LTTextLineVerticals in the plane.
 
         Returns a list of other LTTextLineVerticals in the plane which are
@@ -696,7 +689,7 @@ class LTTextGroupTBRL(LTTextGroup):
 class LTLayoutContainer(LTContainer[LTComponent]):
     def __init__(self, bbox: Rect) -> None:
         LTContainer.__init__(self, bbox)
-        self.groups: Optional[List[LTTextGroup]] = None
+        self.groups: list[LTTextGroup] | None = None
 
     # group_objects: group text object to textlines.
     def group_objects(
@@ -784,7 +777,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         """Group neighboring lines to textboxes"""
         plane: Plane[LTTextLine] = Plane(self.bbox)
         plane.extend(lines)
-        boxes: Dict[LTTextLine, LTTextBox] = {}
+        boxes: dict[LTTextLine, LTTextBox] = {}
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
             members = [line]
@@ -814,7 +807,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         self,
         laparams: LAParams,
         boxes: Sequence[LTTextBox],
-    ) -> List[LTTextGroup]:
+    ) -> list[LTTextGroup]:
         """Group textboxes hierarchically.
 
         Get pair-wise distances, via dist func defined below, and then merge
@@ -857,7 +850,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 - obj2.width * obj2.height
             )
 
-        def isany(obj1: ElementT, obj2: ElementT) -> Set[ElementT]:
+        def isany(obj1: ElementT, obj2: ElementT) -> set[ElementT]:
             """Check if there's any other object between obj1 and obj2."""
             x0 = min(obj1.x0, obj2.x0)
             y0 = min(obj1.y0, obj2.y0)
@@ -866,7 +859,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
             objs = set(plane.find((x0, y0, x1, y1)))
             return objs.difference((obj1, obj2))
 
-        dists: List[Tuple[bool, float, int, int, ElementT, ElementT]] = []
+        dists: list[tuple[bool, float, int, int, ElementT, ElementT]] = []
         for i in range(len(boxes)):
             box1 = boxes[i]
             for j in range(i + 1, len(boxes)):
@@ -920,7 +913,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
             for textbox in textboxes:
                 textbox.analyze(laparams)
 
-            def getkey(box: LTTextBox) -> Tuple[int, float, float]:
+            def getkey(box: LTTextBox) -> tuple[int, float, float]:
                 if isinstance(box, LTTextBoxVertical):
                     return (0, -box.x1, -box.y0)
                 else:
@@ -935,9 +928,9 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 assigner.run(group)
             textboxes.sort(key=lambda box: box.index)
         self._objs = (
-            cast(List[LTComponent], textboxes)
+            cast(list[LTComponent], textboxes)
             + otherobjs
-            + cast(List[LTComponent], empties)
+            + cast(list[LTComponent], empties)
         )
 
 

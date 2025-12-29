@@ -6,7 +6,8 @@ import os.path
 import re
 import sys
 from argparse import ArgumentParser
-from typing import Any, Container, Dict, Iterable, List, Optional, TextIO, Union, cast
+from collections.abc import Container, Iterable
+from typing import Any, TextIO, cast
 
 import pdfminer
 from pdfminer.pdfdocument import PDFDocument, PDFNoOutlines, PDFXRefFallback
@@ -28,7 +29,7 @@ logger = logging.getLogger(__name__)
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
 
 
-def escape(s: Union[str, bytes]) -> str:
+def escape(s: str | bytes) -> str:
     if isinstance(s, bytes):
         us = str(s, "latin-1")
     else:
@@ -36,7 +37,7 @@ def escape(s: Union[str, bytes]) -> str:
     return ESC_PAT.sub(lambda m: "&#%d;" % ord(m.group(0)), us)
 
 
-def dumpxml(out: TextIO, obj: object, codec: Optional[str] = None) -> None:
+def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
     if obj is None:
         out.write("<null />")
         return
@@ -124,7 +125,7 @@ def dumptrailers(
 def dumpallobjs(
     out: TextIO,
     doc: PDFDocument,
-    codec: Optional[str] = None,
+    codec: str | None = None,
     show_fallback_xref: bool = False,
 ) -> None:
     visited = set()
@@ -154,8 +155,8 @@ def dumpoutline(
     pagenos: Container[int],
     password: str = "",
     dumpall: bool = False,
-    codec: Optional[str] = None,
-    extractdir: Optional[str] = None,
+    codec: str | None = None,
+    extractdir: str | None = None,
 ) -> None:
     fp = open(fname, "rb")
     parser = PDFParser(fp)
@@ -212,7 +213,7 @@ LITERAL_EMBEDDEDFILE = LIT("EmbeddedFile")
 
 
 def extractembedded(fname: str, password: str, extractdir: str) -> None:
-    def extract1(objid: int, obj: Dict[str, Any]) -> None:
+    def extract1(objid: int, obj: dict[str, Any]) -> None:
         filename = os.path.basename(obj.get("UF") or cast(bytes, obj.get("F")).decode())
         fileref = obj["EF"].get("UF") or obj["EF"].get("F")
         fileobj = doc.getobj(fileref.objid)
@@ -259,8 +260,8 @@ def dumppdf(
     pagenos: Container[int],
     password: str = "",
     dumpall: bool = False,
-    codec: Optional[str] = None,
-    extractdir: Optional[str] = None,
+    codec: str | None = None,
+    extractdir: str | None = None,
     show_fallback_xref: bool = False,
 ) -> None:
     fp = open(fname, "rb")
@@ -411,7 +412,7 @@ def create_parser() -> ArgumentParser:
     return parser
 
 
-def main(argv: Optional[List[str]] = None) -> None:
+def main(argv: list[str] | None = None) -> None:
     parser = create_parser()
     args = parser.parse_args(args=argv)
 
@@ -438,7 +439,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     password = args.password
 
     if args.raw_stream:
-        codec: Optional[str] = "raw"
+        codec: str | None = "raw"
     elif args.binary_stream:
         codec = "binary"
     elif args.text_stream:

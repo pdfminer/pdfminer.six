@@ -1,5 +1,4 @@
 import io
-from typing import List, Optional
 
 from atheris import FuzzedDataProvider
 
@@ -30,7 +29,7 @@ class PdfminerFuzzedDataProvider(FuzzedDataProvider):  # type: ignore[misc]
         max_count: int,
         min: int,
         max: int,
-    ) -> Optional[List[int]]:
+    ) -> list[int] | None:
         if self.ConsumeBool():
             count = self.ConsumeIntInRange(0, max_count)
             return [int(i) for i in self.ConsumeIntListInRange(count, min, max)]

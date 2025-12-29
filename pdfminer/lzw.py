@@ -1,6 +1,7 @@
 import logging
+from collections.abc import Iterator
 from io import BytesIO
-from typing import BinaryIO, Iterator, List, Optional, cast
+from typing import BinaryIO, cast
 
 from pdfminer.pdfexceptions import PDFEOFError, PDFException
 
@@ -18,8 +19,8 @@ class LZWDecoder:
         self.bpos = 8
         self.nbits = 9
         # NB: self.table stores None only in indices 256 and 257
-        self.table: List[Optional[bytes]] = []
-        self.prevbuf: Optional[bytes] = None
+        self.table: list[bytes | None] = []
+        self.prevbuf: bytes | None = None
 
     def readbits(self, bits: int) -> int:
         v = 0

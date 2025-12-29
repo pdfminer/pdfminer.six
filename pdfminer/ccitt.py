@@ -12,16 +12,9 @@
 
 
 import array
+from collections.abc import Callable, Iterator, MutableSequence, Sequence
 from typing import (
     Any,
-    Callable,
-    Dict,
-    Iterator,
-    List,
-    MutableSequence,
-    Optional,
-    Sequence,
-    Union,
     cast,
 )
 
@@ -43,13 +36,13 @@ class BitParser:
 
     # _accept is declared Optional solely as a workaround for
     # https://github.com/python/mypy/issues/708
-    _accept: Optional[Callable[[Any], BitParserState]]
+    _accept: Callable[[Any], BitParserState] | None
 
     def __init__(self) -> None:
         self._pos = 0
 
     @classmethod
-    def add(cls, root: BitParserState, v: Union[int, str], bits: str) -> None:
+    def add(cls, root: BitParserState, v: int | str, bits: str) -> None:
         p: BitParserState = root
         b = None
         for i in range(len(bits)):
@@ -415,7 +408,7 @@ class CCITTG4Parser(BitParser):
         else:
             return self.BLACK
 
-    def _parse_uncompressed(self, bits: Optional[str]) -> BitParserState:
+    def _parse_uncompressed(self, bits: str | None) -> BitParserState:
         if not bits:
             raise self.InvalidData
         if bits.startswith("T"):
@@ -565,7 +558,7 @@ class CCITTFaxDecoder(CCITTG4Parser):
         self._buf += arr.tobytes()
 
 
-def ccittfaxdecode(data: bytes, params: Dict[str, object]) -> bytes:
+def ccittfaxdecode(data: bytes, params: dict[str, object]) -> bytes:
     K = params.get("K")
     if K == -1:
         cols = cast(int, params.get("Columns"))
@@ -579,7 +572,7 @@ def ccittfaxdecode(data: bytes, params: Dict[str, object]) -> bytes:
 
 
 # test
-def main(argv: List[str]) -> None:
+def main(argv: list[str]) -> None:
     if not argv[1:]:
         import unittest
 

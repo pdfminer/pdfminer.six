@@ -3,21 +3,14 @@
 import io
 import pathlib
 import string
+from collections.abc import Callable, Iterable, Iterator
 from html import escape
 from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Callable,
-    Dict,
     Generic,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
     TextIO,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -93,7 +86,7 @@ def shorten_str(s: str, size: int) -> str:
 
 
 def compatible_encode_method(
-    bytesorstring: Union[bytes, str],
+    bytesorstring: bytes | str,
     encoding: str = "utf-8",
     erraction: str = "ignore",
 ) -> str:
@@ -137,9 +130,9 @@ def apply_tiff_predictor(
         raise PDFValueError(error_msg)
     bpp = colors * (bitspercomponent // 8)
     nbytes = columns * bpp
-    buf: List[int] = []
+    buf: list[int] = []
     for scanline_i in range(0, len(data), nbytes):
-        raw: List[int] = []
+        raw: list[int] = []
         for i in range(nbytes):
             new_value = data[scanline_i + i]
             if i >= bpp:
@@ -252,14 +245,14 @@ def apply_png_predictor(
     return bytes(buf)
 
 
-Point = Tuple[float, float]
-Rect = Tuple[float, float, float, float]
-Matrix = Tuple[float, float, float, float, float, float]
+Point = tuple[float, float]
+Rect = tuple[float, float, float, float]
+Matrix = tuple[float, float, float, float, float, float]
 PathSegment = Union[
-    Tuple[str],  # Literal['h']
-    Tuple[str, float, float],  # Literal['m', 'l']
-    Tuple[str, float, float, float, float],  # Literal['v', 'y']
-    Tuple[str, float, float, float, float, float, float],
+    tuple[str],  # Literal['h']
+    tuple[str, float, float],  # Literal['m', 'l']
+    tuple[str, float, float, float, float],  # Literal['v', 'y']
+    tuple[str, float, float, float, float, float, float],
 ]  # Literal['c']
 
 #  Matrix operations
@@ -363,7 +356,7 @@ def uniq(objs: Iterable[_T]) -> Iterator[_T]:
         yield obj
 
 
-def fsplit(pred: Callable[[_T], bool], objs: Iterable[_T]) -> Tuple[List[_T], List[_T]]:
+def fsplit(pred: Callable[[_T], bool], objs: Iterable[_T]) -> tuple[list[_T], list[_T]]:
     """Split a list into two classes according to the predicate."""
     t = []
     f = []
@@ -395,8 +388,8 @@ def get_bound(pts: Iterable[Point]) -> Rect:
 def pick(
     seq: Iterable[_T],
     func: Callable[[_T], float],
-    maxobj: Optional[_T] = None,
-) -> Optional[_T]:
+    maxobj: _T | None = None,
+) -> _T | None:
     """Picks the object obj where func(obj) has the highest value."""
     maxscore = None
     for obj in seq:
@@ -406,7 +399,7 @@ def pick(
     return maxobj
 
 
-def choplist(n: int, seq: Iterable[_T]) -> Iterator[Tuple[_T, ...]]:
+def choplist(n: int, seq: Iterable[_T]) -> Iterator[tuple[_T, ...]]:
     """Groups every n elements of the list."""
     r = []
     for x in seq:
@@ -718,7 +711,7 @@ def vecBetweenBoxes(obj1: "LTComponent", obj2: "LTComponent") -> Point:
 
     Consider the bounding rectangle for obj1 and obj2.
     Return vector between 2 boxes boundaries if they don't overlap, otherwise
-    returns vector betweeen boxes centers
+    returns vector between boxes centers
 
              +------+..........+ (x1, y1)
              | obj1 |          :
@@ -751,9 +744,9 @@ class Plane(Generic[LTComponentT]):
     """
 
     def __init__(self, bbox: Rect, gridsize: int = 50) -> None:
-        self._seq: List[LTComponentT] = []  # preserve the object order.
-        self._objs: Set[LTComponentT] = set()
-        self._grid: Dict[Point, List[LTComponentT]] = {}
+        self._seq: list[LTComponentT] = []  # preserve the object order.
+        self._objs: set[LTComponentT] = set()
+        self._grid: dict[Point, list[LTComponentT]] = {}
         self.gridsize = gridsize
         (self.x0, self.y0, self.x1, self.y1) = bbox
 
@@ -789,7 +782,7 @@ class Plane(Generic[LTComponentT]):
         """Place an object."""
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
             if k not in self._grid:
-                r: List[LTComponentT] = []
+                r: list[LTComponentT] = []
                 self._grid[k] = r
             else:
                 r = self._grid[k]
@@ -829,7 +822,7 @@ ROMAN_FIVES = ["v", "l", "d"]
 def format_int_roman(value: int) -> str:
     """Format a number as lowercase Roman numerals."""
     assert 0 < value < 4000
-    result: List[str] = []
+    result: list[str] = []
     index = 0
 
     while value != 0:
@@ -854,7 +847,7 @@ def format_int_roman(value: int) -> str:
 def format_int_alpha(value: int) -> str:
     """Format a number as lowercase letters a-z, aa-zz, etc."""
     assert value > 0
-    result: List[str] = []
+    result: list[str] = []
 
     while value != 0:
         value, remainder = divmod(value - 1, len(string.ascii_lowercase))

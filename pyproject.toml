@@ -46,6 +46,7 @@ dev = [
     "black",
     "mypy == 0.931",
     "nox",
+    "pre-commit",
     "pytest",
 ]
 docs = [
@@ -69,11 +70,14 @@ script-files = [
 
 [tool.setuptools_scm]
 
+[tool.ruff]
+target-version = "py310"
+
 [tool.ruff.lint]
 extend-select = [
     "W",  # pycodestyle warnings
     "I",  # isort
-    "TID"  # flake8 tidy imports
+    "TID",  # flake8 tidy imports
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
