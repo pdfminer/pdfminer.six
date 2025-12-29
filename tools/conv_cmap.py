@@ -130,18 +130,18 @@ class CMapConverter:
 
     def dump_cmap(self, fp, enc):
         """Dump CMap data as JSON."""
-        data = dict(
-            IS_VERTICAL=self.is_vertical.get(enc, False),
-            CODE2CID=self.code2cid.get(enc),
-        )
+        data = {
+            "IS_VERTICAL": self.is_vertical.get(enc, False),
+            "CODE2CID": self.code2cid.get(enc),
+        }
         json.dump(data, fp, ensure_ascii=False, separators=(",", ":"))
 
     def dump_unicodemap(self, fp):
         """Dump Unicode map data as JSON."""
-        data = dict(
-            CID2UNICHR_H=self.cid2unichr_h,
-            CID2UNICHR_V=self.cid2unichr_v,
-        )
+        data = {
+            "CID2UNICHR_H": self.cid2unichr_h,
+            "CID2UNICHR_V": self.cid2unichr_v,
+        }
         json.dump(data, fp, ensure_ascii=False, separators=(",", ":"))
 
 
@@ -180,20 +180,18 @@ def main(argv):
 
     for enc in converter.get_encs():
         # Write JSON format
-        fname = "%s.json.gz" % enc
+        fname = f"{enc}.json.gz"
         path = os.path.join(outdir, fname)
-        print("writing: %r..." % path)
-        fp = gzip.open(path, "wt", encoding="utf-8")
-        converter.dump_cmap(fp, enc)
-        fp.close()
+        print(f"writing: {path!r}...")
+        with gzip.open(path, "wt", encoding="utf-8") as fp:
+            converter.dump_cmap(fp, enc)
 
     # Write JSON format
-    fname = "to-unicode-%s.json.gz" % regname
+    fname = f"to-unicode-{regname}.json.gz"
     path = os.path.join(outdir, fname)
-    print("writing: %r..." % path)
-    fp = gzip.open(path, "wt", encoding="utf-8")
-    converter.dump_unicodemap(fp)
-    fp.close()
+    print(f"writing: {path!r}...")
+    with gzip.open(path, "wt", encoding="utf-8") as fp:
+        converter.dump_unicodemap(fp)
 
 
 if __name__ == "__main__":

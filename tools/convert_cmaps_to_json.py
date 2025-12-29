@@ -27,9 +27,7 @@ class RestrictedUnpickler(pickle.Unpickler):
         # Only allow built-in types, no arbitrary classes
         if module == "builtins":
             return getattr(__builtins__, name)  # type: ignore[attr-defined]
-        raise pickle.UnpicklingError(
-            f"Global objects not allowed: {module}.{name}"
-        )
+        raise pickle.UnpicklingError(f"Global objects not allowed: {module}.{name}")
 
 
 def convert_pickle_to_json(pickle_path: str, json_path: str) -> None:
@@ -67,7 +65,8 @@ def main() -> int:
         print(__doc__)
         print("\nError: Expected 2 arguments", file=sys.stderr)
         print(
-            "Usage: python tools/convert_cmaps_to_json.py <input.pickle.gz> <output.json.gz>",
+            "Usage: python tools/convert_cmaps_to_json.py "
+            "<input.pickle.gz> <output.json.gz>",
             file=sys.stderr,
         )
         return 1
