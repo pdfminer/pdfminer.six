@@ -888,7 +888,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                     )
                 plane.add(group)
         # By now only groups are in the plane
-        return list(cast(LTTextGroup, g) for g in plane)
+        return [cast(LTTextGroup, g) for g in plane]
 
     def analyze(self, laparams: LAParams) -> None:
         # textobjs is a list of LTChar objects, i.e.

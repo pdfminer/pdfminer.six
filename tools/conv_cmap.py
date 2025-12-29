@@ -129,17 +129,17 @@ class CMapConverter:
                 self.cid2unichr_v[cid] = pick(unimap_v or unimap_h)
 
     def dump_cmap(self, fp, enc):
-        data = dict(
-            IS_VERTICAL=self.is_vertical.get(enc, False),
-            CODE2CID=self.code2cid.get(enc),
-        )
+        data = {
+            "IS_VERTICAL": self.is_vertical.get(enc, False),
+            "CODE2CID": self.code2cid.get(enc),
+        }
         fp.write(pickle.dumps(data, 2))
 
     def dump_unicodemap(self, fp):
-        data = dict(
-            CID2UNICHR_H=self.cid2unichr_h,
-            CID2UNICHR_V=self.cid2unichr_v,
-        )
+        data = {
+            "CID2UNICHR_H": self.cid2unichr_h,
+            "CID2UNICHR_V": self.cid2unichr_v,
+        }
         fp.write(pickle.dumps(data, 2))
 
 

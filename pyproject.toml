@@ -81,6 +81,7 @@ extend-select = [
     "UP",  # pyupgrade
     "B",  # flake8-bugbear
     "SIM",  # flake8-simplify
+    "C4",  # flake8-comprehensions
 ]
 extend-ignore = [
     # UP007: Union to | syntax breaks mypy 0.931 in TypeAlias definitions

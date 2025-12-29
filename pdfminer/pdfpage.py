@@ -66,7 +66,7 @@ class PDFPage:
         self.label = label
         self.lastmod = resolve1(self.attrs.get("LastModified"))
         self.resources: dict[object, object] = resolve1(
-            self.attrs.get("Resources", dict()),
+            self.attrs.get("Resources", {}),
         )
 
         self.mediabox = self._parse_mediabox(self.attrs.get("MediaBox"))

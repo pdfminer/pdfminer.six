@@ -42,7 +42,7 @@ class MockPdfFont(PDFFont):
 def test_pdffont_char_width_defaults(
     msg: str, widths: dict[str | int, float], expected: float
 ) -> None:
-    pdffont = MockPdfFont(descriptor=dict(), widths=widths, default_width=100.0)
+    pdffont = MockPdfFont(descriptor={}, widths=widths, default_width=100.0)
 
     assert pdffont.char_width(0) == expected, msg
 
