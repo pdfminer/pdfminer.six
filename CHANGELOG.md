@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Pre-commit hooks for automated code quality checks ([#1214](https://github.com/pdfminer/pdfminer.six/issues/1214))
 - Support for colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
 
 ### Fixed
