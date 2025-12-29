@@ -194,7 +194,7 @@ def apply_png_predictor(
             #   Raw(x) = Up(x) + Prior(x)
             # (computed mod 256), where Prior() refers to the decoded bytes of
             # the prior scanline.
-            for up_x, prior_x in zip(line_encoded, line_above):
+            for up_x, prior_x in zip(line_encoded, line_above, strict=False):
                 raw_x = (up_x + prior_x) & 255
                 raw.append(raw_x)
 
@@ -263,8 +263,8 @@ def parse_rect(o: Any) -> Rect:
     try:
         (x0, y0, x1, y1) = o
         return float(x0), float(y0), float(x1), float(y1)
-    except ValueError:
-        raise PDFValueError("Could not parse rectangle")
+    except ValueError as err:
+        raise PDFValueError("Could not parse rectangle") from err
 
 
 def mult_matrix(m1: Matrix, m0: Matrix) -> Matrix:

@@ -24,8 +24,8 @@ def float_or_disabled(x: str) -> float | None:
         return None
     try:
         return float(x)
-    except ValueError:
-        raise argparse.ArgumentTypeError(f"invalid float value: {x}")
+    except ValueError as err:
+        raise argparse.ArgumentTypeError(f"invalid float value: {x}") from err
 
 
 def extract_text(
