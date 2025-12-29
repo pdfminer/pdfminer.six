@@ -105,8 +105,10 @@ class LAParams:
 
     def __repr__(self) -> str:
         return (
-            f"<LAParams: char_margin={self.char_margin:.1f}, line_margin={self.line_margin:.1f}, "
-            f"word_margin={self.word_margin:.1f} all_texts={self.all_texts!r}>"
+            f"<LAParams: char_margin={self.char_margin:.1f}, "
+            f"line_margin={self.line_margin:.1f}, "
+            f"word_margin={self.word_margin:.1f} "
+            f"all_texts={self.all_texts!r}>"
         )
 
 
@@ -321,7 +323,10 @@ class LTImage(LTComponent):
             self.colorspace = [self.colorspace]
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.name}) {bbox2str(self.bbox)} {self.srcsize!r}>"
+        return (
+            f"<{self.__class__.__name__}({self.name}) "
+            f"{bbox2str(self.bbox)} {self.srcsize!r}>"
+        )
 
 
 class LTAnno(LTItem, LTText):
@@ -388,7 +393,13 @@ class LTChar(LTComponent, LTText):
             self.size = self.height
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} {bbox2str(self.bbox)} matrix={matrix2str(self.matrix)} font={self.fontname!r} adv={self.adv} text={self.get_text()!r}>"
+        return (
+            f"<{self.__class__.__name__} {bbox2str(self.bbox)} "
+            f"matrix={matrix2str(self.matrix)} "
+            f"font={self.fontname!r} "
+            f"adv={self.adv} "
+            f"text={self.get_text()!r}>"
+        )
 
     def get_text(self) -> str:
         return self._text
@@ -623,7 +634,10 @@ class LTTextBox(LTTextContainer[LTTextLine]):
         self.index: int = -1
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.index}) {bbox2str(self.bbox)} {self.get_text()!r}>"
+        return (
+            f"<{self.__class__.__name__}({self.index}) "
+            f"{bbox2str(self.bbox)} {self.get_text()!r}>"
+        )
 
     def get_writing_mode(self) -> str:
         raise NotImplementedError
@@ -945,7 +959,11 @@ class LTFigure(LTLayoutContainer):
         LTLayoutContainer.__init__(self, bbox)
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.name}) {bbox2str(self.bbox)} matrix={matrix2str(self.matrix)}>"
+        return (
+            f"<{self.__class__.__name__}({self.name}) "
+            f"{bbox2str(self.bbox)} "
+            f"matrix={matrix2str(self.matrix)}>"
+        )
 
     def analyze(self, laparams: LAParams) -> None:
         if not laparams.all_texts:
@@ -966,4 +984,8 @@ class LTPage(LTLayoutContainer):
         self.rotate = rotate
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.pageid!r}) {bbox2str(self.bbox)} rotate={self.rotate!r}>"
+        return (
+            f"<{self.__class__.__name__}({self.pageid!r}) "
+            f"{bbox2str(self.bbox)} "
+            f"rotate={self.rotate!r}>"
+        )

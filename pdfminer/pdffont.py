@@ -72,12 +72,14 @@ def get_widths(seq: Iterable[object]) -> dict[str | int, float]:
                         widths[i] = w
                 else:
                     log.warning(
-                        f"Skipping invalid font width specification for {char1} to {char2} because either of them is not an int"
+                        f"Skipping invalid font width specification for {char1} to "
+                        f"{char2} because either of them is not an int"
                     )
                 r = []
         else:
             log.warning(
-                f"Skipping invalid font width specification for {v} because it is not a number or a list"
+                f"Skipping invalid font width specification for {v} "
+                f"because it is not a number or a list"
             )
     return cast(dict[str | int, float], widths)
 
@@ -959,7 +961,8 @@ class PDFFont:
         bbox = safe_rect_list(font_bbox)
         if bbox is None:
             log.warning(
-                f"Could not get FontBBox from font descriptor because {font_bbox!r} cannot be parsed as 4 floats"
+                f"Could not get FontBBox from font descriptor because "
+                f"{font_bbox!r} cannot be parsed as 4 floats"
             )
             return 0.0, 0.0, 0.0, 0.0
         return bbox

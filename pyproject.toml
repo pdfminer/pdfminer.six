@@ -75,6 +75,7 @@ target-version = "py310"
 
 [tool.ruff.lint]
 extend-select = [
+    "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
     "I",  # isort
     "TID",  # flake8 tidy imports

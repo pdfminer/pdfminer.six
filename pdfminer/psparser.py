@@ -641,7 +641,8 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
                 self.do_keyword(pos, token)
             else:
                 log.error(
-                    f"unknown token: pos={pos!r}, token={token!r}, stack={self.curstack!r}"
+                    f"unknown token: pos={pos!r}, "
+                    f"token={token!r}, stack={self.curstack!r}"
                 )
                 self.do_keyword(pos, token)
                 raise PSException

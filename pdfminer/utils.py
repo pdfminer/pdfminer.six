@@ -125,7 +125,9 @@ def apply_tiff_predictor(
 ) -> bytes:
     """Reverse the effect of the TIFF predictor 2
 
-    Documentation: https://www.itu.int/itudoc/itu-t/com16/tiff-fx/docs/tiff6.pdf (Section 14, page 64)
+    Documentation:
+    https://www.itu.int/itudoc/itu-t/com16/tiff-fx/docs/tiff6.pdf
+    (Section 14, page 64)
     """
     if bitspercomponent != 8:
         error_msg = f"Unsupported `bitspercomponent': {bitspercomponent}"

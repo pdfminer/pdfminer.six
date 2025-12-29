@@ -468,7 +468,10 @@ class HTMLConverter(PDFConverter[AnyIO]):
 
     def write_footer(self) -> None:
         page_links = [f'<a href="#{i}">{i}</a>' for i in range(1, self.pageno)]
-        s = f'<div style="position:absolute; top:0px;">Page: {", ".join(page_links)}</div>\n'
+        s = (
+            '<div style="position:absolute; top:0px;">'
+            f"Page: {', '.join(page_links)}</div>\n"
+        )
         self.write(s)
         self.write("</body></html>\n")
 
@@ -487,9 +490,12 @@ class HTMLConverter(PDFConverter[AnyIO]):
         color2 = self.rect_colors.get(color)
         if color2 is not None:
             s = (
-                f'<span style="position:absolute; border: {color2} {borderwidth}px solid; '
-                f"left:{x * self.scale}px; top:{(self._yoffset - y) * self.scale}px; "
-                f'width:{w * self.scale}px; height:{h * self.scale}px;"></span>\n'
+                '<span style="position:absolute; '
+                f"border: {color2} {borderwidth}px solid; "
+                f"left:{x * self.scale}px; "
+                f"top:{(self._yoffset - y) * self.scale}px; "
+                f"width:{w * self.scale}px; "
+                f'height:{h * self.scale}px;"></span>\n'
             )
             self.write(s)
 
@@ -508,9 +514,12 @@ class HTMLConverter(PDFConverter[AnyIO]):
         if self.imagewriter is not None:
             name = self.imagewriter.export_image(item)
             s = (
-                f'<img src="{enc(name)}" border="{borderwidth}" style="position:absolute; '
-                f'left:{x * self.scale}px; top:{(self._yoffset - y) * self.scale}px;" '
-                f'width="{w * self.scale}" height="{h * self.scale}" />\n'
+                f'<img src="{enc(name)}" border="{borderwidth}" '
+                'style="position:absolute; '
+                f"left:{x * self.scale}px; "
+                f'top:{(self._yoffset - y) * self.scale}px;" '
+                f'width="{w * self.scale}" '
+                f'height="{h * self.scale}" />\n'
             )
             self.write(s)
 
@@ -525,8 +534,11 @@ class HTMLConverter(PDFConverter[AnyIO]):
         color2 = self.text_colors.get(color)
         if color2 is not None:
             s = (
-                f'<span style="position:absolute; color:{color2}; left:{x * self.scale}px; '
-                f'top:{(self._yoffset - y) * self.scale}px; font-size:{size * self.scale * self.fontscale}px;">'
+                '<span style="position:absolute; '
+                f"color:{color2}; "
+                f"left:{x * self.scale}px; "
+                f"top:{(self._yoffset - y) * self.scale}px; "
+                f'font-size:{size * self.scale * self.fontscale}px;">'
             )
             self.write(s)
             self.write_text(text)
@@ -545,9 +557,13 @@ class HTMLConverter(PDFConverter[AnyIO]):
         self._fontstack.append(self._font)
         self._font = None
         s = (
-            f'<div style="position:absolute; border: {color} {borderwidth}px solid; '
-            f"writing-mode:{writing_mode}; left:{x * self.scale}px; top:{(self._yoffset - y) * self.scale}px; "
-            f'width:{w * self.scale}px; height:{h * self.scale}px;">'
+            '<div style="position:absolute; '
+            f"border: {color} {borderwidth}px solid; "
+            f"writing-mode:{writing_mode}; "
+            f"left:{x * self.scale}px; "
+            f"top:{(self._yoffset - y) * self.scale}px; "
+            f"width:{w * self.scale}px; "
+            f'height:{h * self.scale}px;">'
         )
         self.write(s)
 
@@ -565,7 +581,9 @@ class HTMLConverter(PDFConverter[AnyIO]):
             # Remove subset tag from fontname, see PDF Reference 5.5.3
             fontname_without_subset_tag = fontname.split("+")[-1]
             self.write(
-                f'<span style="font-family: {fontname_without_subset_tag}; font-size:{fontsize * self.scale * self.fontscale}px">'
+                '<span style="'
+                f"font-family: {fontname_without_subset_tag}; "
+                f'font-size:{fontsize * self.scale * self.fontscale}px">'
             )
             self._font = font
         self.write_text(text)
@@ -729,7 +747,11 @@ class XMLConverter(PDFConverter[AnyIO]):
         def render(item: LTItem) -> None:
             child: LTItem
             if isinstance(item, LTPage):
-                s = f'<page id="{item.pageid}" bbox="{bbox2str(item.bbox)}" rotate="{item.rotate}">\n'
+                s = (
+                    f'<page id="{item.pageid}" '
+                    f'bbox="{bbox2str(item.bbox)}" '
+                    f'rotate="{item.rotate}">\n'
+                )
                 self.write(s)
                 for child in item:
                     render(child)
@@ -740,13 +762,26 @@ class XMLConverter(PDFConverter[AnyIO]):
                     self.write("</layout>\n")
                 self.write("</page>\n")
             elif isinstance(item, LTLine):
-                s = f'<line linewidth="{item.linewidth}" bbox="{bbox2str(item.bbox)}" />\n'
+                s = (
+                    f"<line "
+                    f'linewidth="{item.linewidth}" '
+                    f'bbox="{bbox2str(item.bbox)}" />\n'
+                )
                 self.write(s)
             elif isinstance(item, LTRect):
-                s = f'<rect linewidth="{item.linewidth}" bbox="{bbox2str(item.bbox)}" />\n'
+                s = (
+                    f"<rect "
+                    f'linewidth="{item.linewidth}" '
+                    f'bbox="{bbox2str(item.bbox)}" />\n'
+                )
                 self.write(s)
             elif isinstance(item, LTCurve):
-                s = f'<curve linewidth="{item.linewidth}" bbox="{bbox2str(item.bbox)}" pts="{item.get_pts()}"/>\n'
+                s = (
+                    f"<curve "
+                    f'linewidth="{item.linewidth}" '
+                    f'bbox="{bbox2str(item.bbox)}" '
+                    f'pts="{item.get_pts()}"/>\n'
+                )
                 self.write(s)
             elif isinstance(item, LTFigure):
                 s = f'<figure name="{item.name}" bbox="{bbox2str(item.bbox)}">\n'
@@ -770,8 +805,12 @@ class XMLConverter(PDFConverter[AnyIO]):
                 self.write("</textbox>\n")
             elif isinstance(item, LTChar):
                 s = (
-                    f'<text font="{enc(item.fontname)}" bbox="{bbox2str(item.bbox)}" colourspace="{item.ncs.name}" '
-                    f'ncolour="{item.graphicstate.ncolor}" size="{item.size:.3f}">'
+                    f"<text "
+                    f'font="{enc(item.fontname)}" '
+                    f'bbox="{bbox2str(item.bbox)}" '
+                    f'colourspace="{item.ncs.name}" '
+                    f'ncolour="{item.graphicstate.ncolor}" '
+                    f'size="{item.size:.3f}">'
                 )
                 self.write(s)
                 self.write_text(item.get_text())
@@ -782,7 +821,10 @@ class XMLConverter(PDFConverter[AnyIO]):
                 if self.imagewriter is not None:
                     name = self.imagewriter.export_image(item)
                     self.write(
-                        f'<image src="{enc(name)}" width="{item.width}" height="{item.height}" />\n'
+                        f"<image "
+                        f'src="{enc(name)}" '
+                        f'width="{item.width}" '
+                        f'height="{item.height}" />\n'
                     )
                 else:
                     self.write(
@@ -897,9 +939,14 @@ class HOCRConverter(PDFConverter[AnyIO]):
             if "Bold" in self.working_font:
                 bold_and_italic_styles += "font-weight: bold; "
             self.write(
-                f"<span style='font:\"{self.working_font}\"; font-size:{self.working_size}; {bold_and_italic_styles}' "
-                f"class='ocrx_word' title='{self.bbox_repr(self.working_bbox)}; x_font {self.working_font}; "
-                f"x_fsize {self.working_size}'>{self.working_text.strip()}</span>"
+                f'<span style=\'font:"{self.working_font}"; '
+                f"font-size:{self.working_size}; "
+                f"{bold_and_italic_styles}' "
+                f"class='ocrx_word' "
+                f"title='{self.bbox_repr(self.working_bbox)}; "
+                f"x_font {self.working_font}; "
+                f"x_fsize {self.working_size}'>"
+                f"{self.working_text.strip()}</span>"
             )
         self.within_chars = False
 
@@ -910,7 +957,10 @@ class HOCRConverter(PDFConverter[AnyIO]):
             if isinstance(item, LTPage):
                 self.page_bbox = item.bbox
                 self.write(
-                    f"<div class='ocr_page' id='{item.pageid}' title='{self.bbox_repr(item.bbox)}'>\n",
+                    f"<div "
+                    f"class='ocr_page' "
+                    f"id='{item.pageid}' "
+                    f"title='{self.bbox_repr(item.bbox)}'>\n",
                 )
                 for child in item:
                     render(child)
@@ -924,7 +974,10 @@ class HOCRConverter(PDFConverter[AnyIO]):
                 self.write("</span>\n")
             elif isinstance(item, LTTextBox):
                 self.write(
-                    f"<div class='ocr_block' id='{item.index}' title='{self.bbox_repr(item.bbox)}'>\n"
+                    f"<div "
+                    f"class='ocr_block' "
+                    f"id='{item.index}' "
+                    f"title='{self.bbox_repr(item.bbox)}'>\n"
                 )
                 for child in item:
                     render(child)

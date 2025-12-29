@@ -186,7 +186,8 @@ class PDFTextDevice(PDFDevice):
                     needcharspace = True
             else:
                 logger.warning(
-                    f"Cannot render horizontal string because {obj!r} is not a valid int, float or bytes."
+                    f"Cannot render horizontal string because "
+                    f"{obj!r} is not a valid int, float or bytes."
                 )
         return (x, y)
 
@@ -230,7 +231,8 @@ class PDFTextDevice(PDFDevice):
                     needcharspace = True
             else:
                 logger.warning(
-                    f"Cannot render vertical string because {obj!r} is not a valid int, float or bytes."
+                    f"Cannot render vertical string because {obj!r} is not a valid "
+                    f"int, float or bytes."
                 )
         return (x, y)
 
@@ -286,7 +288,10 @@ class TagExtractor(PDFDevice):
         self._write(utils.enc(text))
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
-        output = f'<page id="{self.pageno}" bbox="{utils.bbox2str(page.mediabox)}" rotate="{page.rotate}">'
+        output = (
+            f'<page id="{self.pageno}" bbox="{utils.bbox2str(page.mediabox)}" '
+            f'rotate="{page.rotate}">'
+        )
         self._write(output)
 
     def end_page(self, page: PDFPage) -> None:
