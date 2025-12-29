@@ -43,7 +43,6 @@ dependencies = [
 dev = [
     # Atheris is supports up to Python 3.11.
     "atheris; python_version < '3.12'",
-    "nox",
     "ruff",
     "mypy",
     "pytest",
@@ -132,10 +131,6 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "pytest.*"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = "nox.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
