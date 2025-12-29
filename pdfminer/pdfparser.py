@@ -97,7 +97,7 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
             self.seek(pos + objlen)
             while 1:
                 try:
-                    (linepos, line) = self.nextline()
+                    (_linepos, line) = self.nextline()
                 except PSEOF as err:
                     if settings.STRICT:
                         raise PDFSyntaxError("Unexpected EOF") from err

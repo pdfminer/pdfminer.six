@@ -4,6 +4,7 @@ import re
 from collections.abc import Sequence
 from typing import (
     BinaryIO,
+    ClassVar,
     Generic,
     TextIO,
     TypeVar,
@@ -380,7 +381,7 @@ class TextConverter(PDFConverter[AnyIO]):
 
 
 class HTMLConverter(PDFConverter[AnyIO]):
-    RECT_COLORS = {
+    RECT_COLORS: ClassVar[dict[str, str]] = {
         "figure": "yellow",
         "textline": "magenta",
         "textbox": "cyan",
@@ -389,7 +390,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
         "page": "gray",
     }
 
-    TEXT_COLORS = {
+    TEXT_COLORS: ClassVar[dict[str, str]] = {
         "textbox": "blue",
         "char": "black",
     }

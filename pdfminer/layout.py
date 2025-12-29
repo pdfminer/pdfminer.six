@@ -374,7 +374,7 @@ class LTChar(LTComponent, LTText):
             # horizontal
             descent = font.get_descent() * fontsize
             bbox = (0, descent + rise, self.adv, descent + rise + fontsize)
-        (a, b, c, d, e, f) = self.matrix
+        (a, b, c, d, _e, _f) = self.matrix
         self.upright = a * d * scaling > 0 and b * c <= 0
         (x0, y0, x1, y1) = apply_matrix_rect(self.matrix, bbox)
         if x1 < x0:

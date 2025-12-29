@@ -6,6 +6,7 @@ from collections.abc import Callable, Iterable, Iterator, KeysView, Sequence
 from hashlib import md5, sha256, sha384, sha512
 from typing import (
     Any,
+    ClassVar,
     cast,
 )
 
@@ -263,9 +264,9 @@ class PDFXRefStream(PDFBaseXRef):
         return f"<PDFXRefStream: ranges={self.ranges!r}>"
 
     def load(self, parser: PDFParser) -> None:
-        (_, objid) = parser.nexttoken()  # ignored
-        (_, genno) = parser.nexttoken()  # ignored
-        (_, kwd) = parser.nexttoken()
+        (_, _objid) = parser.nexttoken()  # ignored
+        (_, _genno) = parser.nexttoken()  # ignored
+        (_, _kwd) = parser.nexttoken()
         (_, stream) = parser.nextobject()
         if not isinstance(stream, PDFStream) or stream.get("Type") is not LITERAL_XREF:
             raise PDFNoValidXRef("Invalid PDF stream spec.")
@@ -679,7 +680,7 @@ class PDFDocument:
 
     """
 
-    security_handler_registry: dict[int, type[PDFStandardSecurityHandler]] = {
+    security_handler_registry: ClassVar[dict[int, type[PDFStandardSecurityHandler]]] = {
         1: PDFStandardSecurityHandler,
         2: PDFStandardSecurityHandler,
         4: PDFStandardSecurityHandlerV4,
@@ -801,7 +802,7 @@ class PDFDocument:
         assert self._parser is not None
         self._parser.seek(pos)
         (_, objid1) = self._parser.nexttoken()  # objid
-        (_, genno) = self._parser.nexttoken()  # genno
+        (_, _genno) = self._parser.nexttoken()  # genno
         (_, kwd) = self._parser.nexttoken()
         # hack around malformed pdf files
         # copied from https://github.com/jaepil/pdfminer3k/blob/master/

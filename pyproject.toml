@@ -82,16 +82,22 @@ extend-select = [
     "B",  # flake8-bugbear
     "SIM",  # flake8-simplify
     "C4",  # flake8-comprehensions
+    "RUF",  # Ruff-specific rules
 ]
 extend-ignore = [
     # UP007: Union to | syntax breaks mypy 0.931 in TypeAlias definitions
     # Can be removed once mypy is updated to support PEP 604 syntax in TypeAlias
     "UP007",
+    # RUF001: Intentional use of fullwidth Chinese characters in test strings
+    "RUF001",
 ]
 
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["RUF001", "RUF012"]  # Allow ambiguous unicode and mutable class attributes in tests
 
 [tool.mypy]
 warn_unused_configs = true

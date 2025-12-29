@@ -21,6 +21,7 @@ from collections.abc import Iterable, Iterator, MutableMapping
 from typing import (
     Any,
     BinaryIO,
+    ClassVar,
     TextIO,
     cast,
 )
@@ -109,7 +110,7 @@ class CMap(CMapBase):
             code2cid = self.code2cid
             code = ()
         for k, v in sorted(code2cid.items()):
-            c = code + (k,)
+            c = (*code, k)
             if isinstance(v, int):
                 out.write(f"code {c!r} = cid {v}\n")
             else:
@@ -216,8 +217,8 @@ class PyUnicodeMap(UnicodeMap):
 
 
 class CMapDB:
-    _cmap_cache: dict[str, PyCMap] = {}
-    _umap_cache: dict[str, list[PyUnicodeMap]] = {}
+    _cmap_cache: ClassVar[dict[str, PyCMap]] = {}
+    _umap_cache: ClassVar[dict[str, list[PyUnicodeMap]]] = {}
 
     class CMapNotFound(CMapError):
         pass

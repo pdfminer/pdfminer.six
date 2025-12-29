@@ -327,7 +327,7 @@ def apply_matrix_rect(m: Matrix, rect: Rect) -> Rect:
 
 def apply_matrix_norm(m: Matrix, v: Point) -> Point:
     """Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))"""
-    (a, b, c, d, e, f) = m
+    (a, b, c, d, _e, _f) = m
     (p, q) = v
     return a * p + c * q, b * p + d * q
 

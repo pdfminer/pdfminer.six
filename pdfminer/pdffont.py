@@ -634,7 +634,7 @@ class CFFFont:
         self.name = name
         self.fp = fp
         # Header
-        (_major, _minor, hdrsize, offsize) = struct.unpack("BBBB", self.fp.read(4))
+        (_major, _minor, hdrsize, _offsize) = struct.unpack("BBBB", self.fp.read(4))
         self.fp.read(hdrsize - 4)
         # Name INDEX
         self.name_index = self.INDEX(self.fp)
@@ -733,7 +733,7 @@ class TrueTypeFont:
                 struct.unpack(">HHHH", fp.read(8)),
             )
             for _ in range(ntables):
-                (name_bytes, tsum, offset, length) = cast(
+                (name_bytes, _tsum, offset, length) = cast(
                     tuple[bytes, int, int, int],
                     struct.unpack(">4sLLL", fp.read(16)),
                 )
@@ -747,10 +747,10 @@ class TrueTypeFont:
     def create_unicode_map(self) -> FileUnicodeMap:
         if b"cmap" not in self.tables:
             raise TrueTypeFont.CMapNotFound
-        (base_offset, length) = self.tables[b"cmap"]
+        (base_offset, _length) = self.tables[b"cmap"]
         fp = self.fp
         fp.seek(base_offset)
-        (version, nsubtables) = cast(tuple[int, int], struct.unpack(">HH", fp.read(4)))
+        (_version, nsubtables) = cast(tuple[int, int], struct.unpack(">HH", fp.read(4)))
         subtables: list[tuple[int, int, int]] = []
         for _i in range(nsubtables):
             subtables.append(
@@ -764,7 +764,7 @@ class TrueTypeFont:
             if not (platform_id == 0 or (platform_id == 3 and encoding_id in [1, 10])):
                 continue
             fp.seek(base_offset + st_offset)
-            (fmttype, fmtlen, fmtlang) = cast(
+            (fmttype, _fmtlen, _fmtlang) = cast(
                 tuple[int, int, int],
                 struct.unpack(">HHH", fp.read(6)),
             )

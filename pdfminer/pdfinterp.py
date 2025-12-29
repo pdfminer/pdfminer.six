@@ -288,11 +288,8 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 c = bytes((ci,))
                 data += c
                 self.charpos += 1
-                if (
-                    len(target) <= i
-                    and c.isspace()
-                    or i < len(target)
-                    and c == (bytes((target[i],)))
+                if (len(target) <= i and c.isspace()) or (
+                    i < len(target) and c == (bytes((target[i],)))
                 ):
                     i += 1
                 else:

@@ -2,7 +2,7 @@ import math
 import os
 from collections.abc import Iterable
 from struct import calcsize, pack, unpack
-from typing import BinaryIO, cast
+from typing import BinaryIO, ClassVar, cast
 
 from pdfminer.pdfexceptions import PDFValueError
 
@@ -137,7 +137,7 @@ class JBIG2StreamReader:
             field += self.stream.read(3)
             ref_count = unpack_int(">L", field)
             ref_count = masked_value(REF_COUNT_LONG_MASK, ref_count)
-            ret_bytes_count = int(math.ceil((ref_count + 1) / 8))
+            ret_bytes_count = math.ceil((ref_count + 1) / 8)
             for _ret_byte_index in range(ret_bytes_count):
                 ret_byte = unpack_int(">B", self.stream.read(1))
                 for bit_pos in range(7):
@@ -194,7 +194,7 @@ class JBIG2StreamReader:
 class JBIG2StreamWriter:
     """Write JBIG2 segments to a file in JBIG2 format"""
 
-    EMPTY_RETENTION_FLAGS: JBIG2RetentionFlags = {
+    EMPTY_RETENTION_FLAGS: ClassVar[JBIG2RetentionFlags] = {
         "ref_count": 0,
         "ref_segments": cast(list[int], []),
         "retain_segments": cast(list[bool], []),

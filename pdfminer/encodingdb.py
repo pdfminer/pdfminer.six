@@ -1,7 +1,7 @@
 import logging
 import re
 from collections.abc import Iterable
-from typing import cast
+from typing import ClassVar, cast
 
 from pdfminer.glyphlist import glyphname2unicode
 from pdfminer.latin_enc import ENCODING
@@ -83,10 +83,10 @@ def raise_key_error_for_invalid_unicode(unicode_digit: int) -> None:
 
 
 class EncodingDB:
-    std2unicode: dict[int, str] = {}
-    mac2unicode: dict[int, str] = {}
-    win2unicode: dict[int, str] = {}
-    pdf2unicode: dict[int, str] = {}
+    std2unicode: ClassVar[dict[int, str]] = {}
+    mac2unicode: ClassVar[dict[int, str]] = {}
+    win2unicode: ClassVar[dict[int, str]] = {}
+    pdf2unicode: ClassVar[dict[int, str]] = {}
     for name, std, mac, win, pdf in ENCODING:
         c = name2unicode(name)
         if std:
@@ -98,7 +98,7 @@ class EncodingDB:
         if pdf:
             pdf2unicode[pdf] = c
 
-    encodings = {
+    encodings: ClassVar[dict[str, dict[int, str]]] = {
         "StandardEncoding": std2unicode,
         "MacRomanEncoding": mac2unicode,
         "WinAnsiEncoding": win2unicode,

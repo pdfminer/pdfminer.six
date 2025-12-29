@@ -15,6 +15,7 @@ import array
 from collections.abc import Callable, Iterator, MutableSequence, Sequence
 from typing import (
     Any,
+    ClassVar,
     cast,
 )
 
@@ -71,7 +72,7 @@ class BitParser:
 
 
 class CCITTG4Parser(BitParser):
-    MODE = [None, None]
+    MODE: ClassVar[BitParserState] = [None, None]
     BitParser.add(MODE, 0, "1")
     BitParser.add(MODE, +1, "011")
     BitParser.add(MODE, -1, "010")
@@ -91,7 +92,7 @@ class CCITTG4Parser(BitParser):
     BitParser.add(MODE, "x7", "0000001110")
     BitParser.add(MODE, "e", "000000000001000000000001")
 
-    WHITE = [None, None]
+    WHITE: ClassVar[BitParserState] = [None, None]
     BitParser.add(WHITE, 0, "00110101")
     BitParser.add(WHITE, 1, "000111")
     BitParser.add(WHITE, 2, "0111")
@@ -197,7 +198,7 @@ class CCITTG4Parser(BitParser):
     BitParser.add(WHITE, 2496, "000000011110")
     BitParser.add(WHITE, 2560, "000000011111")
 
-    BLACK = [None, None]
+    BLACK: ClassVar[BitParserState] = [None, None]
     BitParser.add(BLACK, 0, "0000110111")
     BitParser.add(BLACK, 1, "010")
     BitParser.add(BLACK, 2, "11")
@@ -303,7 +304,7 @@ class CCITTG4Parser(BitParser):
     BitParser.add(BLACK, 2496, "000000011110")
     BitParser.add(BLACK, 2560, "000000011111")
 
-    UNCOMPRESSED = [None, None]
+    UNCOMPRESSED: ClassVar[BitParserState] = [None, None]
     BitParser.add(UNCOMPRESSED, "1", "1")
     BitParser.add(UNCOMPRESSED, "01", "01")
     BitParser.add(UNCOMPRESSED, "001", "001")
@@ -594,7 +595,7 @@ def main(argv: list[str]) -> None:
 
     for path in argv[1:]:
         with open(path, "rb") as fp:
-            (_, _, k, w, h, _) = path.split(".")
+            (_, _, _k, w, _h, _) = path.split(".")
             parser = Parser(int(w))
             parser.feedbytes(fp.read())
             parser.close()

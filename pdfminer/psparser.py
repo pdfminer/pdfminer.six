@@ -443,7 +443,7 @@ class PSBaseParser:
 
         elif self.oct:
             chrcode = int(self.oct, 8)
-            assert chrcode < 256, f"Invalid octal {repr(self.oct)} ({chrcode})"
+            assert chrcode < 256, f"Invalid octal {self.oct!r} ({chrcode})"
             self._curtoken += bytes((chrcode,))
             self._parse1 = self._parse_string
             return i

@@ -1,7 +1,7 @@
 import itertools
 import logging
 from collections.abc import Container, Iterator
-from typing import Any, BinaryIO
+from typing import Any, BinaryIO, ClassVar
 
 from pdfminer import settings
 from pdfminer.pdfdocument import (
@@ -80,7 +80,12 @@ class PDFPage:
     def __repr__(self) -> str:
         return f"<PDFPage: Resources={self.resources!r}, MediaBox={self.mediabox!r}>"
 
-    INHERITABLE_ATTRS = {"Resources", "MediaBox", "CropBox", "Rotate"}
+    INHERITABLE_ATTRS: ClassVar[set[str]] = {
+        "Resources",
+        "MediaBox",
+        "CropBox",
+        "Rotate",
+    }
 
     @classmethod
     def create_pages(cls, document: PDFDocument) -> Iterator["PDFPage"]:
