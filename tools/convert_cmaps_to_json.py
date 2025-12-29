@@ -16,6 +16,20 @@ import json
 import pickle
 import sys
 from pathlib import Path
+from typing import Any
+
+
+class RestrictedUnpickler(pickle.Unpickler):
+    """Custom unpickler that only allows safe built-in types."""
+
+    def find_class(self, module: str, name: str) -> Any:
+        """Override find_class to restrict to built-in types only."""
+        # Only allow built-in types, no arbitrary classes
+        if module == "builtins":
+            return getattr(__builtins__, name)  # type: ignore[attr-defined]
+        raise pickle.UnpicklingError(
+            f"Global objects not allowed: {module}.{name}"
+        )
 
 
 def convert_pickle_to_json(pickle_path: str, json_path: str) -> None:
@@ -34,7 +48,7 @@ def convert_pickle_to_json(pickle_path: str, json_path: str) -> None:
 
     # Load pickle data
     with gzip.open(pickle_path, "rb") as gzfile:
-        data = pickle.load(gzfile)
+        data = RestrictedUnpickler(gzfile).load()
 
     # The pickle data should be a dictionary with CODE2CID, IS_VERTICAL, etc.
     if not isinstance(data, dict):
