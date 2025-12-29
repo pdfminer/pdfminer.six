@@ -31,7 +31,7 @@ Any contribution is appreciated! You might want to:
 * Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case
   of features, this will show that your code works correctly.
 * Code should work for Python 3.10+.
-* Test your code by using nox (see below).
+* Test your code by running `make check` (see below).
 * New features should be well documented using docstrings.
 * Check if the [README.md](../README.md) or [readthedocs](../docs/source) documentation needs to be updated.
 * Check spelling and grammar.
@@ -63,36 +63,23 @@ Any contribution is appreciated! You might want to:
 2. Install dev dependencies
 
     ```sh
-    pip install -e ".[dev]"
+    make install
     ```
 
 3. Install pre-commit hooks (recommended)
 
     ```sh
-    pre-commit install
+    uv run pre-commit install
     ```
 
     This will automatically run formatting and linting checks before each commit.
-    You can also run pre-commit manually:
+
+4. Run all checks before committing
 
     ```sh
-    # Run on all files
-    pre-commit run --all-files
-
-    # Run on staged files only
-    pre-commit run
+    make check
     ```
 
-4. Run all formatting, linting and tests
+    This runs formatting, linting with auto-fixes, type checking, and tests.
 
-    On all Python versions:
-
-    ```sh
-    nox
-   ```
-
-   Or only the tests on a single Python version:
-
-   ```sh
-    nox -e tests-3.13
-    ```
+    For individual commands, run `make help` to see all available targets.
