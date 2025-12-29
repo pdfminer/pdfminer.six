@@ -55,7 +55,14 @@ Any contribution is appreciated! You might want to:
 
 This project uses [uv](https://docs.astral.sh/uv/) for dependency management and development workflows.
 
-1. Install uv
+1. Clone the repository
+
+    ```sh
+    git clone https://github.com/pdfminer/pdfminer.six
+    cd pdfminer.six
+    ```
+
+2. Install uv
 
     Follow the installation instructions at [https://docs.astral.sh/uv/getting-started/installation/](https://docs.astral.sh/uv/getting-started/installation/)
 
@@ -66,13 +73,6 @@ This project uses [uv](https://docs.astral.sh/uv/) for dependency management and
 
     # On Windows
     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-    ```
-
-2. Clone the repository
-
-    ```sh
-    git clone https://github.com/pdfminer/pdfminer.six
-    cd pdfminer.six
     ```
 
 3. Install dev dependencies
