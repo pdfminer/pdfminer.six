@@ -107,9 +107,8 @@ class LAParams:
 
     def __repr__(self) -> str:
         return (
-            "<LAParams: char_margin=%.1f, line_margin=%.1f, "
-            "word_margin=%.1f all_texts=%r>"
-            % (self.char_margin, self.line_margin, self.word_margin, self.all_texts)
+            f"<LAParams: char_margin={self.char_margin:.1f}, line_margin={self.line_margin:.1f}, "
+            f"word_margin={self.word_margin:.1f} all_texts={self.all_texts!r}>"
         )
 
 
@@ -237,7 +236,7 @@ class LTCurve(LTComponent):
         self.dashing_style = dashing_style
 
     def get_pts(self) -> str:
-        return ",".join("%.3f,%.3f" % p for p in self.pts)
+        return ",".join("{:.3f},{:.3f}".format(*p) for p in self.pts)
 
 
 class LTLine(LTCurve):

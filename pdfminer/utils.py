@@ -47,7 +47,7 @@ class open_filename:
             self.file_handler = cast(AnyIO, filename)
             self.closing = False
         else:
-            raise PDFTypeError("Unsupported input type: %s" % type(filename))
+            raise PDFTypeError(f"Unsupported input type: {type(filename)}")
 
     def __enter__(self) -> AnyIO:
         return self.file_handler
@@ -156,7 +156,7 @@ def apply_png_predictor(
     Documentation: http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
     """
     if bitspercomponent not in [8, 1]:
-        msg = "Unsupported `bitspercomponent': %d" % bitspercomponent
+        msg = f"Unsupported `bitspercomponent': {bitspercomponent}"
         raise PDFValueError(msg)
 
     nbytes = colors * columns * bitspercomponent // 8
@@ -238,7 +238,7 @@ def apply_png_predictor(
                 raw.append(raw_x)
 
         else:
-            raise PDFValueError("Unsupported predictor value: %d" % filter_type)
+            raise PDFValueError(f"Unsupported predictor value: {filter_type}")
 
         buf.extend(raw)
         line_above = raw
@@ -751,7 +751,7 @@ class Plane(Generic[LTComponentT]):
         (self.x0, self.y0, self.x1, self.y1) = bbox
 
     def __repr__(self) -> str:
-        return "<Plane objs=%r>" % list(self)
+        return f"<Plane objs={list(self)!r}>"
 
     def __iter__(self) -> Iterator[LTComponentT]:
         return (obj for obj in self._seq if obj in self._objs)

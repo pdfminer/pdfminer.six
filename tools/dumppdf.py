@@ -34,7 +34,7 @@ def escape(s: str | bytes) -> str:
         us = str(s, "latin-1")
     else:
         us = s
-    return ESC_PAT.sub(lambda m: "&#%d;" % ord(m.group(0)), us)
+    return ESC_PAT.sub(lambda m: f"&#{ord(m.group(0))};", us)
 
 
 def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
@@ -43,9 +43,9 @@ def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
         return
 
     if isinstance(obj, dict):
-        out.write('<dict size="%d">\n' % len(obj))
+        out.write(f'<dict size="{len(obj)}">\n')
         for k, v in obj.items():
-            out.write("<key>%s</key>\n" % k)
+            out.write(f"<key>{k}</key>\n")
             out.write("<value>")
             dumpxml(out, v)
             out.write("</value>\n")
@@ -53,7 +53,7 @@ def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
         return
 
     if isinstance(obj, list):
-        out.write('<list size="%d">\n' % len(obj))
+        out.write(f'<list size="{len(obj)}">\n')
         for v in obj:
             dumpxml(out, v)
             out.write("\n")
@@ -61,7 +61,7 @@ def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
         return
 
     if isinstance(obj, (str, bytes)):
-        out.write('<string size="%d">%s</string>' % (len(obj), escape(obj)))
+        out.write(f'<string size="{len(obj)}">{escape(obj)}</string>')
         return
 
     if isinstance(obj, PDFStream):
@@ -77,26 +77,26 @@ def dumpxml(out: TextIO, obj: object, codec: str | None = None) -> None:
             out.write("\n</props>\n")
             if codec == "text":
                 data = obj.get_data()
-                out.write('<data size="%d">%s</data>\n' % (len(data), escape(data)))
+                out.write(f'<data size="{len(data)}">{escape(data)}</data>\n')
             out.write("</stream>")
         return
 
     if isinstance(obj, PDFObjRef):
-        out.write('<ref id="%d" />' % obj.objid)
+        out.write(f'<ref id="{obj.objid}" />')
         return
 
     if isinstance(obj, PSKeyword):
         # Likely bug: obj.name is bytes, not str
-        out.write("<keyword>%s</keyword>" % obj.name)  # type: ignore [str-bytes-safe]
+        out.write(f"<keyword>{obj.name}</keyword>")  # type: ignore [str-bytes-safe]
         return
 
     if isinstance(obj, PSLiteral):
         # Likely bug: obj.name may be bytes, not str
-        out.write("<literal>%s</literal>" % obj.name)  # type: ignore [str-bytes-safe]
+        out.write(f"<literal>{obj.name}</literal>")  # type: ignore [str-bytes-safe]
         return
 
     if isnumber(obj):
-        out.write("<number>%s</number>" % obj)
+        out.write(f"<number>{obj}</number>")
         return
 
     raise PDFTypeError(obj)
@@ -139,11 +139,11 @@ def dumpallobjs(
                 obj = doc.getobj(objid)
                 if obj is None:
                     continue
-                out.write('<object id="%d">\n' % objid)
+                out.write(f'<object id="{objid}">\n')
                 dumpxml(out, obj, codec=codec)
                 out.write("\n</object>\n\n")
             except PDFObjectNotFound as e:
-                print("not found: %r" % e)
+                print(f"not found: {e!r}")
     dumptrailers(out, doc, show_fallback_xref)
     out.write("</pdf>")
 
@@ -199,7 +199,7 @@ def dumpoutline(
                 dumpxml(outfp, dest)
                 outfp.write("</dest>\n")
             if pageno is not None:
-                outfp.write("<pageno>%r</pageno>\n" % pageno)
+                outfp.write(f"<pageno>{pageno!r}</pageno>\n")
             outfp.write("</outline>\n")
         outfp.write("</outlines>\n")
     except PDFNoOutlines:
@@ -219,18 +219,18 @@ def extractembedded(fname: str, password: str, extractdir: str) -> None:
         fileobj = doc.getobj(fileref.objid)
         if not isinstance(fileobj, PDFStream):
             error_msg = (
-                "unable to process PDF: reference for %r is not a PDFStream" % filename
+                f"unable to process PDF: reference for {filename!r} is not a PDFStream"
             )
             raise PDFValueError(error_msg)
         if fileobj.get("Type") is not LITERAL_EMBEDDEDFILE:
             raise PDFValueError(
-                "unable to process PDF: reference for %r "
-                "is not an EmbeddedFile" % (filename),
+                f"unable to process PDF: reference for {filename!r} "
+                "is not an EmbeddedFile",
             )
-        path = os.path.join(extractdir, "%.6d-%s" % (objid, filename))
+        path = os.path.join(extractdir, f"{objid:06d}-{filename}")
         if os.path.exists(path):
-            raise PDFIOError("file exists: %r" % path)
-        print("extracting: %r" % path)
+            raise PDFIOError(f"file exists: {path!r}")
+        print(f"extracting: {path!r}")
         os.makedirs(os.path.dirname(path), exist_ok=True)
         out = open(path, "wb")
         out.write(fileobj.get_data())

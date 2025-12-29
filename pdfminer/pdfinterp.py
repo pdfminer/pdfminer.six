@@ -86,21 +86,9 @@ class PDFTextState:
 
     def __repr__(self) -> str:
         return (
-            "<PDFTextState: font=%r, fontsize=%r, charspace=%r, "
-            "wordspace=%r, scaling=%r, leading=%r, render=%r, rise=%r, "
-            "matrix=%r, linematrix=%r>"
-            % (
-                self.font,
-                self.fontsize,
-                self.charspace,
-                self.wordspace,
-                self.scaling,
-                self.leading,
-                self.render,
-                self.rise,
-                self.matrix,
-                self.linematrix,
-            )
+            f"<PDFTextState: font={self.font!r}, fontsize={self.fontsize!r}, charspace={self.charspace!r}, "
+            f"wordspace={self.wordspace!r}, scaling={self.scaling!r}, leading={self.leading!r}, render={self.render!r}, rise={self.rise!r}, "
+            f"matrix={self.matrix!r}, linematrix={self.linematrix!r}>"
         )
 
     def copy(self) -> "PDFTextState":
@@ -174,20 +162,9 @@ class PDFGraphicState:
 
     def __repr__(self) -> str:
         return (
-            "<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, "
-            " miterlimit=%r, dash=%r, intent=%r, flatness=%r, "
-            " stroking color=%r, non stroking color=%r>"
-            % (
-                self.linewidth,
-                self.linecap,
-                self.linejoin,
-                self.miterlimit,
-                self.dash,
-                self.intent,
-                self.flatness,
-                self.scolor,
-                self.ncolor,
-            )
+            f"<PDFGraphicState: linewidth={self.linewidth!r}, linecap={self.linecap!r}, linejoin={self.linejoin!r}, "
+            f" miterlimit={self.miterlimit!r}, dash={self.dash!r}, intent={self.intent!r}, flatness={self.flatness!r}, "
+            f" stroking color={self.scolor!r}, non stroking color={self.ncolor!r}>"
         )
 
 
@@ -256,7 +233,7 @@ class PDFResourceManager:
                 font = self.get_font(None, subspec)
             else:
                 if settings.STRICT:
-                    raise PDFFontError("Invalid Font spec: %r" % spec)
+                    raise PDFFontError(f"Invalid Font spec: {spec!r}")
                 font = PDFType1Font(self, spec)  # this is so wrong!
             if objid and self.caching:
                 self._cached_fonts[objid] = font
@@ -722,7 +699,7 @@ class PDFPageInterpreter:
             self.graphicstate.scs = self.csmap[literal_name(name)]
         except KeyError:
             if settings.STRICT:
-                raise PDFInterpreterError("Undefined ColorSpace: %r" % name)
+                raise PDFInterpreterError(f"Undefined ColorSpace: {name!r}")
 
     def do_cs(self, name: PDFStackT) -> None:
         """Set color space for nonstroking operations"""
@@ -730,7 +707,7 @@ class PDFPageInterpreter:
             self.graphicstate.ncs = self.csmap[literal_name(name)]
         except KeyError:
             if settings.STRICT:
-                raise PDFInterpreterError("Undefined ColorSpace: %r" % name)
+                raise PDFInterpreterError(f"Undefined ColorSpace: {name!r}")
 
     def do_G(self, gray: PDFStackT) -> None:
         """Set gray level for stroking operations"""
@@ -1106,7 +1083,7 @@ class PDFPageInterpreter:
             self.textstate.font = self.fontmap[literal_name(fontid)]
         except KeyError:
             if settings.STRICT:
-                raise PDFInterpreterError("Undefined Font id: %r" % fontid)
+                raise PDFInterpreterError(f"Undefined Font id: {fontid!r}")
             self.textstate.font = self.rsrcmgr.get_font(None, {})
 
         fontsize_f = safe_float(fontsize)
@@ -1272,7 +1249,7 @@ class PDFPageInterpreter:
             xobj = stream_value(self.xobjmap[xobjid])
         except KeyError:
             if settings.STRICT:
-                raise PDFInterpreterError("Undefined xobject id: %r" % xobjid)
+                raise PDFInterpreterError(f"Undefined xobject id: {xobjid!r}")
             return
         log.debug("Processing xobj: %r", xobj)
         subtype = xobj.get("Subtype")
@@ -1373,9 +1350,13 @@ class PDFPageInterpreter:
                 break
             if isinstance(obj, PSKeyword):
                 name = keyword_name(obj)
-                method = "do_%s" % name.replace("*", "_a").replace('"', "_w").replace(
-                    "'",
-                    "_q",
+                method = "do_{}".format(
+                    name.replace("*", "_a")
+                    .replace('"', "_w")
+                    .replace(
+                        "'",
+                        "_q",
+                    )
                 )
                 if hasattr(self, method):
                     func = getattr(self, method)
@@ -1389,7 +1370,7 @@ class PDFPageInterpreter:
                         log.debug("exec: %s", name)
                         func()
                 elif settings.STRICT:
-                    error_msg = "Unknown operator: %r" % name
+                    error_msg = f"Unknown operator: {name!r}"
                     raise PDFInterpreterError(error_msg)
             else:
                 self.push(obj)

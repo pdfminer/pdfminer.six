@@ -286,11 +286,7 @@ class TagExtractor(PDFDevice):
         self._write(utils.enc(text))
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
-        output = '<page id="%s" bbox="%s" rotate="%d">' % (
-            self.pageno,
-            utils.bbox2str(page.mediabox),
-            page.rotate,
-        )
+        output = f'<page id="{self.pageno}" bbox="{utils.bbox2str(page.mediabox)}" rotate="{page.rotate}">'
         self._write(output)
 
     def end_page(self, page: PDFPage) -> None:
@@ -313,7 +309,7 @@ class TagExtractor(PDFDevice):
     def end_tag(self) -> None:
         assert self._stack, str(self.pageno)
         tag = self._stack.pop(-1)
-        out_s = "</%s>" % utils.enc(cast(str, tag.name))
+        out_s = f"</{utils.enc(cast(str, tag.name))}>"
         self._write(out_s)
 
     def do_tag(self, tag: PSLiteral, props: Optional["PDFStackT"] = None) -> None:

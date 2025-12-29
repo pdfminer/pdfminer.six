@@ -268,7 +268,7 @@ class ImageWriter:
 
     def _save_raw(self, image: LTImage) -> str:
         """Save an image with unknown encoding"""
-        ext = ".%d.%dx%d.img" % (image.bits, image.srcsize[0], image.srcsize[1])
+        ext = f".{image.bits}.{image.srcsize[0]}x{image.srcsize[1]}.img"
         name, path = self._create_unique_image_name(image, ext)
 
         with open(path, "wb") as fp:
@@ -288,7 +288,7 @@ class ImageWriter:
         path = os.path.join(self.outdir, name)
         img_index = 0
         while os.path.exists(path):
-            name = "%s.%d%s" % (image.name, img_index, ext)
+            name = f"{image.name}.{img_index}{ext}"
             path = os.path.join(self.outdir, name)
             img_index += 1
         return name, path

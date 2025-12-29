@@ -126,7 +126,7 @@ class PDFXRef(PDFBaseXRef):
         self.trailer: dict[str, Any] = {}
 
     def __repr__(self) -> str:
-        return "<PDFXRef: offsets=%r>" % (self.offsets.keys())
+        return f"<PDFXRef: offsets={self.offsets.keys()!r}>"
 
     def load(self, parser: PDFParser) -> None:
         while True:
@@ -201,7 +201,7 @@ class PDFXRef(PDFBaseXRef):
 
 class PDFXRefFallback(PDFXRef):
     def __repr__(self) -> str:
-        return "<PDFXRefFallback: offsets=%r>" % (self.offsets.keys())
+        return f"<PDFXRefFallback: offsets={self.offsets.keys()!r}>"
 
     PDFOBJ_CUE = re.compile(r"^(\d+)\s+(\d+)\s+obj\b")
 
@@ -234,7 +234,7 @@ class PDFXRefFallback(PDFXRef):
                     n = stream["N"]
                 except KeyError:
                     if settings.STRICT:
-                        raise PDFSyntaxError("N is not defined: %r" % stream)
+                        raise PDFSyntaxError(f"N is not defined: {stream!r}")
                     n = 0
                 parser1 = PDFStreamParser(stream.get_data())
                 objs: list[int] = []
@@ -260,7 +260,7 @@ class PDFXRefStream(PDFBaseXRef):
         self.ranges: list[tuple[int, int]] = []
 
     def __repr__(self) -> str:
-        return "<PDFXRefStream: ranges=%r>" % (self.ranges)
+        return f"<PDFXRefStream: ranges={self.ranges!r}>"
 
     def load(self, parser: PDFParser) -> None:
         (_, objid) = parser.nexttoken()  # ignored
@@ -348,7 +348,7 @@ class PDFStandardSecurityHandler:
     def init(self) -> None:
         self.init_params()
         if self.r not in self.supported_revisions:
-            error_msg = "Unsupported revision: param=%r" % self.param
+            error_msg = f"Unsupported revision: param={self.param!r}"
             raise PDFEncryptionError(error_msg)
         self.init_key()
 
@@ -477,18 +477,18 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
         self.strf = literal_name(self.param["StrF"])
         self.encrypt_metadata = bool(self.param.get("EncryptMetadata", True))
         if self.stmf != self.strf:
-            error_msg = "Unsupported crypt filter: param=%r" % self.param
+            error_msg = f"Unsupported crypt filter: param={self.param!r}"
             raise PDFEncryptionError(error_msg)
         self.cfm = {}
         for k, v in self.cf.items():
             f = self.get_cfm(literal_name(v["CFM"]))
             if f is None:
-                error_msg = "Unknown crypt filter method: param=%r" % self.param
+                error_msg = f"Unknown crypt filter method: param={self.param!r}"
                 raise PDFEncryptionError(error_msg)
             self.cfm[k] = f
         self.cfm["Identity"] = self.decrypt_identity
         if self.strf not in self.cfm:
-            error_msg = "Undefined crypt filter: param=%r" % self.param
+            error_msg = f"Undefined crypt filter: param={self.param!r}"
             raise PDFEncryptionError(error_msg)
 
     def get_cfm(self, name: str) -> Callable[[int, int, bytes], bytes] | None:
@@ -751,11 +751,11 @@ class PDFDocument:
         assert self.encryption is not None
         (docid, param) = self.encryption
         if literal_name(param.get("Filter")) != "Standard":
-            raise PDFEncryptionError("Unknown filter: param=%r" % param)
+            raise PDFEncryptionError(f"Unknown filter: param={param!r}")
         v = int_value(param.get("V", 0))
         factory = self.security_handler_registry.get(v)
         if factory is None:
-            raise PDFEncryptionError("Unknown algorithm: param=%r" % param)
+            raise PDFEncryptionError(f"Unknown algorithm: param={param!r}")
         handler = factory(docid, param, password)
         self.decipher = handler.decrypt
         self.is_printable = handler.is_printable()
@@ -776,18 +776,18 @@ class PDFDocument:
         try:
             obj = objs[i]
         except IndexError:
-            raise PDFSyntaxError("index too big: %r" % index)
+            raise PDFSyntaxError(f"index too big: {index!r}")
         return obj
 
     def _get_objects(self, stream: PDFStream) -> tuple[list[object], int]:
         if stream.get("Type") is not LITERAL_OBJSTM:
             if settings.STRICT:
-                raise PDFSyntaxError("Not a stream object: %r" % stream)
+                raise PDFSyntaxError(f"Not a stream object: {stream!r}")
         try:
             n = cast(int, stream["N"])
         except KeyError:
             if settings.STRICT:
-                raise PDFSyntaxError("N is not defined: %r" % stream)
+                raise PDFSyntaxError(f"N is not defined: {stream!r}")
             n = 0
         parser = PDFStreamParser(stream.get_data())
         parser.set_document(self)
@@ -823,7 +823,7 @@ class PDFDocument:
             raise PDFSyntaxError(f"objid mismatch: {objid1!r}={objid!r}")
 
         if kwd != KWD(b"obj"):
-            raise PDFSyntaxError("Invalid object spec: offset=%r" % pos)
+            raise PDFSyntaxError(f"Invalid object spec: offset={pos!r}")
         (_, obj) = self._parser.nextobject()
         return obj
 

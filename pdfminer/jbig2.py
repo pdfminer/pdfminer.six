@@ -92,7 +92,7 @@ class JBIG2StreamReader:
                     segment["_error"] = True
                     break
                 value = unpack_int(field_format, field)
-                parser = getattr(self, "parse_%s" % name, None)
+                parser = getattr(self, f"parse_{name}", None)
                 if callable(parser):
                     value = parser(segment, value, field)
                 segment[name] = value
@@ -275,7 +275,7 @@ class JBIG2StreamWriter:
         data = b""
         for field_format, name in SEG_STRUCT:
             value = segment.get(name)
-            encoder = getattr(self, "encode_%s" % name, None)
+            encoder = getattr(self, f"encode_{name}", None)
             if callable(encoder):
                 field = encoder(value, segment)
             else:

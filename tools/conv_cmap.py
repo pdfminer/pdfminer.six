@@ -148,7 +148,7 @@ def main(argv):
 
     def usage():
         print(
-            "usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]" % argv[0],
+            f"usage: {argv[0]} [-c enc=codec] output_dir regname [cid2code.txt ...]",
         )
         return 100
 
@@ -170,22 +170,22 @@ def main(argv):
 
     converter = CMapConverter(enc2codec)
     for path in args:
-        print("reading: %r..." % path)
+        print(f"reading: {path!r}...")
         fp = open(path)
         converter.load(fp)
         fp.close()
 
     for enc in converter.get_encs():
-        fname = "%s.pickle.gz" % enc
+        fname = f"{enc}.pickle.gz"
         path = os.path.join(outdir, fname)
-        print("writing: %r..." % path)
+        print(f"writing: {path!r}...")
         fp = gzip.open(path, "wb")
         converter.dump_cmap(fp, enc)
         fp.close()
 
-    fname = "to-unicode-%s.pickle.gz" % regname
+    fname = f"to-unicode-{regname}.pickle.gz"
     path = os.path.join(outdir, fname)
-    print("writing: %r..." % path)
+    print(f"writing: {path!r}...")
     fp = gzip.open(path, "wb")
     converter.dump_unicodemap(fp)
     fp.close()

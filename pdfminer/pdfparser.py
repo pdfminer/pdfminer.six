@@ -83,7 +83,7 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
                     objlen = int_value(dic["Length"])
                 except KeyError:
                     if settings.STRICT:
-                        raise PDFSyntaxError("/Length is undefined: %r" % dic)
+                        raise PDFSyntaxError(f"/Length is undefined: {dic!r}")
             self.seek(pos)
             try:
                 (_, line) = self.nextline()  # 'stream'

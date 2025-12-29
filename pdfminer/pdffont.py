@@ -674,7 +674,7 @@ class CFFFont:
                     self.gid2code[gid] = code
                     code += 1
         else:
-            raise PDFValueError("unsupported encoding format: {!r}".format(format))
+            raise PDFValueError(f"unsupported encoding format: {format!r}")
         # Charsets
         self.name2gid = {}
         self.gid2name = {}
@@ -707,7 +707,7 @@ class CFFFont:
             # Format 2
             assert False, str(("Unhandled", format))
         else:
-            raise PDFValueError("unsupported charset format: {!r}".format(format))
+            raise PDFValueError(f"unsupported charset format: {format!r}")
 
     def getstr(self, sid: int) -> str | bytes:
         # This returns str for one of the STANDARD_STRINGS but bytes otherwise,
@@ -807,21 +807,21 @@ class TrueTypeFont:
                 segcount //= 2
                 ecs = cast(
                     tuple[int, ...],
-                    struct.unpack(">%dH" % segcount, fp.read(2 * segcount)),
+                    struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
                 )
                 fp.read(2)
                 scs = cast(
                     tuple[int, ...],
-                    struct.unpack(">%dH" % segcount, fp.read(2 * segcount)),
+                    struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
                 )
                 idds = cast(
                     tuple[int, ...],
-                    struct.unpack(">%dh" % segcount, fp.read(2 * segcount)),
+                    struct.unpack(f">{segcount}h", fp.read(2 * segcount)),
                 )
                 pos = fp.tell()
                 idrs = cast(
                     tuple[int, ...],
-                    struct.unpack(">%dH" % segcount, fp.read(2 * segcount)),
+                    struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
                 )
                 for ec, sc, idd, idr in zip(ecs, scs, idds, idrs):
                     if idr:

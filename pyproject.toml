@@ -78,7 +78,13 @@ extend-select = [
     "W",  # pycodestyle warnings
     "I",  # isort
     "TID",  # flake8 tidy imports
+    "UP",  # pyupgrade
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# UP007: Type alias Union -> | conversion requires more careful review
+"pdfminer/*.py" = ["UP007"]
+"tools/*.py" = ["UP007"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"

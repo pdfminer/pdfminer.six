@@ -68,7 +68,7 @@ class CMap(CMapBase):
         self.code2cid: dict[int, object] = {}
 
     def __repr__(self) -> str:
-        return "<CMap: %s>" % self.attrs.get("CMapName")
+        return "<CMap: {}>".format(self.attrs.get("CMapName"))
 
     def use_cmap(self, cmap: CMapBase) -> None:
         assert isinstance(cmap, CMap), str(type(cmap))
@@ -110,7 +110,7 @@ class CMap(CMapBase):
         for k, v in sorted(code2cid.items()):
             c = code + (k,)
             if isinstance(v, int):
-                out.write("code %r = cid %d\n" % (c, v))
+                out.write(f"code {c!r} = cid {v}\n")
             else:
                 self.dump(out=out, code2cid=cast(dict[int, object], v), code=c)
 
@@ -119,7 +119,7 @@ class IdentityCMap(CMapBase):
     def decode(self, code: bytes) -> tuple[int, ...]:
         n = len(code) // 2
         if n:
-            return struct.unpack(">%dH" % n, code[: n * 2])
+            return struct.unpack(f">{n}H", code[: n * 2])
         else:
             return ()
 
@@ -128,7 +128,7 @@ class IdentityCMapByte(IdentityCMap):
     def decode(self, code: bytes) -> tuple[int, ...]:
         n = len(code)
         if n:
-            return struct.unpack(">%dB" % n, code[:n])
+            return struct.unpack(f">{n}B", code[:n])
         else:
             return ()
 
@@ -139,7 +139,7 @@ class UnicodeMap(CMapBase):
         self.cid2unichr: dict[int, str] = {}
 
     def __repr__(self) -> str:
-        return "<UnicodeMap: %s>" % self.attrs.get("CMapName")
+        return "<UnicodeMap: {}>".format(self.attrs.get("CMapName"))
 
     def get_unichr(self, cid: int) -> str:
         log.debug("get_unichr: %r, %r", self, cid)
@@ -147,7 +147,7 @@ class UnicodeMap(CMapBase):
 
     def dump(self, out: TextIO = sys.stdout) -> None:
         for k, v in sorted(self.cid2unichr.items()):
-            out.write("cid %d = unicode %r\n" % (k, v))
+            out.write(f"cid {k} = unicode {v!r}\n")
 
 
 class IdentityUnicodeMap(UnicodeMap):
@@ -224,7 +224,7 @@ class CMapDB:
     @classmethod
     def _load_data(cls, name: str) -> Any:
         name = name.replace("\0", "")
-        filename = "%s.pickle.gz" % name
+        filename = f"{name}.pickle.gz"
         log.debug("loading: %r", name)
         cmap_paths = (
             os.environ.get("CMAP_PATH", "/usr/share/pdfminer/"),
@@ -270,7 +270,7 @@ class CMapDB:
             return cls._umap_cache[name][vertical]
         except KeyError:
             pass
-        data = cls._load_data("to-unicode-%s" % name)
+        data = cls._load_data(f"to-unicode-{name}")
         cls._umap_cache[name] = [PyUnicodeMap(name, data, v) for v in (False, True)]
         return cls._umap_cache[name][vertical]
 

@@ -162,15 +162,15 @@ class PDFPage:
         # If not, warn the user and proceed.
         if not doc.is_extractable:
             if check_extractable:
-                error_msg = "Text extraction is not allowed: %r" % fp
+                error_msg = f"Text extraction is not allowed: {fp!r}"
                 raise PDFTextExtractionNotAllowed(error_msg)
             else:
                 warning_msg = (
-                    "The PDF %r contains a metadata field "
+                    f"The PDF {fp!r} contains a metadata field "
                     "indicating that it should not allow "
                     "text extraction. Ignoring this field "
                     "and proceeding. Use the check_extractable "
-                    "if you want to raise an error in this case" % fp
+                    "if you want to raise an error in this case"
                 )
                 log.warning(warning_msg)
         # Process each page contained in the document.
