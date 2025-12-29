@@ -5,11 +5,9 @@ This table is extracted from PDF Reference Manual 1.6, pp.925
 
 """
 
-from typing import List, Optional, Tuple
+EncodingRow = tuple[str, int | None, int | None, int | None, int | None]
 
-EncodingRow = Tuple[str, Optional[int], Optional[int], Optional[int], Optional[int]]
-
-ENCODING: List[EncodingRow] = [
+ENCODING: list[EncodingRow] = [
     # (name, std, mac, win, pdf)
     ("A", 65, 65, 65, 65),
     ("AE", 225, 174, 198, 198),

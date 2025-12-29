@@ -62,7 +62,7 @@ is proper text, pdfminer.six should also be able to extract proper text.
 If the result is gibberish, pdfminer.six will also not be able to convert
 the characters to unicode.
 
-References: 
+References:
 
 #. `Chapter 5: Text, PDF Reference 1.7 <https://opensource.adobe.com/dc-acrobat-sdk-docs/pdflsdk/index.html#pdf-reference>`_
 #. `Text: PDF, Wikipedia <https://en.wikipedia.org/wiki/PDF#Text>`_

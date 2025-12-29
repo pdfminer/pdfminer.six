@@ -1,7 +1,8 @@
 import logging
 import re
+from collections.abc import Mapping, Sequence
 from io import BytesIO
-from typing import Dict, List, Mapping, Optional, Sequence, Set, Tuple, Union, cast
+from typing import Union, cast
 
 from pdfminer import settings
 from pdfminer.casting import safe_cmyk, safe_float, safe_int, safe_matrix, safe_rgb
@@ -71,7 +72,7 @@ class PDFTextState:
     linematrix: Point
 
     def __init__(self) -> None:
-        self.font: Optional[PDFFont] = None
+        self.font: PDFFont | None = None
         self.fontsize: float = 0
         self.charspace: float = 0
         self.wordspace: float = 0
@@ -124,15 +125,15 @@ class PDFTextState:
 # Standard color types (used standalone or as base for uncolored patterns)
 StandardColor = Union[
     float,  # Greyscale
-    Tuple[float, float, float],  # R, G, B
-    Tuple[float, float, float, float],  # C, M, Y, K
+    tuple[float, float, float],  # R, G, B
+    tuple[float, float, float, float],  # C, M, Y, K
 ]
 
 # Complete color type including patterns
 Color = Union[
     StandardColor,  # Standard colors (gray, RGB, CMYK)
     str,  # Pattern name (colored pattern, PaintType=1)
-    Tuple[
+    tuple[
         StandardColor, str
     ],  # (base_color, pattern_name) (uncolored pattern, PaintType=2)
 ]
@@ -141,12 +142,12 @@ Color = Union[
 class PDFGraphicState:
     def __init__(self) -> None:
         self.linewidth: float = 0
-        self.linecap: Optional[object] = None
-        self.linejoin: Optional[object] = None
-        self.miterlimit: Optional[object] = None
-        self.dash: Optional[Tuple[object, object]] = None
-        self.intent: Optional[object] = None
-        self.flatness: Optional[object] = None
+        self.linecap: object | None = None
+        self.linejoin: object | None = None
+        self.miterlimit: object | None = None
+        self.dash: tuple[object, object] | None = None
+        self.intent: object | None = None
+        self.flatness: object | None = None
 
         # stroking color
         self.scolor: Color = 0
@@ -200,7 +201,7 @@ class PDFResourceManager:
 
     def __init__(self, caching: bool = True) -> None:
         self.caching = caching
-        self._cached_fonts: Dict[object, PDFFont] = {}
+        self._cached_fonts: dict[object, PDFFont] = {}
 
     def get_procset(self, procs: Sequence[object]) -> None:
         for proc in procs:
@@ -300,7 +301,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
         self.charpos = 0
         return new_stream
 
-    def get_inline_data(self, pos: int, target: bytes = b"EI") -> Tuple[int, bytes]:
+    def get_inline_data(self, pos: int, target: bytes = b"EI") -> tuple[int, bytes]:
         self.seek(pos)
         i = 0
         data = b""
@@ -386,9 +387,9 @@ class PDFPageInterpreter:
         self.rsrcmgr = rsrcmgr
         self.device = device
         # Track stream IDs currently being executed to detect circular references
-        self.stream_ids: Set[int] = set()
+        self.stream_ids: set[int] = set()
         # Track stream IDs from parent interpreters in the call stack
-        self.parent_stream_ids: Set[int] = set()
+        self.parent_stream_ids: set[int] = set()
 
     def dup(self) -> "PDFPageInterpreter":
         return self.__class__(self.rsrcmgr, self.device)
@@ -406,16 +407,16 @@ class PDFPageInterpreter:
         interp.parent_stream_ids.update(self.stream_ids)
         return interp
 
-    def init_resources(self, resources: Dict[object, object]) -> None:
+    def init_resources(self, resources: dict[object, object]) -> None:
         """Prepare the fonts and XObjects listed in the Resource attribute."""
         self.resources = resources
-        self.fontmap: Dict[object, PDFFont] = {}
+        self.fontmap: dict[object, PDFFont] = {}
         self.xobjmap = {}
-        self.csmap: Dict[str, PDFColorSpace] = PREDEFINED_COLORSPACE.copy()
+        self.csmap: dict[str, PDFColorSpace] = PREDEFINED_COLORSPACE.copy()
         if not resources:
             return
 
-        def get_colorspace(spec: object) -> Optional[PDFColorSpace]:
+        def get_colorspace(spec: object) -> PDFColorSpace | None:
             if isinstance(spec, list):
                 name = literal_name(spec[0])
             else:
@@ -450,31 +451,31 @@ class PDFPageInterpreter:
     def init_state(self, ctm: Matrix) -> None:
         """Initialize the text and graphic states for rendering a page."""
         # gstack: stack for graphical states.
-        self.gstack: List[Tuple[Matrix, PDFTextState, PDFGraphicState]] = []
+        self.gstack: list[tuple[Matrix, PDFTextState, PDFGraphicState]] = []
         self.ctm = ctm
         self.device.set_ctm(self.ctm)
         self.textstate = PDFTextState()
         self.graphicstate = PDFGraphicState()
-        self.curpath: List[PathSegment] = []
+        self.curpath: list[PathSegment] = []
         # argstack: stack for command arguments.
-        self.argstack: List[PDFStackT] = []
+        self.argstack: list[PDFStackT] = []
 
     def push(self, obj: PDFStackT) -> None:
         self.argstack.append(obj)
 
-    def pop(self, n: int) -> List[PDFStackT]:
+    def pop(self, n: int) -> list[PDFStackT]:
         if n == 0:
             return []
         x = self.argstack[-n:]
         self.argstack = self.argstack[:-n]
         return x
 
-    def get_current_state(self) -> Tuple[Matrix, PDFTextState, PDFGraphicState]:
+    def get_current_state(self) -> tuple[Matrix, PDFTextState, PDFGraphicState]:
         return (self.ctm, self.textstate.copy(), self.graphicstate.copy())
 
     def set_current_state(
         self,
-        state: Tuple[Matrix, PDFTextState, PDFGraphicState],
+        state: tuple[Matrix, PDFTextState, PDFGraphicState],
     ) -> None:
         (self.ctm, self.textstate, self.graphicstate) = state
         self.device.set_ctm(self.ctm)
@@ -804,8 +805,8 @@ class PDFPageInterpreter:
             self.graphicstate.ncs = self.csmap["DeviceCMYK"]
 
     def _parse_color_components(
-        self, components: List[PDFStackT], context: str
-    ) -> Optional[StandardColor]:
+        self, components: list[PDFStackT], context: str
+    ) -> StandardColor | None:
         """Parse color components into StandardColor (gray, RGB, or CMYK).
 
         Args:
@@ -1319,7 +1320,7 @@ class PDFPageInterpreter:
 
     def render_contents(
         self,
-        resources: Dict[object, object],
+        resources: dict[object, object],
         streams: Sequence[object],
         ctm: Matrix = MATRIX_IDENTITY,
     ) -> None:
@@ -1342,7 +1343,7 @@ class PDFPageInterpreter:
         # We track stream IDs being executed in the current interpreter and all parent
         # interpreters. If a stream is already being processed in the call stack, we skip
         # it to prevent infinite recursion (CWE-835 vulnerability).
-        valid_streams: List[PDFStream] = []
+        valid_streams: list[PDFStream] = []
         self.stream_ids.clear()
         for obj in streams:
             stream = stream_value(obj)

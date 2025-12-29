@@ -1,12 +1,9 @@
 import logging
+from collections.abc import Iterable, Sequence
 from typing import (
     TYPE_CHECKING,
     BinaryIO,
-    Iterable,
-    List,
     Optional,
-    Sequence,
-    Union,
     cast,
 )
 
@@ -27,7 +24,7 @@ if TYPE_CHECKING:
     )
 
 
-PDFTextSeq = Iterable[Union[int, float, bytes]]
+PDFTextSeq = Iterable[int | float | bytes]
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +34,7 @@ class PDFDevice:
 
     def __init__(self, rsrcmgr: "PDFResourceManager") -> None:
         self.rsrcmgr = rsrcmgr
-        self.ctm: Optional[Matrix] = None
+        self.ctm: Matrix | None = None
 
     def __repr__(self) -> str:
         return "<PDFDevice>"
@@ -262,7 +259,7 @@ class TagExtractor(PDFDevice):
         self.outfp = outfp
         self.codec = codec
         self.pageno = 0
-        self._stack: List[PSLiteral] = []
+        self._stack: list[PSLiteral] = []
 
     def render_string(
         self,

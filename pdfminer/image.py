@@ -2,7 +2,7 @@ import os
 import os.path
 import struct
 from io import BytesIO
-from typing import BinaryIO, Literal, Tuple
+from typing import BinaryIO, Literal
 
 from pdfminer.jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from pdfminer.layout import LTImage
@@ -283,7 +283,7 @@ class ImageWriter:
                 return True
         return False
 
-    def _create_unique_image_name(self, image: LTImage, ext: str) -> Tuple[str, str]:
+    def _create_unique_image_name(self, image: LTImage, ext: str) -> tuple[str, str]:
         name = image.name + ext
         path = os.path.join(self.outdir, name)
         img_index = 0

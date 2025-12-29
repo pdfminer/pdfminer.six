@@ -30,4 +30,3 @@ variable::
             interpreter.process_page(page)
 
     print(output_string.getvalue())
-

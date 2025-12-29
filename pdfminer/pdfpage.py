@@ -1,6 +1,7 @@
 import itertools
 import logging
-from typing import Any, BinaryIO, Container, Dict, Iterator, List, Optional, Set, Tuple
+from collections.abc import Container, Iterator
+from typing import Any, BinaryIO
 
 from pdfminer import settings
 from pdfminer.pdfdocument import (
@@ -50,7 +51,7 @@ class PDFPage:
         doc: PDFDocument,
         pageid: object,
         attrs: object,
-        label: Optional[str],
+        label: str | None,
     ) -> None:
         """Initialize a page object.
 
@@ -64,7 +65,7 @@ class PDFPage:
         self.attrs = dict_value(attrs)
         self.label = label
         self.lastmod = resolve1(self.attrs.get("LastModified"))
-        self.resources: Dict[object, object] = resolve1(
+        self.resources: dict[object, object] = resolve1(
             self.attrs.get("Resources", dict()),
         )
 
@@ -85,9 +86,9 @@ class PDFPage:
     def create_pages(cls, document: PDFDocument) -> Iterator["PDFPage"]:
         def depth_first_search(
             obj: Any,
-            parent: Dict[str, Any],
-            visited: Optional[Set[Any]] = None,
-        ) -> Iterator[Tuple[int, Dict[Any, Dict[Any, Any]]]]:
+            parent: dict[str, Any],
+            visited: set[Any] | None = None,
+        ) -> Iterator[tuple[int, dict[Any, dict[Any, Any]]]]:
             if isinstance(obj, int):
                 object_id = obj
                 object_properties = dict_value(document.getobj(object_id)).copy()
@@ -122,7 +123,7 @@ class PDFPage:
                 yield (object_id, object_properties)
 
         try:
-            page_labels: Iterator[Optional[str]] = document.get_page_labels()
+            page_labels: Iterator[str | None] = document.get_page_labels()
         except PDFNoPageLabels:
             page_labels = itertools.repeat(None)
 
@@ -147,7 +148,7 @@ class PDFPage:
     def get_pages(
         cls,
         fp: BinaryIO,
-        pagenos: Optional[Container[int]] = None,
+        pagenos: Container[int] | None = None,
         maxpages: int = 0,
         password: str = "",
         caching: bool = True,
@@ -209,8 +210,8 @@ class PDFPage:
             log.warning("Invalid CropBox in /Page, defaulting to MediaBox")
             return mediabox
 
-    def _parse_contents(self, value: Any) -> List[Any]:
-        contents: List[Any] = []
+    def _parse_contents(self, value: Any) -> list[Any]:
+        contents: list[Any] = []
         if value is not None:
             contents = resolve1(value)
             if not isinstance(contents, list):

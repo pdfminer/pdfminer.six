@@ -2,8 +2,9 @@
 
 import logging
 import sys
+from collections.abc import Container, Iterator
 from io import StringIO
-from typing import Any, BinaryIO, Container, Iterator, Optional, cast
+from typing import Any, BinaryIO, cast
 
 from pdfminer.converter import (
     HOCRConverter,
@@ -26,14 +27,14 @@ def extract_text_to_fp(
     outfp: AnyIO,
     output_type: str = "text",
     codec: str = "utf-8",
-    laparams: Optional[LAParams] = None,
+    laparams: LAParams | None = None,
     maxpages: int = 0,
-    page_numbers: Optional[Container[int]] = None,
+    page_numbers: Container[int] | None = None,
     password: str = "",
     scale: float = 1.0,
     rotation: int = 0,
     layoutmode: str = "normal",
-    output_dir: Optional[str] = None,
+    output_dir: str | None = None,
     strip_control: bool = False,
     debug: bool = False,
     disable_caching: bool = False,
@@ -76,7 +77,7 @@ def extract_text_to_fp(
         imagewriter = ImageWriter(output_dir)
 
     rsrcmgr = PDFResourceManager(caching=not disable_caching)
-    device: Optional[PDFDevice] = None
+    device: PDFDevice | None = None
 
     if output_type != "text" and outfp == sys.stdout:
         outfp = sys.stdout.buffer
@@ -146,11 +147,11 @@ def extract_text_to_fp(
 def extract_text(
     pdf_file: FileOrName,
     password: str = "",
-    page_numbers: Optional[Container[int]] = None,
+    page_numbers: Container[int] | None = None,
     maxpages: int = 0,
     caching: bool = True,
     codec: str = "utf-8",
-    laparams: Optional[LAParams] = None,
+    laparams: LAParams | None = None,
 ) -> str:
     """Parse and return the text contained in a PDF file.
 
@@ -189,10 +190,10 @@ def extract_text(
 def extract_pages(
     pdf_file: FileOrName,
     password: str = "",
-    page_numbers: Optional[Container[int]] = None,
+    page_numbers: Container[int] | None = None,
     maxpages: int = 0,
     caching: bool = True,
-    laparams: Optional[LAParams] = None,
+    laparams: LAParams | None = None,
 ) -> Iterator[LTPage]:
     """Extract and yield LTPage objects
 

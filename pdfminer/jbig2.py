@@ -1,7 +1,8 @@
 import math
 import os
+from collections.abc import Iterable
 from struct import calcsize, pack, unpack
-from typing import BinaryIO, Dict, Iterable, List, Optional, Tuple, Union, cast
+from typing import BinaryIO, cast
 
 from pdfminer.pdfexceptions import PDFValueError
 
@@ -62,15 +63,15 @@ def mask_value(mask: int, value: int) -> int:
 
 def unpack_int(format: str, buffer: bytes) -> int:
     assert format in {">B", ">I", ">L"}
-    [result] = cast(Tuple[int], unpack(format, buffer))
+    [result] = cast(tuple[int], unpack(format, buffer))
     return result
 
 
-JBIG2SegmentFlags = Dict[str, Union[int, bool]]
-JBIG2RetentionFlags = Dict[str, Union[int, List[int], List[bool]]]
-JBIG2Segment = Dict[
+JBIG2SegmentFlags = dict[str, int | bool]
+JBIG2RetentionFlags = dict[str, int | list[int] | list[bool]]
+JBIG2Segment = dict[
     str,
-    Union[bool, int, bytes, JBIG2SegmentFlags, JBIG2RetentionFlags],
+    bool | int | bytes | JBIG2SegmentFlags | JBIG2RetentionFlags,
 ]
 
 
@@ -80,8 +81,8 @@ class JBIG2StreamReader:
     def __init__(self, stream: BinaryIO) -> None:
         self.stream = stream
 
-    def get_segments(self) -> List[JBIG2Segment]:
-        segments: List[JBIG2Segment] = []
+    def get_segments(self) -> list[JBIG2Segment]:
+        segments: list[JBIG2Segment] = []
         while not self.is_eof():
             segment: JBIG2Segment = {}
             for field_format, name in SEG_STRUCT:
@@ -195,8 +196,8 @@ class JBIG2StreamWriter:
 
     EMPTY_RETENTION_FLAGS: JBIG2RetentionFlags = {
         "ref_count": 0,
-        "ref_segments": cast(List[int], []),
-        "retain_segments": cast(List[bool], []),
+        "ref_segments": cast(list[int], []),
+        "retain_segments": cast(list[bool], []),
     }
 
     def __init__(self, stream: BinaryIO) -> None:
@@ -208,15 +209,15 @@ class JBIG2StreamWriter:
         fix_last_page: bool = True,
     ) -> int:
         data_len = 0
-        current_page: Optional[int] = None
-        seg_num: Optional[int] = None
+        current_page: int | None = None
+        seg_num: int | None = None
 
         for segment in segments:
             data = self.encode_segment(segment)
             self.stream.write(data)
             data_len += len(data)
 
-            seg_num = cast(Optional[int], segment["number"])
+            seg_num = cast(int | None, segment["number"])
 
             if fix_last_page:
                 seg_page = cast(int, segment.get("page_assoc"))
@@ -309,7 +310,7 @@ class JBIG2StreamWriter:
         flags_format = ">B"
         ref_count = value["ref_count"]
         assert isinstance(ref_count, int)
-        retain_segments = cast(List[bool], value.get("retain_segments", []))
+        retain_segments = cast(list[bool], value.get("retain_segments", []))
 
         if ref_count <= 4:
             flags_byte = mask_value(REF_COUNT_SHORT_MASK, ref_count)
@@ -331,7 +332,7 @@ class JBIG2StreamWriter:
 
                 flags.append(ret_byte)
 
-        ref_segments = cast(List[int], value.get("ref_segments", []))
+        ref_segments = cast(list[int], value.get("ref_segments", []))
 
         seg_num = cast(int, segment["number"])
         if seg_num <= 256:

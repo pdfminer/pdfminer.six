@@ -1,6 +1,6 @@
 import logging
 from io import BytesIO
-from typing import TYPE_CHECKING, BinaryIO, Optional, Union
+from typing import TYPE_CHECKING, BinaryIO, Union
 
 from pdfminer import settings
 from pdfminer.casting import safe_int
@@ -38,7 +38,7 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
 
     def __init__(self, fp: BinaryIO) -> None:
         PSStackParser.__init__(self, fp)
-        self.doc: Optional[PDFDocument] = None
+        self.doc: PDFDocument | None = None
         self.fallback = False
 
     def set_document(self, doc: "PDFDocument") -> None:

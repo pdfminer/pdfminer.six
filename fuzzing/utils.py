@@ -1,7 +1,6 @@
 """Utilities shared across the various PDF fuzzing harnesses"""
 
 import logging
-from typing import Optional
 
 import atheris
 
@@ -18,11 +17,11 @@ def prepare_pdfminer_fuzzing() -> None:
 @atheris.instrument_func  # type: ignore[misc]
 def generate_layout_parameters(
     fdp: atheris.FuzzedDataProvider,
-) -> Optional[LAParams]:
+) -> LAParams | None:
     if fdp.ConsumeBool():
         return None
 
-    boxes_flow: Optional[float] = None
+    boxes_flow: float | None = None
     if fdp.ConsumeBool():
         boxes_flow = fdp.ConsumeFloatInRange(-1.0, 1.0)
 

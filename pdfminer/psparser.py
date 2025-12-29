@@ -2,16 +2,11 @@
 import io
 import logging
 import re
+from collections.abc import Iterator
 from typing import (
     Any,
     BinaryIO,
-    Dict,
     Generic,
-    Iterator,
-    List,
-    Optional,
-    Tuple,
-    Type,
     TypeVar,
     Union,
 )
@@ -84,9 +79,9 @@ class PSSymbolTable(Generic[_SymbolT]):
     Interned objects can be checked its identity with "is" operator.
     """
 
-    def __init__(self, klass: Type[_SymbolT]) -> None:
-        self.dict: Dict[PSLiteral.NameType, _SymbolT] = {}
-        self.klass: Type[_SymbolT] = klass
+    def __init__(self, klass: type[_SymbolT]) -> None:
+        self.dict: dict[PSLiteral.NameType, _SymbolT] = {}
+        self.klass: type[_SymbolT] = klass
 
     def intern(self, name: PSLiteral.NameType) -> _SymbolT:
         if name in self.dict:
@@ -184,7 +179,7 @@ class PSBaseParser:
     def tell(self) -> int:
         return self.bufpos + self.charpos
 
-    def poll(self, pos: Optional[int] = None, n: int = 80) -> None:
+    def poll(self, pos: int | None = None, n: int = 80) -> None:
         pos0 = self.fp.tell()
         if not pos:
             pos = self.bufpos + self.charpos
@@ -204,7 +199,7 @@ class PSBaseParser:
         self._parse1 = self._parse_main
         self._curtoken = b""
         self._curtokenpos = 0
-        self._tokens: List[Tuple[int, PSBaseParserToken]] = []
+        self._tokens: list[tuple[int, PSBaseParserToken]] = []
         self.eof = False
 
     def fillbuf(self) -> bool:
@@ -218,7 +213,7 @@ class PSBaseParser:
         self.charpos = 0
         return False
 
-    def nextline(self) -> Tuple[int, bytes]:
+    def nextline(self) -> tuple[int, bytes]:
         """Fetches a next line that ends either with \\r or \\n."""
         linebuf = b""
         linepos = self.bufpos + self.charpos
@@ -345,7 +340,7 @@ class PSBaseParser:
             self._parse1 = self._parse_literal_hex
             return j + 1
         try:
-            name: Union[str, bytes] = str(self._curtoken, "utf-8")
+            name: str | bytes = str(self._curtoken, "utf-8")
         except Exception:
             name = self._curtoken
         self._add_token(LIT(name))
@@ -404,7 +399,7 @@ class PSBaseParser:
             self._curtoken += s[i:]
             return len(s)
         if self._curtoken == b"true":
-            token: Union[bool, PSKeyword] = True
+            token: bool | PSKeyword = True
         elif self._curtoken == b"false":
             token = False
         else:
@@ -501,7 +496,7 @@ class PSBaseParser:
         self._parse1 = self._parse_main
         return j
 
-    def nexttoken(self) -> Tuple[int, PSBaseParserToken]:
+    def nexttoken(self) -> tuple[int, PSBaseParserToken]:
         if self.eof:
             # It's not really unexpected, come on now...
             raise PSEOF("Unexpected EOF")
@@ -535,8 +530,8 @@ class PSBaseParser:
 #  * dict (via KEYWORD_DICT)
 #  * subclass-specific extensions (e.g. PDFStream, PDFObjRef) via ExtraT
 ExtraT = TypeVar("ExtraT")
-PSStackType = Union[str, float, bool, PSLiteral, bytes, List, Dict, ExtraT]
-PSStackEntry = Tuple[int, PSStackType[ExtraT]]
+PSStackType = Union[str, float, bool, PSLiteral, bytes, list, dict, ExtraT]
+PSStackEntry = tuple[int, PSStackType[ExtraT]]
 
 
 class PSStackParser(PSBaseParser, Generic[ExtraT]):
@@ -545,10 +540,10 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
         self.reset()
 
     def reset(self) -> None:
-        self.context: List[Tuple[int, Optional[str], List[PSStackEntry[ExtraT]]]] = []
-        self.curtype: Optional[str] = None
-        self.curstack: List[PSStackEntry[ExtraT]] = []
-        self.results: List[PSStackEntry[ExtraT]] = []
+        self.context: list[tuple[int, str | None, list[PSStackEntry[ExtraT]]]] = []
+        self.curtype: str | None = None
+        self.curstack: list[PSStackEntry[ExtraT]] = []
+        self.results: list[PSStackEntry[ExtraT]] = []
 
     def seek(self, pos: int) -> None:
         PSBaseParser.seek(self, pos)
@@ -557,12 +552,12 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
     def push(self, *objs: PSStackEntry[ExtraT]) -> None:
         self.curstack.extend(objs)
 
-    def pop(self, n: int) -> List[PSStackEntry[ExtraT]]:
+    def pop(self, n: int) -> list[PSStackEntry[ExtraT]]:
         objs = self.curstack[-n:]
         self.curstack[-n:] = []
         return objs
 
-    def popall(self) -> List[PSStackEntry[ExtraT]]:
+    def popall(self) -> list[PSStackEntry[ExtraT]]:
         objs = self.curstack
         self.curstack = []
         return objs
@@ -579,7 +574,7 @@ class PSStackParser(PSBaseParser, Generic[ExtraT]):
         (self.curtype, self.curstack) = (type, [])
         log.debug("start_type: pos=%r, type=%r", pos, type)
 
-    def end_type(self, type: str) -> Tuple[int, List[PSStackType[ExtraT]]]:
+    def end_type(self, type: str) -> tuple[int, list[PSStackType[ExtraT]]]:
         if self.curtype != type:
             raise PSTypeError(f"Type mismatch: {self.curtype!r} != {type!r}")
         objs = [obj for (_, obj) in self.curstack]

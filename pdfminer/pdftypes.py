@@ -1,16 +1,12 @@
 import io
 import logging
 import zlib
+from collections.abc import Iterable
 from typing import (
     TYPE_CHECKING,
     Any,
-    Dict,
-    Iterable,
-    List,
     Optional,
     Protocol,
-    Tuple,
-    Union,
     cast,
 )
 from warnings import warn
@@ -50,7 +46,7 @@ class DecipherCallable(Protocol):
         objid: int,
         genno: int,
         data: bytes,
-        attrs: Optional[Dict[str, Any]] = None,
+        attrs: dict[str, Any] | None = None,
     ) -> bytes:
         raise NotImplementedError
 
@@ -193,7 +189,7 @@ def str_value(x: object) -> bytes:
     return x
 
 
-def list_value(x: object) -> Union[List[Any], Tuple[Any, ...]]:
+def list_value(x: object) -> list[Any] | tuple[Any, ...]:
     x = resolve1(x)
     if not isinstance(x, (list, tuple)):
         if settings.STRICT:
@@ -202,7 +198,7 @@ def list_value(x: object) -> Union[List[Any], Tuple[Any, ...]]:
     return x
 
 
-def dict_value(x: object) -> Dict[Any, Any]:
+def dict_value(x: object) -> dict[Any, Any]:
     x = resolve1(x)
     if not isinstance(x, dict):
         if settings.STRICT:
@@ -245,17 +241,17 @@ def decompress_corrupted(data: bytes) -> bytes:
 class PDFStream(PDFObject):
     def __init__(
         self,
-        attrs: Dict[str, Any],
+        attrs: dict[str, Any],
         rawdata: bytes,
-        decipher: Optional[DecipherCallable] = None,
+        decipher: DecipherCallable | None = None,
     ) -> None:
         assert isinstance(attrs, dict), str(type(attrs))
         self.attrs = attrs
-        self.rawdata: Optional[bytes] = rawdata
+        self.rawdata: bytes | None = rawdata
         self.decipher = decipher
-        self.data: Optional[bytes] = None
-        self.objid: Optional[int] = None
-        self.genno: Optional[int] = None
+        self.data: bytes | None = None
+        self.objid: int | None = None
+        self.genno: int | None = None
 
     def set_objid(self, objid: int, genno: int) -> None:
         self.objid = objid
@@ -292,7 +288,7 @@ class PDFStream(PDFObject):
                 return self.attrs[name]
         return default
 
-    def get_filters(self) -> List[Tuple[Any, Any]]:
+    def get_filters(self) -> list[tuple[Any, Any]]:
         filters = resolve1(self.get_any(("F", "Filter"), []))
         params = resolve1(self.get_any(("DP", "DecodeParms", "FDecodeParms"), {}))
         if not filters:
@@ -405,5 +401,5 @@ class PDFStream(PDFObject):
             assert self.data is not None
         return self.data
 
-    def get_rawdata(self) -> Optional[bytes]:
+    def get_rawdata(self) -> bytes | None:
         return self.rawdata
