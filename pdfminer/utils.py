@@ -21,6 +21,8 @@ from pdfminer.pdfexceptions import PDFTypeError, PDFValueError
 if TYPE_CHECKING:
     from pdfminer.layout import LTComponent
 
+import contextlib
+
 import charset_normalizer  # For str encoding detection
 
 # from sys import maxint as INF doesn't work anymore under Python3, but PDF
@@ -41,7 +43,7 @@ class open_filename:
         if isinstance(filename, pathlib.PurePath):
             filename = str(filename)
         if isinstance(filename, str):
-            self.file_handler: AnyIO = open(filename, *args, **kwargs)
+            self.file_handler: AnyIO = open(filename, *args, **kwargs)  # noqa: SIM115
             self.closing = True
         elif isinstance(filename, io.IOBase):
             self.file_handler = cast(AnyIO, filename)
@@ -180,10 +182,7 @@ def apply_png_predictor(
             # (computed mod 256), where Raw() refers to the bytes already
             #  decoded.
             for j, sub_x in enumerate(line_encoded):
-                if j - bpp < 0:
-                    raw_x_bpp = 0
-                else:
-                    raw_x_bpp = int(raw[j - bpp])
+                raw_x_bpp = 0 if j - bpp < 0 else int(raw[j - bpp])
                 raw_x = (sub_x + raw_x_bpp) & 255
                 raw.append(raw_x)
 
@@ -208,10 +207,7 @@ def apply_png_predictor(
             # bytes already decoded, and Prior() refers to the decoded bytes of
             # the prior scanline.
             for j, average_x in enumerate(line_encoded):
-                if j - bpp < 0:
-                    raw_x_bpp = 0
-                else:
-                    raw_x_bpp = int(raw[j - bpp])
+                raw_x_bpp = 0 if j - bpp < 0 else int(raw[j - bpp])
                 prior_x = int(line_above[j])
                 raw_x = (average_x + (raw_x_bpp + prior_x) // 2) & 255
                 raw.append(raw_x)
@@ -793,10 +789,8 @@ class Plane(Generic[LTComponentT]):
     def remove(self, obj: LTComponentT) -> None:
         """Displace an object."""
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 self._grid[k].remove(obj)
-            except (KeyError, ValueError):
-                pass
         self._objs.remove(obj)
 
     def find(self, bbox: Rect) -> Iterator[LTComponentT]:

@@ -86,9 +86,8 @@ class PDFObjRef(PDFObject):
                 stacklevel=2,
             )
 
-        if objid == 0:
-            if settings.STRICT:
-                raise PDFValueError("PDF object id cannot be 0.")
+        if objid == 0 and settings.STRICT:
+            raise PDFValueError("PDF object id cannot be 0.")
 
         self.doc = doc
         self.objid = objid

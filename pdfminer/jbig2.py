@@ -259,10 +259,7 @@ class JBIG2StreamWriter:
         for segment in segments:
             seg_num = cast(int, segment["number"])
 
-        if fix_last_page:
-            seg_num_offset = 2
-        else:
-            seg_num_offset = 1
+        seg_num_offset = 2 if fix_last_page else 1
         eof_segment = self.get_eof_segment(seg_num + seg_num_offset)
         data = self.encode_segment(eof_segment)
 

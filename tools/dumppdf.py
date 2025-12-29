@@ -30,10 +30,7 @@ ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
 
 
 def escape(s: str | bytes) -> str:
-    if isinstance(s, bytes):
-        us = str(s, "latin-1")
-    else:
-        us = s
+    us = str(s, "latin-1") if isinstance(s, bytes) else s
     return ESC_PAT.sub(lambda m: f"&#{ord(m.group(0))};", us)
 
 
@@ -158,54 +155,53 @@ def dumpoutline(
     codec: str | None = None,
     extractdir: str | None = None,
 ) -> None:
-    fp = open(fname, "rb")
-    parser = PDFParser(fp)
-    doc = PDFDocument(parser, password)
-    pages = {
-        page.pageid: pageno
-        for (pageno, page) in enumerate(PDFPage.create_pages(doc), 1)
-    }
+    with open(fname, "rb") as fp:
+        parser = PDFParser(fp)
+        doc = PDFDocument(parser, password)
+        pages = {
+            page.pageid: pageno
+            for (pageno, page) in enumerate(PDFPage.create_pages(doc), 1)
+        }
 
-    def resolve_dest(dest: object) -> Any:
-        if isinstance(dest, (str, bytes)):
-            dest = resolve1(doc.get_dest(dest))
-        elif isinstance(dest, PSLiteral):
-            dest = resolve1(doc.get_dest(dest.name))
-        if isinstance(dest, dict):
-            dest = dest["D"]
-        if isinstance(dest, PDFObjRef):
-            dest = dest.resolve()
-        return dest
+        def resolve_dest(dest: object) -> Any:
+            if isinstance(dest, (str, bytes)):
+                dest = resolve1(doc.get_dest(dest))
+            elif isinstance(dest, PSLiteral):
+                dest = resolve1(doc.get_dest(dest.name))
+            if isinstance(dest, dict):
+                dest = dest["D"]
+            if isinstance(dest, PDFObjRef):
+                dest = dest.resolve()
+            return dest
 
-    try:
-        outlines = doc.get_outlines()
-        outfp.write("<outlines>\n")
-        for level, title, dest, a, _se in outlines:
-            pageno = None
-            if dest:
-                dest = resolve_dest(dest)
-                pageno = pages[dest[0].objid]
-            elif a:
-                action = a
-                if isinstance(action, dict):
-                    subtype = action.get("S")
-                    if subtype and repr(subtype) == "/'GoTo'" and action.get("D"):
-                        dest = resolve_dest(action["D"])
-                        pageno = pages[dest[0].objid]
-            s = escape(title)
-            outfp.write(f'<outline level="{level!r}" title="{s}">\n')
-            if dest is not None:
-                outfp.write("<dest>")
-                dumpxml(outfp, dest)
-                outfp.write("</dest>\n")
-            if pageno is not None:
-                outfp.write(f"<pageno>{pageno!r}</pageno>\n")
-            outfp.write("</outline>\n")
-        outfp.write("</outlines>\n")
-    except PDFNoOutlines:
-        pass
-    parser.close()
-    fp.close()
+        try:
+            outlines = doc.get_outlines()
+            outfp.write("<outlines>\n")
+            for level, title, dest, a, _se in outlines:
+                pageno = None
+                if dest:
+                    dest = resolve_dest(dest)
+                    pageno = pages[dest[0].objid]
+                elif a:
+                    action = a
+                    if isinstance(action, dict):
+                        subtype = action.get("S")
+                        if subtype and repr(subtype) == "/'GoTo'" and action.get("D"):
+                            dest = resolve_dest(action["D"])
+                            pageno = pages[dest[0].objid]
+                s = escape(title)
+                outfp.write(f'<outline level="{level!r}" title="{s}">\n')
+                if dest is not None:
+                    outfp.write("<dest>")
+                    dumpxml(outfp, dest)
+                    outfp.write("</dest>\n")
+                if pageno is not None:
+                    outfp.write(f"<pageno>{pageno!r}</pageno>\n")
+                outfp.write("</outline>\n")
+            outfp.write("</outlines>\n")
+        except PDFNoOutlines:
+            pass
+        parser.close()
 
 
 LITERAL_FILESPEC = LIT("Filespec")
@@ -232,9 +228,8 @@ def extractembedded(fname: str, password: str, extractdir: str) -> None:
             raise PDFIOError(f"file exists: {path!r}")
         print(f"extracting: {path!r}")
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        out = open(path, "wb")
-        out.write(fileobj.get_data())
-        out.close()
+        with open(path, "wb") as out:
+            out.write(fileobj.get_data())
 
     with open(fname, "rb") as fp:
         parser = PDFParser(fp)
@@ -263,27 +258,26 @@ def dumppdf(
     extractdir: str | None = None,
     show_fallback_xref: bool = False,
 ) -> None:
-    fp = open(fname, "rb")
-    parser = PDFParser(fp)
-    doc = PDFDocument(parser, password)
-    if objids:
-        for objid in objids:
-            obj = doc.getobj(objid)
-            dumpxml(outfp, obj, codec=codec)
-    if pagenos:
-        for pageno, page in enumerate(PDFPage.create_pages(doc)):
-            if pageno in pagenos:
-                if codec:
-                    for obj in page.contents:
-                        obj = stream_value(obj)
-                        dumpxml(outfp, obj, codec=codec)
-                else:
-                    dumpxml(outfp, page.attrs)
-    if dumpall:
-        dumpallobjs(outfp, doc, codec, show_fallback_xref)
-    if (not objids) and (not pagenos) and (not dumpall):
-        dumptrailers(outfp, doc, show_fallback_xref)
-    fp.close()
+    with open(fname, "rb") as fp:
+        parser = PDFParser(fp)
+        doc = PDFDocument(parser, password)
+        if objids:
+            for objid in objids:
+                obj = doc.getobj(objid)
+                dumpxml(outfp, obj, codec=codec)
+        if pagenos:
+            for pageno, page in enumerate(PDFPage.create_pages(doc)):
+                if pageno in pagenos:
+                    if codec:
+                        for obj in page.contents:
+                            obj = stream_value(obj)
+                            dumpxml(outfp, obj, codec=codec)
+                    else:
+                        dumpxml(outfp, page.attrs)
+        if dumpall:
+            dumpallobjs(outfp, doc, codec, show_fallback_xref)
+        if (not objids) and (not pagenos) and (not dumpall):
+            dumptrailers(outfp, doc, show_fallback_xref)
     if codec not in ("raw", "binary"):
         outfp.write("\n")
 
@@ -418,15 +412,7 @@ def main(argv: list[str] | None = None) -> None:
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    if args.outfile == "-":
-        outfp = sys.stdout
-    else:
-        outfp = open(args.outfile, "w")
-
-    if args.objects:
-        objids = [int(x) for x in args.objects.split(",")]
-    else:
-        objids = []
+    objids = [int(x) for x in args.objects.split(",")] if args.objects else []
 
     if args.page_numbers:
         pagenos = {x - 1 for x in args.page_numbers}
@@ -446,34 +432,36 @@ def main(argv: list[str] | None = None) -> None:
     else:
         codec = None
 
-    for fname in args.files:
-        if args.extract_toc:
-            dumpoutline(
-                outfp,
-                fname,
-                objids,
-                pagenos,
-                password=password,
-                dumpall=args.all,
-                codec=codec,
-                extractdir=None,
-            )
-        elif args.extract_embedded:
-            extractembedded(fname, password=password, extractdir=args.extract_embedded)
-        else:
-            dumppdf(
-                outfp,
-                fname,
-                objids,
-                pagenos,
-                password=password,
-                dumpall=args.all,
-                codec=codec,
-                extractdir=None,
-                show_fallback_xref=args.show_fallback_xref,
-            )
-
-    outfp.close()
+    # Use context manager for file output, ensuring proper cleanup
+    with sys.stdout if args.outfile == "-" else open(args.outfile, "w") as outfp:
+        for fname in args.files:
+            if args.extract_toc:
+                dumpoutline(
+                    outfp,
+                    fname,
+                    objids,
+                    pagenos,
+                    password=password,
+                    dumpall=args.all,
+                    codec=codec,
+                    extractdir=None,
+                )
+            elif args.extract_embedded:
+                extractembedded(
+                    fname, password=password, extractdir=args.extract_embedded
+                )
+            else:
+                dumppdf(
+                    outfp,
+                    fname,
+                    objids,
+                    pagenos,
+                    password=password,
+                    dumpall=args.all,
+                    codec=codec,
+                    extractdir=None,
+                    show_fallback_xref=args.show_fallback_xref,
+                )
 
 
 if __name__ == "__main__":

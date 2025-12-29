@@ -51,10 +51,7 @@ class BitParser:
                 if p[b] is None:
                     p[b] = [None, None]
                 p = p[b]
-            if bits[i] == "1":
-                b = 1
-            else:
-                b = 0
+            b = 1 if bits[i] == "1" else 0
         assert b is not None
         p[b] = v
 
@@ -64,10 +61,7 @@ class BitParser:
                 self._parse_bit(byte & m)
 
     def _parse_bit(self, x: object) -> None:
-        if x:
-            v = self._state[1]
-        else:
-            v = self._state[0]
+        v = self._state[1] if x else self._state[0]
         self._pos += 1
         if isinstance(v, list):
             self._state = v
@@ -599,9 +593,8 @@ def main(argv: list[str]) -> None:
             pygame.image.save(self.img, "out.bmp")
 
     for path in argv[1:]:
-        fp = open(path, "rb")
-        (_, _, k, w, h, _) = path.split(".")
-        parser = Parser(int(w))
-        parser.feedbytes(fp.read())
-        parser.close()
-        fp.close()
+        with open(path, "rb") as fp:
+            (_, _, k, w, h, _) = path.split(".")
+            parser = Parser(int(w))
+            parser.feedbytes(fp.read())
+            parser.close()

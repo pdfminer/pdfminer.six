@@ -45,7 +45,7 @@ def extract_text(
     debug: bool = False,
     disable_caching: bool = False,
     **kwargs: Any,
-) -> AnyIO:
+) -> None:
     if not files:
         raise PDFValueError("Must provide files to work upon!")
 
@@ -58,13 +58,15 @@ def extract_text(
         outfp: AnyIO = sys.stdout
         if sys.stdout.encoding is not None:
             codec = "utf-8"
+        for fname in files:
+            with open(fname, "rb") as fp:
+                pdfminer.high_level.extract_text_to_fp(fp, **locals())
     else:
-        outfp = open(outfile, "wb")
-
-    for fname in files:
-        with open(fname, "rb") as fp:
-            pdfminer.high_level.extract_text_to_fp(fp, **locals())
-    return outfp
+        # Use context manager for file output, ensuring proper cleanup
+        with open(outfile, "wb") as outfp:
+            for fname in files:
+                with open(fname, "rb") as fp:
+                    pdfminer.high_level.extract_text_to_fp(fp, **locals())
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -314,9 +316,7 @@ def parse_args(args: list[str] | None) -> argparse.Namespace:
 
 def main(args: list[str] | None = None) -> int:
     parsed_args = parse_args(args)
-    outfp = extract_text(**vars(parsed_args))
-    outfp.close()
-    return 0
+    extract_text(**vars(parsed_args))
 
 
 if __name__ == "__main__":

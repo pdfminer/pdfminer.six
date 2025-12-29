@@ -200,9 +200,8 @@ class PDFResourceManager:
             font = self._cached_fonts[objid]
         else:
             log.debug("get_font: create: objid=%r, spec=%r", objid, spec)
-            if settings.STRICT:
-                if spec["Type"] is not LITERAL_FONT:
-                    raise PDFFontError("Type is not /Font")
+            if settings.STRICT and spec["Type"] is not LITERAL_FONT:
+                raise PDFFontError("Type is not /Font")
             # Create a Font object.
             if "Subtype" in spec:
                 subtype = literal_name(spec["Subtype"])
@@ -330,7 +329,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                     raise PSTypeError(error_msg)
                 d = {literal_name(k): resolve1(v) for (k, v) in choplist(2, objs)}
                 eos = b"EI"
-                filter = d.get("F", None)
+                filter = d.get("F")
                 if filter is not None:
                     if isinstance(filter, PSLiteral):
                         filter = [filter]
@@ -1261,10 +1260,7 @@ class PDFPageInterpreter:
             # earlier PDFs (prior to v1.2) use the page's Resources entry
             # instead of having their own Resources entry.
             xobjres = xobj.get("Resources")
-            if xobjres:
-                resources = dict_value(xobjres)
-            else:
-                resources = self.resources.copy()
+            resources = dict_value(xobjres) if xobjres else self.resources.copy()
             self.device.begin_figure(xobjid, bbox, matrix)
             interpreter.render_contents(
                 resources,

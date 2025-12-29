@@ -316,7 +316,7 @@ class PDFConverter(PDFLayoutAnalyzer, Generic[IOType]):
             return False
         elif isinstance(outfp, io.BytesIO):
             return True
-        elif isinstance(outfp, io.StringIO) or isinstance(outfp, io.TextIOBase):
+        elif isinstance(outfp, (io.StringIO, io.TextIOBase)):
             return False
 
         return True
@@ -353,9 +353,8 @@ class TextConverter(PDFConverter[AnyIO]):
                 self.write_text(item.get_text())
             if isinstance(item, LTTextBox):
                 self.write_text("\n")
-            elif isinstance(item, LTImage):
-                if self.imagewriter is not None:
-                    self.imagewriter.export_image(item)
+            elif isinstance(item, LTImage) and self.imagewriter is not None:
+                self.imagewriter.export_image(item)
 
         if self.showpageno:
             self.write_text(f"Page {ltpage.pageid}\n")

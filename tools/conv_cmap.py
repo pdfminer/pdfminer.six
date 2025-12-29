@@ -173,24 +173,21 @@ def main(argv):
     converter = CMapConverter(enc2codec)
     for path in args:
         print(f"reading: {path!r}...")
-        fp = open(path)
-        converter.load(fp)
-        fp.close()
+        with open(path) as fp:
+            converter.load(fp)
 
     for enc in converter.get_encs():
         fname = f"{enc}.pickle.gz"
         path = os.path.join(outdir, fname)
         print(f"writing: {path!r}...")
-        fp = gzip.open(path, "wb")
-        converter.dump_cmap(fp, enc)
-        fp.close()
+        with gzip.open(path, "wb") as fp:
+            converter.dump_cmap(fp, enc)
 
     fname = f"to-unicode-{regname}.pickle.gz"
     path = os.path.join(outdir, fname)
     print(f"writing: {path!r}...")
-    fp = gzip.open(path, "wb")
-    converter.dump_unicodemap(fp)
-    fp.close()
+    with gzip.open(path, "wb") as fp:
+        converter.dump_unicodemap(fp)
 
 
 if __name__ == "__main__":

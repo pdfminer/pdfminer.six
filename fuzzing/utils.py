@@ -43,7 +43,4 @@ def is_valid_byte_stream(data: bytes) -> bool:
     """
     if not data.startswith(PDF_MAGIC_BYTES):
         return False
-    if b"/Root" not in data:
-        return False
-
-    return True
+    return b"/Root" in data

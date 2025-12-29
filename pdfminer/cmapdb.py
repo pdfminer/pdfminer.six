@@ -9,6 +9,7 @@ More information is available on:
 
 """
 
+import contextlib
 import gzip
 import logging
 import os
@@ -239,11 +240,8 @@ class CMapDB:
             if not resolved_path.startswith(resolved_directory + os.sep):
                 continue
             if os.path.exists(resolved_path):
-                gzfile = gzip.open(resolved_path)
-                try:
+                with gzip.open(resolved_path) as gzfile:
                     return type(str(name), (), pickle.loads(gzfile.read()))
-                finally:
-                    gzfile.close()
         raise CMapDB.CMapNotFound(name)
 
     @classmethod
@@ -284,10 +282,8 @@ class CMapParser(PSStackParser[PSKeyword]):
         self._warnings: set[str] = set()
 
     def run(self) -> None:
-        try:
+        with contextlib.suppress(PSEOF):
             self.nextobject()
-        except PSEOF:
-            pass
 
     KEYWORD_BEGINCMAP = KWD(b"begincmap")
     KEYWORD_ENDCMAP = KWD(b"endcmap")

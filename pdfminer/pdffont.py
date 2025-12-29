@@ -1,3 +1,4 @@
+import contextlib
 import logging
 import struct
 from collections.abc import Iterable, Iterator, Mapping
@@ -1120,18 +1121,14 @@ class PDFCIDFont(PDFFont):
                     self.unicode_map = IdentityUnicodeMap()
         elif self.cidcoding in ("Adobe-Identity", "Adobe-UCS"):
             if ttf:
-                try:
+                with contextlib.suppress(TrueTypeFont.CMapNotFound):
                     self.unicode_map = ttf.create_unicode_map()
-                except TrueTypeFont.CMapNotFound:
-                    pass
         else:
-            try:
+            with contextlib.suppress(CMapDB.CMapNotFound):
                 self.unicode_map = CMapDB.get_unicode_map(
                     self.cidcoding,
                     self.cmap.is_vertical(),
                 )
-            except CMapDB.CMapNotFound:
-                pass
 
         self.vertical = self.cmap.is_vertical()
         if self.vertical:

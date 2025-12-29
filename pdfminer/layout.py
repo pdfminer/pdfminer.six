@@ -98,9 +98,7 @@ class LAParams:
             boxes_flow_err_msg = (
                 "LAParam boxes_flow should be None, or a number between -1 and +1"
             )
-            if not (
-                isinstance(self.boxes_flow, int) or isinstance(self.boxes_flow, float)
-            ):
+            if not (isinstance(self.boxes_flow, (int, float))):
                 raise PDFTypeError(boxes_flow_err_msg)
             if not -1 <= self.boxes_flow <= 1:
                 raise PDFValueError(boxes_flow_err_msg)
@@ -369,10 +367,7 @@ class LTChar(LTComponent, LTText):
             # vertical
             assert isinstance(textdisp, tuple)
             (vx, vy) = textdisp
-            if vx is None:
-                vx = fontsize * 0.5
-            else:
-                vx = vx * fontsize * 0.001
+            vx = fontsize * 0.5 if vx is None else vx * fontsize * 0.001
             vy = (1000 - vy) * fontsize * 0.001
             bbox = (-vx, vy + rise + self.adv, -vx + fontsize, vy + rise)
         else:

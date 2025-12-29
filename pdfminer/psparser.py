@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import contextlib
 import io
 import logging
 import re
@@ -369,10 +370,8 @@ class PSBaseParser:
             self._curtoken += c
             self._parse1 = self._parse_float
             return j + 1
-        try:
+        with contextlib.suppress(ValueError):
             self._add_token(int(self._curtoken))
-        except ValueError:
-            pass
         self._parse1 = self._parse_main
         return j
 
@@ -383,10 +382,8 @@ class PSBaseParser:
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        try:
+        with contextlib.suppress(ValueError):
             self._add_token(float(self._curtoken))
-        except ValueError:
-            pass
         self._parse1 = self._parse_main
         return j
 

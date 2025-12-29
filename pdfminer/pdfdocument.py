@@ -397,9 +397,11 @@ class PDFStandardSecurityHandler:
         # See https://github.com/pdfminer/pdfminer.six/issues/186
         hash.update(struct.pack("<L", self.p))  # 4
         hash.update(self.docid[0])  # 5
-        if self.r >= 4:
-            if not cast(PDFStandardSecurityHandlerV4, self).encrypt_metadata:
-                hash.update(b"\xff\xff\xff\xff")
+        if (
+            self.r >= 4
+            and not cast(PDFStandardSecurityHandlerV4, self).encrypt_metadata
+        ):
+            hash.update(b"\xff\xff\xff\xff")
         result = hash.digest()
         n = 5
         if self.r >= 3:
@@ -722,13 +724,10 @@ class PDFDocument:
                 continue
             # If there's an encryption info, remember it.
             if "Encrypt" in trailer:
-                if "ID" in trailer:
-                    id_value = list_value(trailer["ID"])
-                else:
-                    # Some documents may not have a /ID, use two empty
-                    # byte strings instead. Solves
-                    # https://github.com/pdfminer/pdfminer.six/issues/594
-                    id_value = (b"", b"")
+                # Some documents may not have a /ID, use two empty
+                # byte strings instead. Solves
+                # https://github.com/pdfminer/pdfminer.six/issues/594
+                id_value = list_value(trailer["ID"]) if "ID" in trailer else (b"", b"")
                 self.encryption = (id_value, dict_value(trailer["Encrypt"]))
                 self._initialize_password(password)
             if "Info" in trailer:
@@ -739,9 +738,8 @@ class PDFDocument:
                 break
         else:
             raise PDFSyntaxError("No /Root object! - Is this really a PDF?")
-        if self.catalog.get("Type") is not LITERAL_CATALOG:
-            if settings.STRICT:
-                raise PDFSyntaxError("Catalog not found!")
+        if self.catalog.get("Type") is not LITERAL_CATALOG and settings.STRICT:
+            raise PDFSyntaxError("Catalog not found!")
 
     KEYWORD_OBJ = KWD(b"obj")
 
@@ -780,9 +778,8 @@ class PDFDocument:
         return obj
 
     def _get_objects(self, stream: PDFStream) -> tuple[list[object], int]:
-        if stream.get("Type") is not LITERAL_OBJSTM:
-            if settings.STRICT:
-                raise PDFSyntaxError(f"Not a stream object: {stream!r}")
+        if stream.get("Type") is not LITERAL_OBJSTM and settings.STRICT:
+            raise PDFSyntaxError(f"Not a stream object: {stream!r}")
         try:
             n = cast(int, stream["N"])
         except KeyError:
@@ -874,13 +871,12 @@ class PDFDocument:
 
         def search(entry: object, level: int) -> Iterator[PDFDocument.OutlineType]:
             entry = dict_value(entry)
-            if "Title" in entry:
-                if "A" in entry or "Dest" in entry:
-                    title = decode_text(str_value(entry["Title"]))
-                    dest = entry.get("Dest")
-                    action = entry.get("A")
-                    se = entry.get("SE")
-                    yield (level, title, dest, action, se)
+            if "Title" in entry and ("A" in entry or "Dest" in entry):
+                title = decode_text(str_value(entry["Title"]))
+                dest = entry.get("Dest")
+                action = entry.get("A")
+                se = entry.get("SE")
+                yield (level, title, dest, action, se)
             if "First" in entry and "Last" in entry:
                 yield from search(entry["First"], level + 1)
             if "Next" in entry:
