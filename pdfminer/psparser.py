@@ -527,7 +527,9 @@ class PSBaseParser:
 #  * dict (via KEYWORD_DICT)
 #  * subclass-specific extensions (e.g. PDFStream, PDFObjRef) via ExtraT
 ExtraT = TypeVar("ExtraT")
-PSStackType = Union[str, float, bool, PSLiteral, bytes, list, dict, ExtraT]
+PSStackType = Union[
+    str, float, bool, PSLiteral, bytes, list[Any], dict[Any, Any], ExtraT
+]
 PSStackEntry = tuple[int, PSStackType[ExtraT]]
 
 

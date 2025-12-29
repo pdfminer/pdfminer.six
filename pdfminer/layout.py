@@ -706,7 +706,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         objs: Iterable[LTComponent],
     ) -> Iterator[LTTextLine]:
         obj0 = None
-        line = None
+        line: LTTextLine | None = None
         for obj1 in objs:
             if obj0 is not None:
                 # halign: obj0 and obj1 is horizontally aligned.

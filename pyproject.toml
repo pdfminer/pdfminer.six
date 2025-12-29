@@ -45,7 +45,7 @@ dev = [
     "atheris; python_version < '3.12'",
     "nox",
     "ruff",
-    "mypy < 1",
+    "mypy",
     "pytest",
     "pre-commit",
     "codespell",
