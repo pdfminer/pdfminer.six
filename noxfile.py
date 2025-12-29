@@ -6,7 +6,7 @@ PYTHON_MODULES = ["fuzzing", "pdfminer", "tools", "tests", "noxfile.py"]
 
 @nox.session
 def types(session):
-    session.install("mypy<1", "pytest-mypy")
+    session.install("-e", ".[dev]")
     session.run(
         "mypy",
         "--install-types",
@@ -18,14 +18,12 @@ def types(session):
 
 @nox.session(python=PYTHON_ALL_VERSIONS)
 def tests(session):
-    session.install("pip")
     session.install("-e", ".[dev]")
     session.run("pytest")
 
 
 @nox.session
 def docs(session):
-    session.install("pip")
     session.install("-e", ".[docs]")
     session.run(
         "python",
