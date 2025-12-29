@@ -14,7 +14,5 @@ build:
     - pip install uv
     # Install project with docs dependency group
     - uv sync --locked --group docs
-
-# Build documentation in the "docs/source/" directory with Sphinx
-sphinx:
-  configuration: docs/source/conf.py
+    # Build sphinx documentation
+    - uv run python -m sphinx -T -b html -d docs/_build/doctrees -D language=en docs/source $READTHEDOCS_OUTPUT/html
