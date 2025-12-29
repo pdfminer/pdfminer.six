@@ -80,11 +80,12 @@ extend-select = [
     "TID",  # flake8 tidy imports
     "UP",  # pyupgrade
 ]
+extend-ignore = [
+    # UP007: Union to | syntax breaks mypy 0.931 in TypeAlias definitions
+    # Can be removed once mypy is updated to support PEP 604 syntax in TypeAlias
+    "UP007",
+]
 
-[tool.ruff.lint.per-file-ignores]
-# UP007: Type alias Union -> | conversion requires more careful review
-"pdfminer/**/*.py" = ["UP007"]
-"tools/**/*.py" = ["UP007"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
