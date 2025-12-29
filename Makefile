@@ -36,8 +36,8 @@ check: install format lint-fix type-check test  ## Run all checks with auto-fixe
 
 .PHONY: docs
 docs:  ## Build documentation
-	uv run sphinx-build -b html docs/source docs/build/html
-	uv run sphinx-build -b doctest docs/source docs/build/doctest
+	uv run python -m sphinx -b html docs/source docs/build/html
+	uv run python -m sphinx -b doctest docs/source docs/build/doctest
 
 .PHONY: clean
 clean:  ## Remove build artifacts, cache files, and temporary files

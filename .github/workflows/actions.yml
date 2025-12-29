@@ -115,12 +115,12 @@ jobs:
         uses: astral-sh/setup-uv@v7
       - name: Set up Python ${{ env.default-python }}
         run: uv python install ${{ env.default-python }}
-      - name: Install dependencies
-        run: uv sync --locked --group docs
+      - name: Install project and docs dependencies
+        run: uv sync --locked --group docs --all-extras
       - name: Build docs
         run: |
-          uv run sphinx-build -b html docs/source docs/build/html
-          uv run sphinx-build -b doctest docs/source docs/build/doctest
+          uv run python -m sphinx -b html docs/source docs/build/html
+          uv run python -m sphinx -b doctest docs/source docs/build/doctest
 
   publish:
     name: Publish to PyPi
