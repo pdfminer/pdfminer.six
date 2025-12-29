@@ -68,7 +68,7 @@ def get_widths(seq: Iterable[object]) -> dict[str | int, float]:
             if len(r) == 3:
                 (char1, char2, w) = r
                 if isinstance(char1, int) and isinstance(char2, int):
-                    for i in range(cast(int, char1), cast(int, char2) + 1):
+                    for i in range(char1, char2 + 1):
                         widths[i] = w
                 else:
                     log.warning(

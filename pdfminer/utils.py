@@ -69,6 +69,8 @@ def make_compat_str(o: object) -> str:
     """Converts everything to string, if bytes guessing the encoding."""
     if isinstance(o, bytes):
         enc = charset_normalizer.detect(o)
+        if enc["encoding"] is None:
+            return str(o)
         try:
             return o.decode(enc["encoding"])
         except UnicodeDecodeError:

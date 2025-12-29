@@ -43,11 +43,12 @@ dependencies = [
 dev = [
     # Atheris is supports up to Python 3.11.
     "atheris; python_version < '3.12'",
-    "black",
-    "mypy == 0.931",
     "nox",
-    "pre-commit",
+    "ruff",
+    "mypy",
     "pytest",
+    "pre-commit",
+    "codespell",
 ]
 docs = [
     "sphinx",

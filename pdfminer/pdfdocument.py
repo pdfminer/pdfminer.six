@@ -835,6 +835,8 @@ class PDFDocument:
         if not self.xrefs:
             raise PDFException("PDFDocument is not initialized")
         log.debug("getobj: objid=%r", objid)
+        obj: object  # Initialize to satisfy mypy; always assigned in branches below
+        genno: int
         if objid in self._cached_objs:
             (obj, genno) = self._cached_objs[objid]
         else:
