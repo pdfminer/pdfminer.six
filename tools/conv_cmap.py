@@ -6,7 +6,9 @@ import sys
 
 
 class CMapConverter:
-    def __init__(self, enc2codec={}):
+    def __init__(self, enc2codec=None):
+        if enc2codec is None:
+            enc2codec = {}
         self.enc2codec = enc2codec
         self.code2cid = {}  # {'cmapname': ...}
         self.is_vertical = {}
@@ -84,7 +86,7 @@ class CMapConverter:
             cid = int(values[0])
             unimap_h = {}
             unimap_v = {}
-            for enc, value in zip(encs, values):
+            for enc, value in zip(encs, values, strict=False):
                 if enc == "CID":
                     continue
                 if value == "*":

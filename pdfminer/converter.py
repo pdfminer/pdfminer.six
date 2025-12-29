@@ -147,13 +147,15 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             transformed_points = [
                 [
                     apply_matrix_pt(self.ctm, (float(operand1), float(operand2)))
-                    for operand1, operand2 in zip(operation[1::2], operation[2::2])
+                    for operand1, operand2 in zip(
+                        operation[1::2], operation[2::2], strict=False
+                    )
                 ]
                 for operation in path
             ]
             transformed_path = [
                 cast(PathSegment, (o, *p))
-                for o, p in zip(operators, transformed_points)
+                for o, p in zip(operators, transformed_points, strict=False)
             ]
 
             # Drop a redundant "l" on a path closed with "h"
@@ -787,7 +789,7 @@ class XMLConverter(PDFConverter[AnyIO]):
                         f'<image width="{item.width}" height="{item.height}" />\n'
                     )
             else:
-                assert False, str(("Unhandled", item))
+                raise AssertionError(str(("Unhandled", item)))
 
         render(ltpage)
 

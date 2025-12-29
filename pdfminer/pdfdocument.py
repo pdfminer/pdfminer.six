@@ -135,8 +135,8 @@ class PDFXRef(PDFBaseXRef):
                 line = line.strip()
                 if not line:
                     continue
-            except PSEOF:
-                raise PDFNoValidXRef("Unexpected EOF - file corrupted?")
+            except PSEOF as err:
+                raise PDFNoValidXRef("Unexpected EOF - file corrupted?") from err
             if line.startswith(b"trailer"):
                 parser.seek(pos)
                 break
@@ -146,15 +146,15 @@ class PDFXRef(PDFBaseXRef):
                 raise PDFNoValidXRef(error_msg)
             try:
                 (start, nobjs) = map(int, f)
-            except ValueError:
+            except ValueError as err:
                 error_msg = f"Invalid line: {parser!r}: line={line!r}"
-                raise PDFNoValidXRef(error_msg)
+                raise PDFNoValidXRef(error_msg) from err
             for objid in range(start, start + nobjs):
                 try:
                     (_, line) = parser.nextline()
                     line = line.strip()
-                except PSEOF:
-                    raise PDFNoValidXRef("Unexpected EOF - file corrupted?")
+                except PSEOF as err:
+                    raise PDFNoValidXRef("Unexpected EOF - file corrupted?") from err
                 f = line.split(b" ")
                 if len(f) != 3:
                     error_msg = f"Invalid XRef format: {parser!r}, line={line!r}"
@@ -184,7 +184,7 @@ class PDFXRef(PDFBaseXRef):
         except PSEOF:
             x = parser.pop(1)
             if not x:
-                raise PDFNoValidXRef("Unexpected EOF - file corrupted")
+                raise PDFNoValidXRef("Unexpected EOF - file corrupted") from None
             (_, dic) = x[0]
         self.trailer.update(dict_value(dic))
         log.debug("trailer=%r", self.trailer)
@@ -234,7 +234,7 @@ class PDFXRefFallback(PDFXRef):
                     n = stream["N"]
                 except KeyError:
                     if settings.STRICT:
-                        raise PDFSyntaxError(f"N is not defined: {stream!r}")
+                        raise PDFSyntaxError(f"N is not defined: {stream!r}") from None
                     n = 0
                 parser1 = PDFStreamParser(stream.get_data())
                 objs: list[int] = []
@@ -775,8 +775,8 @@ class PDFDocument:
         i = n * 2 + index
         try:
             obj = objs[i]
-        except IndexError:
-            raise PDFSyntaxError(f"index too big: {index!r}")
+        except IndexError as err:
+            raise PDFSyntaxError(f"index too big: {index!r}") from err
         return obj
 
     def _get_objects(self, stream: PDFStream) -> tuple[list[object], int]:
@@ -787,7 +787,7 @@ class PDFDocument:
             n = cast(int, stream["N"])
         except KeyError:
             if settings.STRICT:
-                raise PDFSyntaxError(f"N is not defined: {stream!r}")
+                raise PDFSyntaxError(f"N is not defined: {stream!r}") from None
             n = 0
         parser = PDFStreamParser(stream.get_data())
         parser.set_document(self)
@@ -900,16 +900,16 @@ class PDFDocument:
 
         try:
             page_labels = PageLabels(self.catalog["PageLabels"])
-        except (PDFTypeError, KeyError):
-            raise PDFNoPageLabels
+        except (PDFTypeError, KeyError) as err:
+            raise PDFNoPageLabels from err
 
         return page_labels.labels
 
     def lookup_name(self, cat: str, key: str | bytes) -> Any:
         try:
             names = dict_value(self.catalog["Names"])
-        except (PDFTypeError, KeyError):
-            raise PDFKeyError((cat, key))
+        except (PDFTypeError, KeyError) as err:
+            raise PDFKeyError((cat, key)) from err
         # may raise KeyError
         d0 = dict_value(names[cat])
 
@@ -940,10 +940,10 @@ class PDFDocument:
         except KeyError:
             # PDF-1.1 or prior
             if "Dests" not in self.catalog:
-                raise PDFDestinationNotFound(name)
+                raise PDFDestinationNotFound(name) from None
             d0 = dict_value(self.catalog["Dests"])
             if name not in d0:
-                raise PDFDestinationNotFound(name)
+                raise PDFDestinationNotFound(name) from None
             obj = d0[name]
         return obj
 
@@ -986,8 +986,8 @@ class PDFDocument:
         parser.reset()
         try:
             (pos, token) = parser.nexttoken()
-        except PSEOF:
-            raise PDFNoValidXRef("Unexpected EOF")
+        except PSEOF as err:
+            raise PDFNoValidXRef("Unexpected EOF") from err
         log.debug("read_xref_from: start=%d, token=%r", start, token)
         if isinstance(token, int):
             # XRefStream: PDF-1.5

@@ -611,7 +611,7 @@ class CFFFont:
             self.fp = fp
             self.offsets: list[int] = []
             (count, offsize) = struct.unpack(">HB", self.fp.read(3))
-            for i in range(count + 1):
+            for _i in range(count + 1):
                 self.offsets.append(nunpack(self.fp.read(offsize)))
             self.base = self.fp.tell() - 1
             self.fp.seek(self.base + self.offsets[-1])
@@ -667,7 +667,7 @@ class CFFFont:
             # Format 1
             (n,) = struct.unpack("B", self.fp.read(1))
             code = 0
-            for i in range(n):
+            for _i in range(n):
                 (first, nleft) = struct.unpack("BB", self.fp.read(2))
                 for gid in range(first, first + nleft + 1):
                     self.code2gid[code] = gid
@@ -696,7 +696,7 @@ class CFFFont:
             # Format 1
             (n,) = struct.unpack("B", self.fp.read(1))
             sid = 0
-            for i in range(n):
+            for _i in range(n):
                 (first, nleft) = struct.unpack("BB", self.fp.read(2))
                 for gid in range(first, first + nleft + 1):
                     sidname = self.getstr(sid)
@@ -705,7 +705,7 @@ class CFFFont:
                     sid += 1
         elif format == b"\x02":
             # Format 2
-            assert False, str(("Unhandled", format))
+            raise AssertionError(str(("Unhandled", format)))
         else:
             raise PDFValueError(f"unsupported charset format: {format!r}")
 
@@ -751,7 +751,7 @@ class TrueTypeFont:
         fp.seek(base_offset)
         (version, nsubtables) = cast(tuple[int, int], struct.unpack(">HH", fp.read(4)))
         subtables: list[tuple[int, int, int]] = []
-        for i in range(nsubtables):
+        for _i in range(nsubtables):
             subtables.append(
                 cast(tuple[int, int, int], struct.unpack(">HHL", fp.read(8))),
             )
@@ -823,7 +823,7 @@ class TrueTypeFont:
                     tuple[int, ...],
                     struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
                 )
-                for ec, sc, idd, idr in zip(ecs, scs, idds, idrs):
+                for ec, sc, idd, idr in zip(ecs, scs, idds, idrs, strict=False):
                     if idr:
                         fp.seek(pos + idr)
                         for c in range(sc, ec + 1):
@@ -833,7 +833,7 @@ class TrueTypeFont:
                         for c in range(sc, ec + 1):
                             char2gid[c] = (c + idd) & 0xFFFF
             else:
-                assert False, str(("Unhandled", fmttype))
+                raise AssertionError(str(("Unhandled", fmttype)))
         if not char2gid:
             raise TrueTypeFont.CMapNotFound
         # create unicode map
@@ -1006,8 +1006,8 @@ class PDFSimpleFont(PDFFont):
                 pass
         try:
             return self.cid2unicode[cid]
-        except KeyError:
-            raise PDFUnicodeNotDefined(None, cid)
+        except KeyError as err:
+            raise PDFUnicodeNotDefined(None, cid) from err
 
 
 class PDFType1Font(PDFSimpleFont):
@@ -1016,7 +1016,7 @@ class PDFType1Font(PDFSimpleFont):
             self.basefont = literal_name(spec["BaseFont"])
         except KeyError:
             if settings.STRICT:
-                raise PDFFontError("BaseFont is missing")
+                raise PDFFontError("BaseFont is missing") from None
             self.basefont = "unknown"
 
         widths: FontWidthDict
@@ -1081,7 +1081,7 @@ class PDFCIDFont(PDFFont):
             self.basefont = literal_name(spec["BaseFont"])
         except KeyError:
             if strict:
-                raise PDFFontError("BaseFont is missing")
+                raise PDFFontError("BaseFont is missing") from None
             self.basefont = "unknown"
         self.cidsysteminfo = dict_value(spec.get("CIDSystemInfo", {}))
         cid_registry = resolve1(self.cidsysteminfo.get("Registry", b"unknown")).decode(
@@ -1097,7 +1097,7 @@ class PDFCIDFont(PDFFont):
             descriptor = dict_value(spec["FontDescriptor"])
         except KeyError:
             if strict:
-                raise PDFFontError("FontDescriptor is missing")
+                raise PDFFontError("FontDescriptor is missing") from None
             descriptor = {}
         ttf = None
         if "FontFile2" in descriptor:
@@ -1167,7 +1167,7 @@ class PDFCIDFont(PDFFont):
             return CMapDB.get_cmap(cmap_name)
         except CMapDB.CMapNotFound as e:
             if strict:
-                raise PDFFontError(e)
+                raise PDFFontError(e) from e
             return CMap()
 
     @staticmethod
@@ -1183,7 +1183,7 @@ class PDFCIDFont(PDFFont):
                 cmap_name = literal_name(spec_encoding["CMapName"])
         except KeyError:
             if strict:
-                raise PDFFontError("Encoding is unspecified")
+                raise PDFFontError("Encoding is unspecified") from None
 
         if type(cmap_name) is PDFStream:  # type: ignore[comparison-overlap]
             cmap_name_stream: PDFStream = cast(PDFStream, cmap_name)
@@ -1215,5 +1215,5 @@ class PDFCIDFont(PDFFont):
             if not self.unicode_map:
                 raise PDFKeyError(cid)
             return self.unicode_map.get_unichr(cid)
-        except KeyError:
-            raise PDFUnicodeNotDefined(self.cidcoding, cid)
+        except KeyError as err:
+            raise PDFUnicodeNotDefined(self.cidcoding, cid) from err

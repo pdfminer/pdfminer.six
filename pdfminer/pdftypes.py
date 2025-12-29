@@ -83,6 +83,7 @@ class PDFObjRef(PDFObject):
                 "The third argument of PDFObjRef is unused and will be removed after "
                 "2024",
                 DeprecationWarning,
+                stacklevel=2,
             )
 
         if objid == 0:
@@ -232,9 +233,10 @@ def decompress_corrupted(data: bytes) -> bytes:
             buffer = f.read(1)
             i += 1
     except zlib.error:
-        # Let the error propagates if we're not yet in the CRC checksum
+        # Let the error propagate if we're not yet in the CRC checksum
         if i < len(data) - 3:
-            logger.warning("Data-loss while decompressing corrupted data")
+            raise
+        logger.warning("Data-loss while decompressing corrupted data")
     return result_str
 
 
@@ -297,7 +299,7 @@ class PDFStream(PDFObject):
 
         resolved_filters = [resolve1(f) for f in filters]
         resolved_params = [resolve1(param) for param in params]
-        return list(zip(resolved_filters, resolved_params))
+        return list(zip(resolved_filters, resolved_params, strict=False))
 
     def decode(self) -> None:
         assert self.data is None and self.rawdata is not None, str(
@@ -323,7 +325,7 @@ class PDFStream(PDFObject):
                 except zlib.error as e:
                     if settings.STRICT:
                         error_msg = f"Invalid zlib bytes: {e!r}, {data!r}"
-                        raise PDFException(error_msg)
+                        raise PDFException(error_msg) from e
 
                     try:
                         data = decompress_corrupted(data)

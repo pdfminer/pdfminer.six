@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Fix `struct.error` when processing PDFs with odd-length font encoding buffers ([#1169](https://github.com/pdfminer/pdfminer.six/pull/1169))
 - `PSBaseParser` combines tokens split across streams ([#1158](https://github.com/pdfminer/pdfminer.six/pull/1158))
+- Improve exception handling in `PDFDocument` with more precise error propagation ([#1220](https://github.com/pdfminer/pdfminer.six/pull/1220))
 
 ## [20251227]
 

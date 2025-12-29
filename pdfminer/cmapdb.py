@@ -423,7 +423,9 @@ class CMapParser(PSStackParser[PSKeyword]):
                             "The difference between the start and end "
                             "offsets does not match the code length.",
                         )
-                    for cid, unicode_value in zip(range(start, end + 1), code):
+                    for cid, unicode_value in zip(
+                        range(start, end + 1), code, strict=False
+                    ):
                         self.cmap.add_cid2unichr(cid, unicode_value)
                 else:
                     assert isinstance(code, bytes)

@@ -697,17 +697,17 @@ class PDFPageInterpreter:
         """
         try:
             self.graphicstate.scs = self.csmap[literal_name(name)]
-        except KeyError:
+        except KeyError as err:
             if settings.STRICT:
-                raise PDFInterpreterError(f"Undefined ColorSpace: {name!r}")
+                raise PDFInterpreterError(f"Undefined ColorSpace: {name!r}") from err
 
     def do_cs(self, name: PDFStackT) -> None:
         """Set color space for nonstroking operations"""
         try:
             self.graphicstate.ncs = self.csmap[literal_name(name)]
-        except KeyError:
+        except KeyError as err:
             if settings.STRICT:
-                raise PDFInterpreterError(f"Undefined ColorSpace: {name!r}")
+                raise PDFInterpreterError(f"Undefined ColorSpace: {name!r}") from err
 
     def do_G(self, gray: PDFStackT) -> None:
         """Set gray level for stroking operations"""
@@ -1081,9 +1081,9 @@ class PDFPageInterpreter:
         """
         try:
             self.textstate.font = self.fontmap[literal_name(fontid)]
-        except KeyError:
+        except KeyError as err:
             if settings.STRICT:
-                raise PDFInterpreterError(f"Undefined Font id: {fontid!r}")
+                raise PDFInterpreterError(f"Undefined Font id: {fontid!r}") from err
             self.textstate.font = self.rsrcmgr.get_font(None, {})
 
         fontsize_f = safe_float(fontsize)
@@ -1247,9 +1247,9 @@ class PDFPageInterpreter:
         xobjid = literal_name(xobjid_arg)
         try:
             xobj = stream_value(self.xobjmap[xobjid])
-        except KeyError:
+        except KeyError as err:
             if settings.STRICT:
-                raise PDFInterpreterError(f"Undefined xobject id: {xobjid!r}")
+                raise PDFInterpreterError(f"Undefined xobject id: {xobjid!r}") from err
             return
         log.debug("Processing xobj: %r", xobj)
         subtype = xobj.get("Subtype")
