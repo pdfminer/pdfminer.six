@@ -3,21 +3,14 @@
 import io
 import pathlib
 import string
+from collections.abc import Callable, Iterable, Iterator
 from html import escape
 from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Callable,
-    Dict,
     Generic,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
     TextIO,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -27,6 +20,8 @@ from pdfminer.pdfexceptions import PDFTypeError, PDFValueError
 
 if TYPE_CHECKING:
     from pdfminer.layout import LTComponent
+
+import contextlib
 
 import charset_normalizer  # For str encoding detection
 
@@ -48,13 +43,13 @@ class open_filename:
         if isinstance(filename, pathlib.PurePath):
             filename = str(filename)
         if isinstance(filename, str):
-            self.file_handler: AnyIO = open(filename, *args, **kwargs)
+            self.file_handler: AnyIO = open(filename, *args, **kwargs)  # noqa: SIM115
             self.closing = True
         elif isinstance(filename, io.IOBase):
             self.file_handler = cast(AnyIO, filename)
             self.closing = False
         else:
-            raise PDFTypeError("Unsupported input type: %s" % type(filename))
+            raise PDFTypeError(f"Unsupported input type: {type(filename)}")
 
     def __enter__(self) -> AnyIO:
         return self.file_handler
@@ -74,6 +69,8 @@ def make_compat_str(o: object) -> str:
     """Converts everything to string, if bytes guessing the encoding."""
     if isinstance(o, bytes):
         enc = charset_normalizer.detect(o)
+        if enc["encoding"] is None:
+            return str(o)
         try:
             return o.decode(enc["encoding"])
         except UnicodeDecodeError:
@@ -93,7 +90,7 @@ def shorten_str(s: str, size: int) -> str:
 
 
 def compatible_encode_method(
-    bytesorstring: Union[bytes, str],
+    bytesorstring: bytes | str,
     encoding: str = "utf-8",
     erraction: str = "ignore",
 ) -> str:
@@ -130,16 +127,18 @@ def apply_tiff_predictor(
 ) -> bytes:
     """Reverse the effect of the TIFF predictor 2
 
-    Documentation: https://www.itu.int/itudoc/itu-t/com16/tiff-fx/docs/tiff6.pdf (Section 14, page 64)
+    Documentation:
+    https://www.itu.int/itudoc/itu-t/com16/tiff-fx/docs/tiff6.pdf
+    (Section 14, page 64)
     """
     if bitspercomponent != 8:
         error_msg = f"Unsupported `bitspercomponent': {bitspercomponent}"
         raise PDFValueError(error_msg)
     bpp = colors * (bitspercomponent // 8)
     nbytes = columns * bpp
-    buf: List[int] = []
+    buf: list[int] = []
     for scanline_i in range(0, len(data), nbytes):
-        raw: List[int] = []
+        raw: list[int] = []
         for i in range(nbytes):
             new_value = data[scanline_i + i]
             if i >= bpp:
@@ -163,7 +162,7 @@ def apply_png_predictor(
     Documentation: http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
     """
     if bitspercomponent not in [8, 1]:
-        msg = "Unsupported `bitspercomponent': %d" % bitspercomponent
+        msg = f"Unsupported `bitspercomponent': {bitspercomponent}"
         raise PDFValueError(msg)
 
     nbytes = colors * columns * bitspercomponent // 8
@@ -187,10 +186,7 @@ def apply_png_predictor(
             # (computed mod 256), where Raw() refers to the bytes already
             #  decoded.
             for j, sub_x in enumerate(line_encoded):
-                if j - bpp < 0:
-                    raw_x_bpp = 0
-                else:
-                    raw_x_bpp = int(raw[j - bpp])
+                raw_x_bpp = 0 if j - bpp < 0 else int(raw[j - bpp])
                 raw_x = (sub_x + raw_x_bpp) & 255
                 raw.append(raw_x)
 
@@ -201,7 +197,7 @@ def apply_png_predictor(
             #   Raw(x) = Up(x) + Prior(x)
             # (computed mod 256), where Prior() refers to the decoded bytes of
             # the prior scanline.
-            for up_x, prior_x in zip(line_encoded, line_above):
+            for up_x, prior_x in zip(line_encoded, line_above, strict=False):
                 raw_x = (up_x + prior_x) & 255
                 raw.append(raw_x)
 
@@ -215,10 +211,7 @@ def apply_png_predictor(
             # bytes already decoded, and Prior() refers to the decoded bytes of
             # the prior scanline.
             for j, average_x in enumerate(line_encoded):
-                if j - bpp < 0:
-                    raw_x_bpp = 0
-                else:
-                    raw_x_bpp = int(raw[j - bpp])
+                raw_x_bpp = 0 if j - bpp < 0 else int(raw[j - bpp])
                 prior_x = int(line_above[j])
                 raw_x = (average_x + (raw_x_bpp + prior_x) // 2) & 255
                 raw.append(raw_x)
@@ -245,21 +238,21 @@ def apply_png_predictor(
                 raw.append(raw_x)
 
         else:
-            raise PDFValueError("Unsupported predictor value: %d" % filter_type)
+            raise PDFValueError(f"Unsupported predictor value: {filter_type}")
 
         buf.extend(raw)
         line_above = raw
     return bytes(buf)
 
 
-Point = Tuple[float, float]
-Rect = Tuple[float, float, float, float]
-Matrix = Tuple[float, float, float, float, float, float]
+Point = tuple[float, float]
+Rect = tuple[float, float, float, float]
+Matrix = tuple[float, float, float, float, float, float]
 PathSegment = Union[
-    Tuple[str],  # Literal['h']
-    Tuple[str, float, float],  # Literal['m', 'l']
-    Tuple[str, float, float, float, float],  # Literal['v', 'y']
-    Tuple[str, float, float, float, float, float, float],
+    tuple[str],  # Literal['h']
+    tuple[str, float, float],  # Literal['m', 'l']
+    tuple[str, float, float, float, float],  # Literal['v', 'y']
+    tuple[str, float, float, float, float, float, float],
 ]  # Literal['c']
 
 #  Matrix operations
@@ -270,8 +263,8 @@ def parse_rect(o: Any) -> Rect:
     try:
         (x0, y0, x1, y1) = o
         return float(x0), float(y0), float(x1), float(y1)
-    except ValueError:
-        raise PDFValueError("Could not parse rectangle")
+    except ValueError as err:
+        raise PDFValueError("Could not parse rectangle") from err
 
 
 def mult_matrix(m1: Matrix, m0: Matrix) -> Matrix:
@@ -338,7 +331,7 @@ def apply_matrix_rect(m: Matrix, rect: Rect) -> Rect:
 
 def apply_matrix_norm(m: Matrix, v: Point) -> Point:
     """Equivalent to apply_matrix_pt(M, (p,q)) - apply_matrix_pt(M, (0,0))"""
-    (a, b, c, d, e, f) = m
+    (a, b, c, d, _e, _f) = m
     (p, q) = v
     return a * p + c * q, b * p + d * q
 
@@ -363,7 +356,7 @@ def uniq(objs: Iterable[_T]) -> Iterator[_T]:
         yield obj
 
 
-def fsplit(pred: Callable[[_T], bool], objs: Iterable[_T]) -> Tuple[List[_T], List[_T]]:
+def fsplit(pred: Callable[[_T], bool], objs: Iterable[_T]) -> tuple[list[_T], list[_T]]:
     """Split a list into two classes according to the predicate."""
     t = []
     f = []
@@ -395,8 +388,8 @@ def get_bound(pts: Iterable[Point]) -> Rect:
 def pick(
     seq: Iterable[_T],
     func: Callable[[_T], float],
-    maxobj: Optional[_T] = None,
-) -> Optional[_T]:
+    maxobj: _T | None = None,
+) -> _T | None:
     """Picks the object obj where func(obj) has the highest value."""
     maxscore = None
     for obj in seq:
@@ -406,7 +399,7 @@ def pick(
     return maxobj
 
 
-def choplist(n: int, seq: Iterable[_T]) -> Iterator[Tuple[_T, ...]]:
+def choplist(n: int, seq: Iterable[_T]) -> Iterator[tuple[_T, ...]]:
     """Groups every n elements of the list."""
     r = []
     for x in seq:
@@ -718,7 +711,7 @@ def vecBetweenBoxes(obj1: "LTComponent", obj2: "LTComponent") -> Point:
 
     Consider the bounding rectangle for obj1 and obj2.
     Return vector between 2 boxes boundaries if they don't overlap, otherwise
-    returns vector betweeen boxes centers
+    returns vector between boxes centers
 
              +------+..........+ (x1, y1)
              | obj1 |          :
@@ -751,14 +744,14 @@ class Plane(Generic[LTComponentT]):
     """
 
     def __init__(self, bbox: Rect, gridsize: int = 50) -> None:
-        self._seq: List[LTComponentT] = []  # preserve the object order.
-        self._objs: Set[LTComponentT] = set()
-        self._grid: Dict[Point, List[LTComponentT]] = {}
+        self._seq: list[LTComponentT] = []  # preserve the object order.
+        self._objs: set[LTComponentT] = set()
+        self._grid: dict[Point, list[LTComponentT]] = {}
         self.gridsize = gridsize
         (self.x0, self.y0, self.x1, self.y1) = bbox
 
     def __repr__(self) -> str:
-        return "<Plane objs=%r>" % list(self)
+        return f"<Plane objs={list(self)!r}>"
 
     def __iter__(self) -> Iterator[LTComponentT]:
         return (obj for obj in self._seq if obj in self._objs)
@@ -789,7 +782,7 @@ class Plane(Generic[LTComponentT]):
         """Place an object."""
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
             if k not in self._grid:
-                r: List[LTComponentT] = []
+                r: list[LTComponentT] = []
                 self._grid[k] = r
             else:
                 r = self._grid[k]
@@ -800,10 +793,8 @@ class Plane(Generic[LTComponentT]):
     def remove(self, obj: LTComponentT) -> None:
         """Displace an object."""
         for k in self._getrange((obj.x0, obj.y0, obj.x1, obj.y1)):
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 self._grid[k].remove(obj)
-            except (KeyError, ValueError):
-                pass
         self._objs.remove(obj)
 
     def find(self, bbox: Rect) -> Iterator[LTComponentT]:
@@ -829,7 +820,7 @@ ROMAN_FIVES = ["v", "l", "d"]
 def format_int_roman(value: int) -> str:
     """Format a number as lowercase Roman numerals."""
     assert 0 < value < 4000
-    result: List[str] = []
+    result: list[str] = []
     index = 0
 
     while value != 0:
@@ -854,7 +845,7 @@ def format_int_roman(value: int) -> str:
 def format_int_alpha(value: int) -> str:
     """Format a number as lowercase letters a-z, aa-zz, etc."""
     assert value > 0
-    result: List[str] = []
+    result: list[str] = []
 
     while value != 0:
         value, remainder = divmod(value - 1, len(string.ascii_lowercase))

@@ -22,12 +22,12 @@ __all__ = ["saslprep"]
 
 import stringprep
 import unicodedata
-from typing import Callable, Tuple
+from collections.abc import Callable
 
 from pdfminer.pdfexceptions import PDFValueError
 
 # RFC4013 section 2.3 prohibited output.
-_PROHIBITED: Tuple[Callable[[str], bool], ...] = (
+_PROHIBITED: tuple[Callable[[str], bool], ...] = (
     # A strict reading of RFC 4013 requires table c12 here, but
     # characters from it are mapped to SPACE in the Map step. Can
     # normalization reintroduce them somehow?
@@ -55,7 +55,7 @@ def saslprep(data: str, prohibit_unassigned_code_points: bool = True) -> str:
     :return: The SASLprep'ed version of `data`.
     """
     if prohibit_unassigned_code_points:
-        prohibited = _PROHIBITED + (stringprep.in_table_a1,)
+        prohibited = (*_PROHIBITED, stringprep.in_table_a1)
     else:
         prohibited = _PROHIBITED
 
@@ -86,12 +86,12 @@ def saslprep(data: str, prohibit_unassigned_code_points: bool = True) -> str:
             raise PDFValueError("SASLprep: failed bidirectional check")
         # RFC3454, Section 6, #2. If a string contains any RandALCat
         # character, it MUST NOT contain any LCat character.
-        prohibited = prohibited + (stringprep.in_table_d2,)
+        prohibited = (*prohibited, stringprep.in_table_d2)
     else:
         # RFC3454, Section 6, #3. Following the logic of #3, if
         # the first character is not a RandALCat, no other character
         # can be either.
-        prohibited = prohibited + (in_table_d1,)
+        prohibited = (*prohibited, in_table_d1)
 
     # RFC3454 section 2, step 3 and 4 - Prohibit and check bidi
     for char in data:

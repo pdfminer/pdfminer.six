@@ -6,7 +6,8 @@ output it to plain text, html, xml or tags.
 import argparse
 import logging
 import sys
-from typing import Any, Container, Iterable, List, Optional
+from collections.abc import Container, Iterable
+from typing import Any
 
 import pdfminer.high_level
 from pdfminer.layout import LAParams
@@ -18,33 +19,33 @@ logging.basicConfig()
 OUTPUT_TYPES = ((".htm", "html"), (".html", "html"), (".xml", "xml"), (".tag", "tag"))
 
 
-def float_or_disabled(x: str) -> Optional[float]:
+def float_or_disabled(x: str) -> float | None:
     if x.lower().strip() == "disabled":
         return None
     try:
         return float(x)
-    except ValueError:
-        raise argparse.ArgumentTypeError(f"invalid float value: {x}")
+    except ValueError as err:
+        raise argparse.ArgumentTypeError(f"invalid float value: {x}") from err
 
 
 def extract_text(
     files: Iterable[str] = [],
     outfile: str = "-",
-    laparams: Optional[LAParams] = None,
+    laparams: LAParams | None = None,
     output_type: str = "text",
     codec: str = "utf-8",
     strip_control: bool = False,
     maxpages: int = 0,
-    page_numbers: Optional[Container[int]] = None,
+    page_numbers: Container[int] | None = None,
     password: str = "",
     scale: float = 1.0,
     rotation: int = 0,
     layoutmode: str = "normal",
-    output_dir: Optional[str] = None,
+    output_dir: str | None = None,
     debug: bool = False,
     disable_caching: bool = False,
     **kwargs: Any,
-) -> AnyIO:
+) -> None:
     if not files:
         raise PDFValueError("Must provide files to work upon!")
 
@@ -57,13 +58,15 @@ def extract_text(
         outfp: AnyIO = sys.stdout
         if sys.stdout.encoding is not None:
             codec = "utf-8"
+        for fname in files:
+            with open(fname, "rb") as fp:
+                pdfminer.high_level.extract_text_to_fp(fp, **locals())
     else:
-        outfp = open(outfile, "wb")
-
-    for fname in files:
-        with open(fname, "rb") as fp:
-            pdfminer.high_level.extract_text_to_fp(fp, **locals())
-    return outfp
+        # Use context manager for file output, ensuring proper cleanup
+        with open(outfile, "wb") as outfp:
+            for fname in files:
+                with open(fname, "rb") as fp:
+                    pdfminer.high_level.extract_text_to_fp(fp, **locals())
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -274,14 +277,13 @@ def create_parser() -> argparse.ArgumentParser:
         "-S",
         default=False,
         action="store_true",
-        help="Remove control statement from text. "
-        "Only used when output_type is xml.",
+        help="Remove control statement from text. Only used when output_type is xml.",
     )
 
     return parser
 
 
-def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
+def parse_args(args: list[str] | None) -> argparse.Namespace:
     parsed_args = create_parser().parse_args(args=args)
 
     # Propagate parsed layout parameters to LAParams object
@@ -312,10 +314,9 @@ def parse_args(args: Optional[List[str]]) -> argparse.Namespace:
     return parsed_args
 
 
-def main(args: Optional[List[str]] = None) -> int:
+def main(args: list[str] | None = None) -> int:
     parsed_args = parse_args(args)
-    outfp = extract_text(**vars(parsed_args))
-    outfp.close()
+    extract_text(**vars(parsed_args))
     return 0
 
 

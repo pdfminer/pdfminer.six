@@ -12,16 +12,10 @@
 
 
 import array
+from collections.abc import Callable, Iterator, MutableSequence, Sequence
 from typing import (
     Any,
-    Callable,
-    Dict,
-    Iterator,
-    List,
-    MutableSequence,
-    Optional,
-    Sequence,
-    Union,
+    ClassVar,
     cast,
 )
 
@@ -43,13 +37,13 @@ class BitParser:
 
     # _accept is declared Optional solely as a workaround for
     # https://github.com/python/mypy/issues/708
-    _accept: Optional[Callable[[Any], BitParserState]]
+    _accept: Callable[[Any], BitParserState] | None
 
     def __init__(self) -> None:
         self._pos = 0
 
     @classmethod
-    def add(cls, root: BitParserState, v: Union[int, str], bits: str) -> None:
+    def add(cls, root: BitParserState, v: int | str, bits: str) -> None:
         p: BitParserState = root
         b = None
         for i in range(len(bits)):
@@ -58,10 +52,7 @@ class BitParser:
                 if p[b] is None:
                     p[b] = [None, None]
                 p = p[b]
-            if bits[i] == "1":
-                b = 1
-            else:
-                b = 0
+            b = 1 if bits[i] == "1" else 0
         assert b is not None
         p[b] = v
 
@@ -71,10 +62,7 @@ class BitParser:
                 self._parse_bit(byte & m)
 
     def _parse_bit(self, x: object) -> None:
-        if x:
-            v = self._state[1]
-        else:
-            v = self._state[0]
+        v = self._state[1] if x else self._state[0]
         self._pos += 1
         if isinstance(v, list):
             self._state = v
@@ -84,7 +72,7 @@ class BitParser:
 
 
 class CCITTG4Parser(BitParser):
-    MODE = [None, None]
+    MODE: ClassVar[BitParserState] = [None, None]
     BitParser.add(MODE, 0, "1")
     BitParser.add(MODE, +1, "011")
     BitParser.add(MODE, -1, "010")
@@ -104,7 +92,7 @@ class CCITTG4Parser(BitParser):
     BitParser.add(MODE, "x7", "0000001110")
     BitParser.add(MODE, "e", "000000000001000000000001")
 
-    WHITE = [None, None]
+    WHITE: ClassVar[BitParserState] = [None, None]
     BitParser.add(WHITE, 0, "00110101")
     BitParser.add(WHITE, 1, "000111")
     BitParser.add(WHITE, 2, "0111")
@@ -210,7 +198,7 @@ class CCITTG4Parser(BitParser):
     BitParser.add(WHITE, 2496, "000000011110")
     BitParser.add(WHITE, 2560, "000000011111")
 
-    BLACK = [None, None]
+    BLACK: ClassVar[BitParserState] = [None, None]
     BitParser.add(BLACK, 0, "0000110111")
     BitParser.add(BLACK, 1, "010")
     BitParser.add(BLACK, 2, "11")
@@ -316,7 +304,7 @@ class CCITTG4Parser(BitParser):
     BitParser.add(BLACK, 2496, "000000011110")
     BitParser.add(BLACK, 2560, "000000011111")
 
-    UNCOMPRESSED = [None, None]
+    UNCOMPRESSED: ClassVar[BitParserState] = [None, None]
     BitParser.add(UNCOMPRESSED, "1", "1")
     BitParser.add(UNCOMPRESSED, "01", "01")
     BitParser.add(UNCOMPRESSED, "001", "001")
@@ -415,7 +403,7 @@ class CCITTG4Parser(BitParser):
         else:
             return self.BLACK
 
-    def _parse_uncompressed(self, bits: Optional[str]) -> BitParserState:
+    def _parse_uncompressed(self, bits: str | None) -> BitParserState:
         if not bits:
             raise self.InvalidData
         if bits.startswith("T"):
@@ -565,7 +553,7 @@ class CCITTFaxDecoder(CCITTG4Parser):
         self._buf += arr.tobytes()
 
 
-def ccittfaxdecode(data: bytes, params: Dict[str, object]) -> bytes:
+def ccittfaxdecode(data: bytes, params: dict[str, object]) -> bytes:
     K = params.get("K")
     if K == -1:
         cols = cast(int, params.get("Columns"))
@@ -579,7 +567,7 @@ def ccittfaxdecode(data: bytes, params: Dict[str, object]) -> bytes:
 
 
 # test
-def main(argv: List[str]) -> None:
+def main(argv: list[str]) -> None:
     if not argv[1:]:
         import unittest
 
@@ -606,9 +594,8 @@ def main(argv: List[str]) -> None:
             pygame.image.save(self.img, "out.bmp")
 
     for path in argv[1:]:
-        fp = open(path, "rb")
-        (_, _, k, w, h, _) = path.split(".")
-        parser = Parser(int(w))
-        parser.feedbytes(fp.read())
-        parser.close()
-        fp.close()
+        with open(path, "rb") as fp:
+            (_, _, _k, w, _h, _) = path.split(".")
+            parser = Parser(int(w))
+            parser.feedbytes(fp.read())
+            parser.close()

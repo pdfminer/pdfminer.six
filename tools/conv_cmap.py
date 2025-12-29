@@ -6,7 +6,9 @@ import sys
 
 
 class CMapConverter:
-    def __init__(self, enc2codec={}):
+    def __init__(self, enc2codec=None):
+        if enc2codec is None:
+            enc2codec = {}
         self.enc2codec = enc2codec
         self.code2cid = {}  # {'cmapname': ...}
         self.is_vertical = {}
@@ -84,7 +86,7 @@ class CMapConverter:
             cid = int(values[0])
             unimap_h = {}
             unimap_v = {}
-            for enc, value in zip(encs, values):
+            for enc, value in zip(encs, values, strict=False):
                 if enc == "CID":
                     continue
                 if value == "*":
@@ -150,7 +152,7 @@ def main(argv):
 
     def usage():
         print(
-            "usage: %s [-c enc=codec] output_dir regname [cid2code.txt ...]" % argv[0],
+            f"usage: {argv[0]} [-c enc=codec] output_dir regname [cid2code.txt ...]",
         )
         return 100
 
@@ -172,10 +174,9 @@ def main(argv):
 
     converter = CMapConverter(enc2codec)
     for path in args:
-        print("reading: %r..." % path)
-        fp = open(path)
-        converter.load(fp)
-        fp.close()
+        print(f"reading: {path!r}...")
+        with open(path) as fp:
+            converter.load(fp)
 
     for enc in converter.get_encs():
         # Write JSON format

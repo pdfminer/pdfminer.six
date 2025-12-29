@@ -56,5 +56,5 @@ class TestPdfDocument:
         with open(path, "rb") as fp:
             parser = PDFParser(fp)
             doc = PDFDocument(parser)
-            for i, page in enumerate(PDFPage.create_pages(doc)):
+            for _i, page in enumerate(PDFPage.create_pages(doc)):
                 print(page)

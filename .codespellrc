@@ -1,0 +1,8 @@
+[codespell]
+# Ignore false positives
+ignore-words-list = ue,paeth,extrat,ascript,rturned
+# ue: Part of PDFOBJ_CUE variable name in pdfdocument.py
+# paeth: Correct name for PNG Paeth filter algorithm
+# extrat: Part of ExtraT TypeVar name in psparser.py
+# ascript: Part of glyph names in glyphlist.py (e.g., javascriptmath)
+# rturned: Valid glyph name for "LATIN SMALL LETTER TURNED R" (U+0279)

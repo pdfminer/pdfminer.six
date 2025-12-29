@@ -1,6 +1,6 @@
 README.txt for cmaprsrc
 
-This directory contains Adobe CMap resources. CMaps are required 
+This directory contains Adobe CMap resources. CMaps are required
 to decode text data written in CJK (Chinese, Japanese, Korean) language.
 CMap resources are now available freely from Adobe web site:
 http://opensource.adobe.com/wiki/display/cmap/CMap+Resources

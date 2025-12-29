@@ -2,20 +2,11 @@ import itertools
 import logging
 import re
 import struct
+from collections.abc import Callable, Iterable, Iterator, KeysView, Sequence
 from hashlib import md5, sha256, sha384, sha512
 from typing import (
     Any,
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    KeysView,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    Union,
+    ClassVar,
     cast,
 )
 
@@ -114,7 +105,7 @@ LITERAL_CATALOG = LIT("Catalog")
 
 
 class PDFBaseXRef:
-    def get_trailer(self) -> Dict[str, Any]:
+    def get_trailer(self) -> dict[str, Any]:
         raise NotImplementedError
 
     def get_objids(self) -> Iterable[int]:
@@ -123,7 +114,7 @@ class PDFBaseXRef:
     # Must return
     #     (strmid, index, genno)
     #  or (None, pos, genno)
-    def get_pos(self, objid: int) -> Tuple[Optional[int], int, int]:
+    def get_pos(self, objid: int) -> tuple[int | None, int, int]:
         raise PDFKeyError(objid)
 
     def load(self, parser: PDFParser) -> None:
@@ -132,11 +123,11 @@ class PDFBaseXRef:
 
 class PDFXRef(PDFBaseXRef):
     def __init__(self) -> None:
-        self.offsets: Dict[int, Tuple[Optional[int], int, int]] = {}
-        self.trailer: Dict[str, Any] = {}
+        self.offsets: dict[int, tuple[int | None, int, int]] = {}
+        self.trailer: dict[str, Any] = {}
 
     def __repr__(self) -> str:
-        return "<PDFXRef: offsets=%r>" % (self.offsets.keys())
+        return f"<PDFXRef: offsets={self.offsets.keys()!r}>"
 
     def load(self, parser: PDFParser) -> None:
         while True:
@@ -145,8 +136,8 @@ class PDFXRef(PDFBaseXRef):
                 line = line.strip()
                 if not line:
                     continue
-            except PSEOF:
-                raise PDFNoValidXRef("Unexpected EOF - file corrupted?")
+            except PSEOF as err:
+                raise PDFNoValidXRef("Unexpected EOF - file corrupted?") from err
             if line.startswith(b"trailer"):
                 parser.seek(pos)
                 break
@@ -156,15 +147,15 @@ class PDFXRef(PDFBaseXRef):
                 raise PDFNoValidXRef(error_msg)
             try:
                 (start, nobjs) = map(int, f)
-            except ValueError:
+            except ValueError as err:
                 error_msg = f"Invalid line: {parser!r}: line={line!r}"
-                raise PDFNoValidXRef(error_msg)
+                raise PDFNoValidXRef(error_msg) from err
             for objid in range(start, start + nobjs):
                 try:
                     (_, line) = parser.nextline()
                     line = line.strip()
-                except PSEOF:
-                    raise PDFNoValidXRef("Unexpected EOF - file corrupted?")
+                except PSEOF as err:
+                    raise PDFNoValidXRef("Unexpected EOF - file corrupted?") from err
                 f = line.split(b" ")
                 if len(f) != 3:
                     error_msg = f"Invalid XRef format: {parser!r}, line={line!r}"
@@ -194,24 +185,24 @@ class PDFXRef(PDFBaseXRef):
         except PSEOF:
             x = parser.pop(1)
             if not x:
-                raise PDFNoValidXRef("Unexpected EOF - file corrupted")
+                raise PDFNoValidXRef("Unexpected EOF - file corrupted") from None
             (_, dic) = x[0]
         self.trailer.update(dict_value(dic))
         log.debug("trailer=%r", self.trailer)
 
-    def get_trailer(self) -> Dict[str, Any]:
+    def get_trailer(self) -> dict[str, Any]:
         return self.trailer
 
     def get_objids(self) -> KeysView[int]:
         return self.offsets.keys()
 
-    def get_pos(self, objid: int) -> Tuple[Optional[int], int, int]:
+    def get_pos(self, objid: int) -> tuple[int | None, int, int]:
         return self.offsets[objid]
 
 
 class PDFXRefFallback(PDFXRef):
     def __repr__(self) -> str:
-        return "<PDFXRefFallback: offsets=%r>" % (self.offsets.keys())
+        return f"<PDFXRefFallback: offsets={self.offsets.keys()!r}>"
 
     PDFOBJ_CUE = re.compile(r"^(\d+)\s+(\d+)\s+obj\b")
 
@@ -244,10 +235,10 @@ class PDFXRefFallback(PDFXRef):
                     n = stream["N"]
                 except KeyError:
                     if settings.STRICT:
-                        raise PDFSyntaxError("N is not defined: %r" % stream)
+                        raise PDFSyntaxError(f"N is not defined: {stream!r}") from None
                     n = 0
                 parser1 = PDFStreamParser(stream.get_data())
-                objs: List[int] = []
+                objs: list[int] = []
                 try:
                     while 1:
                         (_, obj) = parser1.nextobject()
@@ -262,20 +253,20 @@ class PDFXRefFallback(PDFXRef):
 
 class PDFXRefStream(PDFBaseXRef):
     def __init__(self) -> None:
-        self.data: Optional[bytes] = None
-        self.entlen: Optional[int] = None
-        self.fl1: Optional[int] = None
-        self.fl2: Optional[int] = None
-        self.fl3: Optional[int] = None
-        self.ranges: List[Tuple[int, int]] = []
+        self.data: bytes | None = None
+        self.entlen: int | None = None
+        self.fl1: int | None = None
+        self.fl2: int | None = None
+        self.fl3: int | None = None
+        self.ranges: list[tuple[int, int]] = []
 
     def __repr__(self) -> str:
-        return "<PDFXRefStream: ranges=%r>" % (self.ranges)
+        return f"<PDFXRefStream: ranges={self.ranges!r}>"
 
     def load(self, parser: PDFParser) -> None:
-        (_, objid) = parser.nexttoken()  # ignored
-        (_, genno) = parser.nexttoken()  # ignored
-        (_, kwd) = parser.nexttoken()
+        (_, _objid) = parser.nexttoken()  # ignored
+        (_, _genno) = parser.nexttoken()  # ignored
+        (_, _kwd) = parser.nexttoken()
         (_, stream) = parser.nextobject()
         if not isinstance(stream, PDFStream) or stream.get("Type") is not LITERAL_XREF:
             raise PDFNoValidXRef("Invalid PDF stream spec.")
@@ -283,7 +274,7 @@ class PDFXRefStream(PDFBaseXRef):
         index_array = stream.get("Index", (0, size))
         if len(index_array) % 2 != 0:
             raise PDFSyntaxError("Invalid index number")
-        self.ranges.extend(cast(Iterator[Tuple[int, int]], choplist(2, index_array)))
+        self.ranges.extend(cast(Iterator[tuple[int, int]], choplist(2, index_array)))
         (self.fl1, self.fl2, self.fl3) = stream["W"]
         assert self.fl1 is not None and self.fl2 is not None and self.fl3 is not None
         self.data = stream.get_data()
@@ -297,7 +288,7 @@ class PDFXRefStream(PDFBaseXRef):
             self.fl3,
         )
 
-    def get_trailer(self) -> Dict[str, Any]:
+    def get_trailer(self) -> dict[str, Any]:
         return self.trailer
 
     def get_objids(self) -> Iterator[int]:
@@ -311,7 +302,7 @@ class PDFXRefStream(PDFBaseXRef):
                 if f1 == 1 or f1 == 2:
                     yield start + i
 
-    def get_pos(self, objid: int) -> Tuple[Optional[int], int, int]:
+    def get_pos(self, objid: int) -> tuple[int | None, int, int]:
         index = 0
         for start, nobjs in self.ranges:
             if start <= objid and objid < start + nobjs:
@@ -340,15 +331,14 @@ class PDFXRefStream(PDFBaseXRef):
 
 class PDFStandardSecurityHandler:
     PASSWORD_PADDING = (
-        b"(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08"
-        b"..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz"
+        b"(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz"
     )
-    supported_revisions: Tuple[int, ...] = (2, 3)
+    supported_revisions: tuple[int, ...] = (2, 3)
 
     def __init__(
         self,
         docid: Sequence[bytes],
-        param: Dict[str, Any],
+        param: dict[str, Any],
         password: str = "",
     ) -> None:
         self.docid = docid
@@ -359,7 +349,7 @@ class PDFStandardSecurityHandler:
     def init(self) -> None:
         self.init_params()
         if self.r not in self.supported_revisions:
-            error_msg = "Unsupported revision: param=%r" % self.param
+            error_msg = f"Unsupported revision: param={self.param!r}"
             raise PDFEncryptionError(error_msg)
         self.init_key()
 
@@ -408,9 +398,11 @@ class PDFStandardSecurityHandler:
         # See https://github.com/pdfminer/pdfminer.six/issues/186
         hash.update(struct.pack("<L", self.p))  # 4
         hash.update(self.docid[0])  # 5
-        if self.r >= 4:
-            if not cast(PDFStandardSecurityHandlerV4, self).encrypt_metadata:
-                hash.update(b"\xff\xff\xff\xff")
+        if (
+            self.r >= 4
+            and not cast(PDFStandardSecurityHandlerV4, self).encrypt_metadata
+        ):
+            hash.update(b"\xff\xff\xff\xff")
         result = hash.digest()
         n = 5
         if self.r >= 3:
@@ -419,14 +411,14 @@ class PDFStandardSecurityHandler:
                 result = md5(result[:n]).digest()
         return result[:n]
 
-    def authenticate(self, password: str) -> Optional[bytes]:
+    def authenticate(self, password: str) -> bytes | None:
         password_bytes = password.encode("latin1")
         key = self.authenticate_user_password(password_bytes)
         if key is None:
             key = self.authenticate_owner_password(password_bytes)
         return key
 
-    def authenticate_user_password(self, password: bytes) -> Optional[bytes]:
+    def authenticate_user_password(self, password: bytes) -> bytes | None:
         key = self.compute_encryption_key(password)
         if self.verify_encryption_key(key):
             return key
@@ -440,7 +432,7 @@ class PDFStandardSecurityHandler:
             return u == self.u
         return u[:16] == self.u[:16]
 
-    def authenticate_owner_password(self, password: bytes) -> Optional[bytes]:
+    def authenticate_owner_password(self, password: bytes) -> bytes | None:
         # Algorithm 3.7
         password = (password + self.PASSWORD_PADDING)[:32]
         hash = md5(password)
@@ -465,7 +457,7 @@ class PDFStandardSecurityHandler:
         objid: int,
         genno: int,
         data: bytes,
-        attrs: Optional[Dict[str, Any]] = None,
+        attrs: dict[str, Any] | None = None,
     ) -> bytes:
         return self.decrypt_rc4(objid, genno, data)
 
@@ -478,7 +470,7 @@ class PDFStandardSecurityHandler:
 
 
 class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
-    supported_revisions: Tuple[int, ...] = (4,)
+    supported_revisions: tuple[int, ...] = (4,)
 
     def init_params(self) -> None:
         super().init_params()
@@ -488,21 +480,21 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
         self.strf = literal_name(self.param["StrF"])
         self.encrypt_metadata = bool(self.param.get("EncryptMetadata", True))
         if self.stmf != self.strf:
-            error_msg = "Unsupported crypt filter: param=%r" % self.param
+            error_msg = f"Unsupported crypt filter: param={self.param!r}"
             raise PDFEncryptionError(error_msg)
         self.cfm = {}
         for k, v in self.cf.items():
             f = self.get_cfm(literal_name(v["CFM"]))
             if f is None:
-                error_msg = "Unknown crypt filter method: param=%r" % self.param
+                error_msg = f"Unknown crypt filter method: param={self.param!r}"
                 raise PDFEncryptionError(error_msg)
             self.cfm[k] = f
         self.cfm["Identity"] = self.decrypt_identity
         if self.strf not in self.cfm:
-            error_msg = "Undefined crypt filter: param=%r" % self.param
+            error_msg = f"Undefined crypt filter: param={self.param!r}"
             raise PDFEncryptionError(error_msg)
 
-    def get_cfm(self, name: str) -> Optional[Callable[[int, int, bytes], bytes]]:
+    def get_cfm(self, name: str) -> Callable[[int, int, bytes], bytes] | None:
         if name == "V2":
             return self.decrypt_rc4
         elif name == "AESV2":
@@ -515,8 +507,8 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
         objid: int,
         genno: int,
         data: bytes,
-        attrs: Optional[Dict[str, Any]] = None,
-        name: Optional[str] = None,
+        attrs: dict[str, Any] | None = None,
+        name: str | None = None,
     ) -> bytes:
         if not self.encrypt_metadata and attrs is not None:
             t = attrs.get("Type")
@@ -565,13 +557,13 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         self.u_validation_salt = self.u[32:40]
         self.u_key_salt = self.u[40:]
 
-    def get_cfm(self, name: str) -> Optional[Callable[[int, int, bytes], bytes]]:
+    def get_cfm(self, name: str) -> Callable[[int, int, bytes], bytes] | None:
         if name == "AESV3":
             return self.decrypt_aes256
         else:
             return None
 
-    def authenticate(self, password: str) -> Optional[bytes]:
+    def authenticate(self, password: str) -> bytes | None:
         password_b = self._normalize_password(password)
         hash = self._password_hash(password_b, self.o_validation_salt, self.u)
         if hash == self.o_hash:
@@ -607,7 +599,7 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         self,
         password: bytes,
         salt: bytes,
-        vector: Optional[bytes] = None,
+        vector: bytes | None = None,
     ) -> bytes:
         """Compute password hash depending on revision number"""
         if self.r == 5:
@@ -618,7 +610,7 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         self,
         password: bytes,
         salt: bytes,
-        vector: Optional[bytes] = None,
+        vector: bytes | None = None,
     ) -> bytes:
         """Compute the password for revision 5"""
         hash = sha256(password)
@@ -631,7 +623,7 @@ class PDFStandardSecurityHandlerV5(PDFStandardSecurityHandlerV4):
         self,
         password: bytes,
         salt: bytes,
-        vector: Optional[bytes] = None,
+        vector: bytes | None = None,
     ) -> bytes:
         """Compute the password for revision 6"""
         initial_hash = sha256(password)
@@ -688,7 +680,7 @@ class PDFDocument:
 
     """
 
-    security_handler_registry: Dict[int, Type[PDFStandardSecurityHandler]] = {
+    security_handler_registry: ClassVar[dict[int, type[PDFStandardSecurityHandler]]] = {
         1: PDFStandardSecurityHandler,
         2: PDFStandardSecurityHandler,
         4: PDFStandardSecurityHandlerV4,
@@ -704,14 +696,14 @@ class PDFDocument:
     ) -> None:
         """Set the document to use a given PDFParser object."""
         self.caching = caching
-        self.xrefs: List[PDFBaseXRef] = []
+        self.xrefs: list[PDFBaseXRef] = []
         self.info = []
-        self.catalog: Dict[str, Any] = {}
-        self.encryption: Optional[Tuple[Any, Any]] = None
-        self.decipher: Optional[DecipherCallable] = None
+        self.catalog: dict[str, Any] = {}
+        self.encryption: tuple[Any, Any] | None = None
+        self.decipher: DecipherCallable | None = None
         self._parser = None
-        self._cached_objs: Dict[int, Tuple[object, int]] = {}
-        self._parsed_objs: Dict[int, Tuple[List[object], int]] = {}
+        self._cached_objs: dict[int, tuple[object, int]] = {}
+        self._parsed_objs: dict[int, tuple[list[object], int]] = {}
         self._parser = parser
         self._parser.set_document(self)
         self.is_printable = self.is_modifiable = self.is_extractable = True
@@ -733,13 +725,10 @@ class PDFDocument:
                 continue
             # If there's an encryption info, remember it.
             if "Encrypt" in trailer:
-                if "ID" in trailer:
-                    id_value = list_value(trailer["ID"])
-                else:
-                    # Some documents may not have a /ID, use two empty
-                    # byte strings instead. Solves
-                    # https://github.com/pdfminer/pdfminer.six/issues/594
-                    id_value = (b"", b"")
+                # Some documents may not have a /ID, use two empty
+                # byte strings instead. Solves
+                # https://github.com/pdfminer/pdfminer.six/issues/594
+                id_value = list_value(trailer["ID"]) if "ID" in trailer else (b"", b"")
                 self.encryption = (id_value, dict_value(trailer["Encrypt"]))
                 self._initialize_password(password)
             if "Info" in trailer:
@@ -750,9 +739,8 @@ class PDFDocument:
                 break
         else:
             raise PDFSyntaxError("No /Root object! - Is this really a PDF?")
-        if self.catalog.get("Type") is not LITERAL_CATALOG:
-            if settings.STRICT:
-                raise PDFSyntaxError("Catalog not found!")
+        if self.catalog.get("Type") is not LITERAL_CATALOG and settings.STRICT:
+            raise PDFSyntaxError("Catalog not found!")
 
     KEYWORD_OBJ = KWD(b"obj")
 
@@ -762,11 +750,11 @@ class PDFDocument:
         assert self.encryption is not None
         (docid, param) = self.encryption
         if literal_name(param.get("Filter")) != "Standard":
-            raise PDFEncryptionError("Unknown filter: param=%r" % param)
+            raise PDFEncryptionError(f"Unknown filter: param={param!r}")
         v = int_value(param.get("V", 0))
         factory = self.security_handler_registry.get(v)
         if factory is None:
-            raise PDFEncryptionError("Unknown algorithm: param=%r" % param)
+            raise PDFEncryptionError(f"Unknown algorithm: param={param!r}")
         handler = factory(docid, param, password)
         self.decipher = handler.decrypt
         self.is_printable = handler.is_printable()
@@ -786,23 +774,22 @@ class PDFDocument:
         i = n * 2 + index
         try:
             obj = objs[i]
-        except IndexError:
-            raise PDFSyntaxError("index too big: %r" % index)
+        except IndexError as err:
+            raise PDFSyntaxError(f"index too big: {index!r}") from err
         return obj
 
-    def _get_objects(self, stream: PDFStream) -> Tuple[List[object], int]:
-        if stream.get("Type") is not LITERAL_OBJSTM:
-            if settings.STRICT:
-                raise PDFSyntaxError("Not a stream object: %r" % stream)
+    def _get_objects(self, stream: PDFStream) -> tuple[list[object], int]:
+        if stream.get("Type") is not LITERAL_OBJSTM and settings.STRICT:
+            raise PDFSyntaxError(f"Not a stream object: {stream!r}")
         try:
             n = cast(int, stream["N"])
         except KeyError:
             if settings.STRICT:
-                raise PDFSyntaxError("N is not defined: %r" % stream)
+                raise PDFSyntaxError(f"N is not defined: {stream!r}") from None
             n = 0
         parser = PDFStreamParser(stream.get_data())
         parser.set_document(self)
-        objs: List[object] = []
+        objs: list[object] = []
         try:
             while 1:
                 (_, obj) = parser.nextobject()
@@ -815,7 +802,7 @@ class PDFDocument:
         assert self._parser is not None
         self._parser.seek(pos)
         (_, objid1) = self._parser.nexttoken()  # objid
-        (_, genno) = self._parser.nexttoken()  # genno
+        (_, _genno) = self._parser.nexttoken()  # genno
         (_, kwd) = self._parser.nexttoken()
         # hack around malformed pdf files
         # copied from https://github.com/jaepil/pdfminer3k/blob/master/
@@ -834,7 +821,7 @@ class PDFDocument:
             raise PDFSyntaxError(f"objid mismatch: {objid1!r}={objid!r}")
 
         if kwd != KWD(b"obj"):
-            raise PDFSyntaxError("Invalid object spec: offset=%r" % pos)
+            raise PDFSyntaxError(f"Invalid object spec: offset={pos!r}")
         (_, obj) = self._parser.nextobject()
         return obj
 
@@ -848,6 +835,8 @@ class PDFDocument:
         if not self.xrefs:
             raise PDFException("PDFDocument is not initialized")
         log.debug("getobj: objid=%r", objid)
+        obj: object  # Initialize to satisfy mypy; always assigned in branches below
+        genno: int
         if objid in self._cached_objs:
             (obj, genno) = self._cached_objs[objid]
         else:
@@ -877,7 +866,7 @@ class PDFDocument:
                 self._cached_objs[objid] = (obj, genno)
         return obj
 
-    OutlineType = Tuple[Any, Any, Any, Any, Any]
+    OutlineType = tuple[Any, Any, Any, Any, Any]
 
     def get_outlines(self) -> Iterator[OutlineType]:
         if "Outlines" not in self.catalog:
@@ -885,13 +874,12 @@ class PDFDocument:
 
         def search(entry: object, level: int) -> Iterator[PDFDocument.OutlineType]:
             entry = dict_value(entry)
-            if "Title" in entry:
-                if "A" in entry or "Dest" in entry:
-                    title = decode_text(str_value(entry["Title"]))
-                    dest = entry.get("Dest")
-                    action = entry.get("A")
-                    se = entry.get("SE")
-                    yield (level, title, dest, action, se)
+            if "Title" in entry and ("A" in entry or "Dest" in entry):
+                title = decode_text(str_value(entry["Title"]))
+                dest = entry.get("Dest")
+                action = entry.get("A")
+                se = entry.get("SE")
+                yield (level, title, dest, action, se)
             if "First" in entry and "Last" in entry:
                 yield from search(entry["First"], level + 1)
             if "Next" in entry:
@@ -911,20 +899,20 @@ class PDFDocument:
 
         try:
             page_labels = PageLabels(self.catalog["PageLabels"])
-        except (PDFTypeError, KeyError):
-            raise PDFNoPageLabels
+        except (PDFTypeError, KeyError) as err:
+            raise PDFNoPageLabels from err
 
         return page_labels.labels
 
-    def lookup_name(self, cat: str, key: Union[str, bytes]) -> Any:
+    def lookup_name(self, cat: str, key: str | bytes) -> Any:
         try:
             names = dict_value(self.catalog["Names"])
-        except (PDFTypeError, KeyError):
-            raise PDFKeyError((cat, key))
+        except (PDFTypeError, KeyError) as err:
+            raise PDFKeyError((cat, key)) from err
         # may raise KeyError
         d0 = dict_value(names[cat])
 
-        def lookup(d: Dict[str, Any]) -> Any:
+        def lookup(d: dict[str, Any]) -> Any:
             if "Limits" in d:
                 (k1, k2) = list_value(d["Limits"])
                 if key < k1 or k2 < key:
@@ -932,7 +920,7 @@ class PDFDocument:
             if "Names" in d:
                 objs = list_value(d["Names"])
                 names = dict(
-                    cast(Iterator[Tuple[Union[str, bytes], Any]], choplist(2, objs)),
+                    cast(Iterator[tuple[str | bytes, Any]], choplist(2, objs)),
                 )
                 return names[key]
             if "Kids" in d:
@@ -944,17 +932,17 @@ class PDFDocument:
 
         return lookup(d0)
 
-    def get_dest(self, name: Union[str, bytes]) -> Any:
+    def get_dest(self, name: str | bytes) -> Any:
         try:
             # PDF-1.2 or later
             obj = self.lookup_name("Dests", name)
         except KeyError:
             # PDF-1.1 or prior
             if "Dests" not in self.catalog:
-                raise PDFDestinationNotFound(name)
+                raise PDFDestinationNotFound(name) from None
             d0 = dict_value(self.catalog["Dests"])
             if name not in d0:
-                raise PDFDestinationNotFound(name)
+                raise PDFDestinationNotFound(name) from None
             obj = d0[name]
         return obj
 
@@ -990,15 +978,15 @@ class PDFDocument:
         self,
         parser: PDFParser,
         start: int,
-        xrefs: List[PDFBaseXRef],
+        xrefs: list[PDFBaseXRef],
     ) -> None:
         """Reads XRefs from the given location."""
         parser.seek(start)
         parser.reset()
         try:
             (pos, token) = parser.nexttoken()
-        except PSEOF:
-            raise PDFNoValidXRef("Unexpected EOF")
+        except PSEOF as err:
+            raise PDFNoValidXRef("Unexpected EOF") from err
         log.debug("read_xref_from: start=%d, token=%r", start, token)
         if isinstance(token, int):
             # XRefStream: PDF-1.5
