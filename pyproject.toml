@@ -78,7 +78,6 @@ extend-select = [
     "W",  # pycodestyle warnings
     "I",  # isort
     "TID",  # flake8 tidy imports
-    "UP",  # pyupgrade
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
