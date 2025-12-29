@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Fix `struct.error` when processing PDFs with odd-length font encoding buffers ([#1169](https://github.com/pdfminer/pdfminer.six/pull/1169))
 - `PSBaseParser` combines tokens split across streams ([#1158](https://github.com/pdfminer/pdfminer.six/pull/1158))
+- Migrate old-style percent formatting to f-strings in `pdfminer.pdfcolor` module ([#1216](https://github.com/pdfminer/pdfminer.six/pull/1216))
+- Migrate old-style percent formatting to f-strings in `pdfminer.utils` module ([#1217](https://github.com/pdfminer/pdfminer.six/pull/1217))
+- Migrate old-style percent formatting to f-strings in `pdfminer.pdffont` module
 
 ## [20251227]
 

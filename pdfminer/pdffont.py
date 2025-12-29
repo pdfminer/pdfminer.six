@@ -617,7 +617,7 @@ class CFFFont:
             self.fp.seek(self.base + self.offsets[-1])
 
         def __repr__(self) -> str:
-            return "<INDEX: size=%d>" % len(self)
+            return f"<INDEX: size={len(self)}>"
 
         def __len__(self) -> int:
             return len(self.offsets) - 1
@@ -674,7 +674,7 @@ class CFFFont:
                     self.gid2code[gid] = code
                     code += 1
         else:
-            raise PDFValueError("unsupported encoding format: %r" % format)
+            raise PDFValueError("unsupported encoding format: {!r}".format(format))
         # Charsets
         self.name2gid = {}
         self.gid2name = {}
@@ -707,7 +707,7 @@ class CFFFont:
             # Format 2
             assert False, str(("Unhandled", format))
         else:
-            raise PDFValueError("unsupported charset format: %r" % format)
+            raise PDFValueError("unsupported charset format: {!r}".format(format))
 
     def getstr(self, sid: int) -> str | bytes:
         # This returns str for one of the STANDARD_STRINGS but bytes otherwise,
@@ -1039,12 +1039,12 @@ class PDFType1Font(PDFSimpleFont):
             self.cid2unicode = parser.get_encoding()
 
     def __repr__(self) -> str:
-        return "<PDFType1Font: basefont=%r>" % self.basefont
+        return f"<PDFType1Font: basefont={self.basefont!r}>"
 
 
 class PDFTrueTypeFont(PDFType1Font):
     def __repr__(self) -> str:
-        return "<PDFTrueTypeFont: basefont=%r>" % self.basefont
+        return f"<PDFTrueTypeFont: basefont={self.basefont!r}>"
 
 
 class PDFType3Font(PDFSimpleFont):
