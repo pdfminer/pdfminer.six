@@ -128,7 +128,7 @@ class IdentityCMap(CMapBase):
     def decode(self, code: bytes) -> Tuple[int, ...]:
         n = len(code) // 2
         if n:
-            return struct.unpack(">%dH" % n, code)
+            return struct.unpack(">%dH" % n, code[: n * 2])
         else:
             return ()
 
@@ -137,7 +137,7 @@ class IdentityCMapByte(IdentityCMap):
     def decode(self, code: bytes) -> Tuple[int, ...]:
         n = len(code)
         if n:
-            return struct.unpack(">%dB" % n, code)
+            return struct.unpack(">%dB" % n, code[:n])
         else:
             return ()
 

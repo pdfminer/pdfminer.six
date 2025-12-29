@@ -7,7 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Security
 
-- **CRITICAL**: Eliminated arbitrary code execution vulnerability (CVE-2025-64512) by completely removing pickle support for CMap storage - users with custom pickle CMaps can use `tools/convert_cmaps_to_json.py` to convert to JSON format ([GHSA-wf5f-4jwr-ppcp](https://github.com/pdfminer/pdfminer.six/security/advisories/GHSA-wf5f-4jwr-ppcp))
+- Eliminated arbitrary code execution vulnerability (CVE-2025-64512) by completely removing pickle support for CMap storage - users with custom pickle CMaps can use `tools/convert_cmaps_to_json.py` to convert to JSON format ([GHSA-wf5f-4jwr-ppcp](https://github.com/pdfminer/pdfminer.six/security/advisories/GHSA-wf5f-4jwr-ppcp))
+
+### Added
+
+- Support for colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
+
+### Fixed
+
+- Fix `struct.error` when processing PDFs with odd-length font encoding buffers ([#1169](https://github.com/pdfminer/pdfminer.six/pull/1169))
+- `PSBaseParser` combines tokens split across streams ([#1158](https://github.com/pdfminer/pdfminer.six/pull/1158))
 
 ## [20251227]
 
@@ -23,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - `IndexError` when saving image with no filters`` ([#1117](https://github.com/pdfminer/pdfminer.six/pull/1135))
 - Copying color space scs and ncs ([#1140](https://github.com/pdfminer/pdfminer.six/pull/1140))
+- Correct linewidth calculation in `PDFPageInterpreter.do_w` ([#1165](https://github.com/pdfminer/pdfminer.six/issues/1165))
 
 ### Removed
 
@@ -47,6 +57,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `OverflowError` in `safe_float` when input is too large ([#1121](https://github.com/pdfminer/pdfminer.six/pull/1121))
 - Saving colour spaces on the graphics stack ([#1119](https://github.com/pdfminer/pdfminer.six/pull/1119))
 - Remove padding from AES-encrypted strings([#1123](https://github.com/pdfminer/pdfminer.six/pull/1123))
+- TrueType fonts without encoding now correctly default to WinAnsiEncoding ([#1164](https://github.com/pdfminer/pdfminer.six/pull/1164))
 
 ## [20250416]
 
