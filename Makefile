@@ -9,7 +9,7 @@ help:  ## Show this help message
 
 .PHONY: install
 install:  ## Install all dependencies including dev dependencies using uv
-	uv sync --all-extras --locked
+	uv sync --all-extras --no-install-project
 
 .PHONY: format
 format:  ## Format code with ruff
