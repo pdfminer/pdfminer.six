@@ -119,7 +119,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             # Per PDF Reference Section 4.4.1, "path construction operators may
             # be invoked in any sequence, but the first one invoked must be m
             # or re to begin a new subpath." Since pdfminer.six already
-            # converts all `re` (rectangle) operators to their equivelent
+            # converts all `re` (rectangle) operators to their equivalent
             # `mlllh` representation, paths ingested by `.paint_path(...)` that
             # do not begin with the `m` operator are invalid.
             pass
@@ -261,8 +261,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return item.adv
 
     def handle_undefined_char(self, font: PDFFont, cid: int) -> str:
-        log.debug("undefined: %r, %r", font, cid)
-        return "(cid:%d)" % cid
+        log.debug(f"undefined: {font!r}, {cid!r}")
+        return f"(cid:{cid})"
 
     def receive_layout(self, ltpage: LTPage) -> None:
         pass
@@ -466,9 +466,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
 
     def write_footer(self) -> None:
         page_links = [f'<a href="#{i}">{i}</a>' for i in range(1, self.pageno)]
-        s = '<div style="position:absolute; top:0px;">Page: %s</div>\n' % ", ".join(
-            page_links,
-        )
+        s = f'<div style="position:absolute; top:0px;">Page: {", ".join(page_links)}</div>\n'
         self.write(s)
         self.write("</body></html>\n")
 
@@ -833,7 +831,7 @@ class XMLConverter(PDFConverter[AnyIO]):
                 self.write_text(item.get_text())
                 self.write("</text>\n")
             elif isinstance(item, LTText):
-                self.write("<text>%s</text>\n" % item.get_text())
+                self.write(f"<text>{item.get_text()}</text>\n")
             elif isinstance(item, LTImage):
                 if self.imagewriter is not None:
                     name = self.imagewriter.export_image(item)

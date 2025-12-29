@@ -711,7 +711,7 @@ def vecBetweenBoxes(obj1: "LTComponent", obj2: "LTComponent") -> Point:
 
     Consider the bounding rectangle for obj1 and obj2.
     Return vector between 2 boxes boundaries if they don't overlap, otherwise
-    returns vector betweeen boxes centers
+    returns vector between boxes centers
 
              +------+..........+ (x1, y1)
              | obj1 |          :

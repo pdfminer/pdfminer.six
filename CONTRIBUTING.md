@@ -14,7 +14,7 @@ Any contribution is appreciated! You might want to:
     - If you report a bug in the results for a particular pdf, include that pdf. This allows others to replicate the
      issue.
 * Fix issues by [creating pull requests](https://help.github.com/en/articles/creating-a-pull-request).
-* Help others by sharing your thoughs in comments on issues and pull requests.
+* Help others by sharing your thoughts in comments on issues and pull requests.
 * Join the chat on [gitter](https://gitter.im/pdfminer-six/Lobby)
 
 ## Guideline for creating issues

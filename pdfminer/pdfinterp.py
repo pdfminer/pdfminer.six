@@ -373,8 +373,8 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             self.push((pos, token))
 
 
+# Types that may appear on the PDF argument stack.
 PDFStackT = PSStackType[PDFStream]
-"""Types that may appear on the PDF argument stack."""
 
 
 class PDFPageInterpreter:
@@ -1061,7 +1061,7 @@ class PDFPageInterpreter:
         wordspace = safe_float(space)
         if wordspace is None:
             log.warning(
-                f"Could not set word spacing becuase {space!r} is an invalid float value"
+                f"Could not set word spacing because {space!r} is an invalid float value"
             )
         else:
             self.textstate.wordspace = wordspace
