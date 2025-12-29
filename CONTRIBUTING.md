@@ -53,20 +53,37 @@ Any contribution is appreciated! You might want to:
 
 ## Getting started
 
-1. Clone the repository
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management and development workflows.
+
+1. Install uv
+
+    Follow the installation instructions at [https://docs.astral.sh/uv/getting-started/installation/](https://docs.astral.sh/uv/getting-started/installation/)
+
+    Quick install:
+    ```sh
+    # On macOS and Linux
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    # On Windows
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+    ```
+
+2. Clone the repository
 
     ```sh
     git clone https://github.com/pdfminer/pdfminer.six
     cd pdfminer.six
     ```
 
-2. Install dev dependencies
+3. Install dev dependencies
 
     ```sh
     make install
     ```
 
-3. Install pre-commit hooks (recommended)
+    This runs `uv sync` to install all dependencies in an isolated virtual environment.
+
+4. Install pre-commit hooks (recommended)
 
     ```sh
     uv run pre-commit install
@@ -74,7 +91,7 @@ Any contribution is appreciated! You might want to:
 
     This will automatically run formatting and linting checks before each commit.
 
-4. Run all checks before committing
+5. Run all checks before committing
 
     ```sh
     make check
