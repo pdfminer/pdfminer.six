@@ -31,7 +31,7 @@ Any contribution is appreciated! You might want to:
 * Include unit tests when possible. In case of bugs, this will help to prevent the same mistake in the future. In case
   of features, this will show that your code works correctly.
 * Code should work for Python 3.10+.
-* Test your code by using nox (see below).
+* Test your code by running `make check` (see below).
 * New features should be well documented using docstrings.
 * Check if the [README.md](../README.md) or [readthedocs](../docs/source) documentation needs to be updated.
 * Check spelling and grammar.
@@ -53,6 +53,8 @@ Any contribution is appreciated! You might want to:
 
 ## Getting started
 
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management and development workflows.
+
 1. Clone the repository
 
     ```sh
@@ -60,39 +62,41 @@ Any contribution is appreciated! You might want to:
     cd pdfminer.six
     ```
 
-2. Install dev dependencies
+2. Install uv
 
+    Follow the installation instructions at [https://docs.astral.sh/uv/getting-started/installation/](https://docs.astral.sh/uv/getting-started/installation/)
+
+    Quick install:
     ```sh
-    pip install -e ".[dev]"
+    # On macOS and Linux
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    # On Windows
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
     ```
 
-3. Install pre-commit hooks (recommended)
+3. Install dev dependencies
 
     ```sh
-    pre-commit install
+    make install
+    ```
+
+    This runs `uv sync` to install all dependencies in an isolated virtual environment.
+
+4. Install pre-commit hooks (recommended)
+
+    ```sh
+    uv run pre-commit install
     ```
 
     This will automatically run formatting and linting checks before each commit.
-    You can also run pre-commit manually:
+
+5. Run all checks before committing
 
     ```sh
-    # Run on all files
-    pre-commit run --all-files
-
-    # Run on staged files only
-    pre-commit run
+    make check
     ```
 
-4. Run all formatting, linting and tests
+    This runs formatting, linting with auto-fixes, type checking, and tests.
 
-    On all Python versions:
-
-    ```sh
-    nox
-   ```
-
-   Or only the tests on a single Python version:
-
-   ```sh
-    nox -e tests-3.13
-    ```
+    For individual commands, run `make help` to see all available targets.

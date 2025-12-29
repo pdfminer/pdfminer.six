@@ -14,7 +14,7 @@ def prepare_pdfminer_fuzzing() -> None:
     logging.getLogger("pdfminer").setLevel(logging.CRITICAL)
 
 
-@atheris.instrument_func  # type: ignore[misc]
+@atheris.instrument_func  # type: ignore[misc, untyped-decorator]
 def generate_layout_parameters(
     fdp: atheris.FuzzedDataProvider,
 ) -> LAParams | None:
@@ -36,7 +36,7 @@ def generate_layout_parameters(
     )
 
 
-@atheris.instrument_func  # type: ignore[misc]
+@atheris.instrument_func  # type: ignore[misc, untyped-decorator]
 def is_valid_byte_stream(data: bytes) -> bool:
     """Quick check to see if this is worth of passing to atheris
     :return: Whether the byte-stream passes the basic checks
