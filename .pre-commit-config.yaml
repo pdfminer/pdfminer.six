@@ -29,19 +29,3 @@ repos:
               cmaprsrc/.*|
               pdfminer/cmap/.*
           )$
-
-  # Ruff linting and formatting
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.1  # Keep at v0.5.1 to match noxfile.py
-    hooks:
-      # Linter - run first with --fix to auto-correct issues
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-      # Formatter - run after linter
-      - id: ruff-format
-
-  # Black formatting for compatibility
-  - repo: https://github.com/psf/black
-    rev: 25.12.0
-    hooks:
-      - id: black
