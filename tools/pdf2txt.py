@@ -317,6 +317,7 @@ def parse_args(args: list[str] | None) -> argparse.Namespace:
 def main(args: list[str] | None = None) -> int:
     parsed_args = parse_args(args)
     extract_text(**vars(parsed_args))
+    return 0
 
 
 if __name__ == "__main__":
