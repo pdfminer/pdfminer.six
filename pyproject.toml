@@ -83,8 +83,8 @@ extend-select = [
 
 [tool.ruff.lint.per-file-ignores]
 # UP007: Type alias Union -> | conversion requires more careful review
-"pdfminer/*.py" = ["UP007"]
-"tools/*.py" = ["UP007"]
+"pdfminer/**/*.py" = ["UP007"]
+"tools/**/*.py" = ["UP007"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
