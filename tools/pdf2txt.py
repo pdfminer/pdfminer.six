@@ -275,8 +275,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-S",
         default=False,
         action="store_true",
-        help="Remove control statement from text. "
-        "Only used when output_type is xml.",
+        help="Remove control statement from text. Only used when output_type is xml.",
     )
 
     return parser

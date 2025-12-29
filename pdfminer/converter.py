@@ -917,8 +917,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
             )
         else:
             self.write(
-                "<html xmlns='http://www.w3.org/1999/xhtml' "
-                "xml:lang='en' lang='en'>\n",
+                "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>\n",
             )
         self.write("<head>\n")
         self.write("<title></title>\n")

@@ -219,8 +219,7 @@ def extractembedded(fname: str, password: str, extractdir: str) -> None:
         fileobj = doc.getobj(fileref.objid)
         if not isinstance(fileobj, PDFStream):
             error_msg = (
-                "unable to process PDF: reference for %r is not a "
-                "PDFStream" % filename
+                "unable to process PDF: reference for %r is not a PDFStream" % filename
             )
             raise PDFValueError(error_msg)
         if fileobj.get("Type") is not LITERAL_EMBEDDEDFILE:

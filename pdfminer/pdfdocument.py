@@ -330,8 +330,7 @@ class PDFXRefStream(PDFBaseXRef):
 
 class PDFStandardSecurityHandler:
     PASSWORD_PADDING = (
-        b"(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08"
-        b"..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz"
+        b"(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz"
     )
     supported_revisions: tuple[int, ...] = (2, 3)
 
