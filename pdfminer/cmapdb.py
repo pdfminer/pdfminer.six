@@ -11,10 +11,10 @@ More information is available on:
 
 import contextlib
 import gzip
+import json
 import logging
 import os
 import os.path
-import pickle as pickle
 import struct
 import sys
 from collections.abc import Iterable, Iterator, MutableMapping
@@ -23,6 +23,7 @@ from typing import (
     BinaryIO,
     ClassVar,
     TextIO,
+    Union,
     cast,
 )
 
@@ -223,26 +224,64 @@ class CMapDB:
     class CMapNotFound(CMapError):
         pass
 
+    @staticmethod
+    def _convert_code2cid_keys(
+        d: Union[dict[str, object], int],
+    ) -> Union[dict[int, object], int]:
+        """Recursively convert string keys to integers in CODE2CID dictionaries."""
+        if not isinstance(d, dict):
+            return d
+        result: dict[int, object] = {}
+        for k, v in d.items():
+            # Convert string keys to integers
+            try:
+                new_key = int(k)
+            except (ValueError, TypeError):
+                new_key = k  # type: ignore[assignment]
+            # Recursively convert nested dictionaries
+            if isinstance(v, dict):
+                result[new_key] = CMapDB._convert_code2cid_keys(v)
+            else:
+                result[new_key] = v
+        return result
+
     @classmethod
-    def _load_data(cls, name: str) -> Any:
+    def _load_data(cls, name: str) -> type[Any]:
         name = name.replace("\0", "")
-        filename = f"{name}.pickle.gz"
         log.debug("loading: %r", name)
         cmap_paths = (
             os.environ.get("CMAP_PATH", "/usr/share/pdfminer/"),
             os.path.join(os.path.dirname(__file__), "cmap"),
         )
+
         for directory in cmap_paths:
-            path = os.path.join(directory, filename)
-            # Resolve paths to prevent directory traversal
-            resolved_path = os.path.realpath(path)
+            # Load JSON format (secure)
+            json_filename = f"{name}.json.gz"
+            json_path = os.path.join(directory, json_filename)
+            resolved_json_path = os.path.realpath(json_path)
             resolved_directory = os.path.realpath(directory)
+
             # Check if resolved path is within the intended directory
-            if not resolved_path.startswith(resolved_directory + os.sep):
-                continue
-            if os.path.exists(resolved_path):
-                with gzip.open(resolved_path) as gzfile:
-                    return type(str(name), (), pickle.loads(gzfile.read()))
+            if resolved_json_path.startswith(
+                resolved_directory + os.sep
+            ) and os.path.exists(resolved_json_path):
+                log.debug("loading JSON: %r", json_path)
+                with gzip.open(resolved_json_path, "rt", encoding="utf-8") as gzfile:
+                    data: dict[str, Any] = json.load(gzfile)
+                    # Convert string keys to integers for CID mappings
+                    if "CID2UNICHR_H" in data:
+                        data["CID2UNICHR_H"] = {
+                            int(k): v for k, v in data["CID2UNICHR_H"].items()
+                        }
+                    if "CID2UNICHR_V" in data:
+                        data["CID2UNICHR_V"] = {
+                            int(k): v for k, v in data["CID2UNICHR_V"].items()
+                        }
+                    # CODE2CID may also have numeric keys that need conversion
+                    if data.get("CODE2CID"):
+                        data["CODE2CID"] = cls._convert_code2cid_keys(data["CODE2CID"])
+                    return type(str(name), (), data)
+
         raise CMapDB.CMapNotFound(name)
 
     @classmethod
