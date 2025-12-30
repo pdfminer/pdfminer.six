@@ -3,11 +3,13 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [20251229]
+## [Unreleased]
 
 ### Security
 
 - Eliminated arbitrary code execution vulnerability (CVE-2025-64512) by replacing pickle CMap storage with json - users with custom pickle CMaps can use `tools/convert_cmaps_to_json.py` to convert to JSON format ([#1172](https://github.com/pdfminer/pdfminer.six/pull/1172)))
+
+## [20251229]
 
 ### Added
 
