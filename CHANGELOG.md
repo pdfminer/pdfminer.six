@@ -7,13 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Security
 
-- Eliminated arbitrary code execution vulnerability (CVE-2025-64512) by completely removing pickle support for CMap storage - users with custom pickle CMaps can use `tools/convert_cmaps_to_json.py` to convert to JSON format ([GHSA-wf5f-4jwr-ppcp](https://github.com/pdfminer/pdfminer.six/security/advisories/GHSA-wf5f-4jwr-ppcp))
+- Eliminated arbitrary code execution vulnerability (CVE-2025-64512) by replacing pickle CMap storage with json - users with custom pickle CMaps can use `tools/convert_cmaps_to_json.py` to convert to JSON format ([#1172](https://github.com/pdfminer/pdfminer.six/pull/1172)))
 
 ### Added
 
-- Support for colored and uncolored tiling patterns per ISO 32000 ([#1170](https://github.com/pdfminer/pdfminer.six/issues/1170))
-- Pre-commit hooks for automated code quality checks ([#1214](https://github.com/pdfminer/pdfminer.six/issues/1214))
-- Ruff rules for for modernized Python syntax ([#1216](https://github.com/pdfminer/pdfminer.six/issues/1216), [#1218](https://github.com/pdfminer/pdfminer.six/issues/1218))
+- Support for colored and uncolored tiling patterns per ISO 32000 ([#1171](https://github.com/pdfminer/pdfminer.six/pull/1171))
+- Pre-commit hooks for automated code quality checks ([#1215](https://github.com/pdfminer/pdfminer.six/pull/1215))
+- Ruff rules for for modernized Python syntax ([#1218](https://github.com/pdfminer/pdfminer.six/pull/1218))
 
 ### Changed
 
