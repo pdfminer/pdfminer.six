@@ -1,5 +1,6 @@
 import logging
 from io import BytesIO
+from typing import ClassVar
 
 from pdfminer.psexceptions import PSEOF
 from pdfminer.psparser import KWD, LIT, PSBaseParser, PSStackParser
@@ -30,7 +31,7 @@ func/a/b{(c)do*}def
 << /foo (bar) >>
 """
 
-    TOKENS = [
+    TOKENS: ClassVar[list[tuple[int, object]]] = [
         (5, KWD(b"begin")),
         (11, KWD(b"end")),
         (16, KWD(b'"')),
@@ -77,7 +78,7 @@ func/a/b{(c)do*}def
         (272, KWD(b">>")),
     ]
 
-    OBJS = [
+    OBJS: ClassVar[list[tuple[int, object]]] = [
         (23, LIT("a")),
         (25, LIT("BCD")),
         (30, LIT("Some_Name")),
@@ -155,7 +156,7 @@ func/a/b{(c)do*}def
         See: https://github.com/pdfminer/pdfminer.six/issues/884
         """
         parser = PSBaseParser(BytesIO(b"Do"))
-        pos, token = parser.nexttoken()
+        _pos, token = parser.nexttoken()
         assert token == KWD(b"Do")
 
 

@@ -1,7 +1,7 @@
 # cid2code.txt (Version 08/23/2009)
 #
 # The data in this table contains nineteen tab-delimited columns of
-# information. The contents of this file supplement Technical Note 
+# information. The contents of this file supplement Technical Note
 # #5080 "Adobe-CNS1-6 Character Collection for CID-Keyed Fonts":
 #
 # http://www.adobe.com/devnet/font/

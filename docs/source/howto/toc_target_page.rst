@@ -204,7 +204,7 @@ of a document in a human-readable format with the following code:
                        page_num = ref_pagenum_resolver.resolve(se)
                    else:
                        page_num = None
-   
+
                    # Calculate leading spaces and filling dots for formatting.
                    leading_spaces = (level-1) * 4
                    fill_dots = 80 - len(title) - leading_spaces

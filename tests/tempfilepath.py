@@ -1,8 +1,8 @@
 """Helper module, which provides a TemporaryFilePath() context manager"""
 
+import contextlib
 import os
 import tempfile
-from typing import Optional
 
 
 class TemporaryFilePath:
@@ -33,9 +33,9 @@ class TemporaryFilePath:
 
     def __init__(
         self,
-        suffix: Optional[str] = None,
-        prefix: Optional[str] = None,
-        dir: Optional[str] = None,
+        suffix: str | None = None,
+        prefix: str | None = None,
+        dir: str | None = None,
         delete: bool = True,
     ):
         self.suffix = suffix
@@ -60,10 +60,7 @@ class TemporaryFilePath:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.delete:
-            try:
-                os.remove(self.temp_file_name)
-
             # Exception 'FileNotFoundError' is acceptable as user may have not
             # created the file to start with or has deleted it himself
-            except FileNotFoundError:
-                pass
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(self.temp_file_name)

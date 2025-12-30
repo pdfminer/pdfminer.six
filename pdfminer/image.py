@@ -2,7 +2,7 @@ import os
 import os.path
 import struct
 from io import BytesIO
-from typing import BinaryIO, Literal, Tuple
+from typing import BinaryIO, Literal
 
 from pdfminer.jbig2 import JBIG2StreamReader, JBIG2StreamWriter
 from pdfminer.layout import LTImage
@@ -153,14 +153,14 @@ class ImageWriter:
             if LITERAL_DEVICE_CMYK in image.colorspace:
                 try:
                     from PIL import Image, ImageChops  # type: ignore[import]
-                except ImportError:
-                    raise ImportError(PIL_ERROR_MESSAGE)
+                except ImportError as err:
+                    raise ImportError(PIL_ERROR_MESSAGE) from err
 
                 ifp = BytesIO(data)
-                i = Image.open(ifp)
-                i = ImageChops.invert(i)
-                i = i.convert("RGB")
-                i.save(fp, "JPEG")
+                img = Image.open(ifp)
+                inverted = ImageChops.invert(img)
+                rgb_img = inverted.convert("RGB")
+                rgb_img.save(fp, "JPEG")
             else:
                 fp.write(data)
 
@@ -174,8 +174,8 @@ class ImageWriter:
         with open(path, "wb") as fp:
             try:
                 from PIL import Image  # type: ignore[import]
-            except ImportError:
-                raise ImportError(PIL_ERROR_MESSAGE)
+            except ImportError as err:
+                raise ImportError(PIL_ERROR_MESSAGE) from err
 
             # if we just write the raw data, most image programs
             # that I have tried cannot open the file. However,
@@ -245,8 +245,8 @@ class ImageWriter:
                     Image,  # type: ignore[import]
                     ImageOps,
                 )
-            except ImportError:
-                raise ImportError(PIL_ERROR_MESSAGE)
+            except ImportError as err:
+                raise ImportError(PIL_ERROR_MESSAGE) from err
 
             mode: Literal["1", "L", "RGB", "CMYK"]
             if image.bits == 1:
@@ -268,7 +268,7 @@ class ImageWriter:
 
     def _save_raw(self, image: LTImage) -> str:
         """Save an image with unknown encoding"""
-        ext = ".%d.%dx%d.img" % (image.bits, image.srcsize[0], image.srcsize[1])
+        ext = f".{image.bits}.{image.srcsize[0]}x{image.srcsize[1]}.img"
         name, path = self._create_unique_image_name(image, ext)
 
         with open(path, "wb") as fp:
@@ -278,17 +278,17 @@ class ImageWriter:
     @staticmethod
     def _is_jbig2_iamge(image: LTImage) -> bool:
         filters = image.stream.get_filters()
-        for filter_name, params in filters:
+        for filter_name, _params in filters:
             if filter_name in LITERALS_JBIG2_DECODE:
                 return True
         return False
 
-    def _create_unique_image_name(self, image: LTImage, ext: str) -> Tuple[str, str]:
+    def _create_unique_image_name(self, image: LTImage, ext: str) -> tuple[str, str]:
         name = image.name + ext
         path = os.path.join(self.outdir, name)
         img_index = 0
         while os.path.exists(path):
-            name = "%s.%d%s" % (image.name, img_index, ext)
+            name = f"{image.name}.{img_index}{ext}"
             path = os.path.join(self.outdir, name)
             img_index += 1
         return name, path

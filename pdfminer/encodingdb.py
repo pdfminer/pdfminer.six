@@ -1,6 +1,7 @@
 import logging
 import re
-from typing import Dict, Iterable, Optional, cast
+from collections.abc import Iterable
+from typing import ClassVar, cast
 
 from pdfminer.glyphlist import glyphname2unicode
 from pdfminer.latin_enc import ENCODING
@@ -28,8 +29,8 @@ def name2unicode(name: str) -> str:
     """
     if not isinstance(name, str):
         raise PDFKeyError(
-            'Could not convert unicode name "%s" to character because '
-            "it should be of type str but is of type %s" % (name, type(name)),
+            f'Could not convert unicode name "{name}" to character because '
+            f"it should be of type str but is of type {type(name)}",
         )
 
     name = name.split(".")[0]
@@ -63,8 +64,8 @@ def name2unicode(name: str) -> str:
             return chr(unicode_digit)
 
     raise PDFKeyError(
-        'Could not convert unicode name "%s" to character because '
-        "it does not match specification" % name,
+        f'Could not convert unicode name "{name}" to character because '
+        "it does not match specification",
     )
 
 
@@ -76,16 +77,16 @@ def raise_key_error_for_invalid_unicode(unicode_digit: int) -> None:
     """
     if 55295 < unicode_digit < 57344:
         raise PDFKeyError(
-            "Unicode digit %d is invalid because "
-            "it is in the range D800 through DFFF" % unicode_digit,
+            f"Unicode digit {unicode_digit} is invalid because "
+            "it is in the range D800 through DFFF",
         )
 
 
 class EncodingDB:
-    std2unicode: Dict[int, str] = {}
-    mac2unicode: Dict[int, str] = {}
-    win2unicode: Dict[int, str] = {}
-    pdf2unicode: Dict[int, str] = {}
+    std2unicode: ClassVar[dict[int, str]] = {}
+    mac2unicode: ClassVar[dict[int, str]] = {}
+    win2unicode: ClassVar[dict[int, str]] = {}
+    pdf2unicode: ClassVar[dict[int, str]] = {}
     for name, std, mac, win, pdf in ENCODING:
         c = name2unicode(name)
         if std:
@@ -97,7 +98,7 @@ class EncodingDB:
         if pdf:
             pdf2unicode[pdf] = c
 
-    encodings = {
+    encodings: ClassVar[dict[str, dict[int, str]]] = {
         "StandardEncoding": std2unicode,
         "MacRomanEncoding": mac2unicode,
         "WinAnsiEncoding": win2unicode,
@@ -108,8 +109,8 @@ class EncodingDB:
     def get_encoding(
         cls,
         name: str,
-        diff: Optional[Iterable[object]] = None,
-    ) -> Dict[int, str]:
+        diff: Iterable[object] | None = None,
+    ) -> dict[int, str]:
         cid2unicode = cls.encodings.get(name, cls.std2unicode)
         if diff:
             cid2unicode = cid2unicode.copy()

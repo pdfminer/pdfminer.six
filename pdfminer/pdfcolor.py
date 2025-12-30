@@ -1,5 +1,4 @@
 import collections
-from typing import Dict
 
 from pdfminer.psparser import LIT
 
@@ -18,10 +17,10 @@ class PDFColorSpace:
         self.ncomponents = ncomponents
 
     def __repr__(self) -> str:
-        return "<PDFColorSpace: %s, ncomponents=%d>" % (self.name, self.ncomponents)
+        return f"<PDFColorSpace: {self.name}, ncomponents={self.ncomponents}>"
 
 
-PREDEFINED_COLORSPACE: Dict[str, PDFColorSpace] = collections.OrderedDict()
+PREDEFINED_COLORSPACE: dict[str, PDFColorSpace] = collections.OrderedDict()
 
 for name, n in [
     ("DeviceGray", 1),  # default value first

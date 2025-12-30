@@ -1,7 +1,6 @@
 """Utilities shared across the various PDF fuzzing harnesses"""
 
 import logging
-from typing import Optional
 
 import atheris
 
@@ -15,14 +14,14 @@ def prepare_pdfminer_fuzzing() -> None:
     logging.getLogger("pdfminer").setLevel(logging.CRITICAL)
 
 
-@atheris.instrument_func  # type: ignore[misc]
+@atheris.instrument_func  # type: ignore[misc, untyped-decorator]
 def generate_layout_parameters(
     fdp: atheris.FuzzedDataProvider,
-) -> Optional[LAParams]:
+) -> LAParams | None:
     if fdp.ConsumeBool():
         return None
 
-    boxes_flow: Optional[float] = None
+    boxes_flow: float | None = None
     if fdp.ConsumeBool():
         boxes_flow = fdp.ConsumeFloatInRange(-1.0, 1.0)
 
@@ -37,14 +36,11 @@ def generate_layout_parameters(
     )
 
 
-@atheris.instrument_func  # type: ignore[misc]
+@atheris.instrument_func  # type: ignore[misc, untyped-decorator]
 def is_valid_byte_stream(data: bytes) -> bool:
     """Quick check to see if this is worth of passing to atheris
     :return: Whether the byte-stream passes the basic checks
     """
     if not data.startswith(PDF_MAGIC_BYTES):
         return False
-    if b"/Root" not in data:
-        return False
-
-    return True
+    return b"/Root" in data

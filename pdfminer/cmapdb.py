@@ -9,6 +9,7 @@ More information is available on:
 
 """
 
+import contextlib
 import gzip
 import logging
 import os
@@ -16,19 +17,12 @@ import os.path
 import pickle as pickle
 import struct
 import sys
+from collections.abc import Iterable, Iterator, MutableMapping
 from typing import (
     Any,
     BinaryIO,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    MutableMapping,
-    Optional,
-    Set,
+    ClassVar,
     TextIO,
-    Tuple,
-    Union,
     cast,
 )
 
@@ -60,7 +54,7 @@ class CMapBase:
     def add_code2cid(self, code: str, cid: int) -> None:
         pass
 
-    def add_cid2unichr(self, cid: int, code: Union[PSLiteral, bytes, int]) -> None:
+    def add_cid2unichr(self, cid: int, code: PSLiteral | bytes | int) -> None:
         pass
 
     def use_cmap(self, cmap: "CMapBase") -> None:
@@ -71,20 +65,20 @@ class CMapBase:
 
 
 class CMap(CMapBase):
-    def __init__(self, **kwargs: Union[str, int]) -> None:
+    def __init__(self, **kwargs: str | int) -> None:
         CMapBase.__init__(self, **kwargs)
-        self.code2cid: Dict[int, object] = {}
+        self.code2cid: dict[int, object] = {}
 
     def __repr__(self) -> str:
-        return "<CMap: %s>" % self.attrs.get("CMapName")
+        return "<CMap: {}>".format(self.attrs.get("CMapName"))
 
     def use_cmap(self, cmap: CMapBase) -> None:
         assert isinstance(cmap, CMap), str(type(cmap))
 
-        def copy(dst: Dict[int, object], src: Dict[int, object]) -> None:
+        def copy(dst: dict[int, object], src: dict[int, object]) -> None:
             for k, v in src.items():
                 if isinstance(v, dict):
-                    d: Dict[int, object] = {}
+                    d: dict[int, object] = {}
                     dst[k] = d
                     copy(d, v)
                 else:
@@ -102,52 +96,52 @@ class CMap(CMapBase):
                     yield x
                     d = self.code2cid
                 else:
-                    d = cast(Dict[int, object], x)
+                    d = cast(dict[int, object], x)
             else:
                 d = self.code2cid
 
     def dump(
         self,
         out: TextIO = sys.stdout,
-        code2cid: Optional[Dict[int, object]] = None,
-        code: Tuple[int, ...] = (),
+        code2cid: dict[int, object] | None = None,
+        code: tuple[int, ...] = (),
     ) -> None:
         if code2cid is None:
             code2cid = self.code2cid
             code = ()
         for k, v in sorted(code2cid.items()):
-            c = code + (k,)
+            c = (*code, k)
             if isinstance(v, int):
-                out.write("code %r = cid %d\n" % (c, v))
+                out.write(f"code {c!r} = cid {v}\n")
             else:
-                self.dump(out=out, code2cid=cast(Dict[int, object], v), code=c)
+                self.dump(out=out, code2cid=cast(dict[int, object], v), code=c)
 
 
 class IdentityCMap(CMapBase):
-    def decode(self, code: bytes) -> Tuple[int, ...]:
+    def decode(self, code: bytes) -> tuple[int, ...]:
         n = len(code) // 2
         if n:
-            return struct.unpack(">%dH" % n, code[: n * 2])
+            return struct.unpack(f">{n}H", code[: n * 2])
         else:
             return ()
 
 
 class IdentityCMapByte(IdentityCMap):
-    def decode(self, code: bytes) -> Tuple[int, ...]:
+    def decode(self, code: bytes) -> tuple[int, ...]:
         n = len(code)
         if n:
-            return struct.unpack(">%dB" % n, code[:n])
+            return struct.unpack(f">{n}B", code[:n])
         else:
             return ()
 
 
 class UnicodeMap(CMapBase):
-    def __init__(self, **kwargs: Union[str, int]) -> None:
+    def __init__(self, **kwargs: str | int) -> None:
         CMapBase.__init__(self, **kwargs)
-        self.cid2unichr: Dict[int, str] = {}
+        self.cid2unichr: dict[int, str] = {}
 
     def __repr__(self) -> str:
-        return "<UnicodeMap: %s>" % self.attrs.get("CMapName")
+        return "<UnicodeMap: {}>".format(self.attrs.get("CMapName"))
 
     def get_unichr(self, cid: int) -> str:
         log.debug("get_unichr: %r, %r", self, cid)
@@ -155,7 +149,7 @@ class UnicodeMap(CMapBase):
 
     def dump(self, out: TextIO = sys.stdout) -> None:
         for k, v in sorted(self.cid2unichr.items()):
-            out.write("cid %d = unicode %r\n" % (k, v))
+            out.write(f"cid {k} = unicode {v!r}\n")
 
 
 class IdentityUnicodeMap(UnicodeMap):
@@ -174,9 +168,9 @@ class FileCMap(CMap):
         for c in code[:-1]:
             ci = ord(c)
             if ci in d:
-                d = cast(Dict[int, object], d[ci])
+                d = cast(dict[int, object], d[ci])
             else:
-                t: Dict[int, object] = {}
+                t: dict[int, object] = {}
                 d[ci] = t
                 d = t
         ci = ord(code[-1])
@@ -184,7 +178,7 @@ class FileCMap(CMap):
 
 
 class FileUnicodeMap(UnicodeMap):
-    def add_cid2unichr(self, cid: int, code: Union[PSLiteral, bytes, int]) -> None:
+    def add_cid2unichr(self, cid: int, code: PSLiteral | bytes | int) -> None:
         assert isinstance(cid, int), str(type(cid))
         if isinstance(code, PSLiteral):
             # Interpret as an Adobe glyph name.
@@ -223,8 +217,8 @@ class PyUnicodeMap(UnicodeMap):
 
 
 class CMapDB:
-    _cmap_cache: Dict[str, PyCMap] = {}
-    _umap_cache: Dict[str, List[PyUnicodeMap]] = {}
+    _cmap_cache: ClassVar[dict[str, PyCMap]] = {}
+    _umap_cache: ClassVar[dict[str, list[PyUnicodeMap]]] = {}
 
     class CMapNotFound(CMapError):
         pass
@@ -232,7 +226,7 @@ class CMapDB:
     @classmethod
     def _load_data(cls, name: str) -> Any:
         name = name.replace("\0", "")
-        filename = "%s.pickle.gz" % name
+        filename = f"{name}.pickle.gz"
         log.debug("loading: %r", name)
         cmap_paths = (
             os.environ.get("CMAP_PATH", "/usr/share/pdfminer/"),
@@ -247,11 +241,8 @@ class CMapDB:
             if not resolved_path.startswith(resolved_directory + os.sep):
                 continue
             if os.path.exists(resolved_path):
-                gzfile = gzip.open(resolved_path)
-                try:
+                with gzip.open(resolved_path) as gzfile:
                     return type(str(name), (), pickle.loads(gzfile.read()))
-                finally:
-                    gzfile.close()
         raise CMapDB.CMapNotFound(name)
 
     @classmethod
@@ -278,7 +269,7 @@ class CMapDB:
             return cls._umap_cache[name][vertical]
         except KeyError:
             pass
-        data = cls._load_data("to-unicode-%s" % name)
+        data = cls._load_data(f"to-unicode-{name}")
         cls._umap_cache[name] = [PyUnicodeMap(name, data, v) for v in (False, True)]
         return cls._umap_cache[name][vertical]
 
@@ -289,13 +280,11 @@ class CMapParser(PSStackParser[PSKeyword]):
         self.cmap = cmap
         # some ToUnicode maps don't have "begincmap" keyword.
         self._in_cmap = True
-        self._warnings: Set[str] = set()
+        self._warnings: set[str] = set()
 
     def run(self) -> None:
-        try:
+        with contextlib.suppress(PSEOF):
             self.nextobject()
-        except PSEOF:
-            pass
 
     KEYWORD_BEGINCMAP = KWD(b"begincmap")
     KEYWORD_ENDCMAP = KWD(b"endcmap")
@@ -431,7 +420,9 @@ class CMapParser(PSStackParser[PSKeyword]):
                             "The difference between the start and end "
                             "offsets does not match the code length.",
                         )
-                    for cid, unicode_value in zip(range(start, end + 1), code):
+                    for cid, unicode_value in zip(
+                        range(start, end + 1), code, strict=False
+                    ):
                         self.cmap.add_cid2unichr(cid, unicode_value)
                 else:
                     assert isinstance(code, bytes)

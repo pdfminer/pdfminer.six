@@ -1,15 +1,8 @@
 import heapq
 import logging
+from collections.abc import Iterable, Iterator, Sequence
 from typing import (
-    Dict,
     Generic,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -86,7 +79,7 @@ class LAParams:
         char_margin: float = 2.0,
         line_margin: float = 0.5,
         word_margin: float = 0.1,
-        boxes_flow: Optional[float] = 0.5,
+        boxes_flow: float | None = 0.5,
         detect_vertical: bool = False,
         all_texts: bool = False,
     ) -> None:
@@ -105,18 +98,17 @@ class LAParams:
             boxes_flow_err_msg = (
                 "LAParam boxes_flow should be None, or a number between -1 and +1"
             )
-            if not (
-                isinstance(self.boxes_flow, int) or isinstance(self.boxes_flow, float)
-            ):
+            if not (isinstance(self.boxes_flow, (int, float))):
                 raise PDFTypeError(boxes_flow_err_msg)
             if not -1 <= self.boxes_flow <= 1:
                 raise PDFValueError(boxes_flow_err_msg)
 
     def __repr__(self) -> str:
         return (
-            "<LAParams: char_margin=%.1f, line_margin=%.1f, "
-            "word_margin=%.1f all_texts=%r>"
-            % (self.char_margin, self.line_margin, self.word_margin, self.all_texts)
+            f"<LAParams: char_margin={self.char_margin:.1f}, "
+            f"line_margin={self.line_margin:.1f}, "
+            f"word_margin={self.word_margin:.1f} "
+            f"all_texts={self.all_texts!r}>"
         )
 
 
@@ -223,14 +215,14 @@ class LTCurve(LTComponent):
     def __init__(
         self,
         linewidth: float,
-        pts: List[Point],
+        pts: list[Point],
         stroke: bool = False,
         fill: bool = False,
         evenodd: bool = False,
-        stroking_color: Optional[Color] = None,
-        non_stroking_color: Optional[Color] = None,
-        original_path: Optional[List[PathSegment]] = None,
-        dashing_style: Optional[Tuple[object, object]] = None,
+        stroking_color: Color | None = None,
+        non_stroking_color: Color | None = None,
+        original_path: list[PathSegment] | None = None,
+        dashing_style: tuple[object, object] | None = None,
     ) -> None:
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
@@ -244,7 +236,7 @@ class LTCurve(LTComponent):
         self.dashing_style = dashing_style
 
     def get_pts(self) -> str:
-        return ",".join("%.3f,%.3f" % p for p in self.pts)
+        return ",".join("{:.3f},{:.3f}".format(*p) for p in self.pts)
 
 
 class LTLine(LTCurve):
@@ -261,10 +253,10 @@ class LTLine(LTCurve):
         stroke: bool = False,
         fill: bool = False,
         evenodd: bool = False,
-        stroking_color: Optional[Color] = None,
-        non_stroking_color: Optional[Color] = None,
-        original_path: Optional[List[PathSegment]] = None,
-        dashing_style: Optional[Tuple[object, object]] = None,
+        stroking_color: Color | None = None,
+        non_stroking_color: Color | None = None,
+        original_path: list[PathSegment] | None = None,
+        dashing_style: tuple[object, object] | None = None,
     ) -> None:
         LTCurve.__init__(
             self,
@@ -293,10 +285,10 @@ class LTRect(LTCurve):
         stroke: bool = False,
         fill: bool = False,
         evenodd: bool = False,
-        stroking_color: Optional[Color] = None,
-        non_stroking_color: Optional[Color] = None,
-        original_path: Optional[List[PathSegment]] = None,
-        dashing_style: Optional[Tuple[object, object]] = None,
+        stroking_color: Color | None = None,
+        non_stroking_color: Color | None = None,
+        original_path: list[PathSegment] | None = None,
+        dashing_style: tuple[object, object] | None = None,
     ) -> None:
         (x0, y0, x1, y1) = bbox
         LTCurve.__init__(
@@ -331,7 +323,10 @@ class LTImage(LTComponent):
             self.colorspace = [self.colorspace]
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.name}) {bbox2str(self.bbox)} {self.srcsize!r}>"
+        return (
+            f"<{self.__class__.__name__}({self.name}) "
+            f"{bbox2str(self.bbox)} {self.srcsize!r}>"
+        )
 
 
 class LTAnno(LTItem, LTText):
@@ -361,7 +356,7 @@ class LTChar(LTComponent, LTText):
         rise: float,
         text: str,
         textwidth: float,
-        textdisp: Union[float, Tuple[Optional[float], float]],
+        textdisp: float | tuple[float | None, float],
         ncs: PDFColorSpace,
         graphicstate: PDFGraphicState,
     ) -> None:
@@ -377,17 +372,14 @@ class LTChar(LTComponent, LTText):
             # vertical
             assert isinstance(textdisp, tuple)
             (vx, vy) = textdisp
-            if vx is None:
-                vx = fontsize * 0.5
-            else:
-                vx = vx * fontsize * 0.001
+            vx = fontsize * 0.5 if vx is None else vx * fontsize * 0.001
             vy = (1000 - vy) * fontsize * 0.001
             bbox = (-vx, vy + rise + self.adv, -vx + fontsize, vy + rise)
         else:
             # horizontal
             descent = font.get_descent() * fontsize
             bbox = (0, descent + rise, self.adv, descent + rise + fontsize)
-        (a, b, c, d, e, f) = self.matrix
+        (a, b, c, d, _e, _f) = self.matrix
         self.upright = a * d * scaling > 0 and b * c <= 0
         (x0, y0, x1, y1) = apply_matrix_rect(self.matrix, bbox)
         if x1 < x0:
@@ -401,7 +393,13 @@ class LTChar(LTComponent, LTText):
             self.size = self.height
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} {bbox2str(self.bbox)} matrix={matrix2str(self.matrix)} font={self.fontname!r} adv={self.adv} text={self.get_text()!r}>"
+        return (
+            f"<{self.__class__.__name__} {bbox2str(self.bbox)} "
+            f"matrix={matrix2str(self.matrix)} "
+            f"font={self.fontname!r} "
+            f"adv={self.adv} "
+            f"text={self.get_text()!r}>"
+        )
 
     def get_text(self) -> str:
         return self._text
@@ -415,7 +413,7 @@ class LTContainer(LTComponent, Generic[LTItemT]):
 
     def __init__(self, bbox: Rect) -> None:
         LTComponent.__init__(self, bbox)
-        self._objs: List[LTItemT] = []
+        self._objs: list[LTItemT] = []
 
     def __iter__(self) -> Iterator[LTItemT]:
         return iter(self._objs)
@@ -490,7 +488,7 @@ class LTTextLine(LTTextContainer[TextLineElement]):
         self,
         plane: Plane[LTComponentT],
         ratio: float,
-    ) -> List["LTTextLine"]:
+    ) -> list["LTTextLine"]:
         raise NotImplementedError
 
     def is_empty(self) -> bool:
@@ -516,7 +514,7 @@ class LTTextLineHorizontal(LTTextLine):
         self,
         plane: Plane[LTComponentT],
         ratio: float,
-    ) -> List[LTTextLine]:
+    ) -> list[LTTextLine]:
         """Finds neighboring LTTextLineHorizontals in the plane.
 
         Returns a list of other LTTestLineHorizontals in the plane which are
@@ -579,7 +577,7 @@ class LTTextLineVertical(LTTextLine):
         self,
         plane: Plane[LTComponentT],
         ratio: float,
-    ) -> List[LTTextLine]:
+    ) -> list[LTTextLine]:
         """Finds neighboring LTTextLineVerticals in the plane.
 
         Returns a list of other LTTextLineVerticals in the plane which are
@@ -636,7 +634,10 @@ class LTTextBox(LTTextContainer[LTTextLine]):
         self.index: int = -1
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.index}) {bbox2str(self.bbox)} {self.get_text()!r}>"
+        return (
+            f"<{self.__class__.__name__}({self.index}) "
+            f"{bbox2str(self.bbox)} {self.get_text()!r}>"
+        )
 
     def get_writing_mode(self) -> str:
         raise NotImplementedError
@@ -696,7 +697,7 @@ class LTTextGroupTBRL(LTTextGroup):
 class LTLayoutContainer(LTContainer[LTComponent]):
     def __init__(self, bbox: Rect) -> None:
         LTContainer.__init__(self, bbox)
-        self.groups: Optional[List[LTTextGroup]] = None
+        self.groups: list[LTTextGroup] | None = None
 
     # group_objects: group text object to textlines.
     def group_objects(
@@ -705,7 +706,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         objs: Iterable[LTComponent],
     ) -> Iterator[LTTextLine]:
         obj0 = None
-        line = None
+        line: LTTextLine | None = None
         for obj1 in objs:
             if obj0 is not None:
                 # halign: obj0 and obj1 is horizontally aligned.
@@ -784,7 +785,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         """Group neighboring lines to textboxes"""
         plane: Plane[LTTextLine] = Plane(self.bbox)
         plane.extend(lines)
-        boxes: Dict[LTTextLine, LTTextBox] = {}
+        boxes: dict[LTTextLine, LTTextBox] = {}
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
             members = [line]
@@ -814,7 +815,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         self,
         laparams: LAParams,
         boxes: Sequence[LTTextBox],
-    ) -> List[LTTextGroup]:
+    ) -> list[LTTextGroup]:
         """Group textboxes hierarchically.
 
         Get pair-wise distances, via dist func defined below, and then merge
@@ -857,7 +858,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 - obj2.width * obj2.height
             )
 
-        def isany(obj1: ElementT, obj2: ElementT) -> Set[ElementT]:
+        def isany(obj1: ElementT, obj2: ElementT) -> set[ElementT]:
             """Check if there's any other object between obj1 and obj2."""
             x0 = min(obj1.x0, obj2.x0)
             y0 = min(obj1.y0, obj2.y0)
@@ -866,7 +867,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
             objs = set(plane.find((x0, y0, x1, y1)))
             return objs.difference((obj1, obj2))
 
-        dists: List[Tuple[bool, float, int, int, ElementT, ElementT]] = []
+        dists: list[tuple[bool, float, int, int, ElementT, ElementT]] = []
         for i in range(len(boxes)):
             box1 = boxes[i]
             for j in range(i + 1, len(boxes)):
@@ -901,7 +902,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                     )
                 plane.add(group)
         # By now only groups are in the plane
-        return list(cast(LTTextGroup, g) for g in plane)
+        return [cast(LTTextGroup, g) for g in plane]
 
     def analyze(self, laparams: LAParams) -> None:
         # textobjs is a list of LTChar objects, i.e.
@@ -920,7 +921,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
             for textbox in textboxes:
                 textbox.analyze(laparams)
 
-            def getkey(box: LTTextBox) -> Tuple[int, float, float]:
+            def getkey(box: LTTextBox) -> tuple[int, float, float]:
                 if isinstance(box, LTTextBoxVertical):
                     return (0, -box.x1, -box.y0)
                 else:
@@ -935,9 +936,9 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                 assigner.run(group)
             textboxes.sort(key=lambda box: box.index)
         self._objs = (
-            cast(List[LTComponent], textboxes)
+            cast(list[LTComponent], textboxes)
             + otherobjs
-            + cast(List[LTComponent], empties)
+            + cast(list[LTComponent], empties)
         )
 
 
@@ -958,7 +959,11 @@ class LTFigure(LTLayoutContainer):
         LTLayoutContainer.__init__(self, bbox)
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.name}) {bbox2str(self.bbox)} matrix={matrix2str(self.matrix)}>"
+        return (
+            f"<{self.__class__.__name__}({self.name}) "
+            f"{bbox2str(self.bbox)} "
+            f"matrix={matrix2str(self.matrix)}>"
+        )
 
     def analyze(self, laparams: LAParams) -> None:
         if not laparams.all_texts:
@@ -979,4 +984,8 @@ class LTPage(LTLayoutContainer):
         self.rotate = rotate
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}({self.pageid!r}) {bbox2str(self.bbox)} rotate={self.rotate!r}>"
+        return (
+            f"<{self.__class__.__name__}({self.pageid!r}) "
+            f"{bbox2str(self.bbox)} "
+            f"rotate={self.rotate!r}>"
+        )

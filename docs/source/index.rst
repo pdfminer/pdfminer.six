@@ -26,7 +26,7 @@ This documentation is organized into four sections (according to the `Diátaxis
 documentation framework <https://diataxis.fr>`_). The
 :ref:`tutorial` section helps you setup and use pdfminer.six for the first
 time. Read this section if this is your first time working with pdfminer.six.
-The :ref:`howto` offers specific recipies for solving common problems.
+The :ref:`howto` offers specific recipes for solving common problems.
 Take a look at the :ref:`topic` if you want more background information on
 how pdfminer.six works internally. The :ref:`reference` provides
 detailed api documentation for all the common classes and functions in
