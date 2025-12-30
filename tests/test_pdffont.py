@@ -67,7 +67,7 @@ def test_pdffont_get_widths_object_ref():
 
 
 def test_cmap_font_12():
-    from typing import Generator
+    from collections.abc import Generator
 
     from pdfminer.pdfpage import PDFPage
 
@@ -75,9 +75,7 @@ def test_cmap_font_12():
         from pdfminer.pdfpage import PDFPage
 
         with open(file_name, "rb") as fp:
-            pages = PDFPage.get_pages(fp)
-            for page in pages:
-                yield page
+            yield from PDFPage.get_pages(fp)
 
     pdf_rm = PDFResourceManager()
     pdf_param = LAParams(

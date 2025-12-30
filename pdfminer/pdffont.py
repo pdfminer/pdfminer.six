@@ -730,14 +730,10 @@ class TrueTypeFont:
         self.tables: dict[bytes, tuple[int, int]] = {}
         self.fonttype = fp.read(4)
         try:
-            (ntables, _1, _2, _3) = cast(
-                tuple[int, int, int, int],
-                struct.unpack(">HHHH", fp.read(8)),
-            )
+            (ntables, _1, _2, _3) = struct.unpack(">HHHH", fp.read(8))
             for _ in range(ntables):
-                (name_bytes, _tsum, offset, length) = cast(
-                    tuple[bytes, int, int, int],
-                    struct.unpack(">4sLLL", fp.read(16)),
+                (name_bytes, _tsum, offset, length) = struct.unpack(
+                    ">4sLLL", fp.read(16)
                 )
                 self.tables[name_bytes] = (offset, length)
         except struct.error:
@@ -755,9 +751,7 @@ class TrueTypeFont:
         (_version, nsubtables) = cast(tuple[int, int], struct.unpack(">HH", fp.read(4)))
         subtables: list[tuple[int, int, int]] = []
         for _i in range(nsubtables):
-            subtables.append(
-                cast(tuple[int, int, int], struct.unpack(">HHL", fp.read(8))),
-            )
+            subtables.append(struct.unpack(">HHL", fp.read(8)))
         char2gid: dict[int, int] = {}
         # Supports subtable type 0, 2, 4, 6, 10 and 12.
         for platform_id, encoding_id, st_offset in subtables:
@@ -780,7 +774,7 @@ class TrueTypeFont:
             elif fmttype == 12:
                 self.parse_cmap_format_12(fp, char2gid)
             else:
-                assert False, str(("Unhandled", fmttype))
+                raise AssertionError(str(("Unhandled", fmttype)))
         if not char2gid:
             raise TrueTypeFont.CMapNotFound
         # create unicode map
@@ -825,13 +819,13 @@ class TrueTypeFont:
         log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
         (segcount, _1, _2, _3) = struct.unpack(">HHHH", fp.read(8))
         segcount //= 2
-        ecs = struct.unpack(">%dH" % segcount, fp.read(2 * segcount))
+        ecs = struct.unpack(f">{segcount}H", fp.read(2 * segcount))
         fp.read(2)
-        scs = struct.unpack(">%dH" % segcount, fp.read(2 * segcount))
-        idds = struct.unpack(">%dh" % segcount, fp.read(2 * segcount))
+        scs = struct.unpack(f">{segcount}H", fp.read(2 * segcount))
+        idds = struct.unpack(f">{segcount}h", fp.read(2 * segcount))
         pos = fp.tell()
-        idrs = struct.unpack(">%dH" % segcount, fp.read(2 * segcount))
-        for ec, sc, idd, idr in zip(ecs, scs, idds, idrs):
+        idrs = struct.unpack(f">{segcount}H", fp.read(2 * segcount))
+        for ec, sc, idd, idr in zip(ecs, scs, idds, idrs, strict=False):
             if idr:
                 fp.seek(pos + idr)
                 for c in range(sc, ec + 1):
@@ -846,7 +840,7 @@ class TrueTypeFont:
         fmtlen, fmtlang = struct.unpack(">HH", fp.read(4))
         log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
         firstcode, entcount = struct.unpack(">HH", fp.read(4))
-        gids = struct.unpack(">%dH" % entcount, fp.read(2 * entcount))
+        gids = struct.unpack(f">{entcount}H", fp.read(2 * entcount))
         for i in range(entcount):
             char2gid[firstcode + i] = gids[i]
 
@@ -855,7 +849,7 @@ class TrueTypeFont:
         rsv, fmtlen, fmtlang = struct.unpack(">HII", fp.read(10))
         log.debug(f"parse_cmap_format: {rsv=}, {fmtlen=}, {fmtlang=}")
         startcode, numchars = struct.unpack(">II", fp.read(8))
-        gids = struct.unpack(">%dH" % numchars, fp.read(2 * numchars))
+        gids = struct.unpack(f">{numchars}H", fp.read(2 * numchars))
         for i in range(numchars):
             char2gid[startcode + i] = gids[i]
 
@@ -864,7 +858,7 @@ class TrueTypeFont:
         rsv, fmtlen, fmtlang = struct.unpack(">HII", fp.read(10))
         log.debug(f"parse_cmap_format: {rsv=}, {fmtlen=}, {fmtlang=}")
         numgroups = struct.unpack(">I", fp.read(4))[0]
-        for i in range(numgroups):
+        for _i in range(numgroups):
             sc, ec, sgid = struct.unpack(">III", fp.read(12))
             for code in range(sc, ec + 1):
                 char2gid[code] = sgid
