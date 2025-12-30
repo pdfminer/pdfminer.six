@@ -11,7 +11,7 @@ from pdfminer.psparser import PSLiteral
 from tests.helpers import absolute_sample_path
 
 
-def test_get_cmap_from_pickle():
+def test_get_cmap():
     """Test if cmap file is read from pdfminer/cmap
 
     Regression test for https://github.com/pdfminer/pdfminer.six/issues/391

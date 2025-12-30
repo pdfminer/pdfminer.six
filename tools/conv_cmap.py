@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import codecs
-import pickle as pickle
+import json
 import sys
 
 
@@ -129,18 +129,20 @@ class CMapConverter:
                 self.cid2unichr_v[cid] = pick(unimap_v or unimap_h)
 
     def dump_cmap(self, fp, enc):
+        """Dump CMap data as JSON."""
         data = {
             "IS_VERTICAL": self.is_vertical.get(enc, False),
             "CODE2CID": self.code2cid.get(enc),
         }
-        fp.write(pickle.dumps(data, 2))
+        json.dump(data, fp, ensure_ascii=False, separators=(",", ":"))
 
     def dump_unicodemap(self, fp):
+        """Dump Unicode map data as JSON."""
         data = {
             "CID2UNICHR_H": self.cid2unichr_h,
             "CID2UNICHR_V": self.cid2unichr_v,
         }
-        fp.write(pickle.dumps(data, 2))
+        json.dump(data, fp, ensure_ascii=False, separators=(",", ":"))
 
 
 def main(argv):
@@ -177,16 +179,18 @@ def main(argv):
             converter.load(fp)
 
     for enc in converter.get_encs():
-        fname = f"{enc}.pickle.gz"
+        # Write JSON format
+        fname = f"{enc}.json.gz"
         path = os.path.join(outdir, fname)
         print(f"writing: {path!r}...")
-        with gzip.open(path, "wb") as fp:
+        with gzip.open(path, "wt", encoding="utf-8") as fp:
             converter.dump_cmap(fp, enc)
 
-    fname = f"to-unicode-{regname}.pickle.gz"
+    # Write JSON format
+    fname = f"to-unicode-{regname}.json.gz"
     path = os.path.join(outdir, fname)
     print(f"writing: {path!r}...")
-    with gzip.open(path, "wb") as fp:
+    with gzip.open(path, "wt", encoding="utf-8") as fp:
         converter.dump_unicodemap(fp)
 
 
