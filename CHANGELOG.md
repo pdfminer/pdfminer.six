@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Encapsulate errors when failing to get attribute from stream ([#1181](https://github.com/pdfminer/pdfminer.six/pull/1181))
+- Encapsulate error when failing to get attribute or data from stream ([#1225](https://github.com/pdfminer/pdfminer.six/pull/1225), [#1226](https://github.com/pdfminer/pdfminer.six/pull/1226))
 
 ## [20251230]
 
