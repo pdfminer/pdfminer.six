@@ -15,6 +15,7 @@ from pdfminer import pdfexceptions, settings
 from pdfminer.ascii85 import ascii85decode, asciihexdecode
 from pdfminer.ccitt import ccittfaxdecode
 from pdfminer.lzw import lzwdecode
+from pdfminer.pdfexceptions import PDFKeyError
 from pdfminer.psparser import LIT, PSObject
 from pdfminer.runlength import rldecode
 from pdfminer.utils import apply_png_predictor, apply_tiff_predictor
@@ -272,7 +273,12 @@ class PDFStream(PDFObject):
         return name in self.attrs
 
     def __getitem__(self, name: str) -> Any:
-        return self.attrs[name]
+        try:
+            return self.attrs[name]
+        except KeyError as e:
+            raise PDFKeyError(
+                f"PDF stream object {self.objid} does not have attribute '{name}'"
+            ) from e
 
     def get(self, name: str, default: object = None) -> Any:
         return self.attrs.get(name, default)

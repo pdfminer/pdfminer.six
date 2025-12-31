@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Support cmap types 6, 10 and 12 ([#598](https://github.com/pdfminer/pdfminer.six/pull/1213))
 
+### Fixed
+
+- Encapsulate errors when failing to get attribute from stream ([#1181](https://github.com/pdfminer/pdfminer.six/pull/1181))
+
 ## [20251230]
 
 ### Security
