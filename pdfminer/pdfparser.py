@@ -75,7 +75,14 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
 
         elif token is self.KEYWORD_STREAM:
             # stream object
-            ((_, dic),) = self.pop(1)
+            popped_data = self.pop(1)
+            try:
+                ((_, dic),) = popped_data
+            except ValueError as err:
+                raise PDFSyntaxError(
+                    f"Invalid stream dictionary: {popped_data}"
+                ) from err
+
             dic = dict_value(dic)
             objlen = 0
             if not self.fallback:

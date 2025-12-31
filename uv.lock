@@ -676,7 +676,7 @@ docs = [
     { name = "sphinx-argparse" },
 ]
 fuzz = [
-    { name = "atheris", marker = "python_full_version < '3.12'" },
+    { name = "atheris" },
 ]
 
 [package.metadata]
@@ -699,7 +699,7 @@ docs = [
     { name = "sphinx" },
     { name = "sphinx-argparse" },
 ]
-fuzz = [{ name = "atheris", marker = "python_full_version < '3.12'" }]
+fuzz = [{ name = "atheris" }]
 
 [[package]]
 name = "pillow"

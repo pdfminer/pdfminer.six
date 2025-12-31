@@ -57,8 +57,7 @@ docs = [
     "sphinx-argparse",
 ]
 fuzz = [
-    # Atheris supports up to Python 3.11
-    "atheris; python_version < '3.12'",
+    "atheris",
 ]
 
 
