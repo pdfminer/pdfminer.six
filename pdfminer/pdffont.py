@@ -730,14 +730,10 @@ class TrueTypeFont:
         self.tables: dict[bytes, tuple[int, int]] = {}
         self.fonttype = fp.read(4)
         try:
-            (ntables, _1, _2, _3) = cast(
-                tuple[int, int, int, int],
-                struct.unpack(">HHHH", fp.read(8)),
-            )
+            (ntables, _1, _2, _3) = struct.unpack(">HHHH", fp.read(8))
             for _ in range(ntables):
-                (name_bytes, _tsum, offset, length) = cast(
-                    tuple[bytes, int, int, int],
-                    struct.unpack(">4sLLL", fp.read(16)),
+                (name_bytes, _tsum, offset, length) = struct.unpack(
+                    ">4sLLL", fp.read(16)
                 )
                 self.tables[name_bytes] = (offset, length)
         except struct.error:
@@ -755,86 +751,28 @@ class TrueTypeFont:
         (_version, nsubtables) = cast(tuple[int, int], struct.unpack(">HH", fp.read(4)))
         subtables: list[tuple[int, int, int]] = []
         for _i in range(nsubtables):
-            subtables.append(
-                cast(tuple[int, int, int], struct.unpack(">HHL", fp.read(8))),
-            )
+            subtables.append(struct.unpack(">HHL", fp.read(8)))
         char2gid: dict[int, int] = {}
-        # Only supports subtable type 0, 2 and 4.
+        # Supports subtable type 0, 2, 4, 6, 10 and 12.
         for platform_id, encoding_id, st_offset in subtables:
             # Skip non-Unicode cmaps.
             # https://docs.microsoft.com/en-us/typography/opentype/spec/cmap
             if not (platform_id == 0 or (platform_id == 3 and encoding_id in [1, 10])):
                 continue
             fp.seek(base_offset + st_offset)
-            (fmttype, _fmtlen, _fmtlang) = cast(
-                tuple[int, int, int],
-                struct.unpack(">HHH", fp.read(6)),
-            )
+            (fmttype,) = struct.unpack(">H", fp.read(2))
             if fmttype == 0:
-                char2gid.update(
-                    enumerate(
-                        cast(tuple[int, ...], struct.unpack(">256B", fp.read(256))),
-                    ),
-                )
+                self.parse_cmap_format_0(fp, char2gid)
             elif fmttype == 2:
-                subheaderkeys = cast(
-                    tuple[int, ...],
-                    struct.unpack(">256H", fp.read(512)),
-                )
-                firstbytes = [0] * 8192
-                for i, k in enumerate(subheaderkeys):
-                    firstbytes[k // 8] = i
-                nhdrs = max(subheaderkeys) // 8 + 1
-                hdrs: list[tuple[int, int, int, int, int]] = []
-                for i in range(nhdrs):
-                    (firstcode, entcount, delta, offset) = cast(
-                        tuple[int, int, int, int],
-                        struct.unpack(">HHhH", fp.read(8)),
-                    )
-                    hdrs.append((i, firstcode, entcount, delta, fp.tell() - 2 + offset))
-                for i, firstcode, entcount, delta, pos in hdrs:
-                    if not entcount:
-                        continue
-                    first = firstcode + (firstbytes[i] << 8)
-                    fp.seek(pos)
-                    for c in range(entcount):
-                        gid = cast(tuple[int], struct.unpack(">H", fp.read(2)))[0]
-                        if gid:
-                            gid += delta
-                        char2gid[first + c] = gid
+                self.parse_cmap_format_2(fp, char2gid)
             elif fmttype == 4:
-                (segcount, _1, _2, _3) = cast(
-                    tuple[int, int, int, int],
-                    struct.unpack(">HHHH", fp.read(8)),
-                )
-                segcount //= 2
-                ecs = cast(
-                    tuple[int, ...],
-                    struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
-                )
-                fp.read(2)
-                scs = cast(
-                    tuple[int, ...],
-                    struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
-                )
-                idds = cast(
-                    tuple[int, ...],
-                    struct.unpack(f">{segcount}h", fp.read(2 * segcount)),
-                )
-                pos = fp.tell()
-                idrs = cast(
-                    tuple[int, ...],
-                    struct.unpack(f">{segcount}H", fp.read(2 * segcount)),
-                )
-                for ec, sc, idd, idr in zip(ecs, scs, idds, idrs, strict=False):
-                    if idr:
-                        fp.seek(pos + idr)
-                        for c in range(sc, ec + 1):
-                            b = cast(tuple[int], struct.unpack(">H", fp.read(2)))[0]
-                            char2gid[c] = (b + idd) & 0xFFFF
-                    else:
-                        for c in range(sc, ec + 1):
-                            char2gid[c] = (c + idd) & 0xFFFF
+                self.parse_cmap_format_4(fp, char2gid)
+            elif fmttype == 6:
+                self.parse_cmap_format_6(fp, char2gid)
+            elif fmttype == 10:
+                self.parse_cmap_format_10(fp, char2gid)
+            elif fmttype == 12:
+                self.parse_cmap_format_12(fp, char2gid)
             else:
                 raise AssertionError(str(("Unhandled", fmttype)))
         if not char2gid:
@@ -844,6 +782,87 @@ class TrueTypeFont:
         for char, gid in char2gid.items():
             unicode_map.add_cid2unichr(gid, char)
         return unicode_map
+
+    def parse_cmap_format_0(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
+        """Parse cmap subtable format 0"""
+        fmtlen, fmtlang = struct.unpack(">HH", fp.read(4))
+        log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
+        char2gid.update(enumerate(struct.unpack(">256B", fp.read(256))))
+
+    def parse_cmap_format_2(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
+        """Parse cmap subtable format 2"""
+        fmtlen, fmtlang = struct.unpack(">HH", fp.read(4))
+        log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
+        subheaderkeys = struct.unpack(">256H", fp.read(512))
+        firstbytes = [0] * 8192
+        for i, k in enumerate(subheaderkeys):
+            firstbytes[k // 8] = i
+        nhdrs = max(subheaderkeys) // 8 + 1
+        hdrs: list[tuple[int, int, int, int, int]] = []
+        for i in range(nhdrs):
+            (firstcode, entcount, delta, offset) = struct.unpack(">HHhH", fp.read(8))
+            hdrs.append((i, firstcode, entcount, delta, fp.tell() - 2 + offset))
+        for i, firstcode, entcount, delta, pos in hdrs:
+            if not entcount:
+                continue
+            first = firstcode + (firstbytes[i] << 8)
+            fp.seek(pos)
+            for c in range(entcount):
+                gid = struct.unpack(">H", fp.read(2))[0]
+                if gid:
+                    gid += delta
+                char2gid[first + c] = gid
+
+    def parse_cmap_format_4(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
+        """Parse cmap subtable format 4"""
+        fmtlen, fmtlang = struct.unpack(">HH", fp.read(4))
+        log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
+        (segcount, _1, _2, _3) = struct.unpack(">HHHH", fp.read(8))
+        segcount //= 2
+        ecs = struct.unpack(f">{segcount}H", fp.read(2 * segcount))
+        fp.read(2)
+        scs = struct.unpack(f">{segcount}H", fp.read(2 * segcount))
+        idds = struct.unpack(f">{segcount}h", fp.read(2 * segcount))
+        pos = fp.tell()
+        idrs = struct.unpack(f">{segcount}H", fp.read(2 * segcount))
+        for ec, sc, idd, idr in zip(ecs, scs, idds, idrs, strict=False):
+            if idr:
+                fp.seek(pos + idr)
+                for c in range(sc, ec + 1):
+                    b = struct.unpack(">H", fp.read(2))[0]
+                    char2gid[c] = (b + idd) & 0xFFFF
+            else:
+                for c in range(sc, ec + 1):
+                    char2gid[c] = (c + idd) & 0xFFFF
+
+    def parse_cmap_format_6(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
+        """Parse cmap subtable format 6"""
+        fmtlen, fmtlang = struct.unpack(">HH", fp.read(4))
+        log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
+        firstcode, entcount = struct.unpack(">HH", fp.read(4))
+        gids = struct.unpack(f">{entcount}H", fp.read(2 * entcount))
+        for i in range(entcount):
+            char2gid[firstcode + i] = gids[i]
+
+    def parse_cmap_format_10(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
+        """Parse cmap subtable format 10"""
+        rsv, fmtlen, fmtlang = struct.unpack(">HII", fp.read(10))
+        log.debug(f"parse_cmap_format: {rsv=}, {fmtlen=}, {fmtlang=}")
+        startcode, numchars = struct.unpack(">II", fp.read(8))
+        gids = struct.unpack(f">{numchars}H", fp.read(2 * numchars))
+        for i in range(numchars):
+            char2gid[startcode + i] = gids[i]
+
+    def parse_cmap_format_12(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
+        """Parse cmap subtable format 12"""
+        rsv, fmtlen, fmtlang = struct.unpack(">HII", fp.read(10))
+        log.debug(f"parse_cmap_format: {rsv=}, {fmtlen=}, {fmtlang=}")
+        numgroups = struct.unpack(">I", fp.read(4))[0]
+        for _i in range(numgroups):
+            sc, ec, sgid = struct.unpack(">III", fp.read(12))
+            for code in range(sc, ec + 1):
+                char2gid[code] = sgid
+                sgid += 1
 
 
 class PDFFontError(PDFException):
