@@ -30,7 +30,7 @@ A minimal example would be:
        except PDFSyntaxError:
            print("Corrupted PDF or non-PDF file.")
        finally:
-           parser.close()
+           parser.flush()
 
 But what do the different fields of each outline entry mean? To answer this
 question we can refer to the section *12.3.3 Document Outline* of the
@@ -221,7 +221,7 @@ of a document in a human-readable format with the following code:
                print("Corrupted PDF or non-PDF file.")
            finally:
                try:
-                   parser.close()
+                   parser.flush()
                except NameError:
                    pass  # nothing to do
 
