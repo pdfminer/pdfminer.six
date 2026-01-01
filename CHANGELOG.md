@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
-- Unused methods close, tell and poll on PSBaseParser ([#1229](https://github.com/pdfminer/pdfminer.six/pull/1229))
+- Unused methods close, tell and poll on PSBaseParser ([#1230](https://github.com/pdfminer/pdfminer.six/pull/1230))
 
 ## [20251230]
 
