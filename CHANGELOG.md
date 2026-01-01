@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Encapsulate error when failing to get attribute or data from stream ([#1225](https://github.com/pdfminer/pdfminer.six/pull/1225), [#1226](https://github.com/pdfminer/pdfminer.six/pull/1226))
 - Validate maximum size of xref start ([#1227](https://github.com/pdfminer/pdfminer.six/pull/1227))
 
+### Removed
+
+- Unused methods close, tell and poll on PSBaseParser ([#1230](https://github.com/pdfminer/pdfminer.six/pull/1230))
+
 ## [20251230]
 
 ### Security

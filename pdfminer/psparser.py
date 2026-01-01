@@ -174,20 +174,6 @@ class PSBaseParser:
     def flush(self) -> None:
         pass
 
-    def close(self) -> None:
-        self.flush()
-
-    def tell(self) -> int:
-        return self.bufpos + self.charpos
-
-    def poll(self, pos: int | None = None, n: int = 80) -> None:
-        pos0 = self.fp.tell()
-        if not pos:
-            pos = self.bufpos + self.charpos
-        self.fp.seek(pos)
-        log.debug(f"poll({pos}): {self.fp.read(n)!r}")
-        self.fp.seek(pos0)
-
     def seek(self, pos: int) -> None:
         """Seeks the parser to the given position."""
         log.debug(f"seek: {pos!r}")
