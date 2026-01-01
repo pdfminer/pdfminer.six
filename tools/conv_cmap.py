@@ -95,20 +95,23 @@ class CMapConverter:
                 # hcodes, vcodes: encoded bytes for each writing mode.
                 hcodes = []
                 vcodes = []
-                for code in value.split(","):
-                    vertical = code.endswith("v")
+                for code_str in value.split(","):
+                    vertical = code_str.endswith("v")
                     if vertical:
-                        code = code[:-1]
-                    try:
-                        code = codecs.decode(code, "hex_codec")
-                    except Exception:
-                        code = chr(int(code, 16))
+                        code_str = code_str[:-1]
+                    if len(code_str) == 1:
+                        # Prefix nibbles with a 0 to make it a byte
+                        code_str = "0" + code_str
+
+                    code = codecs.decode(code_str, "hex_codec")
+
                     if vertical:
                         vcodes.append(code)
                         add(unimap_v, enc, code)
                     else:
                         hcodes.append(code)
                         add(unimap_h, enc, code)
+
                 # add cid to each map.
                 (hmap, vmap) = self.get_maps(enc)
                 if vcodes:
