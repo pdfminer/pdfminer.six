@@ -96,8 +96,8 @@ class CMapConverter:
                 hcodes = []
                 vcodes = []
                 for code_str in value.split(","):
-                    vertical = code_str.endswith("v")
-                    if vertical:
+                    is_vertical = code_str.endswith("v")
+                    if is_vertical:
                         code_str = code_str[:-1]
                     if len(code_str) == 1:
                         # Prefix nibbles with a 0 to make it a byte
@@ -105,7 +105,7 @@ class CMapConverter:
 
                     code = codecs.decode(code_str, "hex_codec")
 
-                    if vertical:
+                    if is_vertical:
                         vcodes.append(code)
                         add(unimap_v, enc, code)
                     else:
