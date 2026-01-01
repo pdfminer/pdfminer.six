@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import codecs
 import json
 import sys
 
@@ -99,11 +98,12 @@ class CMapConverter:
                     is_vertical = code_str.endswith("v")
                     if is_vertical:
                         code_str = code_str[:-1]
+
                     if len(code_str) == 1:
                         # Prefix nibbles with a 0 to make it a byte
                         code_str = "0" + code_str
 
-                    code = codecs.decode(code_str, "hex_codec")
+                    code = bytes.fromhex(code_str)
 
                     if is_vertical:
                         vcodes.append(code)
