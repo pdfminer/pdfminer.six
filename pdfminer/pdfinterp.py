@@ -491,8 +491,8 @@ class PDFPageInterpreter:
         if matrix is None:
             log.warning(
                 "Cannot concatenate matrix to current transformation matrix "
-                f"because not all values in {(a1, b1, c1, d1, e1, f1)!r} "
-                "can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                (a1, b1, c1, d1, e1, f1),
             )
         else:
             self.ctm = mult_matrix(matrix, self.ctm)
@@ -503,7 +503,8 @@ class PDFPageInterpreter:
         linewidth_f = safe_float(linewidth)
         if linewidth_f is None:
             log.warning(
-                f"Cannot set line width because {linewidth!r} is an invalid float value"
+                "Cannot set line width because %r is an invalid float value",
+                linewidth,
             )
         else:
             scale = (self.ctm[0] ** 2 + self.ctm[1] ** 2) ** 0.5
@@ -546,7 +547,8 @@ class PDFPageInterpreter:
             point = ("m", x, y)
             log.warning(
                 "Cannot start new subpath because not all values "
-                f"in {point!r} can be parsed as floats"
+                "in %r can be parsed as floats",
+                point,
             )
         else:
             point = ("m", x_f, y_f)
@@ -560,7 +562,8 @@ class PDFPageInterpreter:
             point = ("l", x, y)
             log.warning(
                 "Cannot append straight line segment to path "
-                f"because not all values in {point!r} can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                point,
             )
         else:
             point = ("l", x_f, y_f)
@@ -593,7 +596,8 @@ class PDFPageInterpreter:
             point = ("c", x1, y1, x2, y2, x3, y3)
             log.warning(
                 "Cannot append curved segment to path "
-                f"because not all values in {point!r} can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                point,
             )
         else:
             point = ("c", x1_f, y1_f, x2_f, y2_f, x3_f, y3_f)
@@ -609,7 +613,8 @@ class PDFPageInterpreter:
             point = ("v", x2, y2, x3, y3)
             log.warning(
                 "Cannot append curved segment to path "
-                f"because not all values in {point!r} can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                point,
             )
         else:
             point = ("v", x2_f, y2_f, x3_f, y3_f)
@@ -625,7 +630,8 @@ class PDFPageInterpreter:
             point = ("y", x1, y1, x3, y3)
             log.warning(
                 "Cannot append curved segment to path "
-                f"because not all values in {point!r} can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                point,
             )
         else:
             point = ("y", x1_f, y1_f, x3_f, y3_f)
@@ -646,7 +652,8 @@ class PDFPageInterpreter:
             values = (x, y, w, h)
             log.warning(
                 "Cannot append rectangle to path "
-                f"because not all values in {values!r} can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                values,
             )
         else:
             self.curpath.append(("m", x_f, y_f))
@@ -733,7 +740,8 @@ class PDFPageInterpreter:
 
         if gray_f is None:
             log.warning(
-                f"Cannot set gray level because {gray!r} is an invalid float value"
+                "Cannot set gray level because %r is an invalid float value",
+                gray,
             )
         else:
             self.graphicstate.scolor = gray_f
@@ -745,7 +753,8 @@ class PDFPageInterpreter:
 
         if gray_f is None:
             log.warning(
-                f"Cannot set gray level because {gray!r} is an invalid float value"
+                "Cannot set gray level because %r is an invalid float value",
+                gray,
             )
         else:
             self.graphicstate.ncolor = gray_f
@@ -758,7 +767,8 @@ class PDFPageInterpreter:
         if rgb is None:
             log.warning(
                 "Cannot set RGB stroke color "
-                f"because not all values in {(r, g, b)!r} can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                (r, g, b),
             )
         else:
             self.graphicstate.scolor = rgb
@@ -771,7 +781,8 @@ class PDFPageInterpreter:
         if rgb is None:
             log.warning(
                 "Cannot set RGB non-stroke color "
-                f"because not all values in {(r, g, b)!r} can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                (r, g, b),
             )
         else:
             self.graphicstate.ncolor = rgb
@@ -784,7 +795,8 @@ class PDFPageInterpreter:
         if cmyk is None:
             log.warning(
                 "Cannot set CMYK stroke color "
-                f"because not all values in {(c, m, y, k)!r} can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                (c, m, y, k),
             )
         else:
             self.graphicstate.scolor = cmyk
@@ -797,7 +809,8 @@ class PDFPageInterpreter:
         if cmyk is None:
             log.warning(
                 "Cannot set CMYK non-stroke color "
-                f"because not all values in {(c, m, y, k)!r} can be parsed as floats"
+                "because not all values in %r can be parsed as floats",
+                (c, m, y, k),
             )
         else:
             self.graphicstate.ncolor = cmyk
@@ -819,8 +832,9 @@ class PDFPageInterpreter:
             gray = safe_float(components[0])
             if gray is None:
                 log.warning(
-                    f"Cannot set {context} color: "
-                    f"{components[0]!r} is an invalid float value"
+                    "Cannot set %s color: %r is an invalid float value",
+                    context,
+                    components[0],
                 )
             return gray
 
@@ -828,8 +842,9 @@ class PDFPageInterpreter:
             rgb = safe_rgb(*components)
             if rgb is None:
                 log.warning(
-                    f"Cannot set {context} color: "
-                    f"components {components!r} cannot be parsed as RGB"
+                    "Cannot set %s color: components %r cannot be parsed as RGB",
+                    context,
+                    components,
                 )
             return rgb
 
@@ -837,16 +852,18 @@ class PDFPageInterpreter:
             cmyk = safe_cmyk(*components)
             if cmyk is None:
                 log.warning(
-                    f"Cannot set {context} color: "
-                    f"components {components!r} cannot be parsed as CMYK"
+                    "Cannot set %s color: components %r cannot be parsed as CMYK",
+                    context,
+                    components,
                 )
             return cmyk
 
         else:
             log.warning(
-                f"Cannot set {context} color: "
-                f"{len(components)} components specified, "
-                "but only 1 (grayscale), 3 (RGB), and 4 (CMYK) are supported"
+                "Cannot set %s color: %d components specified, "
+                "but only 1 (grayscale), 3 (RGB), and 4 (CMYK) are supported",
+                context,
+                len(components),
             )
             return None
 
@@ -863,8 +880,9 @@ class PDFPageInterpreter:
         components = self.pop(n)
         if len(components) != n:
             log.warning(
-                "Cannot set stroke color because "
-                f"expected {n} components but got {components!r}"
+                "Cannot set stroke color because expected %d components but got %r",
+                n,
+                components,
             )
 
         elif self.graphicstate.scs.name != "Pattern":
@@ -881,11 +899,13 @@ class PDFPageInterpreter:
             # Per spec: pattern name must be a name object (PSLiteral)
             if not isinstance(pattern_component, PSLiteral):
                 log.warning(
-                    f"Pattern color space requires name object (PSLiteral), "
-                    f"got {type(pattern_component).__name__}: {pattern_component!r}. "
+                    "Pattern color space requires name object (PSLiteral), "
+                    "got %s: %r. "
                     "Per ISO 32000 8.7.3.2, colored patterns use syntax '/name SCN'. "
                     "Per ISO 32000 8.7.3.3, uncolored patterns use "
-                    "syntax 'c1...cn /name SCN'."
+                    "syntax 'c1...cn /name SCN'.",
+                    type(pattern_component).__name__,
+                    pattern_component,
                 )
                 return
 
@@ -894,7 +914,7 @@ class PDFPageInterpreter:
             if len(components) == 1:
                 # Colored tiling pattern (PaintType=1): just pattern name
                 self.graphicstate.scolor = pattern_name
-                log.debug(f"Set stroke pattern (colored): {pattern_name}")
+                log.debug("Set stroke pattern (colored): %s", pattern_name)
             else:
                 # Uncolored tiling pattern (PaintType=2):
                 # color components + pattern name
@@ -910,7 +930,7 @@ class PDFPageInterpreter:
                 # Store as tuple: (base_color, pattern_name)
                 self.graphicstate.scolor = (base_color, pattern_name)
                 log.debug(
-                    f"Set stroke pattern (uncolored): {base_color} + {pattern_name}"
+                    "Set stroke pattern (uncolored): %s + %s", base_color, pattern_name
                 )
 
     def do_scn(self) -> None:
@@ -926,8 +946,9 @@ class PDFPageInterpreter:
         components = self.pop(n)
         if len(components) != n:
             log.warning(
-                "Cannot set non-stroke color because "
-                f"expected {n} components but got {components!r}"
+                "Cannot set non-stroke color because expected %d components but got %r",
+                n,
+                components,
             )
 
         elif self.graphicstate.ncs.name != "Pattern":
@@ -944,11 +965,13 @@ class PDFPageInterpreter:
             # Per spec: pattern name must be a name object (PSLiteral)
             if not isinstance(pattern_component, PSLiteral):
                 log.warning(
-                    f"Pattern color space requires name object (PSLiteral), "
-                    f"got {type(pattern_component).__name__}: {pattern_component!r}. "
+                    "Pattern color space requires name object (PSLiteral), "
+                    "got %s: %r. "
                     "Per ISO 32000 8.7.3.2, colored patterns use syntax '/name scn'. "
                     "Per ISO 32000 8.7.3.3, uncolored patterns use "
-                    "syntax 'c1...cn /name scn'."
+                    "syntax 'c1...cn /name scn'.",
+                    type(pattern_component).__name__,
+                    pattern_component,
                 )
                 return
 
@@ -957,7 +980,7 @@ class PDFPageInterpreter:
             if len(components) == 1:
                 # Colored tiling pattern (PaintType=1): just pattern name
                 self.graphicstate.ncolor = pattern_name
-                log.debug(f"Set non-stroke pattern (colored): {pattern_name}")
+                log.debug("Set non-stroke pattern (colored): %s", pattern_name)
             else:
                 # Uncolored tiling pattern (PaintType=2):
                 # color components + pattern name
@@ -973,7 +996,9 @@ class PDFPageInterpreter:
                 # Store as tuple: (base_color, pattern_name)
                 self.graphicstate.ncolor = (base_color, pattern_name)
                 log.debug(
-                    f"Set non-stroke pattern (uncolored): {base_color} + {pattern_name}"
+                    "Set non-stroke pattern (uncolored): %s + %s",
+                    base_color,
+                    pattern_name,
                 )
 
     def do_SC(self) -> None:
@@ -1011,7 +1036,8 @@ class PDFPageInterpreter:
             self.device.do_tag(tag)
         else:
             log.warning(
-                f"Cannot define marked-content point because {tag!r} is not a PSLiteral"
+                "Cannot define marked-content point because %r is not a PSLiteral",
+                tag,
             )
 
     def do_DP(self, tag: PDFStackT, props: PDFStackT) -> None:
@@ -1021,7 +1047,8 @@ class PDFPageInterpreter:
         else:
             log.warning(
                 "Cannot define marked-content point with property list "
-                f"because {tag!r} is not a PSLiteral"
+                "because %r is not a PSLiteral",
+                tag,
             )
 
     def do_BMC(self, tag: PDFStackT) -> None:
@@ -1030,8 +1057,8 @@ class PDFPageInterpreter:
             self.device.begin_tag(tag)
         else:
             log.warning(
-                "Cannot begin marked-content sequence because "
-                f"{tag!r} is not a PSLiteral"
+                "Cannot begin marked-content sequence because %r is not a PSLiteral",
+                tag,
             )
 
     def do_BDC(self, tag: PDFStackT, props: PDFStackT) -> None:
@@ -1040,8 +1067,9 @@ class PDFPageInterpreter:
             self.device.begin_tag(tag, props)
         else:
             log.warning(
-                f"Cannot begin marked-content sequence with property list "
-                f"because {tag!r} is not a PSLiteral"
+                "Cannot begin marked-content sequence with property list "
+                "because %r is not a PSLiteral",
+                tag,
             )
 
     def do_EMC(self) -> None:
@@ -1058,8 +1086,8 @@ class PDFPageInterpreter:
         charspace = safe_float(space)
         if charspace is None:
             log.warning(
-                "Could not set character spacing because "
-                f"{space!r} is an invalid float value"
+                "Could not set character spacing because %r is an invalid float value",
+                space,
             )
         else:
             self.textstate.charspace = charspace
@@ -1074,8 +1102,8 @@ class PDFPageInterpreter:
         wordspace = safe_float(space)
         if wordspace is None:
             log.warning(
-                "Could not set word spacing because "
-                f"{space!r} is an invalid float value"
+                "Could not set word spacing because %r is an invalid float value",
+                space,
             )
         else:
             self.textstate.wordspace = wordspace
@@ -1089,8 +1117,8 @@ class PDFPageInterpreter:
 
         if scale_f is None:
             log.warning(
-                "Could not set horizontal scaling because "
-                f"{scale!r} is an invalid float value"
+                "Could not set horizontal scaling because %r is an invalid float value",
+                scale,
             )
         else:
             self.textstate.scaling = scale_f
@@ -1105,8 +1133,8 @@ class PDFPageInterpreter:
         leading_f = safe_float(leading)
         if leading_f is None:
             log.warning(
-                "Could not set text leading because "
-                f"{leading!r} is an invalid float value"
+                "Could not set text leading because %r is an invalid float value",
+                leading,
             )
         else:
             self.textstate.leading = -leading_f
@@ -1128,8 +1156,8 @@ class PDFPageInterpreter:
         fontsize_f = safe_float(fontsize)
         if fontsize_f is None:
             log.warning(
-                f"Could not set text font because "
-                f"{fontsize!r} is an invalid float value"
+                "Could not set text font because %r is an invalid float value",
+                fontsize,
             )
         else:
             self.textstate.fontsize = fontsize_f
@@ -1140,8 +1168,8 @@ class PDFPageInterpreter:
 
         if render_i is None:
             log.warning(
-                "Could not set text rendering mode because "
-                f"{render!r} is an invalid int value"
+                "Could not set text rendering mode because %r is an invalid int value",
+                render,
             )
         else:
             self.textstate.render = render_i
@@ -1155,7 +1183,8 @@ class PDFPageInterpreter:
 
         if rise_f is None:
             log.warning(
-                f"Could not set text rise because {rise!r} is an invalid float value"
+                "Could not set text rise because %r is an invalid float value",
+                rise,
             )
         else:
             self.textstate.rise = rise_f
@@ -1216,8 +1245,9 @@ class PDFPageInterpreter:
 
         if matrix is None:
             log.warning(
-                f"Could not set text matrix because "
-                f"not all values in {values!r} can be parsed as floats"
+                "Could not set text matrix because "
+                "not all values in %r can be parsed as floats",
+                values,
             )
         else:
             self.textstate.matrix = matrix
