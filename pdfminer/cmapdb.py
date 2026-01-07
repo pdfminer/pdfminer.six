@@ -504,4 +504,4 @@ class CMapParser(PSStackParser[PSKeyword]):
                 "does not conform to the format. This could result in "
                 "(cid) values in the output. "
             )
-            log.warning(base_msg + msg)
+            log.warning("%s%s", base_msg, msg)

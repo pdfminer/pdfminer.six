@@ -72,14 +72,17 @@ def get_widths(seq: Iterable[object]) -> dict[str | int, float]:
                         widths[i] = w
                 else:
                     log.warning(
-                        f"Skipping invalid font width specification for {char1} to "
-                        f"{char2} because either of them is not an int"
+                        "Skipping invalid font width specification for %s to "
+                        "%s because either of them is not an int",
+                        char1,
+                        char2,
                     )
                 r = []
         else:
             log.warning(
-                f"Skipping invalid font width specification for {v} "
-                f"because it is not a number or a list"
+                "Skipping invalid font width specification for %s "
+                "because it is not a number or a list",
+                v,
             )
     return cast(dict[str | int, float], widths)
 
@@ -786,13 +789,13 @@ class TrueTypeFont:
     def parse_cmap_format_0(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
         """Parse cmap subtable format 0"""
         fmtlen, fmtlang = struct.unpack(">HH", fp.read(4))
-        log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
+        log.debug("parse_cmap_format: fmtlen=%s, fmtlang=%s", fmtlen, fmtlang)
         char2gid.update(enumerate(struct.unpack(">256B", fp.read(256))))
 
     def parse_cmap_format_2(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
         """Parse cmap subtable format 2"""
         fmtlen, fmtlang = struct.unpack(">HH", fp.read(4))
-        log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
+        log.debug("parse_cmap_format: fmtlen=%s, fmtlang=%s", fmtlen, fmtlang)
         subheaderkeys = struct.unpack(">256H", fp.read(512))
         firstbytes = [0] * 8192
         for i, k in enumerate(subheaderkeys):
@@ -816,7 +819,7 @@ class TrueTypeFont:
     def parse_cmap_format_4(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
         """Parse cmap subtable format 4"""
         fmtlen, fmtlang = struct.unpack(">HH", fp.read(4))
-        log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
+        log.debug("parse_cmap_format: fmtlen=%s, fmtlang=%s", fmtlen, fmtlang)
         (segcount, _1, _2, _3) = struct.unpack(">HHHH", fp.read(8))
         segcount //= 2
         ecs = struct.unpack(f">{segcount}H", fp.read(2 * segcount))
@@ -838,7 +841,7 @@ class TrueTypeFont:
     def parse_cmap_format_6(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
         """Parse cmap subtable format 6"""
         fmtlen, fmtlang = struct.unpack(">HH", fp.read(4))
-        log.debug(f"parse_cmap_format: {fmtlen=}, {fmtlang=}")
+        log.debug("parse_cmap_format: fmtlen=%s, fmtlang=%s", fmtlen, fmtlang)
         firstcode, entcount = struct.unpack(">HH", fp.read(4))
         gids = struct.unpack(f">{entcount}H", fp.read(2 * entcount))
         for i in range(entcount):
@@ -847,7 +850,9 @@ class TrueTypeFont:
     def parse_cmap_format_10(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
         """Parse cmap subtable format 10"""
         rsv, fmtlen, fmtlang = struct.unpack(">HII", fp.read(10))
-        log.debug(f"parse_cmap_format: {rsv=}, {fmtlen=}, {fmtlang=}")
+        log.debug(
+            "parse_cmap_format: rsv=%s, fmtlen=%s, fmtlang=%s", rsv, fmtlen, fmtlang
+        )
         startcode, numchars = struct.unpack(">II", fp.read(8))
         gids = struct.unpack(f">{numchars}H", fp.read(2 * numchars))
         for i in range(numchars):
@@ -856,7 +861,9 @@ class TrueTypeFont:
     def parse_cmap_format_12(self, fp: BinaryIO, char2gid: dict[int, int]) -> None:
         """Parse cmap subtable format 12"""
         rsv, fmtlen, fmtlang = struct.unpack(">HII", fp.read(10))
-        log.debug(f"parse_cmap_format: {rsv=}, {fmtlen=}, {fmtlang=}")
+        log.debug(
+            "parse_cmap_format: rsv=%s, fmtlen=%s, fmtlang=%s", rsv, fmtlen, fmtlang
+        )
         numgroups = struct.unpack(">I", fp.read(4))[0]
         for _i in range(numgroups):
             sc, ec, sgid = struct.unpack(">III", fp.read(12))
@@ -980,8 +987,9 @@ class PDFFont:
         bbox = safe_rect_list(font_bbox)
         if bbox is None:
             log.warning(
-                f"Could not get FontBBox from font descriptor because "
-                f"{font_bbox!r} cannot be parsed as 4 floats"
+                "Could not get FontBBox from font descriptor because "
+                "%r cannot be parsed as 4 floats",
+                font_bbox,
             )
             return 0.0, 0.0, 0.0, 0.0
         return bbox

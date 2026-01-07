@@ -170,8 +170,11 @@ class PDFXRef(PDFBaseXRef):
                     self.offsets[objid] = (None, pos_i, genno_i)
                 else:
                     log.warning(
-                        f"Not adding object {objid} to xref because position {pos_b!r} "
-                        f"or generation number {genno_b!r} cannot be parsed as an int"
+                        "Not adding object %s to xref because position %r "
+                        "or generation number %r cannot be parsed as an int",
+                        objid,
+                        pos_b,
+                        genno_b,
                     )
 
         log.debug("xref objects: %r", self.offsets)
