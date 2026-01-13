@@ -294,13 +294,13 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
     def get_inline_data(self, pos: int, target: bytes = b"EI") -> tuple[int, bytes]:
         self.seek(pos)
         i = 0
-        data = b""
+        data_parts: list[bytes] = []
         while i <= len(target):
             self.fillbuf()
             if i:
                 ci = self.buf[self.charpos]
                 c = bytes((ci,))
-                data += c
+                data_parts.append(c)
                 self.charpos += 1
                 if (len(target) <= i and c.isspace()) or (
                     i < len(target) and c == (bytes((target[i],)))
@@ -311,12 +311,13 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             else:
                 try:
                     j = self.buf.index(target[0], self.charpos)
-                    data += self.buf[self.charpos : j + 1]
+                    data_parts.append(self.buf[self.charpos : j + 1])
                     self.charpos = j + 1
                     i = 1
                 except ValueError:
-                    data += self.buf[self.charpos :]
+                    data_parts.append(self.buf[self.charpos :])
                     self.charpos = len(self.buf)
+        data = b"".join(data_parts)
         data = data[: -(len(target) + 1)]  # strip the last part
         data = re.sub(rb"(\x0d\x0a|[\x0d\x0a])$", b"", data)
         return (pos, data)
