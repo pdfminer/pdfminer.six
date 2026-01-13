@@ -202,7 +202,7 @@ class PSBaseParser:
 
     def nextline(self) -> tuple[int, bytes]:
         """Fetches a next line that ends either with \\r or \\n."""
-        linebuf = b""
+        linebuf_parts: list[bytes] = []
         linepos = self.bufpos + self.charpos
         eol = False
         while 1:
@@ -211,20 +211,23 @@ class PSBaseParser:
                 c = self.buf[self.charpos : self.charpos + 1]
                 # handle b'\r\n'
                 if c == b"\n":
-                    linebuf += c
+                    linebuf_parts.append(c)
                     self.charpos += 1
                 break
             m = EOL.search(self.buf, self.charpos)
             if m:
-                linebuf += self.buf[self.charpos : m.end(0)]
+                chunk = self.buf[self.charpos : m.end(0)]
+                linebuf_parts.append(chunk)
                 self.charpos = m.end(0)
-                if linebuf[-1:] == b"\r":
+                # Check last byte of chunk for '\r' (more efficient than joining)
+                if chunk and chunk[-1:] == b"\r":
                     eol = True
                 else:
                     break
             else:
-                linebuf += self.buf[self.charpos :]
+                linebuf_parts.append(self.buf[self.charpos :])
                 self.charpos = len(self.buf)
+        linebuf = b"".join(linebuf_parts)
         log.debug("nextline: %r, %r", linepos, linebuf)
 
         return (linepos, linebuf)
@@ -471,10 +474,43 @@ class PSBaseParser:
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
-        token = HEX_PAIR.sub(
-            lambda m: bytes((int(m.group(0), 16),)),
-            SPC.sub(b"", self._curtoken),
-        )
+
+        # Optimized hex string parsing: manual byte scanning instead of nested regex
+        # Remove whitespace and convert hex pairs to bytes in a single pass
+        result: list[int] = []
+        hex_chars: list[int] = []
+        for byte_val in self._curtoken:
+            # Skip whitespace
+            if byte_val in (32, 9, 13, 10):  # space, tab, CR, LF
+                continue
+            # Check if it's a hex digit
+            if (48 <= byte_val <= 57) or (97 <= byte_val <= 102) or (65 <= byte_val <= 70):
+                # 0-9, a-f, A-F
+                hex_chars.append(byte_val)
+                if len(hex_chars) == 2:
+                    # Convert pair to byte
+                    hex_str = bytes(hex_chars).decode('ascii')
+                    result.append(int(hex_str, 16))
+                    hex_chars = []
+            else:
+                # Non-hex character: if we have accumulated hex chars, convert them
+                if hex_chars:
+                    # Single hex digit - convert as hex (0x5 = 5, not '5' = 0x35)
+                    hex_str = bytes(hex_chars).decode('ascii')
+                    result.append(int(hex_str, 16))
+                    hex_chars = []
+                # Add the non-hex character as-is (try to convert as hex, will use byte value if it fails)
+                try:
+                    result.append(int(bytes([byte_val]), 16))
+                except ValueError:
+                    result.append(byte_val)
+        # Handle trailing odd hex digit
+        if hex_chars:
+            # Single hex digit at end - convert as hex
+            hex_str = bytes(hex_chars).decode('ascii')
+            result.append(int(hex_str, 16))
+
+        token = bytes(result)
         self._add_token(token)
         self._parse1 = self._parse_main
         return j
