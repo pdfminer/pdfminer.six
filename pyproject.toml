@@ -49,6 +49,7 @@ dev = [
     "ruff",
     "mypy",
     "pytest",
+    "pytest-benchmark>=4.0.0",
     "pre-commit",
     "codespell",
 ]
