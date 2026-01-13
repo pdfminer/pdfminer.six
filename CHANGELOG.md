@@ -3,6 +3,20 @@ All notable changes in pdfminer.six will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Performance
+
+- Optimize `psparser.nextline()` by replacing O(n²) bytes concatenation with list accumulation - eliminates quadratic complexity for long lines
+- Optimize `pdfinterp.get_inline_data()` by replacing O(n²) bytes concatenation with list accumulation - major speedup for large inline images
+- Optimize hex string parsing in `psparser._parse_hexstring()` by replacing nested regex with manual byte scanning - eliminates regex overhead
+- Add comprehensive benchmark suite with pytest-benchmark for performance tracking and regression detection
+- Add profiling tools (`profile_parser.py`, `compare_benchmarks.py`) for performance analysis
+
+### Documentation
+
+- Add PERFORMANCE_REPORT.md with detailed optimization metrics, methodology, and end-to-end performance benchmarks
+
 ## [20260107]
 
 ### Added
