@@ -12,6 +12,7 @@ Example:
 """
 
 import gzip
+import io
 import json
 import pickle
 import sys
@@ -53,7 +54,11 @@ def convert_pickle_to_json(pickle_path: str, json_path: str) -> None:
         raise ValueError(f"Expected dict from pickle, got {type(data)}")
 
     # Write JSON data
-    with gzip.open(json_path, "wt", encoding="utf-8") as gzfile:
+    with (
+        open(json_path, "wb") as fp,
+        gzip.GzipFile(fileobj=fp, mode="wb", compresslevel=9, mtime=0) as gz,
+        io.TextIOWrapper(gz, encoding="utf-8") as gzfile,
+    ):
         json.dump(data, gzfile, ensure_ascii=False, indent=None, separators=(",", ":"))
 
     print(f"✓ Converted {pickle_path} -> {json_path}")
