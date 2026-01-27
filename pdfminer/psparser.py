@@ -299,10 +299,10 @@ class PSBaseParser:
             return len(s)
         j = m.start(0)
         self._curtokenpos = self.bufpos + j
-        
+
         # Use integer comparison for better performance
         c_int = s[j]
-        
+
         if c_int == _BYTE_PERCENT:
             self._curtoken = _BYTES_PERCENT
             self._parse1 = self._parse_comment
@@ -311,16 +311,18 @@ class PSBaseParser:
             self._curtoken = _BYTES_EMPTY
             self._parse1 = self._parse_literal
             return j + 1
-        elif c_int in {_BYTE_MINUS, _BYTE_PLUS} or 48 <= c_int <= 57:  # 48-57 are digits
-            self._curtoken = s[j:j+1]
+        elif (
+            c_int in {_BYTE_MINUS, _BYTE_PLUS} or 48 <= c_int <= 57
+        ):  # 48-57 are digits
+            self._curtoken = s[j : j + 1]
             self._parse1 = self._parse_number
             return j + 1
         elif c_int == _BYTE_DOT:
-            self._curtoken = s[j:j+1]
+            self._curtoken = s[j : j + 1]
             self._parse1 = self._parse_float
             return j + 1
         elif (65 <= c_int <= 90) or (97 <= c_int <= 122):  # isalpha check
-            self._curtoken = s[j:j+1]
+            self._curtoken = s[j : j + 1]
             self._parse1 = self._parse_keyword
             return j + 1
         elif c_int == _BYTE_LPAREN:
@@ -339,7 +341,7 @@ class PSBaseParser:
         elif c_int == _BYTE_NULL:
             return j + 1
         else:
-            self._add_token(KWD(s[j:j+1]))
+            self._add_token(KWD(s[j : j + 1]))
             return j + 1
 
     def _add_token(self, obj: PSBaseParserToken) -> None:
