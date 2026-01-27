@@ -311,7 +311,7 @@ class PSBaseParser:
             self._curtoken = _BYTES_EMPTY
             self._parse1 = self._parse_literal
             return j + 1
-        elif c_int == _BYTE_MINUS or c_int == _BYTE_PLUS or 48 <= c_int <= 57:  # 48-57 are digits
+        elif c_int in {_BYTE_MINUS, _BYTE_PLUS} or 48 <= c_int <= 57:  # 48-57 are digits
             self._curtoken = s[j:j+1]
             self._parse1 = self._parse_number
             return j + 1
