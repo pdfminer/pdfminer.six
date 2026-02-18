@@ -148,6 +148,7 @@ class CMapConverter:
 def main(argv):
     import getopt
     import gzip
+    import io
     import os.path
 
     def usage():
@@ -183,14 +184,22 @@ def main(argv):
         fname = f"{enc}.json.gz"
         path = os.path.join(outdir, fname)
         print(f"writing: {path!r}...")
-        with gzip.open(path, "wt", encoding="utf-8") as fp:
+        with (
+            open(path, "wb") as bfp,
+            gzip.GzipFile(fileobj=bfp, mode="wb", compresslevel=9, mtime=0) as gz,
+            io.TextIOWrapper(gz, encoding="utf-8") as fp,
+        ):
             converter.dump_cmap(fp, enc)
 
     # Write JSON format
     fname = f"to-unicode-{regname}.json.gz"
     path = os.path.join(outdir, fname)
     print(f"writing: {path!r}...")
-    with gzip.open(path, "wt", encoding="utf-8") as fp:
+    with (
+        open(path, "wb") as bfp,
+        gzip.GzipFile(fileobj=bfp, mode="wb", compresslevel=9, mtime=0) as gz,
+        io.TextIOWrapper(gz, encoding="utf-8") as fp,
+    ):
         converter.dump_unicodemap(fp)
 
 
