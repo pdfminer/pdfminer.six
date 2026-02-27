@@ -218,3 +218,7 @@ class TestDumpImages:
     def test_contrib_issue_1113_evil_xobjects(self):
         """Test for circular form xobjects"""
         run(absolute_sample_path("contrib/issue-1113-evil-xobjects.pdf"))
+
+    def test_contrib_issue_1249_evil_xrefs(self):
+        """Test for circular xref tables"""
+        run(absolute_sample_path("contrib/issue-1249-evil-xrefs.pdf"))
