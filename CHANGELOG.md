@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 - Restore `cmap` and `cmap_clean` targets to `Makefile ([#1256](https://github.com/pdfminer/pdfminer.six/pull/1256))
+- Update to latest published cmap resources from GitHub ([#1257](https://github.com/pdfminer/pdfminer.six/pull/1257))
 
 ### Fixed
 

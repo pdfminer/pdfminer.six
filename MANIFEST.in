@@ -3,9 +3,10 @@ include LICENSE
 include *.txt
 include *.md
 include *.py
-graft cmaprsrc
 graft pdfminer
 graft tools
 global-exclude *.pyc
 prune samples
 prune docs
+include cmaprsrc/LICENSE.md
+recursive-include cmaprsrc cid2code.txt
