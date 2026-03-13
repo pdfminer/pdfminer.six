@@ -31,3 +31,4 @@ poetry.lock
 # Claude Code and Junie
 .claude/
 .junie/
+*~
