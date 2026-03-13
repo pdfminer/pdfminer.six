@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Restore `cmap` and `cmap_clean` targets to `Makefile ([#1256](https://github.com/pdfminer/pdfminer.six/pull/1256))
+
 ### Fixed
 
 - Reproducibility issue when generating cmap `.json.gz` files ([#1242](https://github.com/pdfminer/pdfminer.six/pull/1242))
