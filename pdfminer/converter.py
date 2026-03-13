@@ -33,6 +33,7 @@ from pdfminer.layout import (
     LTTextGroup,
     LTTextLine,
     TextGroupElement,
+    make_path_segment,
 )
 from pdfminer.pdfcolor import PDFColorSpace
 from pdfminer.pdfdevice import PDFTextDevice
@@ -155,7 +156,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                 for operation in path
             ]
             transformed_path = [
-                cast(PathSegment, (o, *p))
+                make_path_segment(o, p)
                 for o, p in zip(operators, transformed_points, strict=False)
             ]
 

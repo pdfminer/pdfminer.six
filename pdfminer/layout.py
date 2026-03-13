@@ -3,6 +3,8 @@ import logging
 from collections.abc import Iterable, Iterator, Sequence
 from typing import (
     Generic,
+    Literal,
+    NamedTuple,
     TypeVar,
     Union,
     cast,
@@ -17,7 +19,6 @@ from pdfminer.utils import (
     INF,
     LTComponentT,
     Matrix,
-    PathSegment,
     Plane,
     Point,
     Rect,
@@ -30,6 +31,53 @@ from pdfminer.utils import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+# Type annotations for what we actually return in `original_path`, which
+# is not the same thing as `PathSegment`.
+class LTPathSegment0(NamedTuple):
+    operator: Literal["h"]
+
+
+class LTPathSegment1(NamedTuple):
+    operator: Literal["m", "l"]
+    dest: Point
+
+
+class LTPathSegment2(NamedTuple):
+    operator: Literal["v", "y"]
+    control: Point
+    dest: Point
+
+
+class LTPathSegment3(NamedTuple):
+    operator: Literal["c"]
+    control1: Point
+    control2: Point
+    dest: Point
+
+
+LTPathSegment = Union[LTPathSegment0, LTPathSegment1, LTPathSegment2, LTPathSegment3]
+
+
+def make_path_segment(operator: str, points: Sequence[Point]) -> LTPathSegment:
+    """Construct a type-safe path segment."""
+    # The apparent redundancy below is due to a limitation of mypy,
+    # see https://github.com/python/mypy/issues/12535 and
+    # https://github.com/python/mypy/issues/16819 among others
+    if operator == "h":
+        return LTPathSegment0("h")
+    if operator == "m":
+        return LTPathSegment1("m", points[0])
+    if operator == "l":
+        return LTPathSegment1("l", points[0])
+    if operator == "v":
+        return LTPathSegment2("v", points[0], points[1])
+    if operator == "y":
+        return LTPathSegment2("y", points[0], points[1])
+    if operator == "c":
+        return LTPathSegment3("c", points[0], points[1], points[2])
+    raise PDFValueError(f"Unrecognized path segment: {operator!r} {points!r}")
 
 
 class IndexAssigner:
@@ -221,7 +269,7 @@ class LTCurve(LTComponent):
         evenodd: bool = False,
         stroking_color: Color | None = None,
         non_stroking_color: Color | None = None,
-        original_path: list[PathSegment] | None = None,
+        original_path: list[LTPathSegment] | None = None,
         dashing_style: tuple[object, object] | None = None,
     ) -> None:
         LTComponent.__init__(self, get_bound(pts))
@@ -255,7 +303,7 @@ class LTLine(LTCurve):
         evenodd: bool = False,
         stroking_color: Color | None = None,
         non_stroking_color: Color | None = None,
-        original_path: list[PathSegment] | None = None,
+        original_path: list[LTPathSegment] | None = None,
         dashing_style: tuple[object, object] | None = None,
     ) -> None:
         LTCurve.__init__(
@@ -287,7 +335,7 @@ class LTRect(LTCurve):
         evenodd: bool = False,
         stroking_color: Color | None = None,
         non_stroking_color: Color | None = None,
-        original_path: list[PathSegment] | None = None,
+        original_path: list[LTPathSegment] | None = None,
         dashing_style: tuple[object, object] | None = None,
     ) -> None:
         (x0, y0, x1, y1) = bbox
