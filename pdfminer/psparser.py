@@ -15,6 +15,46 @@ from typing import (
 from pdfminer import psexceptions, settings
 from pdfminer.utils import choplist
 
+_BYTE_PERCENT = ord(b"%")
+
+_BYTE_SLASH = ord(b"/")
+
+_BYTE_MINUS = ord(b"-")
+
+_BYTE_PLUS = ord(b"+")
+
+_BYTE_DOT = ord(b".")
+
+_BYTE_LPAREN = ord(b"(")
+
+_BYTE_LT = ord(b"<")
+
+_BYTE_GT = ord(b">")
+
+_BYTE_NULL = ord(b"\x00")
+
+_BYTE_BACKSLASH = ord(b"\\")
+
+_BYTE_RPAREN = ord(b")")
+
+_BYTE_HASH = ord(b"#")
+
+_BYTES_PERCENT = b"%"
+
+_BYTES_EMPTY = b""
+
+_BYTES_TRUE = b"true"
+
+_BYTES_FALSE = b"false"
+
+_BYTES_LT = b"<"
+
+_BYTES_GT = b">"
+
+_BYTES_HASH = b"#"
+
+_BYTES_DOT = b"."
+
 log = logging.getLogger(__name__)
 
 
@@ -258,45 +298,50 @@ class PSBaseParser:
         if not m:
             return len(s)
         j = m.start(0)
-        c = s[j : j + 1]
         self._curtokenpos = self.bufpos + j
-        if c == b"%":
-            self._curtoken = b"%"
+
+        # Use integer comparison for better performance
+        c_int = s[j]
+
+        if c_int == _BYTE_PERCENT:
+            self._curtoken = _BYTES_PERCENT
             self._parse1 = self._parse_comment
             return j + 1
-        elif c == b"/":
-            self._curtoken = b""
+        elif c_int == _BYTE_SLASH:
+            self._curtoken = _BYTES_EMPTY
             self._parse1 = self._parse_literal
             return j + 1
-        elif c in b"-+" or c.isdigit():
-            self._curtoken = c
+        elif (
+            c_int in {_BYTE_MINUS, _BYTE_PLUS} or 48 <= c_int <= 57
+        ):  # 48-57 are digits
+            self._curtoken = s[j : j + 1]
             self._parse1 = self._parse_number
             return j + 1
-        elif c == b".":
-            self._curtoken = c
+        elif c_int == _BYTE_DOT:
+            self._curtoken = s[j : j + 1]
             self._parse1 = self._parse_float
             return j + 1
-        elif c.isalpha():
-            self._curtoken = c
+        elif (65 <= c_int <= 90) or (97 <= c_int <= 122):  # isalpha check
+            self._curtoken = s[j : j + 1]
             self._parse1 = self._parse_keyword
             return j + 1
-        elif c == b"(":
-            self._curtoken = b""
+        elif c_int == _BYTE_LPAREN:
+            self._curtoken = _BYTES_EMPTY
             self.paren = 1
             self._parse1 = self._parse_string
             return j + 1
-        elif c == b"<":
-            self._curtoken = b""
+        elif c_int == _BYTE_LT:
+            self._curtoken = _BYTES_EMPTY
             self._parse1 = self._parse_wopen
             return j + 1
-        elif c == b">":
-            self._curtoken = b""
+        elif c_int == _BYTE_GT:
+            self._curtoken = _BYTES_EMPTY
             self._parse1 = self._parse_wclose
             return j + 1
-        elif c == b"\x00":
+        elif c_int == _BYTE_NULL:
             return j + 1
         else:
-            self._add_token(KWD(c))
+            self._add_token(KWD(s[j : j + 1]))
             return j + 1
 
     def _add_token(self, obj: PSBaseParserToken) -> None:
