@@ -53,11 +53,11 @@ class TestAscii85:
 
 class TestArcfour:
     def test(self):
-        assert hex(Arcfour(b"Key").process(b"Plaintext")) == b"bbf316e8d940af0ad3"
-        assert hex(Arcfour(b"Wiki").process(b"pedia")) == b"1021bf0420"
+        assert hex(Arcfour(b"Keyke").process(b"Plaintext")) == b"fe975ba6feedc726b7"
+        assert hex(Arcfour(b"WikiWik").process(b"pedia")) == b"7e9ece1e1e"
         assert (
-            hex(Arcfour(b"Secret").process(b"Attack at dawn"))
-            == b"45a01f645fc35b383552544b9bf5"
+            hex(Arcfour(b"Secretly").process(b"Attack at dawn"))
+            == b"8df044a0904127b93cc69312c595"
         )
 
 
