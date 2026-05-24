@@ -1411,7 +1411,7 @@ class PDFPageInterpreter:
                 valid_streams.append(stream)
                 self.stream_ids.add(stream.objid)
         try:
-            parser = PDFContentParser(valid_streams)
+            parser = self.create_parser(valid_streams)
         except PSEOF:
             # empty page
             return
@@ -1446,3 +1446,7 @@ class PDFPageInterpreter:
                     raise PDFInterpreterError(error_msg)
             else:
                 self.push(obj)
+
+    def create_parser(self, valid_streams: Sequence[PDFStream]) -> PDFContentParser:
+        """Create a PDFContentParser to parse the streams"""
+        return PDFContentParser(valid_streams)

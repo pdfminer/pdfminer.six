@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Check the type of `N` when creating an `ICCBased` color space ([#1252](http3://github.com/pdfminer/pdfminer.six/pull/1253))
 - Endless recursion issue with circular or corrupted `Prev` chains in cross-refeerence tables ([#1253](https://github.com/pdfminer/pdfminer.six/pull/1253))
 
+### Added
+
+- Add `PDFPageInterpreter.create_parser` method to allow subclasses to provide their own parser
+
 ## [20260107]
 
 ### Added
