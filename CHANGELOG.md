@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `KeyError` on `ICCBased` color spaces whose stream omits the required `/N`; the `/Alternate` color space is used when available, otherwise the color space is skipped ([#1079](https://github.com/pdfminer/pdfminer.six/issues/1079))
 - Reproducibility issue when generating cmap `.json.gz` files ([#1242](https://github.com/pdfminer/pdfminer.six/pull/1242))
 - Switch to `bytearray` in `apply_png_predictor` to avoid out of memory error (and speed it up) ([#1247](https://github.com/pdfminer/pdfminer.six/pull/1247))
 - Check the type of `N` when creating an `ICCBased` color space ([#1252](http3://github.com/pdfminer/pdfminer.six/pull/1253))

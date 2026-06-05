@@ -298,6 +298,40 @@ def get_chars(el):
         pass
 
 
+def _pdf_with_iccbased_colorspace(icc_attrs: bytes) -> io.BytesIO:
+    """Build a one-page PDF whose ColorSpace resource is an ICCBased stream.
+
+    ``icc_attrs`` is injected into the ICC stream's dictionary, e.g. ``b""`` to
+    omit /N entirely or ``b"/Alternate/DeviceRGB"`` to provide an alternate.
+    Built in memory so the test stays self-contained.
+    """
+    icc_data = b"\x00\x00\x00"
+    objs = [
+        b"<</Type/Catalog/Pages 2 0 R>>",
+        b"<</Type/Pages/Kids[3 0 R]/Count 1>>",
+        b"<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]"
+        b"/Resources<</ColorSpace<</CS0 5 0 R>>>>/Contents 4 0 R>>",
+        b"<</Length 2>>\nstream\nq\nendstream",
+        b"[/ICCBased 6 0 R]",
+        b"<</Length %d%s>>\nstream\n%s\nendstream"
+        % (len(icc_data), icc_attrs, icc_data),
+    ]
+    out = b"%PDF-1.4\n"
+    offsets = []
+    for i, obj in enumerate(objs, 1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n%s\nendobj\n" % (i, obj)
+    startxref = len(out)
+    out += b"xref\n0 %d\n0000000000 65535 f \n" % (len(objs) + 1)
+    for offset in offsets:
+        out += b"%010d 00000 n \n" % offset
+    out += b"trailer<</Size %d/Root 1 0 R>>\nstartxref\n%d\n%%%%EOF" % (
+        len(objs) + 1,
+        startxref,
+    )
+    return io.BytesIO(out)
+
+
 class TestColorSpace:
     def test_do_rg(self):
         path = absolute_sample_path("contrib/issue-00352-hash-twos-complement.pdf")
@@ -315,6 +349,31 @@ class TestColorSpace:
                     # Pattern colors should be stored as strings (pattern names)
                     assert isinstance(color, str)
                     assert color.startswith("P")  # Pattern names typically start with P
+
+    def test_iccbased_missing_n(self):
+        """An ICCBased color space whose stream omits /N must not crash.
+
+        /N is required by the spec, but some PDFs omit it. The color space is
+        skipped (or falls back to /Alternate) instead of raising a KeyError.
+        """
+        from pdfminer.pdfdevice import PDFDevice
+        from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
+        from pdfminer.pdfpage import PDFPage
+
+        def get_csmap(pdf_stream):
+            rsrcmgr = PDFResourceManager()
+            interpreter = PDFPageInterpreter(rsrcmgr, PDFDevice(rsrcmgr))
+            page = next(PDFPage.get_pages(pdf_stream))
+            interpreter.process_page(page)
+            return interpreter.csmap
+
+        # Missing /N, no alternate: the color space is skipped, not registered.
+        csmap = get_csmap(_pdf_with_iccbased_colorspace(b""))
+        assert "CS0" not in csmap
+
+        # Missing /N, with /Alternate /DeviceRGB: falls back to 3 components.
+        csmap = get_csmap(_pdf_with_iccbased_colorspace(b"/Alternate/DeviceRGB"))
+        assert csmap["CS0"].ncomponents == 3
 
     def test_pattern_colors(self):
         """Test that Pattern color spaces are properly handled.

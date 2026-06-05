@@ -24,7 +24,6 @@ from pdfminer.pdftypes import (
     PDFObjRef,
     PDFStream,
     dict_value,
-    int_value,
     list_value,
     resolve1,
     stream_value,
@@ -335,7 +334,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             self.start_type(pos, "inline")
         elif token is self.KEYWORD_ID:
             try:
-                (_, objs) = self.end_type("inline")
+                _, objs = self.end_type("inline")
                 if len(objs) % 2 != 0:
                     error_msg = f"Invalid dictionary construct: {objs!r}"
                     raise PSTypeError(error_msg)
@@ -347,7 +346,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                         filter = [filter]
                     if filter[0] in LITERALS_ASCII85_DECODE:
                         eos = b"~>"
-                (pos, data) = self.get_inline_data(pos + len(b"ID "), target=eos)
+                pos, data = self.get_inline_data(pos + len(b"ID "), target=eos)
                 if eos != b"EI":  # it may be necessary for decoding
                     data += eos
                 obj = PDFStream(d, data)
@@ -410,7 +409,24 @@ class PDFPageInterpreter:
             else:
                 name = literal_name(spec)
             if name == "ICCBased" and isinstance(spec, list) and len(spec) >= 2:
-                return PDFColorSpace(name, int_value(stream_value(spec[1])["N"]))
+                stream = stream_value(spec[1])
+                n = stream.get("N")
+                if not isinstance(n, int) or n <= 0:
+                    # /N (1, 3 or 4) is required for ICCBased streams (PDF 1.7,
+                    # 8.6.5.5), but some PDFs omit it or give an invalid value.
+                    # Fall back to the /Alternate color space when it is a
+                    # usable (non-ICCBased) space, otherwise skip this color
+                    # space rather than raising or registering a broken,
+                    # zero-component one.
+                    alternate = resolve1(stream.get("Alternate"))
+                    if alternate is not None:
+                        alt_name = literal_name(
+                            alternate[0] if isinstance(alternate, list) else alternate
+                        )
+                        if alt_name != "ICCBased":
+                            return get_colorspace(alternate)
+                    return None
+                return PDFColorSpace(name, n)
             elif name == "DeviceN" and isinstance(spec, list) and len(spec) >= 2:
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
@@ -465,7 +481,7 @@ class PDFPageInterpreter:
         self,
         state: tuple[Matrix, PDFTextState, PDFGraphicState],
     ) -> None:
-        (self.ctm, self.textstate, self.graphicstate) = state
+        self.ctm, self.textstate, self.graphicstate = state
         self.device.set_ctm(self.ctm)
 
     def do_q(self) -> None:
@@ -1198,7 +1214,7 @@ class PDFPageInterpreter:
         tx_ = safe_float(tx)
         ty_ = safe_float(ty)
         if tx_ is not None and ty_ is not None:
-            (a, b, c, d, e, f) = self.textstate.matrix
+            a, b, c, d, e, f = self.textstate.matrix
             e_new = tx_ * a + ty_ * c + e
             f_new = tx_ * b + ty_ * d + f
             self.textstate.matrix = (a, b, c, d, e_new, f_new)
@@ -1218,7 +1234,7 @@ class PDFPageInterpreter:
         ty_ = safe_float(ty)
 
         if tx_ is not None and ty_ is not None:
-            (a, b, c, d, e, f) = self.textstate.matrix
+            a, b, c, d, e, f = self.textstate.matrix
             e_new = tx_ * a + ty_ * c + e
             f_new = tx_ * b + ty_ * d + f
             self.textstate.matrix = (a, b, c, d, e_new, f_new)
@@ -1256,7 +1272,7 @@ class PDFPageInterpreter:
 
     def do_T_a(self) -> None:
         """Move to start of next text line"""
-        (a, b, c, d, e, f) = self.textstate.matrix
+        a, b, c, d, e, f = self.textstate.matrix
         self.textstate.matrix = (
             a,
             b,
@@ -1352,7 +1368,7 @@ class PDFPageInterpreter:
 
     def process_page(self, page: PDFPage) -> None:
         log.debug("Processing page: %r", page)
-        (x0, y0, x1, y1) = page.mediabox
+        x0, y0, x1, y1 = page.mediabox
         if page.rotate == 90:
             ctm = (0, -1, 1, 0, -y0, x1)
         elif page.rotate == 180:
@@ -1417,7 +1433,7 @@ class PDFPageInterpreter:
             return
         while True:
             try:
-                (_, obj) = parser.nextobject()
+                _, obj = parser.nextobject()
             except PSEOF:
                 break
             if isinstance(obj, PSKeyword):
