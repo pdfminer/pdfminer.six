@@ -151,13 +151,16 @@ def apply_tiff_predictor(
 
 
 def apply_png_predictor(
-    pred: int,
     colors: int,
     columns: int,
     bitspercomponent: int,
     data: bytes,
 ) -> bytes:
     """Reverse the effect of the PNG predictor
+
+    The PNG predictor type (``/Predictor`` >= 10) is not needed here: each
+    scanline carries its own filter-type byte as its first byte, so the filter
+    is selected per row from the data itself.
 
     Documentation: http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
     """

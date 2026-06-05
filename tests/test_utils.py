@@ -4,6 +4,7 @@ import pathlib
 import pytest
 
 from pdfminer.layout import LTComponent
+from pdfminer.pdfexceptions import PDFValueError
 from pdfminer.utils import (
     Matrix,
     Plane,
@@ -11,6 +12,7 @@ from pdfminer.utils import (
     Rect,
     apply_matrix_pt,
     apply_matrix_rect,
+    apply_png_predictor,
     format_int_alpha,
     format_int_roman,
     mult_matrix,
@@ -246,3 +248,27 @@ def test_apply_matrix_pt(m0: Matrix, p0: Point, expected: Point) -> None:
 def test_apply_matrix_rect_outside(m0: Matrix, r0: Rect, expected: Rect) -> None:
     """Test rotation examples based on PDF reference 4.2.2 Common Transformations"""
     assert apply_matrix_rect(m0, r0) == expected
+
+
+class TestApplyPngPredictor:
+    """The filter type is the first byte of each scanline (colors=1, columns=3,
+    bitspercomponent=8 -> 3 data bytes per row)."""
+
+    def test_filter_none(self) -> None:
+        # Filter type 0 (None): bytes pass through unchanged.
+        data = b"\x00\x10\x20\x30"
+        assert apply_png_predictor(1, 3, 8, data) == b"\x10\x20\x30"
+
+    def test_filter_sub(self) -> None:
+        # Filter type 1 (Sub): Raw(x) = Sub(x) + Raw(x - bpp), bpp = 1.
+        data = b"\x01\x05\x01\x01"
+        assert apply_png_predictor(1, 3, 8, data) == b"\x05\x06\x07"
+
+    def test_filter_up(self) -> None:
+        # Filter type 2 (Up): Raw(x) = Up(x) + Prior(x) across two scanlines.
+        data = b"\x00\x10\x20\x30" + b"\x02\x01\x01\x01"
+        assert apply_png_predictor(1, 3, 8, data) == b"\x10\x20\x30\x11\x21\x31"
+
+    def test_unsupported_bitspercomponent(self) -> None:
+        with pytest.raises(PDFValueError):
+            apply_png_predictor(1, 3, 4, b"\x00\x00")
