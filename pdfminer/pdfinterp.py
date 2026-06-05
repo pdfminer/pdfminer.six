@@ -335,7 +335,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
             self.start_type(pos, "inline")
         elif token is self.KEYWORD_ID:
             try:
-                (_, objs) = self.end_type("inline")
+                _, objs = self.end_type("inline")
                 if len(objs) % 2 != 0:
                     error_msg = f"Invalid dictionary construct: {objs!r}"
                     raise PSTypeError(error_msg)
@@ -347,7 +347,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                         filter = [filter]
                     if filter[0] in LITERALS_ASCII85_DECODE:
                         eos = b"~>"
-                (pos, data) = self.get_inline_data(pos + len(b"ID "), target=eos)
+                pos, data = self.get_inline_data(pos + len(b"ID "), target=eos)
                 if eos != b"EI":  # it may be necessary for decoding
                     data += eos
                 obj = PDFStream(d, data)
@@ -465,7 +465,7 @@ class PDFPageInterpreter:
         self,
         state: tuple[Matrix, PDFTextState, PDFGraphicState],
     ) -> None:
-        (self.ctm, self.textstate, self.graphicstate) = state
+        self.ctm, self.textstate, self.graphicstate = state
         self.device.set_ctm(self.ctm)
 
     def do_q(self) -> None:
@@ -1198,7 +1198,7 @@ class PDFPageInterpreter:
         tx_ = safe_float(tx)
         ty_ = safe_float(ty)
         if tx_ is not None and ty_ is not None:
-            (a, b, c, d, e, f) = self.textstate.matrix
+            a, b, c, d, e, f = self.textstate.matrix
             e_new = tx_ * a + ty_ * c + e
             f_new = tx_ * b + ty_ * d + f
             self.textstate.matrix = (a, b, c, d, e_new, f_new)
@@ -1218,7 +1218,7 @@ class PDFPageInterpreter:
         ty_ = safe_float(ty)
 
         if tx_ is not None and ty_ is not None:
-            (a, b, c, d, e, f) = self.textstate.matrix
+            a, b, c, d, e, f = self.textstate.matrix
             e_new = tx_ * a + ty_ * c + e
             f_new = tx_ * b + ty_ * d + f
             self.textstate.matrix = (a, b, c, d, e_new, f_new)
@@ -1256,7 +1256,7 @@ class PDFPageInterpreter:
 
     def do_T_a(self) -> None:
         """Move to start of next text line"""
-        (a, b, c, d, e, f) = self.textstate.matrix
+        a, b, c, d, e, f = self.textstate.matrix
         self.textstate.matrix = (
             a,
             b,
@@ -1328,7 +1328,27 @@ class PDFPageInterpreter:
         subtype = xobj.get("Subtype")
         if subtype is LITERAL_FORM and "BBox" in xobj:
             interpreter = self.subinterp()
-            bbox = cast(Rect, list_value(xobj["BBox"]))
+            bbox_raw = list_value(xobj["BBox"])
+            bbox_values = [safe_float(v) for v in bbox_raw]
+            if len(bbox_values) != 4 or any(v is None for v in bbox_values):
+                # The PDF spec (1.7, section 8.10.1) requires a form XObject's
+                # /BBox to be a rectangle of four numbers. Some non-conformant
+                # PDFs provide a different length or non-numeric entries, which
+                # previously raised a ValueError while unpacking the bbox. Fall
+                # back to the unit rectangle used for missing/image bboxes
+                # instead of crashing.
+                if settings.STRICT:
+                    raise PDFInterpreterError(
+                        f"Invalid BBox for xobject {xobjid!r}: {bbox_raw!r}",
+                    )
+                log.warning(
+                    "Invalid BBox %r for xobject %r; using unit rectangle",
+                    bbox_raw,
+                    xobjid,
+                )
+                bbox = (0.0, 0.0, 1.0, 1.0)
+            else:
+                bbox = cast(Rect, tuple(bbox_values))
             matrix = cast(Matrix, list_value(xobj.get("Matrix", MATRIX_IDENTITY)))
             # According to PDF reference 1.7 section 4.9.1, XObjects in
             # earlier PDFs (prior to v1.2) use the page's Resources entry
@@ -1352,7 +1372,7 @@ class PDFPageInterpreter:
 
     def process_page(self, page: PDFPage) -> None:
         log.debug("Processing page: %r", page)
-        (x0, y0, x1, y1) = page.mediabox
+        x0, y0, x1, y1 = page.mediabox
         if page.rotate == 90:
             ctm = (0, -1, 1, 0, -y0, x1)
         elif page.rotate == 180:
@@ -1417,7 +1437,7 @@ class PDFPageInterpreter:
             return
         while True:
             try:
-                (_, obj) = parser.nextobject()
+                _, obj = parser.nextobject()
             except PSEOF:
                 break
             if isinstance(obj, PSKeyword):

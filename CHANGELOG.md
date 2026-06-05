@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Crash (`ValueError: not enough values to unpack`) on form XObjects whose `/BBox` is not a four-number rectangle; the malformed bbox now falls back to a unit rectangle instead ([#1263](https://github.com/pdfminer/pdfminer.six/issues/1263))
 - Reproducibility issue when generating cmap `.json.gz` files ([#1242](https://github.com/pdfminer/pdfminer.six/pull/1242))
 - Switch to `bytearray` in `apply_png_predictor` to avoid out of memory error (and speed it up) ([#1247](https://github.com/pdfminer/pdfminer.six/pull/1247))
 - Check the type of `N` when creating an `ICCBased` color space ([#1252](http3://github.com/pdfminer/pdfminer.six/pull/1253))
