@@ -359,7 +359,15 @@ class TextConverter(PDFConverter[AnyIO]):
 
         if self.showpageno:
             self.write_text(f"Page {ltpage.pageid}\n")
-        render(ltpage)
+
+        # catch BrokenPipeError in case text gets piped into a command
+        # which closes the pipe prematurely e.g. `head`
+        try:
+            render(ltpage)
+        except BrokenPipeError as e:
+            # log the trace at debug-lvl to reduce noise
+            log.debug(e, exc_info=True)
+            exit(0)
         self.write_text("\f")
 
     # Some dummy functions to save memory/CPU when all that is wanted
