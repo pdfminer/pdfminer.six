@@ -1,5 +1,7 @@
 import filecmp
 import os
+import shlex
+import subprocess
 from shutil import rmtree
 from tempfile import mkdtemp
 
@@ -222,3 +224,37 @@ class TestDumpImages:
     def test_contrib_issue_1249_evil_xrefs(self):
         """Test for circular xref tables"""
         run(absolute_sample_path("contrib/issue-1249-evil-xrefs.pdf"))
+
+
+class TestShellPipes:
+    def test_contrib_issue_875_broken_pipe(self):
+        """
+        Testing BrokenPipeError in a shell pipe.
+        But using shell=True which is not optimal
+        """
+        absolute_path = absolute_sample_path("nonfree/i1040nr.pdf")
+        pipe_cmd = f"tools/pdf2txt.py {absolute_path} | head -n1"
+        proc = subprocess.run(pipe_cmd, shell=True, capture_output=True)
+        assert not proc.stderr
+
+    def test_contrib_issue_875_broken_pipe_v2(self):
+        """
+        Testing BrokenPipeError v2 without shell=True.
+        But this version does not capture the BrokenPipeError.
+        It seems p2 does not close the pipe to p1
+        when `head` is done reading `-n` lines
+        """
+        absolute_path = absolute_sample_path("nonfree/i1040nr.pdf")
+        cmd = f"tools/pdf2txt.py {absolute_path}"
+        head = "head -n1"
+        p1 = subprocess.Popen(
+            shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        p2 = subprocess.Popen(
+            shlex.split(head),
+            stdin=p1.stdout,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        _out, err = p2.communicate()
+        assert not err

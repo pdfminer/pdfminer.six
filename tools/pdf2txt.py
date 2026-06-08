@@ -5,6 +5,7 @@ output it to plain text, html, xml or tags.
 
 import argparse
 import logging
+import os
 import sys
 from collections.abc import Container, Iterable
 from typing import Any
@@ -316,8 +317,14 @@ def parse_args(args: list[str] | None) -> argparse.Namespace:
 
 def main(args: list[str] | None = None) -> int:
     parsed_args = parse_args(args)
-    extract_text(**vars(parsed_args))
-    return 0
+    try:
+        extract_text(**vars(parsed_args))
+        return 0
+    except BrokenPipeError:
+        # handling adapted from https://docs.python.org/3/library/signal.html#note-on-sigpipe
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, sys.stdout.fileno())
+        return 1
 
 
 if __name__ == "__main__":
