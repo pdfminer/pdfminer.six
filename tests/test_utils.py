@@ -11,6 +11,7 @@ from pdfminer.utils import (
     Rect,
     apply_matrix_pt,
     apply_matrix_rect,
+    apply_png_predictor,
     format_int_alpha,
     format_int_roman,
     mult_matrix,
@@ -121,6 +122,12 @@ class TestFunctions:
         assert format_int_roman(90) == "xc"
         assert format_int_roman(91) == "xci"
         assert format_int_roman(100) == "c"
+
+
+def test_png_predictor_average_first_rgb_row() -> None:
+    data = bytes([3, 1, 2, 3, 4, 5, 6])
+
+    assert apply_png_predictor(12, 3, 2, 8, data) == bytes([1, 2, 3, 4, 6, 7])
 
 
 @pytest.mark.parametrize(
