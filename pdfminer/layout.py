@@ -953,6 +953,8 @@ class LTFigure(LTLayoutContainer):
     def __init__(self, name: str, bbox: Rect, matrix: Matrix) -> None:
         self.name = name
         self.matrix = matrix
+        if len(bbox) != 4:
+            bbox = (0, 0, 1, 1)  # Fallback for malformed BBox
         (x, y, w, h) = bbox
         rect = (x, y, x + w, y + h)
         bbox = apply_matrix_rect(matrix, rect)
