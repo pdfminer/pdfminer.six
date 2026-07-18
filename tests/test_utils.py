@@ -11,6 +11,7 @@ from pdfminer.utils import (
     Rect,
     apply_matrix_pt,
     apply_matrix_rect,
+    apply_png_predictor,
     format_int_alpha,
     format_int_roman,
     mult_matrix,
@@ -121,6 +122,16 @@ class TestFunctions:
         assert format_int_roman(90) == "xc"
         assert format_int_roman(91) == "xci"
         assert format_int_roman(100) == "c"
+
+    def test_apply_png_predictor_multibyte_pixels(self):
+        # colors=3, columns=2 -> a scanline is 6 bytes wide, wider than
+        # `columns`. The first scanline's prior row must be a full-width zero
+        # row, otherwise filter types 3 (Average) and 4 (Paeth) index past it.
+        data = bytes([3]) + bytes([10, 20, 30, 40, 50, 60])
+        result = apply_png_predictor(
+            pred=10, colors=3, columns=2, bitspercomponent=8, data=data
+        )
+        assert result == bytes([10, 20, 30, 45, 60, 75])
 
 
 @pytest.mark.parametrize(
