@@ -58,6 +58,13 @@ class LZWDecoder:
         elif code == 257:
             pass
         elif not self.prevbuf:
+            # First code after a clear (or at the very start) must be a literal
+            # already present in the table. A malformed stream that omits the
+            # initial clear code, or sends an out-of-range code here, would
+            # otherwise raise IndexError; treat it as corrupt data so run()
+            # stops gracefully instead.
+            if code >= len(self.table):
+                raise CorruptDataError
             x = self.prevbuf = cast(bytes, self.table[code])  # assume not None
         else:
             if code < len(self.table):
