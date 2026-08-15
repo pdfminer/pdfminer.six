@@ -22,15 +22,27 @@ def rldecode(data: bytes) -> bytes:
     decoded_array: list[int] = []
     data_iter = iter(data)
 
+    # A sentinel that cannot be a byte value, so a truncated run (one whose
+    # length byte is not followed by enough data) is detected instead of
+    # letting next() raise StopIteration, which would surface as a bare
+    # StopIteration or, from inside a generator expression, a RuntimeError.
+    _END = -1
+
     while True:
         length = next(data_iter, 128)
         if length == 128:
             break
 
         if 0 <= length < 128:
-            decoded_array.extend(next(data_iter) for _ in range(length + 1))
+            for _ in range(length + 1):
+                value = next(data_iter, _END)
+                if value == _END:
+                    return bytes(decoded_array)
+                decoded_array.append(value)
 
         if length > 128:
-            run = [next(data_iter)] * (257 - length)
-            decoded_array.extend(run)
+            value = next(data_iter, _END)
+            if value == _END:
+                return bytes(decoded_array)
+            decoded_array.extend([value] * (257 - length))
     return bytes(decoded_array)

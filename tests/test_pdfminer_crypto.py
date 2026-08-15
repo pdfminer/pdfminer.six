@@ -73,6 +73,13 @@ class TestRunlength:
     def test_rldecode(self):
         assert rldecode(b"\x05123456\xfa7\x04abcde\x80junk") == b"1234567777777abcde"
 
+    def test_rldecode_truncated(self):
+        # A run whose length byte is not followed by enough data used to raise
+        # StopIteration (or RuntimeError from the generator expression). It
+        # should return what was decoded so far instead.
+        assert rldecode(b"\x81") == b""  # repeat run with no data byte
+        assert rldecode(b"\x04AB") == b"AB"  # literal run wants 5 bytes, has 2
+
 
 class TestAES:
     def test_unpad_aes(self):
