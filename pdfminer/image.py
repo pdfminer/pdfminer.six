@@ -1,3 +1,4 @@
+import logging
 import os
 import os.path
 import struct
@@ -20,6 +21,8 @@ from pdfminer.pdftypes import (
     LITERALS_JBIG2_DECODE,
     LITERALS_JPX_DECODE,
 )
+
+logger = logging.getLogger(__name__)
 
 PIL_ERROR_MESSAGE = (
     "Could not import Pillow. This dependency of pdfminer.six is not "
@@ -270,6 +273,17 @@ class ImageWriter:
         """Save an image with unknown encoding"""
         ext = f".{image.bits}.{image.srcsize[0]}x{image.srcsize[1]}.img"
         name, path = self._create_unique_image_name(image, ext)
+
+        # The encoding of this image could not be determined, so the raw bytes
+        # are written to disk as-is. These .img files cannot be opened by most
+        # image viewers, so warn the user that the output needs attention.
+        logger.warning(
+            "Could not determine the image encoding of %r, writing raw image "
+            "data to %r instead. This file is unlikely to be viewable by most "
+            "image viewers.",
+            image.name,
+            name,
+        )
 
         with open(path, "wb") as fp:
             fp.write(image.stream.get_data())
