@@ -2,11 +2,16 @@ import itertools
 
 import pytest
 
-from pdfminer.pdfdocument import PDFDocument, PDFNoPageLabels
+from pdfminer.pdfdocument import (
+    PDFDocument,
+    PDFNoPageLabels,
+    PDFStandardSecurityHandlerV4,
+)
 from pdfminer.pdfexceptions import PDFObjectNotFound
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdftypes import dict_value, int_value
+from pdfminer.psparser import LIT
 from tests.helpers import absolute_sample_path
 
 
@@ -27,6 +32,40 @@ class TestPdfDocument:
             parser = PDFParser(fp)
             doc = PDFDocument(parser)
             assert doc.info == [{"Producer": b"European Patent Office"}]
+
+    def test_crypt_filter_without_cfm_uses_identity(self):
+        handler = PDFStandardSecurityHandlerV4.__new__(PDFStandardSecurityHandlerV4)
+        handler.param = {
+            "V": 4,
+            "R": 4,
+            "P": -4,
+            "O": b"",
+            "U": b"",
+            "CF": {"StdCF": {"Length": 16}},
+            "StmF": LIT("StdCF"),
+            "StrF": LIT("StdCF"),
+        }
+
+        handler.init_params()
+
+        assert handler.cfm["StdCF"](0, 0, b"ciphertext") == b"ciphertext"
+
+    def test_missing_default_crypt_filters_use_identity(self):
+        handler = PDFStandardSecurityHandlerV4.__new__(PDFStandardSecurityHandlerV4)
+        handler.param = {
+            "V": 4,
+            "R": 4,
+            "P": -4,
+            "O": b"",
+            "U": b"",
+            "CF": {},
+        }
+
+        handler.init_params()
+
+        assert handler.stmf == "Identity"
+        assert handler.strf == "Identity"
+        assert handler.cfm["Identity"](0, 0, b"ciphertext") == b"ciphertext"
 
     def test_page_labels(self):
         path = absolute_sample_path("contrib/pagelabels.pdf")
