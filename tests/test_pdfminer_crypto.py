@@ -60,6 +60,38 @@ class TestArcfour:
             == b"45a01f645fc35b383552544b9bf5"
         )
 
+    def test_long_keystream_matches_rfc_6229(self):
+        """Encrypting zeros reproduces the RFC 6229 keystream for key 0102030405.
+
+        The offsets reach beyond 3 KB, so this also covers outputs far longer
+        than the short samples above.
+        """
+        keystream = Arcfour(dehex(b"0102030405")).process(bytes(3088))
+        expected = {
+            0: b"b2396305f03dc027ccc3524a0a1118a8",
+            16: b"6982944f18fc82d589c403a47a0d0919",
+            240: b"28cb1132c96ce286421dcaadb8b69eae",
+            1024: b"30abbcc7c20b01609f23ee2d5f6bb7df",
+            2048: b"cc582f8ba9f265e2b1be9112e975d2d7",
+            3072: b"ec0e11c479dc329dc8da7968fe965681",
+        }
+        for offset, expected_hex in expected.items():
+            assert hex(keystream[offset : offset + 16]) == expected_hex
+
+    def test_cipher_state_is_carried_over_between_calls(self):
+        """Processing data in chunks gives the same result as one single call.
+
+        pdfminer reuses one Arcfour instance for the whole of a stream, so the
+        keystream has to continue where the previous call left off.
+        """
+        plaintext = bytes(range(256)) * 5
+        cipher = Arcfour(b"Key")
+        chunked = cipher.process(plaintext[:7]) + cipher.process(plaintext[7:])
+        assert chunked == Arcfour(b"Key").process(plaintext)
+
+    def test_empty_input_gives_empty_output(self):
+        assert Arcfour(b"Key").process(b"") == b""
+
 
 class TestLzw:
     def test_lzwdecode(self):
