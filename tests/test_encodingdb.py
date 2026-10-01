@@ -187,3 +187,13 @@ def test_get_encoding_with_invalid_differences():
     """
     invalid_differences = [PSLiteral("ubuntu"), PSLiteral("1234")]
     EncodingDB.get_encoding("StandardEncoding", invalid_differences)
+
+
+def test_winansi_duplicate_codes():
+    """WinAnsiEncoding duplicates hyphen at 0o255 and space at 0o240
+
+    ISO 32000-1:2008, Annex D, notes 5 and 6.
+    """
+    winansi = EncodingDB.get_encoding("WinAnsiEncoding")
+    assert winansi[0o255] == "-"
+    assert winansi[0o240] == " "
