@@ -1,9 +1,10 @@
+import hashlib
 import itertools
 import logging
 import re
 import struct
 from collections.abc import Callable, Iterable, Iterator, KeysView, Sequence
-from hashlib import md5, sha256, sha384, sha512
+from hashlib import sha256, sha384, sha512
 from typing import (
     Any,
     ClassVar,
@@ -77,6 +78,10 @@ class PDFEncryptionError(PDFException):
 
 
 class PDFPasswordIncorrect(PDFEncryptionError):
+    pass
+
+
+class PDFMD5Unavailable(PDFEncryptionError):
     pass
 
 
@@ -332,6 +337,23 @@ class PDFXRefStream(PDFBaseXRef):
             raise PDFKeyError(objid)
 
 
+def _md5(data: bytes = b"") -> "hashlib._Hash":
+    """Create an MD5 hash object, looked up lazily.
+
+    MD5 is only needed for the legacy security handlers (revisions 2 to 4).
+    Some Python builds (e.g. FIPS configurations) do not provide it, which
+    must not prevent importing this module or opening other documents.
+    """
+    try:
+        return hashlib.new("md5", data, usedforsecurity=False)
+    except ValueError as e:
+        error_msg = (
+            "This PDF uses a legacy security handler that requires MD5, "
+            "which is not available in this Python build"
+        )
+        raise PDFMD5Unavailable(error_msg) from e
+
+
 class PDFStandardSecurityHandler:
     PASSWORD_PADDING = (
         b"(\xbfN^Nu\x8aAd\x00NV\xff\xfa\x01\x08..\x00\xb6\xd0h>\x80/\x0c\xa9\xfedSiz"
@@ -384,7 +406,7 @@ class PDFStandardSecurityHandler:
             return Arcfour(key).encrypt(self.PASSWORD_PADDING)  # 2
         else:
             # Algorithm 3.5
-            hash = md5(self.PASSWORD_PADDING)  # 2
+            hash = _md5(self.PASSWORD_PADDING)  # 2
             hash.update(self.docid[0])  # 3
             result = Arcfour(key).encrypt(hash.digest())  # 4
             for i in range(1, 20):  # 5
@@ -396,7 +418,7 @@ class PDFStandardSecurityHandler:
     def compute_encryption_key(self, password: bytes) -> bytes:
         # Algorithm 3.2
         password = (password + self.PASSWORD_PADDING)[:32]  # 1
-        hash = md5(password)  # 2
+        hash = _md5(password)  # 2
         hash.update(self.o)  # 3
         # See https://github.com/pdfminer/pdfminer.six/issues/186
         hash.update(struct.pack("<L", self.p))  # 4
@@ -411,7 +433,7 @@ class PDFStandardSecurityHandler:
         if self.r >= 3:
             n = self.length // 8
             for _ in range(50):
-                result = md5(result[:n]).digest()
+                result = _md5(result[:n]).digest()
         return result[:n]
 
     def authenticate(self, password: str) -> bytes | None:
@@ -438,10 +460,10 @@ class PDFStandardSecurityHandler:
     def authenticate_owner_password(self, password: bytes) -> bytes | None:
         # Algorithm 3.7
         password = (password + self.PASSWORD_PADDING)[:32]
-        hash = md5(password)
+        hash = _md5(password)
         if self.r >= 3:
             for _ in range(50):
-                hash = md5(hash.digest())
+                hash = _md5(hash.digest())
         n = 5
         if self.r >= 3:
             n = self.length // 8
@@ -467,7 +489,7 @@ class PDFStandardSecurityHandler:
     def decrypt_rc4(self, objid: int, genno: int, data: bytes) -> bytes:
         assert self.key is not None
         key = self.key + struct.pack("<L", objid)[:3] + struct.pack("<L", genno)[:2]
-        hash = md5(key)
+        hash = _md5(key)
         key = hash.digest()[: min(len(key), 16)]
         return Arcfour(key).decrypt(data)
 
@@ -532,7 +554,7 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
             + struct.pack("<L", genno)[:2]
             + b"sAlT"
         )
-        hash = md5(key)
+        hash = _md5(key)
         key = hash.digest()[: min(len(key), 16)]
         initialization_vector = data[:16]
         ciphertext = data[16:]
