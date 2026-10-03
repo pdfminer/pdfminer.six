@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Switch to `bytearray` in `apply_png_predictor` to avoid out of memory error (and speed it up) ([#1247](https://github.com/pdfminer/pdfminer.six/pull/1247))
 - Check the type of `N` when creating an `ICCBased` color space ([#1252](http3://github.com/pdfminer/pdfminer.six/pull/1253))
 - Endless recursion issue with circular or corrupted `Prev` chains in cross-refeerence tables ([#1253](https://github.com/pdfminer/pdfminer.six/pull/1253))
+- Importing `pdfminer.pdfdocument` failing on Python builds without MD5 (e.g. FIPS configurations); MD5 is now resolved lazily and opening a PDF with a legacy security handler (revision 2-4) raises `PDFMD5Unavailable` ([#1292](https://github.com/pdfminer/pdfminer.six/issues/1292))
 
 ## [20260107]
 
