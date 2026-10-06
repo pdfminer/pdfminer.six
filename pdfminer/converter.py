@@ -531,6 +531,10 @@ class HTMLConverter(PDFConverter[AnyIO]):
         y: float,
         size: float,
     ) -> None:
+        font_style = ""
+        if color == "char" and self._font is not None:
+            name = self._font[0].split("+")[-1]
+            font_style = f"font-family: {enc(name)}; "
         color2 = self.text_colors.get(color)
         if color2 is not None:
             s = (
@@ -538,6 +542,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
                 f"color:{color2}; "
                 f"left:{x * self.scale}px; "
                 f"top:{(self._yoffset - y) * self.scale}px; "
+                f"{font_style}"
                 f'font-size:{size * self.scale * self.fontscale}px;">'
             )
             self.write(s)
@@ -643,13 +648,19 @@ class HTMLConverter(PDFConverter[AnyIO]):
                         render(child)
                 elif isinstance(item, LTChar):
                     self.place_border("char", 1, item)
-                    self.place_text(
-                        "char",
-                        item.get_text(),
-                        item.x0,
-                        item.y1,
-                        item.size,
-                    )
+                    # Preserve place_text's interface for subclass overrides.
+                    previous_font = self._font
+                    try:
+                        self._font = (make_compat_str(item.fontname), item.size)
+                        self.place_text(
+                            "char",
+                            item.get_text(),
+                            item.x0,
+                            item.y1,
+                            item.size,
+                        )
+                    finally:
+                        self._font = previous_font
             elif isinstance(item, LTTextLine):
                 for child in item:
                     render(child)
