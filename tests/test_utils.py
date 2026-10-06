@@ -1,9 +1,12 @@
 import math
 import pathlib
+import zlib
 
 import pytest
 
 from pdfminer.layout import LTComponent
+from pdfminer.pdftypes import PDFStream
+from pdfminer.psparser import LIT
 from pdfminer.utils import (
     Matrix,
     Plane,
@@ -11,6 +14,7 @@ from pdfminer.utils import (
     Rect,
     apply_matrix_pt,
     apply_matrix_rect,
+    apply_png_predictor,
     format_int_alpha,
     format_int_roman,
     mult_matrix,
@@ -246,3 +250,57 @@ def test_apply_matrix_pt(m0: Matrix, p0: Point, expected: Point) -> None:
 def test_apply_matrix_rect_outside(m0: Matrix, r0: Rect, expected: Rect) -> None:
     """Test rotation examples based on PDF reference 4.2.2 Common Transformations"""
     assert apply_matrix_rect(m0, r0) == expected
+
+
+@pytest.mark.parametrize(
+    ("bitspercomponent", "columns", "nbytes"),
+    [
+        (1, 1, 1),
+        (1, 8, 1),
+        (1, 9, 2),
+        (1, 16, 2),
+        (1, 17, 3),
+        (8, 1, 1),
+        (8, 2, 2),
+        (8, 3, 3),
+    ],
+)
+@pytest.mark.parametrize(
+    ("filter_type", "first_row", "second_row"),
+    [
+        (0, bytes([129, 66, 231]), bytes([60, 255, 0])),
+        (1, bytes([129, 193, 165]), bytes([60, 195, 1])),
+        (2, bytes([129, 66, 231]), bytes([187, 189, 25])),
+        (3, bytes([129, 2, 198]), bytes([252, 192, 13])),
+        (4, bytes([129, 193, 165]), bytes([187, 195, 1])),
+    ],
+)
+def test_png_predictor_packed_scanlines(
+    bitspercomponent: int,
+    columns: int,
+    nbytes: int,
+    filter_type: int,
+    first_row: bytes,
+    second_row: bytes,
+) -> None:
+    # All five filters encode the same two rows. Partial bytes retain padding.
+    data = bytes([filter_type]) + first_row[:nbytes]
+    data += bytes([filter_type]) + second_row[:nbytes]
+    expected = bytes([129, 66, 231])[:nbytes] + bytes([60, 255, 0])[:nbytes]
+    assert apply_png_predictor(15, 1, columns, bitspercomponent, data) == expected
+
+
+def test_flate_stream_with_packed_png_predictor() -> None:
+    stream = PDFStream(
+        {
+            "Filter": LIT("FlateDecode"),
+            "DecodeParms": {
+                "Predictor": 15,
+                "Colors": 1,
+                "Columns": 9,
+                "BitsPerComponent": 1,
+            },
+        },
+        zlib.compress(bytes([1, 129, 193, 2, 187, 189])),
+    )
+    assert stream.get_data() == bytes([129, 66, 60, 255])
