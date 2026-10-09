@@ -929,7 +929,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
     def write_text(self, text: str) -> None:
         if self.stripcontrol:
             text = self.CONTROL.sub("", text)
-        self.write(text)
+        self.write(enc(text))
 
     def write_word(self) -> None:
         if len(self.working_text) > 0:
@@ -946,8 +946,9 @@ class HOCRConverter(PDFConverter[AnyIO]):
                 f"title='{self.bbox_repr(self.working_bbox)}; "
                 f"x_font {self.working_font}; "
                 f"x_fsize {self.working_size}'>"
-                f"{self.working_text.strip()}</span>"
             )
+            self.write_text(self.working_text.strip())
+            self.write("</span>")
         self.within_chars = False
 
     def receive_layout(self, ltpage: LTPage) -> None:
@@ -991,7 +992,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
                     self.working_size = item.size
                 elif len(item.get_text().strip()) == 0:
                     self.write_word()
-                    self.write(item.get_text())
+                    self.write_text(item.get_text())
                 else:
                     if (
                         self.working_bbox[1] != item.bbox[1]
