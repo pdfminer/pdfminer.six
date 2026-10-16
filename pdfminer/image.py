@@ -283,12 +283,25 @@ class ImageWriter:
                 return True
         return False
 
+    @staticmethod
+    def _sanitize_name(name: str) -> str:
+        # The image name comes from the PDF (the XObject name in a content
+        # stream) and must not be able to steer the output path outside
+        # outdir. Keep only the final path component and drop separators,
+        # parent references and NUL bytes.
+        cleaned = name.replace("\\", "/").replace("\0", "")
+        stem = os.path.basename(cleaned).strip()
+        if not stem or stem in (os.curdir, os.pardir):
+            stem = "image"
+        return stem
+
     def _create_unique_image_name(self, image: LTImage, ext: str) -> tuple[str, str]:
-        name = image.name + ext
+        stem = self._sanitize_name(image.name)
+        name = stem + ext
         path = os.path.join(self.outdir, name)
         img_index = 0
         while os.path.exists(path):
-            name = f"{image.name}.{img_index}{ext}"
+            name = f"{stem}.{img_index}{ext}"
             path = os.path.join(self.outdir, name)
             img_index += 1
         return name, path
