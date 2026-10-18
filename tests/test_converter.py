@@ -1,9 +1,10 @@
 import io
+import xml.dom.minidom
 from tempfile import TemporaryFile
 
 from pdfminer.converter import PDFConverter, PDFLayoutAnalyzer
-from pdfminer.high_level import extract_pages
-from pdfminer.layout import LTChar, LTContainer, LTCurve, LTLine, LTRect
+from pdfminer.high_level import extract_pages, extract_text_to_fp
+from pdfminer.layout import LAParams, LTChar, LTContainer, LTCurve, LTLine, LTRect
 from pdfminer.pdfinterp import PDFGraphicState
 from tests.helpers import absolute_sample_path
 
@@ -475,3 +476,82 @@ class TestBinaryDetector:
 
     def test_textiowrapper(self):
         assert not PDFConverter._is_binary_stream(io.TextIOBase())
+
+
+def _make_pdf(fontname: str, text: str, pattern: str) -> bytes:
+    """Build a one-page PDF with a given font name, text and pattern name."""
+
+    def name(s: str) -> bytes:
+        return "".join(f"#{ord(c):02X}" for c in s).encode()
+
+    content = (
+        b"/Pattern cs /" + name(pattern) + b" scn "
+        b"BT /F1 24 Tf 72 700 Td (" + text.encode() + b") Tj ET"
+    )
+    widths = b"[" + b" ".join([b"600"] * 95) + b"]"
+    objs = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R"
+        b" /Resources << /Font << /F1 5 0 R >> >> >>",
+        b"<< /Length "
+        + str(len(content)).encode()
+        + b" >>\nstream\n"
+        + content
+        + b"\nendstream",
+        b"<< /Type /Font /Subtype /TrueType /BaseFont /"
+        + name(fontname)
+        + b" /FirstChar 32 /LastChar 126 /Widths "
+        + widths
+        + b" /FontDescriptor 6 0 R /Encoding /WinAnsiEncoding >>",
+        b"<< /Type /FontDescriptor /FontName /"
+        + name(fontname)
+        + b" /Flags 32 /FontBBox [0 0 1000 1000] /ItalicAngle 0"
+        b" /Ascent 800 /Descent -200 /CapHeight 700 /StemV 80 >>",
+    ]
+    out = bytearray(b"%PDF-1.4\n")
+    offsets = []
+    for i, obj in enumerate(objs, 1):
+        offsets.append(len(out))
+        out += f"{i} 0 obj\n".encode() + obj + b"\nendobj\n"
+    xref = len(out)
+    out += f"xref\n0 {len(objs) + 1}\n".encode() + b"0000000000 65535 f \n"
+    for offset in offsets:
+        out += f"{offset:010d} 00000 n \n".encode()
+    out += (
+        f"trailer\n<< /Size {len(objs) + 1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n"
+    ).encode()
+    return bytes(out)
+
+
+class TestOutputEscaping:
+    """Font names, pattern names and text taken from the PDF must be escaped
+    in the HTML, hOCR and XML output so they cannot inject markup."""
+
+    fontname = '"><script>alert(1)</script>'
+    text = "<script>alert(1)</script>"
+    pattern = '"><evil'
+
+    def _convert(self, output_type: str) -> str:
+        inf = io.BytesIO(_make_pdf(self.fontname, self.text, self.pattern))
+        outfp = io.BytesIO()
+        extract_text_to_fp(inf, outfp, output_type=output_type, laparams=LAParams())
+        return outfp.getvalue().decode("utf-8")
+
+    def test_html_escapes_fontname(self):
+        output = self._convert("html")
+        assert self.fontname not in output
+        assert "<script>" not in output
+        assert "font-family: &quot;&gt;&lt;script&gt;" in output
+
+    def test_hocr_escapes_fontname_and_text(self):
+        output = self._convert("hocr")
+        assert self.fontname not in output
+        assert "<script>" not in output
+        assert "x_font &quot;&gt;&lt;script&gt;" in output
+        assert "&lt;script&gt;alert(1)&lt;/script&gt;</span>" in output
+
+    def test_xml_escapes_pattern_name(self):
+        output = self._convert("xml")
+        assert 'ncolour="&quot;&gt;&lt;evil"' in output
+        xml.dom.minidom.parseString(output)

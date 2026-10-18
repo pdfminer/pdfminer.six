@@ -582,7 +582,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
             fontname_without_subset_tag = fontname.split("+")[-1]
             self.write(
                 '<span style="'
-                f"font-family: {fontname_without_subset_tag}; "
+                f"font-family: {enc(fontname_without_subset_tag)}; "
                 f'font-size:{fontsize * self.scale * self.fontscale}px">'
             )
             self._font = font
@@ -809,7 +809,7 @@ class XMLConverter(PDFConverter[AnyIO]):
                     f'font="{enc(item.fontname)}" '
                     f'bbox="{bbox2str(item.bbox)}" '
                     f'colourspace="{item.ncs.name}" '
-                    f'ncolour="{item.graphicstate.ncolor}" '
+                    f'ncolour="{enc(str(item.graphicstate.ncolor))}" '
                     f'size="{item.size:.3f}">'
                 )
                 self.write(s)
@@ -929,7 +929,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
     def write_text(self, text: str) -> None:
         if self.stripcontrol:
             text = self.CONTROL.sub("", text)
-        self.write(text)
+        self.write(enc(text))
 
     def write_word(self) -> None:
         if len(self.working_text) > 0:
@@ -938,15 +938,16 @@ class HOCRConverter(PDFConverter[AnyIO]):
                 bold_and_italic_styles = "font-style: italic; "
             if "Bold" in self.working_font:
                 bold_and_italic_styles += "font-weight: bold; "
+            fontname = enc(self.working_font)
             self.write(
-                f'<span style=\'font:"{self.working_font}"; '
+                f'<span style=\'font:"{fontname}"; '
                 f"font-size:{self.working_size}; "
                 f"{bold_and_italic_styles}' "
                 f"class='ocrx_word' "
                 f"title='{self.bbox_repr(self.working_bbox)}; "
-                f"x_font {self.working_font}; "
+                f"x_font {fontname}; "
                 f"x_fsize {self.working_size}'>"
-                f"{self.working_text.strip()}</span>"
+                f"{enc(self.working_text.strip())}</span>"
             )
         self.within_chars = False
 
@@ -991,7 +992,7 @@ class HOCRConverter(PDFConverter[AnyIO]):
                     self.working_size = item.size
                 elif len(item.get_text().strip()) == 0:
                     self.write_word()
-                    self.write(item.get_text())
+                    self.write_text(item.get_text())
                 else:
                     if (
                         self.working_bbox[1] != item.bbox[1]
