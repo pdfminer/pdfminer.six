@@ -187,6 +187,9 @@ class FileUnicodeMap(UnicodeMap):
             unichr = name2unicode(code.name)
         elif isinstance(code, bytes):
             # Interpret as UTF-16BE.
+            if len(code) == 1:
+                # Some generators omit the zero high byte in ToUnicode destinations.
+                code = b"\x00" + code
             unichr = code.decode("UTF-16BE", "ignore")
         elif isinstance(code, int):
             unichr = chr(code)
