@@ -1,8 +1,46 @@
 """Test cmapdb module, particularly IdentityCMap decoding."""
 
 import struct
+from io import BytesIO
 
-from pdfminer.cmapdb import IdentityCMap, IdentityCMapByte
+import pytest
+
+from pdfminer.cmapdb import CMapParser, FileUnicodeMap, IdentityCMap, IdentityCMapByte
+
+
+@pytest.mark.parametrize(
+    ("code", "expected"),
+    [
+        (b"A", "A"),
+        (b"\xe9", "\u00e9"),
+        (b"\x00", "\x00"),
+        (b"", ""),
+        (b"\x00A", "A"),
+        (b"\x00f\x00i", "fi"),
+        (b"\xd8=\xde\x00", "\U0001f600"),
+        (b"\x00A\x01", "A"),
+    ],
+)
+def test_unicode_map_byte_destinations(code: bytes, expected: str) -> None:
+    """Recover one-byte destinations without changing longer UTF-16BE strings."""
+    cmap = FileUnicodeMap()
+    cmap.add_cid2unichr(1, code)
+    assert cmap.get_unichr(1) == expected
+
+
+@pytest.mark.parametrize(
+    "mapping",
+    [
+        b"2 beginbfchar <01> <41> <02> <0042> endbfchar",
+        b"1 beginbfrange <01> <02> <41> endbfrange",
+        b"1 beginbfrange <01> <02> [<41> <0042>] endbfrange",
+    ],
+)
+def test_cmap_parser_single_byte_unicode_destinations(mapping: bytes) -> None:
+    """Read single-byte destinations in character, range, and array mappings."""
+    cmap = FileUnicodeMap()
+    CMapParser(cmap, BytesIO(b"begincmap\n" + mapping + b"\nendcmap")).run()
+    assert cmap.cid2unichr == {1: "A", 2: "B"}
 
 
 def test_identity_cmap_odd_length_buffer():
