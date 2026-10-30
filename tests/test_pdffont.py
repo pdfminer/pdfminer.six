@@ -114,7 +114,7 @@ end
 """
 
 
-def embedded_encoding_spec(data: bytes) -> dict:
+def embedded_encoding_spec(data: bytes) -> dict[str, Any]:
     return {
         "Encoding": PDFStream({"CMapName": PSLiteral("ArbolCustom-H")}, data),
     }
