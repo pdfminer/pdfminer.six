@@ -1,5 +1,6 @@
 import contextlib
 import logging
+import re
 import struct
 from collections.abc import Iterable, Iterator, Mapping
 from io import BytesIO
@@ -17,6 +18,7 @@ from pdfminer.cmapdb import (
     CMapBase,
     CMapDB,
     CMapParser,
+    FileCMap,
     FileUnicodeMap,
     IdentityUnicodeMap,
     UnicodeMap,
@@ -49,6 +51,36 @@ if TYPE_CHECKING:
     from pdfminer.pdfinterp import PDFResourceManager
 
 log = logging.getLogger(__name__)
+
+# Sections of an embedded Encoding CMap stream, read by
+# PDFCIDFont._get_embedded_cmap(). The entry patterns only run inside
+# their own section, so lookalike text elsewhere in the stream (bfchar
+# sections, comments) cannot produce mappings.
+_RE_CIDCHAR_BLOCK = re.compile(rb"begincidchar(.*?)endcidchar", re.DOTALL)
+_RE_CIDCHAR_ENTRY = re.compile(rb"<([0-9A-Fa-f]+)>\s+(\d+)")
+_RE_CIDRANGE_BLOCK = re.compile(rb"begincidrange(.*?)endcidrange", re.DOTALL)
+_RE_CIDRANGE_ENTRY = re.compile(rb"<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s+(\d+)")
+_RE_WMODE = re.compile(rb"/WMode\s+(\d+)")
+
+# Bound on the code-to-CID mappings one embedded CMap may define, so a
+# hostile or broken stream cannot make font construction expand an
+# enormous begincidrange span. 131072 mappings is far above any real
+# font (a full two-byte codespace is 65536).
+MAX_EMBEDDED_CMAP_MAPPINGS = 131072
+
+
+def _hex_to_bytes(hex_digits: bytes) -> bytes | None:
+    """Decode a PDF hex string's digits, or None if they are malformed.
+
+    PDF hex strings with an odd number of digits are padded with a
+    trailing 0 (PDF 32000, 7.3.4.2).
+    """
+    if len(hex_digits) % 2:
+        hex_digits += b"0"
+    try:
+        return bytes.fromhex(hex_digits.decode("ascii"))
+    except (ValueError, UnicodeDecodeError):
+        return None
 
 
 def get_widths(seq: Iterable[object]) -> dict[str | int, float]:
@@ -1193,9 +1225,88 @@ class PDFCIDFont(PDFFont):
         try:
             return CMapDB.get_cmap(cmap_name)
         except CMapDB.CMapNotFound as e:
+            cmap = self._get_embedded_cmap(spec)
+            if cmap is not None:
+                return cmap
             if strict:
                 raise PDFFontError(e) from e
             return CMap()
+
+    @staticmethod
+    def _get_embedded_cmap(spec: Mapping[str, Any]) -> CMap | None:
+        """Read the CMap embedded as the Encoding stream, if there is one.
+
+        Some PDF generators (e.g. Prince XML) embed a custom CMap as a
+        stream in the Encoding entry instead of referring to a predefined
+        CMap by name. The name of such a CMap is unknown to the predefined
+        database, but the stream itself holds the mapping from character
+        codes to CIDs that decode() needs, in its begincidchar and
+        begincidrange sections.
+
+        Those sections cannot go through CMapParser: it interprets every
+        CMap stream as a ToUnicode map and stores cid sections as
+        cid-to-unicode entries, never as code-to-CID mappings. Read the
+        two sections directly instead, and fill a FileCMap, the class
+        whose add_code2cid() builds the trie that decode() walks.
+
+        Returns None when the Encoding is not a stream, when the stream
+        cannot be read, or when it defines no code-to-CID mapping; the
+        caller then falls back to the previous behaviour.
+        """
+        encoding = resolve1(spec.get("Encoding"))
+        if not isinstance(encoding, PDFStream):
+            return None
+        try:
+            data = encoding.get_data()
+        except (PDFException, ValueError, TypeError) as exc:
+            log.debug("Failed to read embedded Encoding CMap stream: %r", exc)
+            return None
+
+        cmap = FileCMap()
+        num_mappings = 0
+
+        for block in _RE_CIDCHAR_BLOCK.finditer(data):
+            for code_hex, cid_text in _RE_CIDCHAR_ENTRY.findall(block.group(1)):
+                code = _hex_to_bytes(code_hex)
+                if code is None or num_mappings >= MAX_EMBEDDED_CMAP_MAPPINGS:
+                    continue
+                cmap.add_code2cid(code.decode("latin-1"), int(cid_text))
+                num_mappings += 1
+
+        for block in _RE_CIDRANGE_BLOCK.finditer(data):
+            for lo_hex, hi_hex, cid_text in _RE_CIDRANGE_ENTRY.findall(block.group(1)):
+                lo = _hex_to_bytes(lo_hex)
+                hi = _hex_to_bytes(hi_hex)
+                if lo is None or hi is None or len(lo) != len(hi):
+                    continue
+                start = int.from_bytes(lo, "big")
+                end = int.from_bytes(hi, "big")
+                range_size = end - start + 1
+                if range_size <= 0 or (
+                    num_mappings + range_size > MAX_EMBEDDED_CMAP_MAPPINGS
+                ):
+                    # A range that would expand past the mapping bound
+                    # makes the whole embedded CMap untrustworthy; drop
+                    # it rather than decode with a partial mapping.
+                    log.debug(
+                        "Embedded Encoding CMap exceeds %d mappings; ignoring it",
+                        MAX_EMBEDDED_CMAP_MAPPINGS,
+                    )
+                    return None
+                base_cid = int(cid_text)
+                code_len = len(lo)
+                for offset in range(range_size):
+                    code = (start + offset).to_bytes(code_len, "big")
+                    cmap.add_code2cid(code.decode("latin-1"), base_cid + offset)
+                num_mappings += range_size
+
+        if not cmap.code2cid:
+            return None
+
+        wmode = _RE_WMODE.search(data)
+        if wmode is not None and int(wmode.group(1)) != 0:
+            cmap.attrs["WMode"] = int(wmode.group(1))
+        return cmap
 
     @staticmethod
     def _get_cmap_name(spec: Mapping[str, Any], strict: bool) -> str:
