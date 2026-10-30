@@ -71,6 +71,16 @@ class LAParams:
         layout analysis
     :param all_texts: If layout analysis should be performed on text in
         figures.
+    :param max_layout_objects: Maximum number of non-text layout objects
+        (paths, curves and images) retained per page, including objects
+        inside figures. Pages crowded with vector graphics, such as CAD
+        drawings, can contain hundreds of thousands of path objects; each
+        one is materialized as a layout object and kept in the page tree,
+        so time and memory grow without bound. When a page exceeds this
+        number, the remaining non-text objects on that page are dropped
+        while rendering. Text objects are never dropped, so text
+        extraction still returns the page's text. If `None` (the default),
+        all objects are retained.
     """
 
     def __init__(
@@ -82,6 +92,7 @@ class LAParams:
         boxes_flow: float | None = 0.5,
         detect_vertical: bool = False,
         all_texts: bool = False,
+        max_layout_objects: int | None = None,
     ) -> None:
         self.line_overlap = line_overlap
         self.char_margin = char_margin
@@ -90,10 +101,20 @@ class LAParams:
         self.boxes_flow = boxes_flow
         self.detect_vertical = detect_vertical
         self.all_texts = all_texts
+        self.max_layout_objects = max_layout_objects
 
         self._validate()
 
     def _validate(self) -> None:
+        if self.max_layout_objects is not None:
+            max_layout_objects_err_msg = (
+                "LAParam max_layout_objects should be None, or a non-negative integer"
+            )
+            if not isinstance(self.max_layout_objects, int):
+                raise PDFTypeError(max_layout_objects_err_msg)
+            if self.max_layout_objects < 0:
+                raise PDFValueError(max_layout_objects_err_msg)
+
         if self.boxes_flow is not None:
             boxes_flow_err_msg = (
                 "LAParam boxes_flow should be None, or a number between -1 and +1"
