@@ -4,9 +4,9 @@ import pytest
 
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LAParams
-from pdfminer.pdffont import PDFCIDFont, PDFFont, get_widths
+from pdfminer.pdffont import PDFCIDFont, PDFFont, PDFFontError, get_widths
 from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
-from pdfminer.pdftypes import PDFObjRef
+from pdfminer.pdftypes import PDFObjRef, PDFStream
 from pdfminer.psparser import PSLiteral
 from tests.helpers import absolute_sample_path
 
@@ -89,3 +89,161 @@ def test_cmap_font_12():
         pdf_interpreter.process_page(pdf_page)
 
     assert pdf_device.get_result() is not None
+
+
+EMBEDDED_CMAP_STREAM = b"""\
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> def
+/CMapName /ArbolCustom-H def
+/CMapType 2 def
+1 begincodespacerange
+<00> <FF>
+endcodespacerange
+1 begincidchar
+<01> 5
+endcidchar
+1 begincidrange
+<10> <12> 20
+endcidrange
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+"""
+
+
+def embedded_encoding_spec(data: bytes) -> dict[str, Any]:
+    return {
+        "Encoding": PDFStream({"CMapName": PSLiteral("ArbolCustom-H")}, data),
+    }
+
+
+def test_get_cmap_from_embedded_encoding_stream():
+    """An Encoding that is an embedded CMap stream supplies the mapping.
+
+    Generators such as Prince XML embed a custom CMap as a stream whose
+    name is not in the predefined database. The code-to-CID mapping lives
+    in the stream itself; without reading it, decode() yields nothing
+    and every character in the font is silently dropped.
+    """
+    spec = embedded_encoding_spec(EMBEDDED_CMAP_STREAM)
+    font = PDFCIDFont(PDFResourceManager(), spec)
+
+    cmap = font.get_cmap_from_spec(spec, False)
+
+    assert list(cmap.decode(b"\x01")) == [5]
+    assert list(cmap.decode(b"\x10\x11\x12")) == [20, 21, 22]
+
+
+def test_get_cmap_from_embedded_encoding_stream_wmode():
+    """The WMode of an embedded CMap carries over to the parsed CMap."""
+    data = EMBEDDED_CMAP_STREAM.replace(
+        b"/CMapType 2 def", b"/CMapType 2 def\n/WMode 1 def"
+    )
+    spec = embedded_encoding_spec(data)
+    font = PDFCIDFont(PDFResourceManager(), spec)
+
+    cmap = font.get_cmap_from_spec(spec, False)
+
+    assert cmap.is_vertical()
+
+
+def test_get_cmap_unknown_name_without_stream_still_falls_back():
+    """Behaviour for unknown predefined names is unchanged."""
+    spec = {"Encoding": PSLiteral("NoSuchCMap-H")}
+    font = PDFCIDFont(PDFResourceManager(), spec)
+
+    cmap = font.get_cmap_from_spec(spec, False)
+    assert list(cmap.decode(b"\x01")) == []
+
+    with pytest.raises(PDFFontError):
+        font.get_cmap_from_spec(spec, True)
+
+
+def test_get_cmap_embedded_stream_without_mappings_falls_back():
+    """An embedded stream with no cid sections changes nothing."""
+    spec = embedded_encoding_spec(b"this is not a CMap stream")
+    font = PDFCIDFont(PDFResourceManager(), spec)
+
+    cmap = font.get_cmap_from_spec(spec, False)
+
+    assert list(cmap.decode(b"\x01")) == []
+
+
+def test_get_cmap_embedded_stream_oversized_range_falls_back():
+    """A begincidrange that expands past the mapping bound is ignored."""
+    data = EMBEDDED_CMAP_STREAM.replace(b"<10> <12> 20", b"<000000> <FFFFFF> 20")
+    spec = embedded_encoding_spec(data)
+    font = PDFCIDFont(PDFResourceManager(), spec)
+
+    cmap = font.get_cmap_from_spec(spec, False)
+
+    # The oversized range discards the whole embedded CMap, including
+    # the otherwise valid begincidchar entry: decoding must not proceed
+    # with a partial mapping.
+    assert list(cmap.decode(b"\x10")) == []
+    assert list(cmap.decode(b"\x01")) == []
+
+
+def test_type0_font_with_embedded_encoding_stream_decodes_to_text():
+    """End to end: Type0 font, embedded Encoding stream, ToUnicode map."""
+    encoding_cmap = b"""\
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CMapName /ArbolCustom-H def
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+1 begincidrange
+<0001> <0003> 1
+endcidrange
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+"""
+    tounicode_cmap = b"""\
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+3 beginbfchar
+<0001> <0041>
+<0002> <0042>
+<0003> <0043>
+endbfchar
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+"""
+    descendant = {
+        "BaseFont": PSLiteral("ArbolCustom"),
+        "Subtype": PSLiteral("CIDFontType2"),
+        "CIDSystemInfo": {
+            "Registry": b"Adobe",
+            "Ordering": b"Identity",
+            "Supplement": 0,
+        },
+        "FontDescriptor": {},
+        "DW": 1000,
+    }
+    spec = {
+        "Type": PSLiteral("Font"),
+        "Subtype": PSLiteral("Type0"),
+        "BaseFont": PSLiteral("ArbolCustom"),
+        "Encoding": PDFStream({"CMapName": PSLiteral("ArbolCustom-H")}, encoding_cmap),
+        "DescendantFonts": [descendant],
+        "ToUnicode": PDFStream({}, tounicode_cmap),
+    }
+
+    font = PDFResourceManager().get_font(None, spec)
+
+    cids = list(font.decode(b"\x00\x01\x00\x02\x00\x03"))
+    assert cids == [1, 2, 3]
+    assert "".join(font.to_unichr(cid) for cid in cids) == "ABC"
