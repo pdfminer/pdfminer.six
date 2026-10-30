@@ -824,10 +824,14 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         distances to other objects & groups are added to the process queue.
 
         For performance reason, pair-wise distances and object pair info are
-        maintained in a heap of (idx, dist, id(obj1), id(obj2), obj1, obj2)
+        maintained in a heap of (skip_isany, dist, seq1, seq2, obj1, obj2)
         tuples. It ensures quick access to the smallest element. Note that
         since comparison operators, e.g., __lt__, are disabled for
-        LTComponent, id(obj) has to appear before obj in element tuples.
+        LTComponent, a sequence number has to appear before obj in element
+        tuples. Sequence numbers count the boxes in input order and then the
+        groups in creation order, so ties in distance are broken the same way
+        on every run. Do not break ties by id(obj): memory addresses differ
+        between runs.
 
         :param laparams: LAParams object.
         :param boxes: All textbox objects to be grouped.
@@ -872,17 +876,20 @@ class LTLayoutContainer(LTContainer[LTComponent]):
             box1 = boxes[i]
             for j in range(i + 1, len(boxes)):
                 box2 = boxes[j]
-                dists.append((False, dist(box1, box2), id(box1), id(box2), box1, box2))
+                dists.append((False, dist(box1, box2), i, j, box1, box2))
         heapq.heapify(dists)
 
+        # Maps id(obj) to the sequence number of each box and group.
+        seqs: dict[int, int] = {id(box): i for i, box in enumerate(boxes)}
+        next_group_seq = len(boxes)
         plane.extend(boxes)
         done = set()
         while len(dists) > 0:
-            (skip_isany, d, id1, id2, obj1, obj2) = heapq.heappop(dists)
+            (skip_isany, d, seq1, seq2, obj1, obj2) = heapq.heappop(dists)
             # Skip objects that are already merged
-            if (id1 not in done) and (id2 not in done):
+            if (seq1 not in done) and (seq2 not in done):
                 if not skip_isany and isany(obj1, obj2):
-                    heapq.heappush(dists, (True, d, id1, id2, obj1, obj2))
+                    heapq.heappush(dists, (True, d, seq1, seq2, obj1, obj2))
                     continue
                 if isinstance(obj1, (LTTextBoxVertical, LTTextGroupTBRL)) or isinstance(
                     obj2,
@@ -893,12 +900,22 @@ class LTLayoutContainer(LTContainer[LTComponent]):
                     group = LTTextGroupLRTB([obj1, obj2])
                 plane.remove(obj1)
                 plane.remove(obj2)
-                done.update([id1, id2])
+                done.update([seq1, seq2])
+                group_seq = next_group_seq
+                next_group_seq += 1
+                seqs[id(group)] = group_seq
 
                 for other in plane:
                     heapq.heappush(
                         dists,
-                        (False, dist(group, other), id(group), id(other), group, other),
+                        (
+                            False,
+                            dist(group, other),
+                            group_seq,
+                            seqs[id(other)],
+                            group,
+                            other,
+                        ),
                     )
                 plane.add(group)
         # By now only groups are in the plane
