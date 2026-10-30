@@ -72,11 +72,41 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         self.pageno = pageno
         self.laparams = laparams
         self._stack: list[LTLayoutContainer] = []
+        self._nontext_count = 0
+        self._layout_cap_warned = False
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
         (x0, y0, x1, y1) = apply_matrix_rect(ctm, page.mediabox)
         mediabox = (0, 0, abs(x0 - x1), abs(y0 - y1))
         self.cur_item = LTPage(self.pageno, mediabox)
+        self._nontext_count = 0
+        self._layout_cap_warned = False
+
+    def _layout_cap_reached(self) -> bool:
+        """Whether the per-page cap on non-text layout objects is reached.
+
+        The cap is ``LAParams.max_layout_objects``. It counts the path and
+        image objects retained for the current page, including objects
+        inside figures. Text objects are never counted or dropped, so a
+        page that reaches the cap still yields its text.
+        """
+        if self.laparams is None or self.laparams.max_layout_objects is None:
+            return False
+        if self._nontext_count < self.laparams.max_layout_objects:
+            return False
+        if not self._layout_cap_warned:
+            self._layout_cap_warned = True
+            log.warning(
+                "Page %s: dropping non-text layout objects beyond "
+                "max_layout_objects=%s; text extraction is unaffected",
+                self.pageno,
+                self.laparams.max_layout_objects,
+            )
+        return True
+
+    def _add_nontext_object(self, item: LTComponent) -> None:
+        self.cur_item.add(item)
+        self._nontext_count += 1
 
     def end_page(self, page: PDFPage) -> None:
         assert not self._stack, str(len(self._stack))
@@ -97,13 +127,15 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         self.cur_item.add(fig)
 
     def render_image(self, name: str, stream: PDFStream) -> None:
+        if self._layout_cap_reached():
+            return
         assert isinstance(self.cur_item, LTFigure), str(type(self.cur_item))
         item = LTImage(
             name,
             stream,
             (self.cur_item.x0, self.cur_item.y0, self.cur_item.x1, self.cur_item.y1),
         )
-        self.cur_item.add(item)
+        self._add_nontext_object(item)
 
     def paint_path(
         self,
@@ -114,6 +146,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         path: Sequence[PathSegment],
     ) -> None:
         """Paint paths described in section 4.4 of the PDF reference manual"""
+        if self._layout_cap_reached():
+            return
         shape = "".join(x[0] for x in path)
 
         if shape[:1] != "m":
@@ -181,7 +215,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                     original_path=transformed_path,
                     dashing_style=gstate.dash,
                 )
-                self.cur_item.add(line)
+                self._add_nontext_object(line)
 
             elif shape in {"mlllh", "mllll"}:
                 (x0, y0), (x1, y1), (x2, y2), (x3, y3), _ = pts
@@ -202,7 +236,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                         transformed_path,
                         gstate.dash,
                     )
-                    self.cur_item.add(rect)
+                    self._add_nontext_object(rect)
                 else:
                     curve = LTCurve(
                         gstate.linewidth,
@@ -215,7 +249,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                         transformed_path,
                         gstate.dash,
                     )
-                    self.cur_item.add(curve)
+                    self._add_nontext_object(curve)
             else:
                 curve = LTCurve(
                     gstate.linewidth,
@@ -228,7 +262,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                     transformed_path,
                     gstate.dash,
                 )
-                self.cur_item.add(curve)
+                self._add_nontext_object(curve)
 
     def render_char(
         self,
