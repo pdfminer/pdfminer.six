@@ -428,8 +428,9 @@ class PSBaseParser:
             return i + 1
 
         elif self.oct:
-            chrcode = int(self.oct, 8)
-            assert chrcode < 256, f"Invalid octal {self.oct!r} ({chrcode})"
+            # High-order overflow is ignored (PDF 32000-1:2008, 7.3.4.2),
+            # so e.g. \777 is the same as \377.
+            chrcode = int(self.oct, 8) & 0xFF
             self._curtoken += bytes((chrcode,))
             self._parse1 = self._parse_string
             return i
@@ -471,9 +472,14 @@ class PSBaseParser:
             return len(s)
         j = m.start(0)
         self._curtoken += s[i:j]
+        hexdigits = SPC.sub(b"", self._curtoken)
+        if len(hexdigits) % 2:
+            # An odd final digit is assumed to be followed by 0
+            # (PDF 32000-1:2008, 7.3.4.3), so <901FA> is <901FA0>.
+            hexdigits += b"0"
         token = HEX_PAIR.sub(
             lambda m: bytes((int(m.group(0), 16),)),
-            SPC.sub(b"", self._curtoken),
+            hexdigits,
         )
         self._add_token(token)
         self._parse1 = self._parse_main

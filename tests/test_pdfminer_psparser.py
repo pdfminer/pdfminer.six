@@ -58,7 +58,7 @@ func/a/b{(c)do*}def
         (191, b""),
         (194, b" "),
         (199, b"@@ "),
-        (211, b"\xab\xcd\x00\x124\x05"),
+        (211, b"\xab\xcd\x00\x124P"),
         (226, KWD(b"func")),
         (230, LIT("a")),
         (232, LIT("b")),
@@ -100,7 +100,7 @@ func/a/b{(c)do*}def
         (191, b""),
         (194, b" "),
         (199, b"@@ "),
-        (211, b"\xab\xcd\x00\x124\x05"),
+        (211, b"\xab\xcd\x00\x124P"),
         (230, LIT("a")),
         (232, LIT("b")),
         (234, [b"c"]),
@@ -158,6 +158,22 @@ func/a/b{(c)do*}def
         parser = PSBaseParser(BytesIO(b"Do"))
         _pos, token = parser.nexttoken()
         assert token == KWD(b"Do")
+
+    def test_odd_length_hex_string(self):
+        """The last digit of an odd-length hex string is padded with 0.
+
+        PDF 32000-1:2008, 7.3.4.3: <901FA> is the same as <901FA0>.
+        """
+        tokens = self.get_tokens(b"<901FA> <4 1 4> <7>")
+        assert tokens == [(0, b"\x90\x1f\xa0"), (8, b"A@"), (16, b"p")]
+
+    def test_octal_escape_overflow(self):
+        """High-order overflow in an octal escape is ignored, not fatal.
+
+        PDF 32000-1:2008, 7.3.4.2.
+        """
+        tokens = self.get_tokens(rb"(a\777b) (\400)")
+        assert tokens == [(0, b"a\xffb"), (9, b"\x00")]
 
 
 BIGDATA = b"""/CIDInit /ProcSet findresource begin\r
