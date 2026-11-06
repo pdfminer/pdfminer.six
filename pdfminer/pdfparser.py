@@ -40,6 +40,13 @@ class PDFParser(PSStackParser[Union[PSKeyword, PDFStream, PDFObjRef, None]]):
         PSStackParser.__init__(self, fp)
         self.doc: PDFDocument | None = None
         self.fallback = False
+        # When set, nextobject() returns each top-level object as soon as it
+        # is complete, instead of waiting for a keyword such as `startxref`.
+        self.return_toplevel = False
+
+    def flush(self) -> None:
+        if self.return_toplevel:
+            self.add_results(*self.popall())
 
     def set_document(self, doc: "PDFDocument") -> None:
         """Associates the parser with a PDFDocument object."""

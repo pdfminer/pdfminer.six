@@ -2,6 +2,7 @@ import itertools
 
 import pytest
 
+from pdfminer.high_level import extract_text
 from pdfminer.pdfdocument import PDFDocument, PDFNoPageLabels
 from pdfminer.pdfexceptions import PDFObjectNotFound
 from pdfminer.pdfpage import PDFPage
@@ -27,6 +28,17 @@ class TestPdfDocument:
             parser = PDFParser(fp)
             doc = PDFDocument(parser)
             assert doc.info == [{"Producer": b"European Patent Office"}]
+
+    def test_trailer_without_startxref(self):
+        # The newer trailer, whose /Prev leads to the page tree, is followed
+        # by another object instead of `startxref`. Tests
+        # https://github.com/pdfminer/pdfminer.six/issues/493
+        path = absolute_sample_path("contrib/issue-493-trailer-without-startxref.pdf")
+        with open(path, "rb") as fp:
+            doc = PDFDocument(PDFParser(fp))
+            assert doc.info == [{"Producer": b"pdfminer.six test"}]
+            assert len(list(PDFPage.create_pages(doc))) == 1
+        assert extract_text(path).strip() == "Hello, trailer"
 
     def test_page_labels(self):
         path = absolute_sample_path("contrib/pagelabels.pdf")
