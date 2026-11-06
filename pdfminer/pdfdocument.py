@@ -479,15 +479,16 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
         super().init_params()
         self.length = 128
         self.cf = dict_value(self.param.get("CF"))
-        self.stmf = literal_name(self.param["StmF"])
-        self.strf = literal_name(self.param["StrF"])
+        self.stmf = literal_name(self.param.get("StmF", LIT("Identity")))
+        self.strf = literal_name(self.param.get("StrF", LIT("Identity")))
         self.encrypt_metadata = bool(self.param.get("EncryptMetadata", True))
         if self.stmf != self.strf:
             error_msg = f"Unsupported crypt filter: param={self.param!r}"
             raise PDFEncryptionError(error_msg)
         self.cfm = {}
         for k, v in self.cf.items():
-            f = self.get_cfm(literal_name(v["CFM"]))
+            params = dict_value(v)
+            f = self.get_cfm(literal_name(params.get("CFM", LIT("None"))))
             if f is None:
                 error_msg = f"Unknown crypt filter method: param={self.param!r}"
                 raise PDFEncryptionError(error_msg)
@@ -498,12 +499,11 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
             raise PDFEncryptionError(error_msg)
 
     def get_cfm(self, name: str) -> Callable[[int, int, bytes], bytes] | None:
-        if name == "V2":
-            return self.decrypt_rc4
-        elif name == "AESV2":
-            return self.decrypt_aes128
-        else:
-            return None
+        return {
+            "None": self.decrypt_identity,
+            "V2": self.decrypt_rc4,
+            "AESV2": self.decrypt_aes128,
+        }.get(name)
 
     def decrypt(
         self,
