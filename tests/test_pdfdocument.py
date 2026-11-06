@@ -2,7 +2,13 @@ import itertools
 
 import pytest
 
-from pdfminer.pdfdocument import PDFDocument, PDFNoPageLabels
+from pdfminer.high_level import extract_text
+from pdfminer.pdfdocument import (
+    PDFDocument,
+    PDFNoPageLabels,
+    PDFPasswordIncorrect,
+    PDFStandardSecurityHandlerV5,
+)
 from pdfminer.pdfexceptions import PDFObjectNotFound
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
@@ -27,6 +33,19 @@ class TestPdfDocument:
             parser = PDFParser(fp)
             doc = PDFDocument(parser)
             assert doc.info == [{"Producer": b"European Patent Office"}]
+
+    def test_encrypted_only_embedded_files(self):
+        # /AuthEvent /EFOpen: strings and streams use /Identity, only embedded
+        # files need the (non-empty) user password, so the document opens
+        # without it. Like auth-event-ef-open.pdf in the pdf.js test suite.
+        path = absolute_sample_path("encryption/aes-256-r6-ef-open.pdf")
+        assert extract_text(path).strip() == "Hello, EFOpen"
+        with open(path, "rb") as fp:
+            doc = PDFDocument(PDFParser(fp))
+            assert doc.encryption is not None
+            handler = PDFStandardSecurityHandlerV5(*doc.encryption)
+            with pytest.raises(PDFPasswordIncorrect):
+                handler.decrypt(4, 0, b"data", name="StdCF")
 
     def test_page_labels(self):
         path = absolute_sample_path("contrib/pagelabels.pdf")
