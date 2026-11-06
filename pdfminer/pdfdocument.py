@@ -505,6 +505,23 @@ class PDFStandardSecurityHandlerV4(PDFStandardSecurityHandler):
         else:
             return None
 
+    def init_key(self) -> None:
+        self.key = self.authenticate(self.password)
+        if self.key is not None:
+            return
+        if self.stmf != "Identity" or self.strf != "Identity":
+            raise PDFPasswordIncorrect
+        # Strings and streams are not encrypted, so the document opens without
+        # the password, like in other readers. This happens with
+        # /AuthEvent /EFOpen, where only embedded files are encrypted. Only
+        # crypt filters that need the key fail, and only when used.
+        for name, f in self.cfm.items():
+            if f != self.decrypt_identity:
+                self.cfm[name] = self.decrypt_password_required
+
+    def decrypt_password_required(self, objid: int, genno: int, data: bytes) -> bytes:
+        raise PDFPasswordIncorrect
+
     def decrypt(
         self,
         objid: int,
