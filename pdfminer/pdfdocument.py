@@ -184,7 +184,13 @@ class PDFXRef(PDFBaseXRef):
         try:
             (_, kwd) = parser.nexttoken()
             assert kwd is KWD(b"trailer"), str(kwd)
-            (_, dic) = parser.nextobject()
+            # The trailer is usually followed by `startxref`, but not always:
+            # some files go straight on with the next object (issue #493).
+            parser.return_toplevel = True
+            try:
+                (_, dic) = parser.nextobject()
+            finally:
+                parser.return_toplevel = False
         except PSEOF:
             x = parser.pop(1)
             if not x:
