@@ -296,7 +296,11 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
         self.seek(pos)
         i = 0
         data = b""
-        while i <= len(target):
+        # Only "EI" is followed by whitespace. The ASCII85 end-of-data marker "~>"
+        # terminates the data by itself: "~" never occurs in ASCII85 data and ">"
+        # is a delimiter, so "~>EI" is valid and must not consume the next byte.
+        trailer = 1 if target == b"EI" else 0
+        while i < len(target) + trailer:
             self.fillbuf()
             if i:
                 ci = self.buf[self.charpos]
@@ -318,7 +322,7 @@ class PDFContentParser(PSStackParser[Union[PSKeyword, PDFStream]]):
                 except ValueError:
                     data += self.buf[self.charpos :]
                     self.charpos = len(self.buf)
-        data = data[: -(len(target) + 1)]  # strip the last part
+        data = data[: -(len(target) + trailer)]  # strip the last part
         data = re.sub(rb"(\x0d\x0a|[\x0d\x0a])$", b"", data)
         return (pos, data)
 
