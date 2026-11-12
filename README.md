@@ -71,7 +71,6 @@ Please note that as a community-maintained project with limited maintainer avail
 To get started:
 1. Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and coding standards
 2. Check out the [open issues](https://github.com/pdfminer/pdfminer.six/issues) to find something to work on
-3. Join the discussion on [Gitter](https://gitter.im/pdfminer-six/Lobby) if you have questions
 
 Acknowledgement
 ---------------
