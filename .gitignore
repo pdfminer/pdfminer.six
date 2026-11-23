@@ -28,7 +28,8 @@ poetry.lock
 .eggs
 .venv
 
-# Claude Code and Junie
+# Claude Code, Cursor and Junie
 .claude/
+.cursor/
 .junie/
 *~
