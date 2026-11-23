@@ -1,3 +1,4 @@
+import itertools
 import unittest
 
 from pdfminer.high_level import extract_pages
@@ -6,6 +7,7 @@ from pdfminer.layout import (
     LTLayoutContainer,
     LTTextBoxHorizontal,
     LTTextBoxVertical,
+    LTTextGroup,
     LTTextLineHorizontal,
     LTTextLineVertical,
 )
@@ -30,6 +32,42 @@ class TestGroupTextLines(unittest.TestCase):
         textboxes = list(layout.group_textlines(laparams, lines))
 
         self.assertEqual(len(textboxes), 2)
+
+
+class TestGroupTextBoxes(unittest.TestCase):
+    # Three equal boxes in an L-shape: top-left, top-right and bottom-left.
+    # Top-left is equally distant from the other two, so group_textboxes()
+    # must break a tie between the pairs (top-left, top-right) and
+    # (top-left, bottom-left).
+    POSITIONS = ((0, 20), (20, 20), (0, 0))
+
+    @classmethod
+    def _leaves(cls, obj):
+        if isinstance(obj, LTTextGroup):
+            return [leaf for child in obj for leaf in cls._leaves(child)]
+        return [obj]
+
+    def _reading_order(self, address_order):
+        """Group and analyze the boxes, and return the (x0, y0) of each box in
+        reading order. `address_order` says which box goes in which position:
+        box 0 has the lowest memory address (id()), box 2 the highest.
+        """
+        laparams = LAParams()
+        boxes = sorted((LTTextBoxHorizontal() for _ in range(3)), key=id)
+        placed = [boxes[k] for k in address_order]
+        for (x, y), box in zip(self.POSITIONS, placed, strict=True):
+            box.set_bbox((x, y, x + 10, y + 10))
+        layout = LTLayoutContainer((0, 0, 100, 100))
+        [group] = layout.group_textboxes(laparams, placed)
+        group.analyze(laparams)
+        return tuple((box.x0, box.y0) for box in self._leaves(group))
+
+    def test_reading_order_does_not_depend_on_memory_addresses(self):
+        """Ties must be broken the same way on every run, or the text that
+        extract_text() returns can differ between runs on the same PDF.
+        """
+        for address_order in itertools.permutations(range(3)):
+            self.assertEqual(self._reading_order(address_order), self.POSITIONS)
 
 
 class TestFindNeigbors(unittest.TestCase):
