@@ -384,7 +384,6 @@ class PDFStream(PDFObject):
                     raw_bits_per_component = params.get("BitsPerComponent", 8)
                     bitspercomponent = int_value(raw_bits_per_component)
                     data = apply_png_predictor(
-                        pred,
                         colors,
                         columns,
                         bitspercomponent,
