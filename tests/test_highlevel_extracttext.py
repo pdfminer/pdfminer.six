@@ -56,6 +56,7 @@ test_strings = {
     "contrib/issue-625-identity-cmap.pdf": "Termin płatności: 2021-05-03",
     "contrib/issue-791-non-unicode-cmap.pdf": "Peněžní prostředky na účtech",
     "contrib/issue-886-xref-stream-widths.pdf": "Hello",
+    "contrib/issue_1288_actualtext.pdf": "replacement\n\nbefore ff after\n\nvisible\n\n\x0c",
 }
 
 
@@ -146,6 +147,11 @@ class TestExtractText(unittest.TestCase):
         test_file = "contrib/issue-791-non-unicode-cmap.pdf"
         s = run_with_file(test_file)
         self.assertEqual(s.strip(), test_strings[test_file])
+
+    def test_issue_1288_actualtext(self):
+        test_file = "contrib/issue_1288_actualtext.pdf"
+        s = run_with_file(test_file)
+        self.assertEqual(s, test_strings[test_file])
 
     def test_issue_886_xref_stream_widths(self):
         """Ensure that we can support arbitrary width integers in xref streams"""
