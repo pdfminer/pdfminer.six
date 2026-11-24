@@ -71,19 +71,24 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         PDFTextDevice.__init__(self, rsrcmgr)
         self.pageno = pageno
         self.laparams = laparams
+        self._auto_pageno = pageno == 1
         self._stack: list[LTLayoutContainer] = []
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
         (x0, y0, x1, y1) = apply_matrix_rect(ctm, page.mediabox)
         mediabox = (0, 0, abs(x0 - x1), abs(y0 - y1))
-        self.cur_item = LTPage(self.pageno, mediabox)
+        if self._auto_pageno and page.page_number is not None:
+            pageid = page.page_number + 1
+        else:
+            pageid = self.pageno
+        self.cur_item = LTPage(pageid, mediabox)
 
     def end_page(self, page: PDFPage) -> None:
         assert not self._stack, str(len(self._stack))
         assert isinstance(self.cur_item, LTPage), str(type(self.cur_item))
         if self.laparams is not None:
             self.cur_item.analyze(self.laparams)
-        self.pageno += 1
+        self.pageno = self.cur_item.pageid + 1
         self.receive_layout(self.cur_item)
 
     def begin_figure(self, name: str, bbox: Rect, matrix: Matrix) -> None:
@@ -446,6 +451,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
         self._yoffset: float = self.pagemargin
         self._font: tuple[str, float] | None = None
         self._fontstack: list[tuple[str, float] | None] = []
+        self._page_ids: list[int] = []
         self.write_header()
 
     def write(self, text: str) -> None:
@@ -467,7 +473,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
         self.write("</head><body>\n")
 
     def write_footer(self) -> None:
-        page_links = [f'<a href="#{i}">{i}</a>' for i in range(1, self.pageno)]
+        page_links = [f'<a href="#{i}">{i}</a>' for i in self._page_ids]
         s = (
             '<div style="position:absolute; top:0px;">'
             f"Page: {', '.join(page_links)}</div>\n"
@@ -674,6 +680,7 @@ class HTMLConverter(PDFConverter[AnyIO]):
             elif isinstance(item, LTText):
                 self.write_text(item.get_text())
 
+        self._page_ids.append(ltpage.pageid)
         render(ltpage)
         self._yoffset += self.pagemargin
 

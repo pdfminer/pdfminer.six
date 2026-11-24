@@ -43,6 +43,7 @@ class PDFPage:
       annots: the page annotations.
       beads: a chain that represents natural reading order.
       label: the page's label (typically, the logical page number).
+      page_number: zero-based page index in the document, if known.
 
     """
 
@@ -52,6 +53,7 @@ class PDFPage:
         pageid: object,
         attrs: object,
         label: str | None,
+        page_number: int | None = None,
     ) -> None:
         """Initialize a page object.
 
@@ -59,11 +61,13 @@ class PDFPage:
         pageid: any Python object that can uniquely identify the page.
         attrs: a dictionary of page attributes.
         label: page label string.
+        page_number: zero-based page index in the document.
         """
         self.doc = doc
         self.pageid = pageid
         self.attrs = dict_value(attrs)
         self.label = label
+        self.page_number = page_number
         self.lastmod = resolve1(self.attrs.get("LastModified"))
         self.resources: dict[object, object] = resolve1(
             self.attrs.get("Resources", {}),
@@ -133,10 +137,18 @@ class PDFPage:
             page_labels = itertools.repeat(None)
 
         pages = False
+        page_number = 0
         if "Pages" in document.catalog:
             objects = depth_first_search(document.catalog["Pages"], document.catalog)
             for objid, tree in objects:
-                yield cls(document, objid, tree, next(page_labels))
+                yield cls(
+                    document,
+                    objid,
+                    tree,
+                    next(page_labels),
+                    page_number=page_number,
+                )
+                page_number += 1
                 pages = True
         if not pages:
             # fallback when /Pages is missing.
@@ -145,7 +157,14 @@ class PDFPage:
                     try:
                         obj = document.getobj(objid)
                         if isinstance(obj, dict) and obj.get("Type") is LITERAL_PAGE:
-                            yield cls(document, objid, obj, next(page_labels))
+                            yield cls(
+                                document,
+                                objid,
+                                obj,
+                                next(page_labels),
+                                page_number=page_number,
+                            )
+                            page_number += 1
                     except PDFObjectNotFound:
                         pass
 
