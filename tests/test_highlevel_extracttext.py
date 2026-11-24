@@ -56,7 +56,8 @@ test_strings = {
     "contrib/issue-625-identity-cmap.pdf": "Termin płatności: 2021-05-03",
     "contrib/issue-791-non-unicode-cmap.pdf": "Peněžní prostředky na účtech",
     "contrib/issue-886-xref-stream-widths.pdf": "Hello",
-    "contrib/issue_1288_actualtext.pdf": "replacement\n\nbefore ff after\n\nvisible\n\n\x0c",
+    "contrib/issue_1288_actualtext.pdf": "replacement\n\nbefore ff after\n\n"
+    "visible\n\n\x0c",
 }
 
 

@@ -63,6 +63,14 @@ from pdfminer.utils import (
 log = logging.getLogger(__name__)
 
 
+class _ActualTextContext:
+    """State of an open marked-content sequence carrying ActualText."""
+
+    def __init__(self, replacement_text: str) -> None:
+        self.replacement_text = replacement_text
+        self.first_char_emitted = False
+
+
 class PDFLayoutAnalyzer(PDFTextDevice):
     cur_item: LTLayoutContainer
     ctm: Matrix
@@ -78,9 +86,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         self.laparams = laparams
         self._stack: list[LTLayoutContainer] = []
         # Stack of marked-content contexts, one entry per open BMC/BDC
-        # sequence. Entries are None for sequences without ActualText and
-        # a mutable [replacement_text, first_char_emitted] pair otherwise.
-        self._marked_content_stack: list[list | None] = []
+        # sequence. Entries are None for sequences without ActualText.
+        self._marked_content_stack: list[_ActualTextContext | None] = []
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
         (x0, y0, x1, y1) = apply_matrix_rect(ctm, page.mediabox)
@@ -246,7 +253,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                 if key == "ActualText" or literal_name(key) == "ActualText":
                     replacement_text = self._decode_actual_text(value)
         if replacement_text is not None:
-            self._marked_content_stack.append([replacement_text, False])
+            self._marked_content_stack.append(_ActualTextContext(replacement_text))
         else:
             self._marked_content_stack.append(None)
 
@@ -287,10 +294,9 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             None,
         )
         if actual_text is not None:
-            replacement_text, first_char_emitted = actual_text
-            if replacement_text and not first_char_emitted:
-                text = replacement_text
-                actual_text[1] = True
+            if actual_text.replacement_text and not actual_text.first_char_emitted:
+                text = actual_text.replacement_text
+                actual_text.first_char_emitted = True
             else:
                 text = ""
         textwidth = font.char_width(cid)
