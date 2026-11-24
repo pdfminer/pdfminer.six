@@ -1,6 +1,7 @@
 import unittest
+from io import BytesIO
 
-from pdfminer.high_level import extract_pages, extract_text
+from pdfminer.high_level import extract_pages, extract_text, extract_text_to_fp
 from pdfminer.layout import LAParams, LTTextContainer
 from tests.helpers import absolute_sample_path
 
@@ -204,3 +205,39 @@ class TestExtractPages(unittest.TestCase):
         elements = [element for element in page if isinstance(element, LTTextContainer)]
         self.assertEqual(len(elements), 1)
         self.assertEqual(elements[0].get_text(), "Text1\nText2\nText3\n")
+
+    def test_selected_pages_preserve_pageid(self) -> None:
+        """Regression test for https://github.com/pdfminer/pdfminer.six/issues/805."""
+        path = absolute_sample_path("contrib/pagelabels.pdf")
+
+        single = list(extract_pages(path, page_numbers=[2]))
+        self.assertEqual([page.pageid for page in single], [3])
+
+        subset = list(extract_pages(path, page_numbers=[1, 3]))
+        self.assertEqual([page.pageid for page in subset], [2, 4])
+
+        all_pages = list(extract_pages(path))
+        self.assertEqual([page.pageid for page in all_pages], [1, 2, 3, 4, 5])
+
+    def test_extract_text_to_fp_selected_pages_pageid(self) -> None:
+        path = absolute_sample_path("contrib/pagelabels.pdf")
+
+        with open(path, "rb") as inf, BytesIO() as outfp:
+            extract_text_to_fp(inf, outfp, output_type="xml", page_numbers=[1, 3])
+            xml_out = outfp.getvalue().decode("utf-8")
+        self.assertIn('<page id="2"', xml_out)
+        self.assertIn('<page id="4"', xml_out)
+        self.assertNotIn('<page id="1"', xml_out)
+
+        with open(path, "rb") as inf, BytesIO() as outfp:
+            extract_text_to_fp(inf, outfp, output_type="html", page_numbers=[1, 3])
+            html_out = outfp.getvalue().decode("utf-8")
+        self.assertIn('<a name="2">Page 2</a>', html_out)
+        self.assertIn('<a name="4">Page 4</a>', html_out)
+        self.assertIn('Page: <a href="#2">2</a>, <a href="#4">4</a></div>', html_out)
+
+        with open(path, "rb") as inf, BytesIO() as outfp:
+            extract_text_to_fp(inf, outfp, output_type="hocr", page_numbers=[1, 3])
+            hocr_out = outfp.getvalue().decode("utf-8")
+        self.assertIn("class='ocr_page' id='2'", hocr_out)
+        self.assertIn("class='ocr_page' id='4'", hocr_out)

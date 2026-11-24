@@ -475,3 +475,43 @@ class TestBinaryDetector:
 
     def test_textiowrapper(self):
         assert not PDFConverter._is_binary_stream(io.TextIOBase())
+
+
+class TestLayoutAnalyzerPageId:
+    def test_explicit_pageno_and_manual_pdfpage_fallback(self) -> None:
+        from pdfminer.converter import PDFPageAggregator
+        from pdfminer.pdfdocument import PDFDocument
+        from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
+        from pdfminer.pdfpage import PDFPage
+        from pdfminer.pdfparser import PDFParser
+
+        path = absolute_sample_path("contrib/pagelabels.pdf")
+        with open(path, "rb") as fp:
+            rsrcmgr = PDFResourceManager()
+            custom_device = PDFPageAggregator(rsrcmgr, pageno=10)
+            interpreter = PDFPageInterpreter(rsrcmgr, custom_device)
+            selected = list(PDFPage.get_pages(fp, pagenos=[1, 3]))
+            custom_ids = []
+            for page in selected:
+                interpreter.process_page(page)
+                custom_ids.append(custom_device.get_result().pageid)
+            assert custom_ids == [10, 11]
+
+        with open(path, "rb") as fp:
+            parser = PDFParser(fp)
+            doc = PDFDocument(parser)
+            raw_pages = list(PDFPage.create_pages(doc))[:2]
+            rsrcmgr = PDFResourceManager()
+            default_device = PDFPageAggregator(rsrcmgr)
+            interpreter = PDFPageInterpreter(rsrcmgr, default_device)
+            fallback_ids = []
+            for raw_page in raw_pages:
+                manual_page = PDFPage(
+                    doc,
+                    raw_page.pageid,
+                    raw_page.attrs,
+                    raw_page.label,
+                )
+                interpreter.process_page(manual_page)
+                fallback_ids.append(default_device.get_result().pageid)
+            assert fallback_ids == [1, 2]
