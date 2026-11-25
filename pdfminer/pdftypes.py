@@ -175,7 +175,8 @@ def num_value(x: object) -> float:
 def uint_value(x: object, n_bits: int) -> int:
     """Resolve number and interpret it as a two's-complement unsigned number"""
     xi = int_value(x)
-    if xi > 0:
+    # Zero is already unsigned. Only a negative value needs the two's-complement shift.
+    if xi >= 0:
         return xi
     else:
         return xi + cast(int, 2**n_bits)
