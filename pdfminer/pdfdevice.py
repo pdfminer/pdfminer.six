@@ -162,15 +162,11 @@ class PDFTextDevice(PDFDevice):
         graphicstate: "PDFGraphicState",
     ) -> Point:
         (x, y) = pos
-        needcharspace = False
         for obj in seq:
             if isinstance(obj, (int, float)):
                 x -= obj * dxscale
-                needcharspace = True
             elif isinstance(obj, bytes):
                 for cid in font.decode(obj):
-                    if needcharspace:
-                        x += charspace
                     x += self.render_char(
                         utils.translate_matrix(matrix, (x, y)),
                         font,
@@ -181,9 +177,9 @@ class PDFTextDevice(PDFDevice):
                         ncs,
                         graphicstate,
                     )
+                    x += charspace
                     if cid == 32 and wordspace:
                         x += wordspace
-                    needcharspace = True
             else:
                 logger.warning(
                     "Cannot render horizontal string because "
@@ -208,15 +204,11 @@ class PDFTextDevice(PDFDevice):
         graphicstate: "PDFGraphicState",
     ) -> Point:
         (x, y) = pos
-        needcharspace = False
         for obj in seq:
             if isinstance(obj, (int, float)):
                 y -= obj * dxscale
-                needcharspace = True
             elif isinstance(obj, bytes):
                 for cid in font.decode(obj):
-                    if needcharspace:
-                        y += charspace
                     y += self.render_char(
                         utils.translate_matrix(matrix, (x, y)),
                         font,
@@ -227,9 +219,9 @@ class PDFTextDevice(PDFDevice):
                         ncs,
                         graphicstate,
                     )
+                    y += charspace
                     if cid == 32 and wordspace:
                         y += wordspace
-                    needcharspace = True
             else:
                 logger.warning(
                     "Cannot render vertical string because %r is not a valid "
