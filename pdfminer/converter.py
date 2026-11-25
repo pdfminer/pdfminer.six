@@ -3,6 +3,7 @@ import logging
 import re
 from collections.abc import Sequence
 from typing import (
+    TYPE_CHECKING,
     BinaryIO,
     ClassVar,
     Generic,
@@ -39,6 +40,10 @@ from pdfminer.pdfdevice import PDFTextDevice
 from pdfminer.pdfexceptions import PDFValueError
 from pdfminer.pdffont import PDFFont, PDFUnicodeNotDefined
 from pdfminer.pdfinterp import PDFGraphicState, PDFResourceManager
+from pdfminer.psparser import PSLiteral, literal_name
+
+if TYPE_CHECKING:
+    from pdfminer.pdfinterp import PDFStackT
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdftypes import PDFStream
 from pdfminer.utils import (
@@ -58,6 +63,14 @@ from pdfminer.utils import (
 log = logging.getLogger(__name__)
 
 
+class _ActualTextContext:
+    """State of an open marked-content sequence carrying ActualText."""
+
+    def __init__(self, replacement_text: str) -> None:
+        self.replacement_text = replacement_text
+        self.first_char_emitted = False
+
+
 class PDFLayoutAnalyzer(PDFTextDevice):
     cur_item: LTLayoutContainer
     ctm: Matrix
@@ -72,6 +85,9 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         self.pageno = pageno
         self.laparams = laparams
         self._stack: list[LTLayoutContainer] = []
+        # Stack of marked-content contexts, one entry per open BMC/BDC
+        # sequence. Entries are None for sequences without ActualText.
+        self._marked_content_stack: list[_ActualTextContext | None] = []
 
     def begin_page(self, page: PDFPage, ctm: Matrix) -> None:
         (x0, y0, x1, y1) = apply_matrix_rect(ctm, page.mediabox)
@@ -230,6 +246,33 @@ class PDFLayoutAnalyzer(PDFTextDevice):
                 )
                 self.cur_item.add(curve)
 
+    def begin_tag(self, tag: PSLiteral, props: "PDFStackT | None" = None) -> None:
+        replacement_text = None
+        if isinstance(props, dict):
+            for key, value in props.items():
+                if key == "ActualText" or literal_name(key) == "ActualText":
+                    replacement_text = self._decode_actual_text(value)
+        if replacement_text is not None:
+            self._marked_content_stack.append(_ActualTextContext(replacement_text))
+        else:
+            self._marked_content_stack.append(None)
+
+    def end_tag(self) -> None:
+        if self._marked_content_stack:
+            self._marked_content_stack.pop()
+
+    @staticmethod
+    def _decode_actual_text(value: object) -> str | None:
+        if isinstance(value, str):
+            return value
+        if not isinstance(value, bytes):
+            return None
+        if value.startswith(b"\xfe\xff"):
+            return value[2:].decode("utf-16-be", "replace")
+        if value.startswith(b"\xff\xfe"):
+            return value[2:].decode("utf-16-le", "replace")
+        return value.decode("latin-1", "replace")
+
     def render_char(
         self,
         matrix: Matrix,
@@ -246,6 +289,16 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             assert isinstance(text, str), str(type(text))
         except PDFUnicodeNotDefined:
             text = self.handle_undefined_char(font, cid)
+        actual_text = next(
+            (ctx for ctx in reversed(self._marked_content_stack) if ctx is not None),
+            None,
+        )
+        if actual_text is not None:
+            if actual_text.replacement_text and not actual_text.first_char_emitted:
+                text = actual_text.replacement_text
+                actual_text.first_char_emitted = True
+            else:
+                text = ""
         textwidth = font.char_width(cid)
         textdisp = font.char_disp(cid)
         item = LTChar(
