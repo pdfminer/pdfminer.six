@@ -165,8 +165,8 @@ def apply_png_predictor(
         msg = f"Unsupported `bitspercomponent': {bitspercomponent}"
         raise PDFValueError(msg)
 
-    nbytes = colors * columns * bitspercomponent // 8
-    bpp = colors * bitspercomponent // 8  # number of bytes per complete pixel
+    nbytes = (colors * columns * bitspercomponent + 7) // 8
+    bpp = (colors * bitspercomponent + 7) // 8  # bytes per pixel, rounded up
     buf = bytearray()
     line_above = bytearray(columns)
     for scanline_i in range(0, len(data), nbytes + 1):
