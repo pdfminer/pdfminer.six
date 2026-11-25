@@ -1,8 +1,49 @@
 import unittest
+from io import BytesIO
 
 from pdfminer.high_level import extract_pages, extract_text
 from pdfminer.layout import LAParams, LTTextContainer
+from pdfminer.pdfexceptions import PDFException
 from tests.helpers import absolute_sample_path
+
+
+def _pdf_with_form_bbox(bbox: bytes) -> BytesIO:
+    """Build a tiny two-page PDF whose second page uses a form XObject /BBox.
+
+    The first page contains the text "Hello"; the second page invokes a form
+    XObject whose /BBox is ``bbox`` (e.g. ``b"[0 0]"`` to exercise a malformed,
+    non-four-number rectangle). Returned as a BytesIO so tests stay
+    self-contained and free of line-ending conversion on a committed binary.
+    """
+    form_stream = b"q Q"
+    text_stream = b"BT /F1 12 Tf 50 100 Td (Hello) Tj ET"
+    objs = [
+        b"<</Type/Catalog/Pages 2 0 R>>",
+        b"<</Type/Pages/Kids[3 0 R 4 0 R]/Count 2>>",
+        b"<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]"
+        b"/Resources<</Font<</F1 7 0 R>>>>/Contents 5 0 R>>",
+        b"<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]"
+        b"/Resources<</XObject<</Fm0 6 0 R>>>>/Contents 8 0 R>>",
+        b"<</Length %d>>\nstream\n%s\nendstream" % (len(text_stream), text_stream),
+        b"<</Type/XObject/Subtype/Form/FormType 1/BBox %s/Resources<<>>"
+        b"/Length %d>>\nstream\n%s\nendstream" % (bbox, len(form_stream), form_stream),
+        b"<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>",
+        b"<</Length 7>>\nstream\n/Fm0 Do\nendstream",
+    ]
+    out = b"%PDF-1.4\n"
+    offsets = []
+    for i, obj in enumerate(objs, 1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n%s\nendobj\n" % (i, obj)
+    startxref = len(out)
+    out += b"xref\n0 %d\n0000000000 65535 f \n" % (len(objs) + 1)
+    for offset in offsets:
+        out += b"%010d 00000 n \n" % offset
+    out += b"trailer<</Size %d/Root 1 0 R>>\nstartxref\n%d\n%%%%EOF" % (
+        len(objs) + 1,
+        startxref,
+    )
+    return BytesIO(out)
 
 
 def run_with_string(sample_path, laparams=None):
@@ -152,6 +193,29 @@ class TestExtractText(unittest.TestCase):
         test_file = "contrib/issue-886-xref-stream-widths.pdf"
         s = run_with_file(test_file)
         self.assertEqual(s.strip(), test_strings[test_file])
+
+    def test_invalid_form_bbox_does_not_crash(self):
+        """A form XObject with a non-conformant /BBox must not crash extraction.
+
+        The second page holds a form XObject whose /BBox is [0 0] (two numbers
+        instead of the four required by the spec). Extraction should fall back
+        to a unit rectangle for the bad bbox and still recover the text from the
+        first page rather than raising ValueError.
+        """
+        s = extract_text(_pdf_with_form_bbox(b"[0 0]"))
+        self.assertIn("Hello", s)
+
+    def test_invalid_form_bbox_raises_in_strict_mode(self):
+        """In STRICT mode the invalid /BBox is reported instead of tolerated."""
+        from pdfminer import settings
+
+        original = settings.STRICT
+        settings.STRICT = True
+        try:
+            with self.assertRaises(PDFException):
+                extract_text(_pdf_with_form_bbox(b"[0 0]"))
+        finally:
+            settings.STRICT = original
 
 
 class TestExtractPages(unittest.TestCase):
