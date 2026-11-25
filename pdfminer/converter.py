@@ -999,6 +999,8 @@ class HOCRConverter(PDFConverter[AnyIO]):
                         or self.working_size != item.size
                     ):
                         self.write_word()
+                        self.within_chars = True
+                        self.working_text = ""
                         self.working_bbox = item.bbox
                         self.working_font = item.fontname
                         self.working_size = item.size
