@@ -211,10 +211,14 @@ def apply_png_predictor(
             # bytes already decoded, and Prior() refers to the decoded bytes of
             # the prior scanline.
             for j, average_x in enumerate(line_encoded):
-                raw_x_bpp = 0 if j < bpp else raw[j - bpp]
-                prior_x = line_above[j]
-                raw_x = (average_x + (raw_x_bpp + prior_x) // 2) & 255
-                raw.append(raw_x)
+                raw_x_bpp = 0
+                if 0 <= (j - bpp) < len(raw):
+                    raw_x_bpp = 0 if j < bpp else raw[j - bpp]
+
+                if 0 <= j < len(line_above):
+                    prior_x = line_above[j]
+                    raw_x = (average_x + (raw_x_bpp + prior_x) // 2) & 255
+                    raw.append(raw_x)
 
         elif filter_type == 4:
             # Filter type 4: Paeth
@@ -226,16 +230,20 @@ def apply_png_predictor(
             # already decoded. Exactly the same PaethPredictor() function is
             # used by both encoder and decoder.
             for j, paeth_x in enumerate(line_encoded):
-                if j < bpp:
-                    raw_x_bpp = 0
-                    prior_x_bpp = 0
-                else:
-                    raw_x_bpp = raw[j - bpp]
-                    prior_x_bpp = line_above[j - bpp]
-                prior_x = line_above[j]
-                paeth = paeth_predictor(raw_x_bpp, prior_x, prior_x_bpp)
-                raw_x = (paeth_x + paeth) & 255
-                raw.append(raw_x)
+                raw_x_bpp = 0
+                prior_x_bpp = 0
+
+                if j >= bpp:
+                    if 0 <= (j - bpp) < len(raw):
+                        raw_x_bpp = raw[j - bpp]
+                    if 0 <= (j - bpp) < len(line_above):
+                        prior_x_bpp = line_above[j - bpp]
+
+                if 0 <= j < len(line_above):
+                    prior_x = line_above[j]
+                    paeth = paeth_predictor(raw_x_bpp, prior_x, prior_x_bpp)
+                    raw_x = (paeth_x + paeth) & 255
+                    raw.append(raw_x)
 
         else:
             raise PDFValueError(f"Unsupported predictor value: {filter_type}")
