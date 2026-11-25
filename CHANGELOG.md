@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Restore `cmap` and `cmap_clean` targets to `Makefile ([#1256](https://github.com/pdfminer/pdfminer.six/pull/1256))
 
+### Added
+
+- `LAParams.max_layout_objects` to bound the number of non-text layout objects (paths, curves and images) retained per page. Pages crowded with vector graphics no longer grow time and memory without bound; text objects are never dropped, so text extraction still returns the page's text
+
 ### Fixed
 
 - Reproducibility issue when generating cmap `.json.gz` files ([#1242](https://github.com/pdfminer/pdfminer.six/pull/1242))
