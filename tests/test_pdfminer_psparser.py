@@ -461,3 +461,38 @@ def test_issue_1025():
     # we should get both "end" at the end
     assert tokens[-1] == end
     assert tokens[-2] == tokens[-1]
+
+
+def test_issue_1316_ascii85_inline_image_without_whitespace():
+    """Regression test for an ASCII85 inline image whose end-of-data marker
+    is followed directly by "EI".
+
+    "~>" terminates the data by itself, so no whitespace is required before
+    "EI". Requiring it made the parser swallow the rest of the content stream.
+
+    See: https://github.com/pdfminer/pdfminer.six/issues/1316
+    """
+    from pdfminer.pdfinterp import PDFContentParser
+    from pdfminer.pdftypes import PDFStream
+
+    for tail in (b"", b" ", b"\n"):
+        stream = PDFStream(
+            {},
+            b"BI /W 2 /H 2 /BPC 8 /CS /G /F /A85 ID 0L0#b~>"
+            + tail
+            + b"EI Q\nBT (After image) Tj ET\n",
+        )
+        parser = PDFContentParser([stream])
+        results = []
+        while True:
+            try:
+                results.append(parser.nextobject()[1])
+            except PSEOF:
+                break
+        images = [obj for obj in results if isinstance(obj, PDFStream)]
+        assert len(images) == 1, f"tail={tail!r}: no inline image was parsed"
+        assert images[0].rawdata == b"0L0#b~>", f"tail={tail!r}"
+        # The text-showing operator after the image is still parsed.
+        assert b"After image" in results, (
+            f"tail={tail!r}: the rest of the stream was lost"
+        )
