@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Check the type of `N` when creating an `ICCBased` color space ([#1252](http3://github.com/pdfminer/pdfminer.six/pull/1253))
 - Endless recursion issue with circular or corrupted `Prev` chains in cross-refeerence tables ([#1253](https://github.com/pdfminer/pdfminer.six/pull/1253))
 - WinAnsiEncoding code 0xAD decoded as space instead of hyphen ([#1291](https://github.com/pdfminer/pdfminer.six/pull/1291))
+- Fix image export for JBIG2 images without global segments ([#743](https://github.com/pdfminer/pdfminer.six/issues/743))
 
 ## [20260107]
 

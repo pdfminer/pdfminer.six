@@ -19,6 +19,7 @@ from pdfminer.pdftypes import (
     LITERALS_FLATE_DECODE,
     LITERALS_JBIG2_DECODE,
     LITERALS_JPX_DECODE,
+    resolve1,
 )
 
 PIL_ERROR_MESSAGE = (
@@ -195,8 +196,10 @@ class ImageWriter:
             global_streams = []
             filters = image.stream.get_filters()
             for filter_name, params in filters:
-                if filter_name in LITERALS_JBIG2_DECODE:
-                    global_streams.append(params["JBIG2Globals"].resolve())
+                if filter_name in LITERALS_JBIG2_DECODE and params:
+                    global_stream = resolve1(params.get("JBIG2Globals"))
+                    if global_stream is not None:
+                        global_streams.append(global_stream)
 
             if len(global_streams) > 1:
                 msg = (
