@@ -1,4 +1,5 @@
 import itertools
+from io import BytesIO
 
 import pytest
 
@@ -6,11 +7,71 @@ from pdfminer.pdfdocument import PDFDocument, PDFNoPageLabels
 from pdfminer.pdfexceptions import PDFObjectNotFound
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
-from pdfminer.pdftypes import dict_value, int_value
+from pdfminer.pdftypes import PDFObjRef, dict_value, int_value
 from tests.helpers import absolute_sample_path
 
 
 class TestPdfDocument:
+    @pytest.mark.parametrize(
+        "sample, expected_names",
+        [
+            (
+                "simple5.pdf",
+                {
+                    b"Doc-Start",
+                    b"heading",
+                    b"page.1",
+                    b"section*.1",
+                    b"section*.2",
+                    b"subheading",
+                },
+            ),
+            (
+                "contrib/pagelabels.pdf",
+                {
+                    b"Doc-Start",
+                    b"page.1",
+                    b"page.2",
+                    b"page.iii",
+                    b"page.iv",
+                    b"section*.1",
+                    b"section.1",
+                    b"section.2",
+                    b"section.3",
+                    b"section.4",
+                },
+            ),
+        ],
+    )
+    def test_get_destinations_name_tree(self, sample, expected_names):
+        with open(absolute_sample_path(sample), "rb") as fp:
+            doc = PDFDocument(PDFParser(fp))
+            destinations = list(doc.get_destinations())
+
+            assert [name for name, _ in destinations] == sorted(expected_names)
+            for name, destination in destinations:
+                assert destination.objid == doc.get_dest(name).objid
+
+    def test_get_destinations_mixed_catalog(self):
+        pdf = BytesIO(b"""%PDF-1.4
+1 0 obj << /Type /Catalog /Dests << /chapter 3 0 R >>
+    /Names << /Dests << /Names [(chapter) 3 0 R 2 0 R 3 0 R] >> >> >> endobj
+2 0 obj <ff> endobj
+3 0 obj [4 0 R /Fit] endobj
+4 0 obj << /Type /Page >> endobj
+trailer << /Root 1 0 R >>
+%%EOF""")
+        doc = PDFDocument(PDFParser(pdf))
+        destinations = list(doc.get_destinations())
+        assert [name for name, _ in destinations] == ["chapter", b"chapter", b"\xff"]
+        for _, destination in destinations:
+            assert isinstance(destination, PDFObjRef)
+            assert destination.objid == 3
+
+    def test_no_destinations(self):
+        with open(absolute_sample_path("simple1.pdf"), "rb") as fp:
+            assert list(PDFDocument(PDFParser(fp)).get_destinations()) == []
+
     def test_get_zero_objid_raises_pdfobjectnotfound(self):
         with open(absolute_sample_path("simple1.pdf"), "rb") as in_file:
             parser = PDFParser(in_file)

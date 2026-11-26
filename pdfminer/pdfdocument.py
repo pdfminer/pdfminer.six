@@ -26,6 +26,7 @@ from pdfminer.pdfexceptions import (
 from pdfminer.pdfparser import PDFParser, PDFStreamParser, PDFSyntaxError
 from pdfminer.pdftypes import (
     DecipherCallable,
+    PDFObjRef,
     PDFStream,
     decipher_all,
     dict_value,
@@ -949,6 +950,29 @@ class PDFDocument:
                 raise PDFDestinationNotFound(name) from None
             obj = d0[name]
         return obj
+
+    def get_destinations(self) -> Iterator[tuple[str | bytes, Any]]:
+        """Iterate over the document's named destinations.
+
+        Names and destination values are returned as stored in the document.
+        Names are strings in the legacy destination dictionary and bytes in
+        the destination name tree. Values may be indirect object references.
+        """
+        yield from dict_value(self.catalog.get("Dests", {})).items()
+
+        names = dict_value(self.catalog.get("Names", {}))
+        stack = [names.get("Dests", {})]
+        visited: set[int] = set()
+        while stack:
+            node = stack.pop()
+            if isinstance(node, PDFObjRef):
+                if node.objid in visited:
+                    continue
+                visited.add(node.objid)
+            tree = dict_value(node)
+            for name, destination in choplist(2, list_value(tree.get("Names", []))):
+                yield str_value(name), destination
+            stack.extend(reversed(list_value(tree.get("Kids", []))))
 
     # find_xref
     def find_xref(self, parser: PDFParser) -> int:
