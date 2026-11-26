@@ -61,6 +61,11 @@ question we can refer to the section *12.3.3 Document Outline* of the
   instead, or if they do, they might still include a destination (**Dest**) to
   keep compatibility with PDF versions previous to 1.3.
 
+To list named destinations without knowing their names in advance, iterate over
+``document.get_destinations()``. It yields ``(name, destination)`` pairs. Names
+from a destination dictionary are strings. Names from a name tree are bytes,
+so their original encoding is preserved.
+
 Unfortunately, pdfminer.six doesn't expose the page number that each of the
 entries targets. However, once we know what each of the fields above mean, we
 can implement a ToC-entry page number resolver ourselves:
