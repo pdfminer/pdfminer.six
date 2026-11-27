@@ -124,7 +124,9 @@ def test_pdf_with_empty_characters_horizontal():
     path = absolute_sample_path("contrib/issue-449-horizontal.pdf")
     pages = extract_pages(path)
     textboxes = [
-        textbox for textbox in next(pages) if isinstance(textbox, LTTextBoxHorizontal)
+        textbox
+        for textbox in next(pages)
+        if isinstance(textbox, LTTextBoxHorizontal) and textbox.get_text().strip()
     ]
     assert len(textboxes) == 3
 
@@ -142,6 +144,30 @@ def test_pdf_with_empty_characters_vertical():
     laparams = LAParams(detect_vertical=True)
     pages = extract_pages(path, laparams=laparams)
     textboxes = [
-        textbox for textbox in next(pages) if isinstance(textbox, LTTextBoxVertical)
+        textbox
+        for textbox in next(pages)
+        if isinstance(textbox, LTTextBoxVertical) and textbox.get_text().strip()
     ]
     assert len(textboxes) == 3
+
+
+def test_pdf_whitespace_only_textlines_wrapped_in_textboxes():
+    """Regression test for issue #763
+
+    Whitespace-only text lines must still be wrapped in a text box, so no
+    bare text lines remain directly under the page after layout analysis.
+    The sample PDF has explicit space characters between lines with text.
+    """
+    path = absolute_sample_path("contrib/issue-449-horizontal.pdf")
+    pages = extract_pages(path)
+    page = next(pages)
+    orphan_lines = [
+        element for element in page if isinstance(element, LTTextLineHorizontal)
+    ]
+    assert orphan_lines == []
+    whitespace_boxes = [
+        textbox
+        for textbox in page
+        if isinstance(textbox, LTTextBoxHorizontal) and not textbox.get_text().strip()
+    ]
+    assert len(whitespace_boxes) == 2
