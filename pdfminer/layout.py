@@ -914,8 +914,20 @@ class LTLayoutContainer(LTContainer[LTComponent]):
             return
         textlines = list(self.group_objects(laparams, textobjs))
         (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
+        # Whitespace-only lines must not be grouped with other lines, since
+        # that can merge distinct paragraphs (#449). But leaving them
+        # unwrapped puts a bare LTTextLine directly under the page (#763).
+        # Wrap each one in its own text box instead.
+        empty_boxes: list[LTTextBox] = []
         for obj in empties:
             obj.analyze(laparams)
+            empty_box: LTTextBox
+            if isinstance(obj, LTTextLineVertical):
+                empty_box = LTTextBoxVertical()
+            else:
+                empty_box = LTTextBoxHorizontal()
+            empty_box.add(obj)
+            empty_boxes.append(empty_box)
         textboxes = list(self.group_textlines(laparams, textlines))
         if laparams.boxes_flow is None:
             for textbox in textboxes:
@@ -938,7 +950,7 @@ class LTLayoutContainer(LTContainer[LTComponent]):
         self._objs = (
             cast(list[LTComponent], textboxes)
             + otherobjs
-            + cast(list[LTComponent], empties)
+            + cast(list[LTComponent], empty_boxes)
         )
 
 
